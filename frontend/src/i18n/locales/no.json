@@ -1,0 +1,114 @@
+{
+  "hero": {
+    "title": "MÉTRO-TAXI",
+    "subtitle": "Det abonnementsbaserte bymobilitetsnettverket",
+    "description": "Bli med på kjøretøy som går i din retning. Ubegrensede turer med et enkelt abonnement.",
+    "cta": "KOM I GANG"
+  },
+  "nav": {
+    "login": "Logg inn",
+    "register": "Registrer deg",
+    "pricing": "Priser",
+    "howItWorks": "Hvordan det fungerer",
+    "drivers": "Sjåfører"
+  },
+  "pricing": {
+    "title": "ABONNEMENTER",
+    "subtitle": "Velg din plan",
+    "plans": {
+      "day": {
+        "name": "24 Timer",
+        "price": "6,99 €",
+        "description": "Perfekt for sporadisk bruk"
+      },
+      "week": {
+        "name": "1 Uke",
+        "price": "16,99 €",
+        "description": "Ideell for korte opphold"
+      },
+      "month": {
+        "name": "1 Måned",
+        "price": "53,99 €",
+        "description": "Best verdi for pengene"
+      }
+    },
+    "features": {
+      "unlimited": "Ubegrensede turer",
+      "allVehicles": "Tilgang til alle kjøretøy",
+      "support": "Prioritert støtte",
+      "noCommitment": "Ingen binding"
+    },
+    "cta": "ABONNER"
+  },
+  "howItWorks": {
+    "title": "HVORDAN DET FUNGERER",
+    "steps": {
+      "step1": {
+        "title": "Registrer deg",
+        "description": "Opprett din konto og velg ditt abonnement"
+      },
+      "step2": {
+        "title": "Finn et kjøretøy",
+        "description": "Finn kjøretøy som går i din retning"
+      },
+      "step3": {
+        "title": "Be om en tur",
+        "description": "Send en forespørsel til sjåføren med ett klikk"
+      },
+      "step4": {
+        "title": "Reis",
+        "description": "Nyt turen og gå av hvor du vil"
+      }
+    }
+  },
+  "drivers": {
+    "title": "BLI VTC-SJÅFØR",
+    "subtitle": "Bli med i Métro-Taxi-nettverket og maksimer inntekten din uten skjulte kostnader",
+    "revenue": {
+      "title": "POTENSIELL SJÅFØRINNTEKT",
+      "monthly": "per måned",
+      "upTo": "Kan nå opp til",
+      "depending": "avhengig av aktivitet"
+    },
+    "benefits": {
+      "title": "SJÅFØRFORDELER",
+      "noSubscription": "Ingen abonnement å betale",
+      "noSubscriptionDesc": "Bli med i nettverket vårt gratis",
+      "noCommission": "Ingen provisjon per tur",
+      "noCommissionDesc": "Behold 100% av inntektene dine",
+      "subscribedPassengers": "Forhåndsabonnerte passasjerer",
+      "subscribedPassengersDesc": "Ingen behov for å finne kunder",
+      "optimizedRoutes": "Ruteoptimalisering",
+      "optimizedRoutesDesc": "Smart matchingsalgoritme",
+      "morePassengers": "Flere passasjerer gjennom nettverket",
+      "morePassengersDesc": "Maksimer kjøretiden din"
+    },
+    "app": {
+      "title": "SJÅFØRAPPEN",
+      "subtitle": "Alt du trenger på én skjerm",
+      "requests": "Passasjerforespørsler",
+      "requestsDesc": "Motta forespørsler i sanntid i ditt område",
+      "routes": "Optimaliserte ruter",
+      "routesDesc": "Ruter beregnet for å maksimere turene dine",
+      "transfers": "Foreslåtte forbindelser",
+      "transfersDesc": "Intelligent overgangssystem"
+    },
+    "cta": "BLI MED I NETTVERKET NÅ",
+    "ctaSubtext": "Gratis registrering • Ingen binding"
+  },
+  "video": {
+    "title": "Oppdag Métro-Taxi",
+    "loading": "Laster voiceover..."
+  },
+  "footer": {
+    "rights": "Alle rettigheter forbeholdt",
+    "contact": "Kontakt",
+    "legal": "Juridisk",
+    "privacy": "Personvern"
+  },
+  "common": {
+    "loading": "Laster...",
+    "error": "En feil oppstod",
+    "retry": "Prøv igjen"
+  }
+}
