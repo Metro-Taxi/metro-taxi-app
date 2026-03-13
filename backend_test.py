@@ -508,11 +508,17 @@ def main():
         ("Driver Registration", tester.test_driver_registration),
         ("Admin Login", tester.test_admin_login),
         ("Auth Me", tester.test_auth_me),
+        ("Email Verification Status", tester.test_email_verification_status),
         ("Admin Stats", tester.test_admin_stats),
         ("Admin Drivers", tester.test_admin_drivers),
         ("Validate Driver", tester.test_validate_driver),
         ("Available Drivers", tester.test_available_drivers),
+        ("Matching Find Drivers", tester.test_matching_find_drivers),
+        ("Matching Transfers", tester.test_matching_transfers),
+        ("Admin Virtual Cards", tester.test_admin_virtual_cards),
+        ("Admin User Card Detail", tester.test_admin_user_card_detail),
         ("User Virtual Card", tester.test_user_virtual_card),
+        ("Ride Request and Progress", tester.test_ride_request_and_progress),
     ]
     
     failed_tests = []
