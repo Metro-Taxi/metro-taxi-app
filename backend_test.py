@@ -276,6 +276,225 @@ class MetroTaxiAPITester:
             return True
         return False
 
+    def test_email_verification_status(self):
+        """Test email verification status endpoint"""
+        if not self.token:
+            return False
+            
+        success, response = self.run_test(
+            "Get Email Verification Status",
+            "GET",
+            "auth/verification-status",
+            200,
+            headers={'Authorization': f'Bearer {self.token}'}
+        )
+        
+        if success and 'email_verified' in response:
+            print(f"   Email verified: {response['email_verified']}")
+            return True
+        return False
+
+    def test_matching_find_drivers(self):
+        """Test intelligent matching algorithm"""
+        if not self.token:
+            return False
+            
+        matching_data = {
+            "user_lat": 48.8566,
+            "user_lng": 2.3522,
+            "dest_lat": 48.8606,
+            "dest_lng": 2.3376
+        }
+        
+        success, response = self.run_test(
+            "Find Matching Drivers",
+            "POST",
+            "matching/find-drivers",
+            200,
+            data=matching_data,
+            headers={'Authorization': f'Bearer {self.token}'}
+        )
+        
+        if success and 'drivers' in response:
+            drivers = response['drivers']
+            print(f"   Found {len(drivers)} matched drivers")
+            if drivers:
+                # Check if matching scores are present
+                first_driver = drivers[0]
+                if 'matching' in first_driver:
+                    matching = first_driver['matching']
+                    print(f"   Best match score: {matching.get('score', 0)}")
+                    return True
+            return True  # Empty result is also valid
+        return False
+
+    def test_matching_transfers(self):
+        """Test transfer suggestions endpoint"""
+        if not self.token:
+            return False
+            
+        transfer_data = {
+            "user_lat": 48.8566,
+            "user_lng": 2.3522,
+            "dest_lat": 48.8606,
+            "dest_lng": 2.3376
+        }
+        
+        success, response = self.run_test(
+            "Find Transfer Routes",
+            "POST",
+            "matching/transfers",
+            200,
+            data=transfer_data,
+            headers={'Authorization': f'Bearer {self.token}'}
+        )
+        
+        if success and 'transfers' in response and 'count' in response:
+            transfers = response['transfers']
+            count = response['count']
+            print(f"   Found {count} transfer options")
+            return True
+        return False
+
+    def test_admin_virtual_cards(self):
+        """Test admin virtual cards endpoint"""
+        if not self.admin_token:
+            return False
+            
+        success, response = self.run_test(
+            "Admin Get Virtual Cards",
+            "GET",
+            "admin/cards",
+            200,
+            headers={'Authorization': f'Bearer {self.admin_token}'}
+        )
+        
+        if success and 'cards' in response and 'total' in response:
+            cards = response['cards']
+            total = response['total']
+            print(f"   Found {total} virtual cards")
+            return True
+        return False
+
+    def test_admin_user_card_detail(self):
+        """Test admin get specific user card"""
+        if not self.admin_token or not self.user_id:
+            return False
+            
+        success, response = self.run_test(
+            "Admin Get User Card Detail",
+            "GET",
+            f"admin/cards/{self.user_id}",
+            200,
+            headers={'Authorization': f'Bearer {self.admin_token}'}
+        )
+        
+        if success and 'card' in response:
+            card = response['card']
+            print(f"   Card details for: {card.get('name', 'Unknown')}")
+            print(f"   Card number: {card.get('card_number', 'N/A')}")
+            return True
+        return False
+
+    def test_ride_request_and_progress(self):
+        """Test ride request and progress tracking"""
+        if not self.token or not self.driver_token:
+            return False
+            
+        # First, update driver location to make them available
+        location_data = {
+            "latitude": 48.8566,
+            "longitude": 2.3522,
+            "available_seats": 3
+        }
+        
+        location_success, _ = self.run_test(
+            "Update Driver Location",
+            "POST",
+            "drivers/location",
+            200,
+            data=location_data,
+            headers={'Authorization': f'Bearer {self.driver_token}'}
+        )
+        
+        if not location_success:
+            print("   Failed to update driver location")
+            return False
+            
+        # Toggle driver active
+        active_success, _ = self.run_test(
+            "Toggle Driver Active",
+            "POST",
+            "drivers/toggle-active",
+            200,
+            headers={'Authorization': f'Bearer {self.driver_token}'}
+        )
+        
+        if not active_success:
+            print("   Failed to activate driver")
+            return False
+            
+        # Create ride request
+        ride_data = {
+            "driver_id": self.driver_id,
+            "pickup_lat": 48.8566,
+            "pickup_lng": 2.3522,
+            "destination_lat": 48.8606,
+            "destination_lng": 2.3376
+        }
+        
+        ride_success, ride_response = self.run_test(
+            "Create Ride Request",
+            "POST",
+            "rides/request",
+            200,
+            data=ride_data,
+            headers={'Authorization': f'Bearer {self.token}'}
+        )
+        
+        if not ride_success or 'ride' not in ride_response:
+            print("   Failed to create ride request")
+            return False
+            
+        ride_id = ride_response['ride']['id']
+        print(f"   Created ride: {ride_id[:8]}")
+        
+        # Test ride progress update
+        progress_data = {
+            "ride_id": ride_id,
+            "status": "pickup",
+            "current_lat": 48.8566,
+            "current_lng": 2.3522
+        }
+        
+        progress_success, progress_response = self.run_test(
+            "Update Ride Progress",
+            "POST",
+            f"rides/{ride_id}/progress",
+            200,
+            data=progress_data,
+            headers={'Authorization': f'Bearer {self.driver_token}'}
+        )
+        
+        if progress_success and 'status' in progress_response:
+            print(f"   Progress updated to: {progress_response['status']}")
+            
+            # Test ride tracking
+            tracking_success, tracking_response = self.run_test(
+                "Get Ride Tracking",
+                "GET",
+                f"rides/{ride_id}/tracking",
+                200,
+                headers={'Authorization': f'Bearer {self.token}'}
+            )
+            
+            if tracking_success and 'ride' in tracking_response and 'progress' in tracking_response:
+                progress = tracking_response['progress']
+                print(f"   Tracking progress: {progress.get('percent', 0)}%")
+                return True
+                
+        return False
+
 def main():
     print("🚀 Starting Métro-Taxi API Tests")
     print("=" * 50)
