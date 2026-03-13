@@ -193,7 +193,7 @@ async def get_current_user(request: Request) -> dict:
 # Auth Routes
 @api_router.post("/auth/register/user")
 async def register_user(data: UserRegister):
-    existing = await db.users.find_one({"email": data.email})
+    existing = await db.users.find_one({"email": data.email}, {"_id": 0})
     if existing:
         raise HTTPException(status_code=400, detail="Email déjà utilisé")
     
@@ -213,7 +213,8 @@ async def register_user(data: UserRegister):
     await db.users.insert_one(user_doc)
     
     token = create_token(user_id, "user")
-    return {"token": token, "user": {k: v for k, v in user_doc.items() if k != "password"}}
+    user_response = {k: v for k, v in user_doc.items() if k != "password"}
+    return {"token": token, "user": user_response}
 
 @api_router.post("/auth/register/driver")
 async def register_driver(data: DriverRegister):
