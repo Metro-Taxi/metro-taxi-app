@@ -122,7 +122,7 @@ const Landing = () => {
               preload="metadata"
             >
               <source 
-                src="https://videos.pexels.com/video-files/3129957/3129957-uhd_2560_1440_30fps.mp4" 
+                src="https://videos.pexels.com/video-files/2053100/2053100-uhd_2560_1440_30fps.mp4" 
                 type="video/mp4" 
               />
               Votre navigateur ne supporte pas la lecture vidéo.
