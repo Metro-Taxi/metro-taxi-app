@@ -43,8 +43,22 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 # ============================================
-# MATCHING ALGORITHM HELPER FUNCTIONS
+# ALGORITHME CENTRAL MÉTRO-TAXI
 # ============================================
+# Objectifs:
+# 1. Associer usagers aux véhicules allant dans leur direction
+# 2. Optimiser les trajets avec transbordements (max 2)
+# 3. Réduire temps d'attente des usagers
+# 4. Maximiser le taux de remplissage des véhicules
+# 5. Segments optimisés entre 1.5km et 3km
+# ============================================
+
+# Constants for algorithm
+SEGMENT_MIN_KM = 1.5  # Minimum segment distance
+SEGMENT_MAX_KM = 3.0  # Maximum segment distance (suggest transfer after)
+MAX_PICKUP_DISTANCE_KM = 2.0  # Maximum pickup distance
+MAX_TRANSFERS = 2  # Maximum number of transfers allowed
+DIRECTION_THRESHOLD = 60  # Minimum direction score for compatibility (0-100)
 
 def calculate_distance(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
     """Calculate distance between two points in km using Haversine formula"""
@@ -58,6 +72,18 @@ def calculate_distance(lat1: float, lng1: float, lat2: float, lng2: float) -> fl
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
     
     return R * c
+
+def calculate_bearing(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
+    """Calculate bearing (direction angle) from point 1 to point 2 in degrees"""
+    lat1_rad = math.radians(lat1)
+    lat2_rad = math.radians(lat2)
+    delta_lng = math.radians(lng2 - lng1)
+    
+    x = math.sin(delta_lng) * math.cos(lat2_rad)
+    y = math.cos(lat1_rad) * math.sin(lat2_rad) - math.sin(lat1_rad) * math.cos(lat2_rad) * math.cos(delta_lng)
+    
+    bearing = math.atan2(x, y)
+    return (math.degrees(bearing) + 360) % 360
 
 def calculate_direction_score(user_dest_lat: float, user_dest_lng: float, 
                                driver_dest_lat: float, driver_dest_lng: float,
@@ -83,26 +109,42 @@ def calculate_direction_score(user_dest_lat: float, user_dest_lng: float,
     cos_sim = dot_product / (mag_driver * mag_user)
     return max(0, min(100, (cos_sim + 1) * 50))
 
+def calculate_eta_minutes(distance_km: float, avg_speed_kmh: float = 25) -> int:
+    """Calculate estimated time of arrival in minutes"""
+    if distance_km <= 0:
+        return 0
+    return max(1, int((distance_km / avg_speed_kmh) * 60))
+
 def calculate_matching_score(driver: dict, user_lat: float, user_lng: float,
                               dest_lat: float, dest_lng: float) -> dict:
-    """Calculate overall matching score for a driver"""
+    """
+    Calculate comprehensive matching score for a driver
+    Score components:
+    - Distance score (40 points max) - closer is better
+    - Direction score (40 points max) - same direction is better
+    - Seats score (20 points max) - more available seats is better
+    """
     if not driver.get('location'):
-        return {"score": 0, "distance": float('inf'), "direction_score": 0, "seats_score": 0}
+        return {"score": 0, "distance": float('inf'), "direction_score": 0, "seats_score": 0, "eta_minutes": 0}
     
     driver_lat = driver['location']['lat']
     driver_lng = driver['location']['lng']
     
-    # Distance score (closer = better, max 40 points)
+    # Distance to user (pickup distance)
     distance = calculate_distance(user_lat, user_lng, driver_lat, driver_lng)
-    distance_score = max(0, 40 - (distance * 10))  # Penalize 10 points per km
+    
+    # Distance score: max 40 points, penalize 20 points per km
+    distance_score = max(0, 40 - (distance * 20))
     
     # Direction score (max 40 points)
     driver_dest = driver.get('destination', {})
-    direction_score = calculate_direction_score(
+    direction_raw = calculate_direction_score(
         dest_lat, dest_lng,
-        driver_dest.get('lat'), driver_dest.get('lng'),
+        driver_dest.get('lat') if driver_dest else None, 
+        driver_dest.get('lng') if driver_dest else None,
         driver_lat, driver_lng
-    ) * 0.4  # Scale to max 40 points
+    )
+    direction_score = direction_raw * 0.4  # Scale to max 40 points
     
     # Seats score (more seats = better, max 20 points)
     available_seats = driver.get('available_seats', 0)
@@ -110,18 +152,279 @@ def calculate_matching_score(driver: dict, user_lat: float, user_lng: float,
     
     total_score = distance_score + direction_score + seats_score
     
+    # Calculate ETA
+    eta = calculate_eta_minutes(distance)
+    
+    # Calculate how far driver can take user towards destination
+    driver_dest_lat = driver_dest.get('lat') if driver_dest else None
+    driver_dest_lng = driver_dest.get('lng') if driver_dest else None
+    
+    segment_distance = 0
+    if driver_dest_lat and driver_dest_lng:
+        # Distance driver will travel towards user's destination
+        segment_distance = calculate_distance(driver_lat, driver_lng, driver_dest_lat, driver_dest_lng)
+    
     return {
         "score": round(total_score, 2),
-        "distance": round(distance, 2),
-        "direction_score": round(direction_score, 2),
-        "seats_score": round(seats_score, 2)
+        "distance_km": round(distance, 2),
+        "direction_score": round(direction_raw, 2),
+        "direction_score_weighted": round(direction_score, 2),
+        "seats_score": round(seats_score, 2),
+        "eta_minutes": eta,
+        "segment_distance_km": round(segment_distance, 2),
+        "needs_transfer": segment_distance > 0 and direction_raw < DIRECTION_THRESHOLD
     }
+
+def find_optimal_transfer_point(start_lat: float, start_lng: float, 
+                                 end_lat: float, end_lng: float,
+                                 target_distance_km: float = SEGMENT_MAX_KM) -> dict:
+    """Find optimal transfer point along the route at target distance"""
+    total_distance = calculate_distance(start_lat, start_lng, end_lat, end_lng)
+    
+    if total_distance <= target_distance_km:
+        return {"lat": end_lat, "lng": end_lng, "distance_from_start": total_distance}
+    
+    # Calculate fraction of journey for transfer point
+    fraction = target_distance_km / total_distance
+    
+    # Linear interpolation for transfer point
+    transfer_lat = start_lat + (end_lat - start_lat) * fraction
+    transfer_lng = start_lng + (end_lng - start_lng) * fraction
+    
+    return {
+        "lat": round(transfer_lat, 6),
+        "lng": round(transfer_lng, 6),
+        "distance_from_start": round(target_distance_km, 2)
+    }
+
+async def find_drivers_for_segment(start_lat: float, start_lng: float,
+                                    end_lat: float, end_lng: float,
+                                    exclude_driver_ids: List[str] = None) -> List[dict]:
+    """Find drivers compatible with a specific segment"""
+    if exclude_driver_ids is None:
+        exclude_driver_ids = []
+    
+    query = {
+        "is_active": True, 
+        "is_validated": True, 
+        "location": {"$ne": None},
+        "available_seats": {"$gt": 0}
+    }
+    
+    if exclude_driver_ids:
+        query["id"] = {"$nin": exclude_driver_ids}
+    
+    drivers = await db.drivers.find(query, {"_id": 0, "password": 0}).to_list(100)
+    
+    compatible_drivers = []
+    for driver in drivers:
+        driver_lat = driver['location']['lat']
+        driver_lng = driver['location']['lng']
+        
+        # Check pickup distance
+        pickup_distance = calculate_distance(start_lat, start_lng, driver_lat, driver_lng)
+        if pickup_distance > MAX_PICKUP_DISTANCE_KM:
+            continue
+        
+        # Check direction compatibility
+        direction_score = calculate_direction_score(
+            end_lat, end_lng,
+            driver.get('destination', {}).get('lat'),
+            driver.get('destination', {}).get('lng'),
+            driver_lat, driver_lng
+        )
+        
+        if direction_score >= DIRECTION_THRESHOLD or not driver.get('destination'):
+            compatible_drivers.append({
+                **driver,
+                "pickup_distance_km": round(pickup_distance, 2),
+                "direction_score": round(direction_score, 2),
+                "eta_minutes": calculate_eta_minutes(pickup_distance)
+            })
+    
+    # Sort by pickup distance
+    compatible_drivers.sort(key=lambda x: x['pickup_distance_km'])
+    return compatible_drivers
+
+async def calculate_multi_transfer_route(user_lat: float, user_lng: float,
+                                          dest_lat: float, dest_lng: float) -> dict:
+    """
+    Calculate optimal route with up to 2 transfers
+    Returns complete route plan with segments and transfer points
+    """
+    total_distance = calculate_distance(user_lat, user_lng, dest_lat, dest_lng)
+    
+    result = {
+        "total_distance_km": round(total_distance, 2),
+        "direct_route_possible": False,
+        "segments": [],
+        "transfer_points": [],
+        "total_transfers": 0,
+        "estimated_total_time_minutes": 0,
+        "route_efficiency": 0
+    }
+    
+    # Try to find direct route first
+    direct_drivers = await find_drivers_for_segment(user_lat, user_lng, dest_lat, dest_lng)
+    
+    if direct_drivers:
+        best_direct = direct_drivers[0]
+        # Check if driver can cover most of the journey
+        if best_direct['direction_score'] >= 70:
+            result["direct_route_possible"] = True
+            result["segments"] = [{
+                "type": "direct",
+                "start": {"lat": user_lat, "lng": user_lng},
+                "end": {"lat": dest_lat, "lng": dest_lng},
+                "distance_km": total_distance,
+                "driver": best_direct,
+                "eta_minutes": best_direct['eta_minutes'] + calculate_eta_minutes(total_distance)
+            }]
+            result["estimated_total_time_minutes"] = result["segments"][0]["eta_minutes"]
+            result["route_efficiency"] = 100
+            return result
+    
+    # Need transfers - calculate optimal segments
+    if total_distance <= SEGMENT_MAX_KM * 2:
+        # One transfer should suffice
+        num_segments = 2
+    else:
+        # May need 2 transfers
+        num_segments = min(3, max(2, int(total_distance / SEGMENT_MAX_KM) + 1))
+    
+    segment_distance = total_distance / num_segments
+    segments = []
+    transfer_points = []
+    current_lat, current_lng = user_lat, user_lng
+    used_driver_ids = []
+    total_time = 0
+    
+    for i in range(num_segments):
+        is_last_segment = (i == num_segments - 1)
+        
+        if is_last_segment:
+            segment_end_lat, segment_end_lng = dest_lat, dest_lng
+        else:
+            # Calculate transfer point
+            transfer = find_optimal_transfer_point(
+                current_lat, current_lng, dest_lat, dest_lng, segment_distance
+            )
+            segment_end_lat = transfer['lat']
+            segment_end_lng = transfer['lng']
+            transfer_points.append({
+                "index": i + 1,
+                "location": {"lat": segment_end_lat, "lng": segment_end_lng},
+                "type": "transbordement"
+            })
+        
+        # Find driver for this segment
+        segment_drivers = await find_drivers_for_segment(
+            current_lat, current_lng, 
+            segment_end_lat, segment_end_lng,
+            used_driver_ids
+        )
+        
+        segment_data = {
+            "index": i + 1,
+            "start": {"lat": round(current_lat, 6), "lng": round(current_lng, 6)},
+            "end": {"lat": round(segment_end_lat, 6), "lng": round(segment_end_lng, 6)},
+            "distance_km": round(calculate_distance(current_lat, current_lng, segment_end_lat, segment_end_lng), 2),
+            "driver": segment_drivers[0] if segment_drivers else None,
+            "alternative_drivers": segment_drivers[1:4] if len(segment_drivers) > 1 else []
+        }
+        
+        if segment_drivers:
+            used_driver_ids.append(segment_drivers[0]['id'])
+            segment_data["eta_minutes"] = segment_drivers[0]['eta_minutes'] + calculate_eta_minutes(segment_data["distance_km"])
+            total_time += segment_data["eta_minutes"]
+        else:
+            segment_data["eta_minutes"] = calculate_eta_minutes(segment_data["distance_km"]) + 5  # Add wait time
+            total_time += segment_data["eta_minutes"]
+        
+        segments.append(segment_data)
+        current_lat, current_lng = segment_end_lat, segment_end_lng
+    
+    result["segments"] = segments
+    result["transfer_points"] = transfer_points
+    result["total_transfers"] = len(transfer_points)
+    result["estimated_total_time_minutes"] = total_time
+    
+    # Calculate efficiency (100% = optimal, lower = less efficient)
+    actual_distance = sum(s["distance_km"] for s in segments)
+    result["route_efficiency"] = round((total_distance / actual_distance) * 100, 1) if actual_distance > 0 else 0
+    
+    return result
+
+async def find_compatible_passengers_for_driver(driver_id: str) -> List[dict]:
+    """Find passengers compatible with driver's route"""
+    driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0, "password": 0})
+    if not driver or not driver.get('location') or not driver.get('destination'):
+        return []
+    
+    driver_lat = driver['location']['lat']
+    driver_lng = driver['location']['lng']
+    driver_dest_lat = driver['destination']['lat']
+    driver_dest_lng = driver['destination']['lng']
+    
+    # Get users with active subscriptions and location
+    users = await db.users.find(
+        {"subscription_active": True, "location": {"$ne": None}},
+        {"_id": 0, "password": 0, "verification_token": 0}
+    ).to_list(100)
+    
+    # Get pending ride requests
+    pending_requests = await db.ride_requests.find(
+        {"status": "pending"},
+        {"_id": 0}
+    ).to_list(100)
+    
+    pending_user_ids = {r["user_id"]: r for r in pending_requests}
+    
+    compatible_passengers = []
+    for user in users:
+        user_lat = user['location']['lat']
+        user_lng = user['location']['lng']
+        
+        # Check if user is close enough for pickup
+        pickup_distance = calculate_distance(driver_lat, driver_lng, user_lat, user_lng)
+        if pickup_distance > MAX_PICKUP_DISTANCE_KM:
+            continue
+        
+        # Check if user has a pending request with destination
+        pending = pending_user_ids.get(user['id'])
+        if pending:
+            user_dest_lat = pending['destination_lat']
+            user_dest_lng = pending['destination_lng']
+            
+            # Check direction compatibility
+            direction_score = calculate_direction_score(
+                user_dest_lat, user_dest_lng,
+                driver_dest_lat, driver_dest_lng,
+                driver_lat, driver_lng
+            )
+            
+            if direction_score >= DIRECTION_THRESHOLD:
+                compatible_passengers.append({
+                    "user_id": user['id'],
+                    "name": f"{user['first_name']} {user['last_name']}",
+                    "location": user['location'],
+                    "destination": {"lat": user_dest_lat, "lng": user_dest_lng},
+                    "pickup_distance_km": round(pickup_distance, 2),
+                    "direction_score": round(direction_score, 2),
+                    "eta_minutes": calculate_eta_minutes(pickup_distance),
+                    "has_pending_request": True,
+                    "request_id": pending['id']
+                })
+    
+    # Sort by direction score then pickup distance
+    compatible_passengers.sort(key=lambda x: (-x['direction_score'], x['pickup_distance_km']))
+    return compatible_passengers
 
 async def find_transfer_options(user_lat: float, user_lng: float, 
                                  dest_lat: float, dest_lng: float) -> List[dict]:
-    """Find transfer (transbordement) options for optimized routing"""
+    """Find single transfer options (legacy compatibility + enhanced)"""
     drivers = await db.drivers.find(
-        {"is_active": True, "is_validated": True, "location": {"$ne": None}},
+        {"is_active": True, "is_validated": True, "location": {"$ne": None}, "available_seats": {"$gt": 0}},
         {"_id": 0, "password": 0}
     ).to_list(100)
     
@@ -131,92 +434,68 @@ async def find_transfer_options(user_lat: float, user_lng: float,
     transfers = []
     direct_distance = calculate_distance(user_lat, user_lng, dest_lat, dest_lng)
     
-    # Find potential transfer points (midpoint area)
-    mid_lat = (user_lat + dest_lat) / 2
-    mid_lng = (user_lng + dest_lng) / 2
+    # Find optimal transfer point
+    transfer_point = find_optimal_transfer_point(user_lat, user_lng, dest_lat, dest_lng)
     
-    # Find first leg drivers (from user to midpoint area)
-    first_leg_drivers = []
-    for driver in drivers:
-        if driver.get('available_seats', 0) < 1:
-            continue
-        driver_lat = driver['location']['lat']
-        driver_lng = driver['location']['lng']
-        
-        # Check if driver is near user and heading towards midpoint
-        dist_to_user = calculate_distance(user_lat, user_lng, driver_lat, driver_lng)
-        if dist_to_user < 3:  # Within 3km
-            first_leg_drivers.append(driver)
+    # Find first leg drivers (pickup to transfer)
+    first_leg_drivers = await find_drivers_for_segment(
+        user_lat, user_lng, transfer_point['lat'], transfer_point['lng']
+    )
     
-    # Find second leg drivers (from midpoint to destination)
-    second_leg_drivers = []
-    for driver in drivers:
-        if driver.get('available_seats', 0) < 1:
-            continue
-        driver_lat = driver['location']['lat']
-        driver_lng = driver['location']['lng']
-        
-        # Check if driver is near midpoint and heading towards destination
-        dist_to_mid = calculate_distance(mid_lat, mid_lng, driver_lat, driver_lng)
-        if dist_to_mid < 3:  # Within 3km
-            dest = driver.get('destination', {})
-            if dest:
-                dest_direction = calculate_direction_score(
-                    dest_lat, dest_lng,
-                    dest.get('lat'), dest.get('lng'),
-                    driver_lat, driver_lng
-                )
-                if dest_direction > 60:  # Good direction match
-                    second_leg_drivers.append(driver)
+    # Find second leg drivers (transfer to destination)
+    second_leg_drivers = await find_drivers_for_segment(
+        transfer_point['lat'], transfer_point['lng'], dest_lat, dest_lng
+    )
     
     # Create transfer combinations
-    for first_driver in first_leg_drivers[:3]:
-        for second_driver in second_leg_drivers[:3]:
+    for first_driver in first_leg_drivers[:5]:
+        for second_driver in second_leg_drivers[:5]:
             if first_driver['id'] == second_driver['id']:
                 continue
             
-            # Calculate transfer efficiency
-            first_pickup_dist = calculate_distance(
-                user_lat, user_lng,
-                first_driver['location']['lat'], first_driver['location']['lng']
+            first_segment_dist = calculate_distance(
+                user_lat, user_lng, transfer_point['lat'], transfer_point['lng']
+            )
+            second_segment_dist = calculate_distance(
+                transfer_point['lat'], transfer_point['lng'], dest_lat, dest_lng
             )
             
-            transfer_point_lat = (first_driver['location']['lat'] + second_driver['location']['lat']) / 2
-            transfer_point_lng = (first_driver['location']['lng'] + second_driver['location']['lng']) / 2
-            
-            second_dropoff_dist = calculate_distance(
-                second_driver['location']['lat'], second_driver['location']['lng'],
-                dest_lat, dest_lng
+            total_time = (
+                first_driver['eta_minutes'] + 
+                calculate_eta_minutes(first_segment_dist) +
+                3 +  # Transfer wait time
+                calculate_eta_minutes(second_segment_dist)
             )
             
-            total_transfer_dist = first_pickup_dist + second_dropoff_dist
+            efficiency = round((direct_distance / (first_segment_dist + second_segment_dist)) * 100, 1)
             
-            # Only suggest if transfer is reasonably efficient
-            if total_transfer_dist < direct_distance * 1.5:
-                transfers.append({
-                    "type": "transfer",
-                    "first_driver": {
-                        "id": first_driver['id'],
-                        "name": first_driver['first_name'],
-                        "vehicle": first_driver['vehicle_plate'],
-                        "vehicle_type": first_driver['vehicle_type']
-                    },
-                    "second_driver": {
-                        "id": second_driver['id'],
-                        "name": second_driver['first_name'],
-                        "vehicle": second_driver['vehicle_plate'],
-                        "vehicle_type": second_driver['vehicle_type']
-                    },
-                    "transfer_point": {
-                        "lat": transfer_point_lat,
-                        "lng": transfer_point_lng
-                    },
-                    "estimated_efficiency": round((1 - total_transfer_dist / direct_distance) * 100, 1)
-                })
+            transfers.append({
+                "type": "single_transfer",
+                "first_driver": {
+                    "id": first_driver['id'],
+                    "name": first_driver['first_name'],
+                    "vehicle": first_driver['vehicle_plate'],
+                    "vehicle_type": first_driver['vehicle_type'],
+                    "pickup_eta_minutes": first_driver['eta_minutes'],
+                    "direction_score": first_driver['direction_score']
+                },
+                "second_driver": {
+                    "id": second_driver['id'],
+                    "name": second_driver['first_name'],
+                    "vehicle": second_driver['vehicle_plate'],
+                    "vehicle_type": second_driver['vehicle_type'],
+                    "direction_score": second_driver['direction_score']
+                },
+                "transfer_point": transfer_point,
+                "first_segment_km": round(first_segment_dist, 2),
+                "second_segment_km": round(second_segment_dist, 2),
+                "total_time_minutes": total_time,
+                "efficiency_percent": efficiency
+            })
     
-    # Sort by efficiency and return top 3
-    transfers.sort(key=lambda x: x['estimated_efficiency'], reverse=True)
-    return transfers[:3]
+    # Sort by efficiency
+    transfers.sort(key=lambda x: x['efficiency_percent'], reverse=True)
+    return transfers[:5]
 
 # WebSocket connection manager
 class ConnectionManager:
