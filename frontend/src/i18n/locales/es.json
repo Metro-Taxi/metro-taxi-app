@@ -1,0 +1,114 @@
+{
+  "hero": {
+    "title": "MÉTRO-TAXI",
+    "subtitle": "La red de movilidad urbana por suscripción",
+    "description": "Únete a vehículos que van en tu dirección. Viajes ilimitados con una simple suscripción.",
+    "cta": "COMENZAR"
+  },
+  "nav": {
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "pricing": "Precios",
+    "howItWorks": "Cómo funciona",
+    "drivers": "Conductores"
+  },
+  "pricing": {
+    "title": "SUSCRIPCIONES",
+    "subtitle": "Elige tu plan",
+    "plans": {
+      "day": {
+        "name": "24 Horas",
+        "price": "6,99 €",
+        "description": "Perfecto para uso ocasional"
+      },
+      "week": {
+        "name": "1 Semana",
+        "price": "16,99 €",
+        "description": "Ideal para estancias cortas"
+      },
+      "month": {
+        "name": "1 Mes",
+        "price": "53,99 €",
+        "description": "La mejor relación calidad-precio"
+      }
+    },
+    "features": {
+      "unlimited": "Viajes ilimitados",
+      "allVehicles": "Acceso a todos los vehículos",
+      "support": "Soporte prioritario",
+      "noCommitment": "Sin compromiso"
+    },
+    "cta": "SUSCRIBIRSE"
+  },
+  "howItWorks": {
+    "title": "CÓMO FUNCIONA",
+    "steps": {
+      "step1": {
+        "title": "Regístrate",
+        "description": "Crea tu cuenta y elige tu suscripción"
+      },
+      "step2": {
+        "title": "Encuentra un vehículo",
+        "description": "Localiza vehículos que van en tu dirección"
+      },
+      "step3": {
+        "title": "Solicita un viaje",
+        "description": "Envía una solicitud al conductor con un solo clic"
+      },
+      "step4": {
+        "title": "Viaja",
+        "description": "Disfruta de tu viaje y bájate donde quieras"
+      }
+    }
+  },
+  "drivers": {
+    "title": "CONVIÉRTETE EN CONDUCTOR VTC",
+    "subtitle": "Únete a la red Métro-Taxi y maximiza tus ingresos sin costes ocultos",
+    "revenue": {
+      "title": "INGRESOS POTENCIALES DEL CONDUCTOR",
+      "monthly": "por mes",
+      "upTo": "Puede llegar hasta",
+      "depending": "según la actividad"
+    },
+    "benefits": {
+      "title": "BENEFICIOS PARA CONDUCTORES",
+      "noSubscription": "Sin suscripción que pagar",
+      "noSubscriptionDesc": "Únete a nuestra red gratis",
+      "noCommission": "Sin comisión por viaje",
+      "noCommissionDesc": "Quédate con el 100% de tus ganancias",
+      "subscribedPassengers": "Pasajeros ya suscritos",
+      "subscribedPassengersDesc": "No necesitas buscar clientes",
+      "optimizedRoutes": "Optimización de rutas",
+      "optimizedRoutesDesc": "Algoritmo inteligente de matching",
+      "morePassengers": "Más pasajeros gracias a la red",
+      "morePassengersDesc": "Maximiza tu tiempo de conducción"
+    },
+    "app": {
+      "title": "LA APP DEL CONDUCTOR",
+      "subtitle": "Todo lo que necesitas en una pantalla",
+      "requests": "Solicitudes de pasajeros",
+      "requestsDesc": "Recibe solicitudes en tiempo real en tu zona",
+      "routes": "Rutas optimizadas",
+      "routesDesc": "Rutas calculadas para maximizar tus viajes",
+      "transfers": "Conexiones sugeridas",
+      "transfersDesc": "Sistema de transbordo inteligente"
+    },
+    "cta": "ÚNETE A LA RED AHORA",
+    "ctaSubtext": "Registro gratuito • Sin compromiso"
+  },
+  "video": {
+    "title": "Descubre Métro-Taxi",
+    "loading": "Cargando voz en off..."
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados",
+    "contact": "Contacto",
+    "legal": "Aviso legal",
+    "privacy": "Privacidad"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ha ocurrido un error",
+    "retry": "Reintentar"
+  }
+}
