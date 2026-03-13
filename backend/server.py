@@ -245,10 +245,13 @@ async def register_driver(data: DriverRegister):
         "available_seats": data.seats,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
+    
+    # Create response before inserting to avoid ObjectId contamination
+    driver_response = {k: v for k, v in driver_doc.items() if k != "password"}
+    
     await db.drivers.insert_one(driver_doc)
     
     token = create_token(driver_id, "driver")
-    driver_response = {k: v for k, v in driver_doc.items() if k != "password"}
     return {"token": token, "driver": driver_response}
 
 @api_router.post("/auth/login")
