@@ -94,6 +94,21 @@ const AdminDashboard = () => {
     }
   };
 
+  const cleanupExpiredSubscriptions = async () => {
+    setCleanupLoading(true);
+    try {
+      const response = await axios.post(`${API}/admin/subscriptions/cleanup`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success(response.data.message);
+      fetchData();
+    } catch (error) {
+      toast.error('Erreur lors du nettoyage');
+    } finally {
+      setCleanupLoading(false);
+    }
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/');
