@@ -227,10 +227,11 @@ async def find_drivers_for_segment(start_lat: float, start_lng: float,
             continue
         
         # Check direction compatibility
+        dest = driver.get('destination') or {}
         direction_score = calculate_direction_score(
             end_lat, end_lng,
-            driver.get('destination', {}).get('lat'),
-            driver.get('destination', {}).get('lng'),
+            dest.get('lat') if dest else None,
+            dest.get('lng') if dest else None,
             driver_lat, driver_lng
         )
         
