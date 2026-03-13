@@ -210,10 +210,13 @@ async def register_user(data: UserRegister):
         "subscription_expires": None,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
+    
+    # Create response before inserting to avoid ObjectId contamination
+    user_response = {k: v for k, v in user_doc.items() if k != "password"}
+    
     await db.users.insert_one(user_doc)
     
     token = create_token(user_id, "user")
-    user_response = {k: v for k, v in user_doc.items() if k != "password"}
     return {"token": token, "user": user_response}
 
 @api_router.post("/auth/register/driver")
