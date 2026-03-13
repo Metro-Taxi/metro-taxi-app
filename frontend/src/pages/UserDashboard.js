@@ -363,7 +363,7 @@ const UserDashboard = () => {
         ))}
       </MapContainer>
 
-      {/* Bottom Panel - Active Ride */}
+      {/* Bottom Panel - Active Ride with Progress */}
       <AnimatePresence>
         {activeRide && (
           <motion.div
@@ -376,20 +376,69 @@ const UserDashboard = () => {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-white text-lg">Trajet en cours</h3>
                 <span className={`text-xs px-2 py-1 rounded ${
-                  activeRide.status === 'accepted' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
+                  activeRide.status === 'in_progress' ? 'bg-blue-500/20 text-blue-400' :
+                  activeRide.status === 'pickup' ? 'bg-purple-500/20 text-purple-400' :
+                  activeRide.status === 'near_destination' ? 'bg-green-500/20 text-green-400' :
+                  activeRide.status === 'accepted' ? 'bg-yellow-500/20 text-yellow-400' : 
+                  'bg-zinc-500/20 text-zinc-400'
                 }`}>
-                  {activeRide.status === 'accepted' ? 'Accepté' : 'En attente'}
+                  {activeRide.status === 'in_progress' ? 'En route' :
+                   activeRide.status === 'pickup' ? 'Prise en charge' :
+                   activeRide.status === 'near_destination' ? 'Arrivée proche' :
+                   activeRide.status === 'accepted' ? 'Accepté' : 'En attente'}
                 </span>
               </div>
+              
+              {/* Progress Bar */}
+              <div className="mb-4">
+                <div className="flex justify-between text-xs text-zinc-400 mb-2">
+                  <span>Départ</span>
+                  <span>Destination</span>
+                </div>
+                <Progress value={activeRide.progress_percent || (activeRide.status === 'accepted' ? 10 : 0)} className="h-2" />
+                <p className="text-center text-xs text-zinc-500 mt-1">
+                  {activeRide.progress_percent || 0}% du trajet
+                </p>
+              </div>
+              
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-[#FFD60A] rounded flex items-center justify-center">
                   <Car className="w-6 h-6 text-black" />
                 </div>
                 <div className="flex-1">
                   <p className="text-white font-medium">
-                    {activeRide.status === 'accepted' ? 'Le chauffeur arrive !' : 'En attente de confirmation...'}
+                    {activeRide.status === 'pickup' ? 'Le chauffeur vous récupère' :
+                     activeRide.status === 'in_progress' ? 'En route vers votre destination' :
+                     activeRide.status === 'near_destination' ? 'Vous approchez de l\'arrivée' :
+                     activeRide.status === 'accepted' ? 'Le chauffeur arrive !' : 
+                     'En attente de confirmation...'}
                   </p>
                   <p className="text-zinc-400 text-sm">ID: {activeRide.id.slice(0, 8)}</p>
+                </div>
+              </div>
+              
+              {/* Timeline */}
+              <div className="mt-4 pt-4 border-t border-zinc-800">
+                <div className="flex justify-between">
+                  <div className="flex flex-col items-center">
+                    <div className={`w-3 h-3 rounded-full ${activeRide.status !== 'pending' ? 'bg-green-500' : 'bg-zinc-600'}`}></div>
+                    <span className="text-xs text-zinc-500 mt-1">Accepté</span>
+                  </div>
+                  <div className="flex-1 h-0.5 bg-zinc-700 self-center mx-2"></div>
+                  <div className="flex flex-col items-center">
+                    <div className={`w-3 h-3 rounded-full ${['pickup', 'in_progress', 'near_destination', 'completed'].includes(activeRide.status) ? 'bg-green-500' : 'bg-zinc-600'}`}></div>
+                    <span className="text-xs text-zinc-500 mt-1">Récupéré</span>
+                  </div>
+                  <div className="flex-1 h-0.5 bg-zinc-700 self-center mx-2"></div>
+                  <div className="flex flex-col items-center">
+                    <div className={`w-3 h-3 rounded-full ${['in_progress', 'near_destination', 'completed'].includes(activeRide.status) ? 'bg-green-500' : 'bg-zinc-600'}`}></div>
+                    <span className="text-xs text-zinc-500 mt-1">En route</span>
+                  </div>
+                  <div className="flex-1 h-0.5 bg-zinc-700 self-center mx-2"></div>
+                  <div className="flex flex-col items-center">
+                    <div className={`w-3 h-3 rounded-full ${activeRide.status === 'completed' ? 'bg-green-500' : 'bg-zinc-600'}`}></div>
+                    <span className="text-xs text-zinc-500 mt-1">Arrivé</span>
+                  </div>
                 </div>
               </div>
             </div>
