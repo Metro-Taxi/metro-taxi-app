@@ -182,6 +182,37 @@ const UserDashboard = () => {
     }
   }, [token, userLocation, destination]);
 
+  // Fetch optimal route with segments
+  const fetchOptimalRoute = useCallback(async () => {
+    if (!userLocation || !destination) return;
+    
+    try {
+      const response = await axios.post(`${API}/matching/optimal-route`, {
+        user_lat: userLocation[0],
+        user_lng: userLocation[1],
+        dest_lat: destination[0],
+        dest_lng: destination[1]
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setOptimalRoute(response.data.route);
+    } catch (error) {
+      console.error('Fetch optimal route error:', error);
+    }
+  }, [token, userLocation, destination]);
+
+  // Fetch network status
+  const fetchNetworkStatus = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API}/matching/network-status`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setNetworkStatus(response.data);
+    } catch (error) {
+      console.error('Fetch network status error:', error);
+    }
+  }, [token]);
+
   useEffect(() => {
     fetchDrivers();
     fetchActiveRide();
