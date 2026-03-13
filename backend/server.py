@@ -339,6 +339,21 @@ class AdminStats(BaseModel):
     active_subscriptions: int
     active_rides: int
 
+class MatchingRequest(BaseModel):
+    user_lat: float
+    user_lng: float
+    dest_lat: float
+    dest_lng: float
+
+class EmailVerificationRequest(BaseModel):
+    token: str
+
+class RideProgressUpdate(BaseModel):
+    ride_id: str
+    status: str  # "pickup", "in_progress", "near_destination", "completed"
+    current_lat: Optional[float] = None
+    current_lng: Optional[float] = None
+
 # Helper functions
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
@@ -353,6 +368,9 @@ def create_token(user_id: str, role: str) -> str:
         "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS)
     }
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+def generate_verification_token() -> str:
+    return secrets.token_urlsafe(32)
 
 async def get_current_user(request: Request) -> dict:
     auth_header = request.headers.get("Authorization")
