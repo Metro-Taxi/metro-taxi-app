@@ -107,7 +107,7 @@ const Landing = () => {
             <p className="text-zinc-400 text-lg">La nouvelle façon de se déplacer en ville</p>
           </motion.div>
           
-          {/* Video Player with Stock Video */}
+          {/* Video Player with Cloudinary Stock Video */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -118,14 +118,13 @@ const Landing = () => {
             <video
               className="w-full h-full object-cover"
               controls
-              autoPlay
               muted
               loop
               playsInline
               poster="https://images.unsplash.com/photo-1768297941301-1009a05e5514?crop=entropy&cs=srgb&fm=jpg&q=85"
             >
               <source 
-                src="https://cdn.pixabay.com/video/2019/06/20/24593-343992686_large.mp4" 
+                src="https://res.cloudinary.com/demo/video/upload/v1689946614/samples/cld-sample-video.mp4" 
                 type="video/mp4" 
               />
               Votre navigateur ne supporte pas la lecture vidéo.
