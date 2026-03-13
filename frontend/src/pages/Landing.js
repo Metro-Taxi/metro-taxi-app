@@ -107,7 +107,7 @@ const Landing = () => {
             <p className="text-zinc-400 text-lg">La nouvelle façon de se déplacer en ville</p>
           </motion.div>
           
-          {/* Video Placeholder */}
+          {/* Video Player */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -115,20 +115,13 @@ const Landing = () => {
             viewport={{ once: true }}
             className="relative aspect-video bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800"
           >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-20 h-20 rounded-full bg-[#FFD60A] flex items-center justify-center mb-4 mx-auto cursor-pointer hover:scale-110 transition-transform">
-                  <svg className="w-8 h-8 text-black ml-1" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-                <p className="text-zinc-400">Vidéo de présentation</p>
-              </div>
-            </div>
-            <img 
-              src="https://images.unsplash.com/photo-1651393313280-cc00aa0eda2c?crop=entropy&cs=srgb&fm=jpg&q=85"
-              alt="Commuters"
-              className="w-full h-full object-cover opacity-30"
+            <iframe
+              src="https://www.youtube.com/embed/UX4KklvCDmg?rel=0&modestbranding=1"
+              title="Métro-Taxi Présentation"
+              className="w-full h-full"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
             />
           </motion.div>
         </div>
