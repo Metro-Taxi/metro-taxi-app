@@ -1226,6 +1226,68 @@ async def get_all_users(current_user: dict = Depends(get_current_user)):
     users = await db.users.find({}, {"_id": 0, "password": 0}).to_list(1000)
     return {"users": users}
 
+# Admin - Get all virtual cards
+@api_router.get("/admin/cards")
+async def get_all_virtual_cards(current_user: dict = Depends(get_current_user)):
+    """Get all user virtual cards for admin view"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    users = await db.users.find({}, {"_id": 0, "password": 0, "verification_token": 0}).to_list(1000)
+    
+    cards = []
+    for user in users:
+        cards.append({
+            "id": user["id"],
+            "card_number": f"MT-{user['id'][:8].upper()}",
+            "name": f"{user['first_name']} {user['last_name']}",
+            "email": user["email"],
+            "phone": user["phone"],
+            "email_verified": user.get("email_verified", False),
+            "subscription_active": user.get("subscription_active", False),
+            "subscription_plan": user.get("subscription_plan"),
+            "subscription_expires": user.get("subscription_expires"),
+            "created_at": user.get("created_at")
+        })
+    
+    return {"cards": cards, "total": len(cards)}
+
+# Admin - Get single user card details
+@api_router.get("/admin/cards/{user_id}")
+async def get_admin_user_card(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Get detailed virtual card for a specific user (admin view)"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    user = await db.users.find_one({"id": user_id}, {"_id": 0, "password": 0, "verification_token": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    
+    # Get ride history
+    rides = await db.ride_requests.find(
+        {"user_id": user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(10)
+    
+    card = {
+        "id": user["id"],
+        "card_number": f"MT-{user['id'][:8].upper()}",
+        "name": f"{user['first_name']} {user['last_name']}",
+        "first_name": user["first_name"],
+        "last_name": user["last_name"],
+        "email": user["email"],
+        "phone": user["phone"],
+        "email_verified": user.get("email_verified", False),
+        "subscription_active": user.get("subscription_active", False),
+        "subscription_plan": user.get("subscription_plan"),
+        "subscription_expires": user.get("subscription_expires"),
+        "created_at": user.get("created_at"),
+        "recent_rides": rides[:5],
+        "total_rides": len(rides)
+    }
+    
+    return {"card": card}
+
 # Virtual Card Route
 @api_router.get("/users/{user_id}/card")
 async def get_user_card(user_id: str, current_user: dict = Depends(get_current_user)):
