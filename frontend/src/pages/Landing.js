@@ -116,8 +116,8 @@ const Landing = () => {
             className="relative aspect-video bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800"
           >
             <iframe
-              src="https://www.youtube.com/embed/RnKnZwEeHLs?rel=0&modestbranding=1"
-              title="Métro-Taxi Présentation"
+              src="https://www.youtube.com/embed/F6zTsv3Y94I?rel=0&modestbranding=1"
+              title="Métro-Taxi Présentation - Mobilité Urbaine"
               className="w-full h-full"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
