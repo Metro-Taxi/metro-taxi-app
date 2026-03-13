@@ -44,7 +44,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 // Public Route (redirect if authenticated)
 const PublicRoute = ({ children }) => {
-  const { isAuthenticated, role, loading } = useAuth();
+  const { isAuthenticated, role, loading, logout } = useAuth();
   
   if (loading) {
     return (
@@ -54,10 +54,29 @@ const PublicRoute = ({ children }) => {
     );
   }
   
+  // Show option to switch accounts instead of auto-redirect
   if (isAuthenticated) {
-    if (role === 'admin') return <Navigate to="/admin" replace />;
-    if (role === 'driver') return <Navigate to="/driver" replace />;
-    return <Navigate to="/dashboard" replace />;
+    return (
+      <div className="min-h-screen bg-[#09090B] flex items-center justify-center px-4">
+        <div className="text-center">
+          <p className="text-white mb-4">Vous êtes connecté en tant que <span className="text-[#FFD60A] font-bold">{role}</span></p>
+          <div className="flex flex-col gap-3">
+            <a 
+              href={role === 'admin' ? '/admin' : role === 'driver' ? '/driver' : '/dashboard'}
+              className="bg-[#FFD60A] text-black px-6 py-3 rounded font-bold hover:bg-[#E6C209]"
+            >
+              Aller à mon tableau de bord
+            </a>
+            <button 
+              onClick={() => { logout(); window.location.reload(); }}
+              className="border border-zinc-700 text-white px-6 py-3 rounded hover:bg-zinc-800"
+            >
+              Se déconnecter et changer de compte
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
   
   return children;
