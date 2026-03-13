@@ -217,19 +217,31 @@ const UserDashboard = () => {
     fetchDrivers();
     fetchActiveRide();
     checkEmailVerification();
+    fetchNetworkStatus();
     const interval = setInterval(() => {
       fetchDrivers();
       fetchActiveRide();
+      fetchNetworkStatus();
     }, 5000);
     return () => clearInterval(interval);
-  }, [fetchDrivers, fetchActiveRide, checkEmailVerification]);
+  }, [fetchDrivers, fetchActiveRide, checkEmailVerification, fetchNetworkStatus]);
 
-  // Fetch transfers when destination changes
+  // Fetch transfers and optimal route when destination changes
   useEffect(() => {
     if (destination) {
       fetchTransfers();
+      fetchOptimalRoute();
     }
-  }, [destination, fetchTransfers]);
+  }, [destination, fetchTransfers, fetchOptimalRoute]);
+
+  // Handle map click to set destination
+  const handleMapClick = (e) => {
+    if (showDestinationPicker) {
+      setDestination([e.latlng.lat, e.latlng.lng]);
+      setShowDestinationPicker(false);
+      toast.success('Destination définie !');
+    }
+  };
 
   const handleDriverSelect = (driver) => {
     if (!user?.subscription_active) {
