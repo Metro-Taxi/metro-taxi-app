@@ -12,19 +12,21 @@ def generate_metro_taxi_video():
     """Generate promotional video for Métro-Taxi"""
     
     prompt = """
-    A cinematic promotional video for an eco-friendly urban ride-sharing service called Métro-Taxi.
+    A cinematic promotional video for Métro-Taxi, an eco-friendly urban ride-sharing subscription service.
     
-    Scene 1: Aerial view of a modern European city at golden hour, showing clean streets and sustainable transport.
+    Scene 1: A beautiful young blonde woman in a modern apartment, smiling as she downloads and opens the Métro-Taxi app on her smartphone. She registers on the app, her face lit by the yellow glow of the screen showing the Métro-Taxi logo.
     
-    Scene 2: A sleek yellow taxi with black accents smoothly driving through city streets, picking up a young professional woman with blonde hair who smiles as she gets in.
+    Scene 2: Close-up of her phone screen showing a map interface with multiple yellow taxi icons around her location. She scrolls and taps, browsing through available VTC vehicles nearby, checking their destinations and available seats. Her expression shows excitement as she finds the perfect ride.
     
-    Scene 3: Inside the vehicle, passengers are comfortable, using their smartphones. The atmosphere is modern and premium.
+    Scene 3: The blonde woman gets into a sleek yellow and black Métro-Taxi vehicle. The driver, a friendly middle-aged man in professional attire, smiles warmly and greets her. They drive through beautiful city streets.
     
-    Scene 4: The same blonde woman exits the first taxi at a designated transfer point and seamlessly enters another yellow taxi - demonstrating the unique "transbordement" feature.
+    Scene 4: The transbordement scene - The taxi stops at a designated transfer point in a clean urban plaza. The blonde woman thanks the first driver who waves goodbye with satisfaction. She walks a few steps to another waiting yellow Métro-Taxi. A second driver, a happy woman, welcomes her with a warm smile. The transfer is seamless and elegant.
     
-    Scene 5: Final shot showing multiple yellow Métro-Taxi vehicles moving efficiently through the city, with green parks and clean air visible in the background.
+    Scene 5: Multiple shots of satisfied Métro-Taxi drivers - a diverse group of professional drivers smiling in their vehicles, waving to passengers, looking proud and content with their work. Yellow taxis moving efficiently through green, eco-friendly city streets.
     
-    Style: Modern, professional, cinematic look with warm golden tones. Black, yellow and white color scheme. Premium feel like Uber but emphasizing environmental sustainability.
+    Scene 6: Final shot - the blonde woman arrives at her destination, exits the taxi with a grateful smile, waves to the driver. The Métro-Taxi drives away into a beautiful sunset cityscape.
+    
+    Style: Premium, modern, warm cinematography. Yellow, black and white color palette. Professional and friendly atmosphere. Emphasis on human connection, satisfaction, and sustainable urban mobility.
     """
     
     print("🎬 Génération de la vidéo Métro-Taxi en cours...")
@@ -36,7 +38,7 @@ def generate_metro_taxi_video():
         prompt=prompt,
         model="sora-2",
         size="1280x720",  # HD format
-        duration=8,  # 8 seconds for promotional video
+        duration=10,  # 10 seconds for more detailed scenes
         max_wait_time=600
     )
     
