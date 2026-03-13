@@ -86,6 +86,9 @@ const UserDashboard = () => {
   const [showTransfers, setShowTransfers] = useState(false);
   const [rideProgress, setRideProgress] = useState(null);
   const [emailVerified, setEmailVerified] = useState(true);
+  const [optimalRoute, setOptimalRoute] = useState(null);
+  const [networkStatus, setNetworkStatus] = useState(null);
+  const [showDestinationPicker, setShowDestinationPicker] = useState(false);
 
   // Paris center as default
   const defaultCenter = [48.8566, 2.3522];
