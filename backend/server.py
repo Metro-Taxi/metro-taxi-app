@@ -1596,6 +1596,97 @@ async def get_all_users(current_user: dict = Depends(get_current_user)):
     users = await db.users.find({}, {"_id": 0, "password": 0}).to_list(1000)
     return {"users": users}
 
+# Admin - Get subscription statistics
+@api_router.get("/admin/subscriptions")
+async def get_subscription_stats(current_user: dict = Depends(get_current_user)):
+    """Get detailed subscription statistics for admin"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    now = datetime.now(timezone.utc)
+    
+    # Get all users with subscription info
+    users = await db.users.find({}, {"_id": 0, "password": 0, "verification_token": 0}).to_list(1000)
+    
+    active_subscriptions = []
+    expired_subscriptions = []
+    expiring_soon = []  # Within 24 hours
+    
+    for user in users:
+        sub_info = {
+            "id": user["id"],
+            "name": f"{user['first_name']} {user['last_name']}",
+            "email": user["email"],
+            "plan": user.get("subscription_plan"),
+            "expires": user.get("subscription_expires"),
+            "active": user.get("subscription_active", False)
+        }
+        
+        if user.get("subscription_active"):
+            expires_str = user.get("subscription_expires")
+            if expires_str:
+                try:
+                    expires = datetime.fromisoformat(expires_str)
+                    if expires < now:
+                        expired_subscriptions.append(sub_info)
+                    elif expires < now + timedelta(hours=24):
+                        expiring_soon.append(sub_info)
+                        active_subscriptions.append(sub_info)
+                    else:
+                        active_subscriptions.append(sub_info)
+                except (ValueError, TypeError):
+                    active_subscriptions.append(sub_info)
+            else:
+                active_subscriptions.append(sub_info)
+        elif user.get("subscription_expires"):
+            expired_subscriptions.append(sub_info)
+    
+    return {
+        "summary": {
+            "total_active": len(active_subscriptions),
+            "total_expired": len(expired_subscriptions),
+            "expiring_soon_24h": len(expiring_soon)
+        },
+        "active_subscriptions": active_subscriptions,
+        "expired_subscriptions": expired_subscriptions,
+        "expiring_soon": expiring_soon
+    }
+
+# Admin - Manually deactivate expired subscriptions
+@api_router.post("/admin/subscriptions/cleanup")
+async def cleanup_expired_subscriptions(current_user: dict = Depends(get_current_user)):
+    """Manually trigger cleanup of all expired subscriptions"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    now = datetime.now(timezone.utc)
+    
+    # Find and deactivate all expired subscriptions
+    expired_users = await db.users.find({
+        "subscription_active": True,
+        "subscription_expires": {"$ne": None}
+    }, {"_id": 0, "id": 1, "subscription_expires": 1, "email": 1}).to_list(1000)
+    
+    deactivated = []
+    for user in expired_users:
+        expires_str = user.get("subscription_expires")
+        if expires_str:
+            try:
+                expires = datetime.fromisoformat(expires_str)
+                if expires < now:
+                    await db.users.update_one(
+                        {"id": user["id"]},
+                        {"$set": {"subscription_active": False}}
+                    )
+                    deactivated.append(user.get("email", user["id"]))
+            except (ValueError, TypeError):
+                pass
+    
+    return {
+        "message": f"{len(deactivated)} abonnement(s) expiré(s) désactivé(s)",
+        "deactivated_users": deactivated
+    }
+
 # Admin - Get all virtual cards
 @api_router.get("/admin/cards")
 async def get_all_virtual_cards(current_user: dict = Depends(get_current_user)):
