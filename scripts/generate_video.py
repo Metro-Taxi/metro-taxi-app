@@ -35,7 +35,7 @@ def generate_metro_taxi_video():
     video_bytes = video_gen.text_to_video(
         prompt=prompt,
         model="sora-2",
-        size="1792x1024",  # Widescreen cinematic format
+        size="1280x720",  # HD format
         duration=8,  # 8 seconds for promotional video
         max_wait_time=600
     )
