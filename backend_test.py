@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 
 class MetroTaxiAPITester:
-    def __init__(self, base_url="https://vtc-platform-13.preview.emergentagent.com"):
+    def __init__(self, base_url="https://ride-pooling-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.admin_token = None
