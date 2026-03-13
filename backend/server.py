@@ -488,7 +488,102 @@ async def register_driver(data: DriverRegister, request: Request):
     verification_url = f"{host_url}/verify-email?token={verification_token}"
     
     token = create_token(driver_id, "driver")
-    return {"token": token, "driver": driver_response}
+    return {
+        "token": token, 
+        "driver": driver_response,
+        "verification_url": verification_url,
+        "message": "Un email de vérification a été envoyé"
+    }
+
+# Email Verification Routes
+@api_router.post("/auth/verify-email")
+async def verify_email(data: EmailVerificationRequest):
+    verification = await db.email_verifications.find_one({"token": data.token}, {"_id": 0})
+    
+    if not verification:
+        raise HTTPException(status_code=400, detail="Token de vérification invalide")
+    
+    # Check expiration
+    expires_at = datetime.fromisoformat(verification["expires_at"])
+    if expires_at < datetime.now(timezone.utc):
+        raise HTTPException(status_code=400, detail="Token de vérification expiré")
+    
+    user_type = verification["user_type"]
+    user_id = verification["user_id"]
+    
+    # Update user/driver as verified
+    if user_type == "user":
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {"email_verified": True}}
+        )
+    else:
+        await db.drivers.update_one(
+            {"id": user_id},
+            {"$set": {"email_verified": True}}
+        )
+    
+    # Delete verification token
+    await db.email_verifications.delete_one({"token": data.token})
+    
+    return {"message": "Email vérifié avec succès", "verified": True}
+
+@api_router.get("/auth/verification-status")
+async def get_verification_status(current_user: dict = Depends(get_current_user)):
+    user_id = current_user["user_id"]
+    role = current_user["role"]
+    
+    if role == "user":
+        user = await db.users.find_one({"id": user_id}, {"_id": 0, "email_verified": 1})
+        return {"email_verified": user.get("email_verified", False) if user else False}
+    elif role == "driver":
+        driver = await db.drivers.find_one({"id": user_id}, {"_id": 0, "email_verified": 1})
+        return {"email_verified": driver.get("email_verified", False) if driver else False}
+    
+    return {"email_verified": True}  # Admin always verified
+
+@api_router.post("/auth/resend-verification")
+async def resend_verification(current_user: dict = Depends(get_current_user), request: Request = None):
+    user_id = current_user["user_id"]
+    role = current_user["role"]
+    
+    if role == "user":
+        user = await db.users.find_one({"id": user_id}, {"_id": 0})
+        if not user:
+            raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+        if user.get("email_verified"):
+            return {"message": "Email déjà vérifié"}
+        email = user["email"]
+        user_type = "user"
+    elif role == "driver":
+        driver = await db.drivers.find_one({"id": user_id}, {"_id": 0})
+        if not driver:
+            raise HTTPException(status_code=404, detail="Chauffeur non trouvé")
+        if driver.get("email_verified"):
+            return {"message": "Email déjà vérifié"}
+        email = driver["email"]
+        user_type = "driver"
+    else:
+        return {"message": "Vérification non requise"}
+    
+    # Delete old tokens
+    await db.email_verifications.delete_many({"user_id": user_id})
+    
+    # Create new token
+    verification_token = generate_verification_token()
+    await db.email_verifications.insert_one({
+        "token": verification_token,
+        "user_id": user_id,
+        "user_type": user_type,
+        "email": email,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
+    })
+    
+    host_url = str(request.headers.get("origin", "")) if request else ""
+    verification_url = f"{host_url}/verify-email?token={verification_token}"
+    
+    return {"message": "Email de vérification renvoyé", "verification_url": verification_url}
 
 @api_router.post("/auth/login")
 async def login(data: LoginRequest):
