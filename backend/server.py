@@ -1376,7 +1376,6 @@ async def complete_ride(ride_id: str, current_user: dict = Depends(get_current_u
     )
     
     # Restore available seats
-    driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0})
     await db.drivers.update_one({"id": driver_id}, {"$inc": {"available_seats": 1}})
     
     # Notify user
