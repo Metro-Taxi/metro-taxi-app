@@ -218,7 +218,7 @@ async def register_user(data: UserRegister):
 
 @api_router.post("/auth/register/driver")
 async def register_driver(data: DriverRegister):
-    existing = await db.drivers.find_one({"email": data.email})
+    existing = await db.drivers.find_one({"email": data.email}, {"_id": 0})
     if existing:
         raise HTTPException(status_code=400, detail="Email déjà utilisé")
     
@@ -245,7 +245,8 @@ async def register_driver(data: DriverRegister):
     await db.drivers.insert_one(driver_doc)
     
     token = create_token(driver_id, "driver")
-    return {"token": token, "driver": {k: v for k, v in driver_doc.items() if k != "password"}}
+    driver_response = {k: v for k, v in driver_doc.items() if k != "password"}
+    return {"token": token, "driver": driver_response}
 
 @api_router.post("/auth/login")
 async def login(data: LoginRequest):
