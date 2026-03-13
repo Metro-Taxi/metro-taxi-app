@@ -1,0 +1,117 @@
+{
+  "identity": {
+    "persona": "E1",
+    "tone": "Urban Tactical",
+    "core_philosophy": "Efficiency over Decoration. The city is the UI.",
+    "anti_patterns": [
+      "No generic 'SaaS Blue' or 'Teal'.",
+      "No 'Inter' for headings.",
+      "No gradient text unless it's a specific 'speed' effect.",
+      "No low-contrast gray text on maps."
+    ]
+  },
+  "typography": {
+    "headings": {
+      "family": "Chivo, sans-serif",
+      "weights": ["900", "700"],
+      "usage": "Headlines, Hero Sections, Price Tags",
+      "letter_spacing": "-0.02em"
+    },
+    "body": {
+      "family": "Manrope, sans-serif",
+      "weights": ["400", "500", "600"],
+      "usage": "UI Elements, Map Labels, Long Text"
+    },
+    "mono": {
+      "family": "JetBrains Mono, monospace",
+      "usage": "Time stamps, License plates, Ride IDs"
+    }
+  },
+  "colors": {
+    "palette": {
+      "brand": {
+        "primary": "#FFD60A",
+        "primary_foreground": "#000000",
+        "secondary": "#18181B",
+        "accent": "#FFFFFF"
+      },
+      "background": {
+        "app": "#09090B",
+        "card": "#18181B",
+        "overlay": "rgba(9, 9, 11, 0.9)"
+      },
+      "functional": {
+        "success": "#22C55E",
+        "warning": "#F59E0B",
+        "error": "#EF4444",
+        "info": "#3B82F6"
+      }
+    },
+    "theme_strategy": "Hybrid. Marketing pages use high-contrast Light/Dark sections. The App Dashboard is STRICTLY Dark Mode for battery saving and night-time driving comfort."
+  },
+  "layout": {
+    "grid_system": "Bento Grid (Mode B - High Density)",
+    "spacing": "Tailwind Scale (p-4, p-6, p-8). Use generous padding inside black containers.",
+    "containers": {
+      "marketing": "max-w-7xl mx-auto px-6",
+      "app": "w-full h-screen overflow-hidden relative"
+    },
+    "z_index_hierarchy": {
+      "map": 0,
+      "overlays": 10,
+      "modals": 50,
+      "toasts": 100
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-[#FFD60A] text-black font-bold hover:bg-[#E6C209] rounded-none uppercase tracking-wide",
+      "secondary": "bg-zinc-800 text-white border border-zinc-700 hover:bg-zinc-700 rounded-none",
+      "ghost": "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+    },
+    "cards": {
+      "style": "Flat, sharp edges (rounded-sm), 1px border-zinc-800. No drop shadows in dark mode, use border contrast.",
+      "glass": "Use only for floating map controls: bg-black/80 backdrop-blur-md border border-white/10"
+    },
+    "inputs": {
+      "style": "bg-zinc-900 border-zinc-700 text-white focus:ring-[#FFD60A] focus:border-[#FFD60A] rounded-sm h-12"
+    },
+    "map_markers": {
+      "user": "Blue pulsing dot (standard GPS)",
+      "taxi": "Yellow chevron or stylized car icon (SVG)",
+      "transbordement": "White dashed line connecting two points"
+    }
+  },
+  "visual_enhancers": {
+    "textures": "Subtle noise overlay on the dark background to prevent banding.",
+    "motion": {
+      "library": "Framer Motion",
+      "transitions": "type: 'spring', stiffness: 300, damping: 30",
+      "micro_interactions": "Buttons scale down 0.98 on press."
+    },
+    "icons": "Phosphor Icons (Bold weight for UI, Fill weight for active states)"
+  },
+  "media": {
+    "image_style": "High contrast, urban night photography, motion blur on vehicles.",
+    "image_urls": {
+      "hero_background": "https://images.unsplash.com/photo-1768297941301-1009a05e5514?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "commuters": "https://images.unsplash.com/photo-1651393313280-cc00aa0eda2c?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "driver_experience": "https://images.unsplash.com/photo-1608878746376-b65933cb0079?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "city_vibe": "https://images.unsplash.com/photo-1768413450193-8c586d232226?crop=entropy&cs=srgb&fm=jpg&q=85"
+    }
+  },
+  "instructions_to_main_agent": [
+    "INSTALL FONTS: Add '@import url(\"https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap\");' to index.css",
+    "SETUP MAP: Use 'react-leaflet' with OpenStreetMap. Apply a CSS filter to the map tiles to invert them for dark mode: 'filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%)'. This creates a free dark mode map without API keys.",
+    "LAYOUT STRATEGY: The App is NOT a scrolling website. It is a Viewport Application. Use 'h-screen' and 'overflow-hidden'.",
+    "TRANSBORDEMENT UI: Create a specific component that visualizes the 'Hop' - e.g., Car A (Yellow) -> Walk (Dashed Line) -> Car B (Yellow).",
+    "SUBSCRIPTION PAGE: Make this the 'High Voltage' page. Use massive yellow typography for the prices.",
+    "DRIVER DASHBOARD: Focus on 'Earnings' and 'Next Pickup'. High legibility is safety critical."
+  ],
+  "universal_guidelines": [
+    "Do not use gradients for the primary yellow.",
+    "Ensure all text on the map has a text-shadow or background pill for readability.",
+    "Use 'sonner' for all notifications (Ride accepted, Driver arriving).",
+    "All interactive elements must have 'data-testid'."
+  ]
+}
