@@ -794,6 +794,81 @@ async def get_available_drivers(current_user: dict = Depends(get_current_user)):
     ).to_list(100)
     return {"drivers": drivers}
 
+# ============================================
+# MATCHING ALGORITHM ENDPOINTS
+# ============================================
+
+@api_router.post("/matching/find-drivers")
+async def find_matching_drivers(data: MatchingRequest, current_user: dict = Depends(get_current_user)):
+    """Find best matching drivers based on distance, direction, and availability"""
+    drivers = await db.drivers.find(
+        {"is_active": True, "is_validated": True, "location": {"$ne": None}, "available_seats": {"$gt": 0}},
+        {"_id": 0, "password": 0}
+    ).to_list(100)
+    
+    matched_drivers = []
+    for driver in drivers:
+        match_info = calculate_matching_score(
+            driver, data.user_lat, data.user_lng, data.dest_lat, data.dest_lng
+        )
+        if match_info["score"] > 10:  # Minimum score threshold
+            matched_drivers.append({
+                **driver,
+                "matching": match_info
+            })
+    
+    # Sort by score descending
+    matched_drivers.sort(key=lambda x: x["matching"]["score"], reverse=True)
+    
+    return {"drivers": matched_drivers[:10]}  # Return top 10
+
+@api_router.post("/matching/transfers")
+async def find_transfer_routes(data: MatchingRequest, current_user: dict = Depends(get_current_user)):
+    """Find transfer (transbordement) options for optimized routing"""
+    transfers = await find_transfer_options(
+        data.user_lat, data.user_lng, data.dest_lat, data.dest_lng
+    )
+    
+    return {"transfers": transfers, "count": len(transfers)}
+
+@api_router.get("/matching/suggestions/{user_id}")
+async def get_ride_suggestions(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Get personalized ride suggestions based on user location and common destinations"""
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    
+    user_location = user.get("location")
+    if not user_location:
+        return {"suggestions": [], "message": "Position utilisateur non disponible"}
+    
+    # Find available drivers
+    drivers = await db.drivers.find(
+        {"is_active": True, "is_validated": True, "location": {"$ne": None}, "available_seats": {"$gt": 0}},
+        {"_id": 0, "password": 0}
+    ).to_list(50)
+    
+    suggestions = []
+    for driver in drivers:
+        if driver.get("destination"):
+            distance = calculate_distance(
+                user_location["lat"], user_location["lng"],
+                driver["location"]["lat"], driver["location"]["lng"]
+            )
+            if distance < 5:  # Within 5km
+                suggestions.append({
+                    "driver_id": driver["id"],
+                    "driver_name": driver["first_name"],
+                    "vehicle": driver["vehicle_plate"],
+                    "vehicle_type": driver["vehicle_type"],
+                    "destination": driver["destination"],
+                    "distance_km": round(distance, 2),
+                    "available_seats": driver["available_seats"]
+                })
+    
+    suggestions.sort(key=lambda x: x["distance_km"])
+    return {"suggestions": suggestions[:5]}
+
 @api_router.post("/drivers/toggle-active")
 async def toggle_driver_active(current_user: dict = Depends(get_current_user)):
     if current_user["role"] != "driver":
