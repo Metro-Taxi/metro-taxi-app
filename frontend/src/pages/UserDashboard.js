@@ -72,6 +72,18 @@ const MapUpdater = ({ center }) => {
   return null;
 };
 
+// Map click handler component
+const MapClickHandler = ({ onMapClick, isActive }) => {
+  const map = useMapEvents({
+    click: (e) => {
+      if (isActive && onMapClick) {
+        onMapClick(e);
+      }
+    },
+  });
+  return null;
+};
+
 const UserDashboard = () => {
   const { user, token, logout, refreshUser } = useAuth();
   const navigate = useNavigate();
