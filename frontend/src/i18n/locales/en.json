@@ -1,0 +1,114 @@
+{
+  "hero": {
+    "title": "MÉTRO-TAXI",
+    "subtitle": "The subscription-based urban mobility network",
+    "description": "Join vehicles heading in your direction. Unlimited rides with a simple subscription.",
+    "cta": "GET STARTED"
+  },
+  "nav": {
+    "login": "Login",
+    "register": "Sign Up",
+    "pricing": "Pricing",
+    "howItWorks": "How It Works",
+    "drivers": "Drivers"
+  },
+  "pricing": {
+    "title": "SUBSCRIPTIONS",
+    "subtitle": "Choose your plan",
+    "plans": {
+      "day": {
+        "name": "24 Hours",
+        "price": "€6.99",
+        "description": "Perfect for occasional use"
+      },
+      "week": {
+        "name": "1 Week",
+        "price": "€16.99",
+        "description": "Ideal for short stays"
+      },
+      "month": {
+        "name": "1 Month",
+        "price": "€53.99",
+        "description": "Best value for money"
+      }
+    },
+    "features": {
+      "unlimited": "Unlimited rides",
+      "allVehicles": "Access to all vehicles",
+      "support": "Priority support",
+      "noCommitment": "No commitment"
+    },
+    "cta": "SUBSCRIBE"
+  },
+  "howItWorks": {
+    "title": "HOW IT WORKS",
+    "steps": {
+      "step1": {
+        "title": "Sign Up",
+        "description": "Create your account and choose your subscription"
+      },
+      "step2": {
+        "title": "Find a Vehicle",
+        "description": "Locate vehicles heading in your direction"
+      },
+      "step3": {
+        "title": "Request a Ride",
+        "description": "Send a request to the driver with a single click"
+      },
+      "step4": {
+        "title": "Travel",
+        "description": "Enjoy your ride and get off wherever you want"
+      }
+    }
+  },
+  "drivers": {
+    "title": "BECOME A VTC DRIVER",
+    "subtitle": "Join the Métro-Taxi network and maximize your income with no hidden fees",
+    "revenue": {
+      "title": "POTENTIAL DRIVER INCOME",
+      "monthly": "per month",
+      "upTo": "Can reach up to",
+      "depending": "depending on activity"
+    },
+    "benefits": {
+      "title": "DRIVER BENEFITS",
+      "noSubscription": "No subscription to pay",
+      "noSubscriptionDesc": "Join our network for free",
+      "noCommission": "No commission per ride",
+      "noCommissionDesc": "Keep 100% of your earnings",
+      "subscribedPassengers": "Pre-subscribed passengers",
+      "subscribedPassengersDesc": "No need to find customers",
+      "optimizedRoutes": "Route optimization",
+      "optimizedRoutesDesc": "Smart matching algorithm",
+      "morePassengers": "More passengers through the network",
+      "morePassengersDesc": "Maximize your driving time"
+    },
+    "app": {
+      "title": "THE DRIVER APP",
+      "subtitle": "Everything you need on one screen",
+      "requests": "Passenger requests",
+      "requestsDesc": "Receive real-time requests in your area",
+      "routes": "Optimized routes",
+      "routesDesc": "Routes calculated to maximize your trips",
+      "transfers": "Suggested connections",
+      "transfersDesc": "Intelligent transfer system"
+    },
+    "cta": "JOIN THE NETWORK NOW",
+    "ctaSubtext": "Free registration • No commitment"
+  },
+  "video": {
+    "title": "Discover Métro-Taxi",
+    "loading": "Loading voiceover..."
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "contact": "Contact",
+    "legal": "Legal Notice",
+    "privacy": "Privacy"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry"
+  }
+}
