@@ -1694,6 +1694,52 @@ async def create_default_admin():
         await db.admins.insert_one(admin_doc)
         logging.info("Default admin created: admin@metrotaxi.fr / admin123")
 
+# ============================================
+# AUTOMATIC SUBSCRIPTION EXPIRATION CHECK
+# ============================================
+async def check_expired_subscriptions():
+    """Background task to automatically deactivate expired subscriptions"""
+    while True:
+        try:
+            now = datetime.now(timezone.utc)
+            
+            # Find all users with active subscriptions that have expired
+            expired_users = await db.users.find({
+                "subscription_active": True,
+                "subscription_expires": {"$ne": None}
+            }, {"_id": 0, "id": 1, "subscription_expires": 1, "email": 1}).to_list(1000)
+            
+            deactivated_count = 0
+            for user in expired_users:
+                expires_str = user.get("subscription_expires")
+                if expires_str:
+                    try:
+                        expires = datetime.fromisoformat(expires_str)
+                        if expires < now:
+                            await db.users.update_one(
+                                {"id": user["id"]},
+                                {"$set": {"subscription_active": False}}
+                            )
+                            deactivated_count += 1
+                            logging.info(f"Subscription expired and deactivated for user: {user.get('email', user['id'])}")
+                    except (ValueError, TypeError) as e:
+                        logging.error(f"Error parsing expiration date for user {user['id']}: {e}")
+            
+            if deactivated_count > 0:
+                logging.info(f"Deactivated {deactivated_count} expired subscription(s)")
+            
+        except Exception as e:
+            logging.error(f"Error checking expired subscriptions: {e}")
+        
+        # Check every 5 minutes
+        await asyncio.sleep(300)
+
+@app.on_event("startup")
+async def start_subscription_checker():
+    """Start the background subscription expiration checker"""
+    asyncio.create_task(check_expired_subscriptions())
+    logging.info("Subscription expiration checker started (runs every 5 minutes)")
+
 # WebSocket endpoint
 @app.websocket("/ws/{user_id}/{user_type}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str, user_type: str):
