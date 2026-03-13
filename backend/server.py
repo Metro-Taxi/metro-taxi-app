@@ -388,12 +388,14 @@ async def get_current_user(request: Request) -> dict:
 
 # Auth Routes
 @api_router.post("/auth/register/user")
-async def register_user(data: UserRegister):
+async def register_user(data: UserRegister, request: Request):
     existing = await db.users.find_one({"email": data.email}, {"_id": 0})
     if existing:
         raise HTTPException(status_code=400, detail="Email déjà utilisé")
     
     user_id = str(uuid.uuid4())
+    verification_token = generate_verification_token()
+    
     user_doc = {
         "id": user_id,
         "first_name": data.first_name,
@@ -402,26 +404,49 @@ async def register_user(data: UserRegister):
         "phone": data.phone,
         "password": hash_password(data.password),
         "role": "user",
+        "email_verified": False,
+        "verification_token": verification_token,
         "subscription_active": False,
         "subscription_expires": None,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
     # Create response before inserting to avoid ObjectId contamination
-    user_response = {k: v for k, v in user_doc.items() if k != "password"}
+    user_response = {k: v for k, v in user_doc.items() if k not in ["password", "verification_token"]}
     
     await db.users.insert_one(user_doc)
     
+    # Store verification token separately for easy lookup
+    await db.email_verifications.insert_one({
+        "token": verification_token,
+        "user_id": user_id,
+        "user_type": "user",
+        "email": data.email,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
+    })
+    
+    # Generate verification URL
+    host_url = str(request.headers.get("origin", ""))
+    verification_url = f"{host_url}/verify-email?token={verification_token}"
+    
     token = create_token(user_id, "user")
-    return {"token": token, "user": user_response}
+    return {
+        "token": token, 
+        "user": user_response,
+        "verification_url": verification_url,
+        "message": "Un email de vérification a été envoyé"
+    }
 
 @api_router.post("/auth/register/driver")
-async def register_driver(data: DriverRegister):
+async def register_driver(data: DriverRegister, request: Request):
     existing = await db.drivers.find_one({"email": data.email}, {"_id": 0})
     if existing:
         raise HTTPException(status_code=400, detail="Email déjà utilisé")
     
     driver_id = str(uuid.uuid4())
+    verification_token = generate_verification_token()
+    
     driver_doc = {
         "id": driver_id,
         "first_name": data.first_name,
@@ -435,6 +460,8 @@ async def register_driver(data: DriverRegister):
         "vtc_license": data.vtc_license,
         "is_active": False,
         "is_validated": False,
+        "email_verified": False,
+        "verification_token": verification_token,
         "role": "driver",
         "location": None,
         "destination": None,
@@ -443,9 +470,22 @@ async def register_driver(data: DriverRegister):
     }
     
     # Create response before inserting to avoid ObjectId contamination
-    driver_response = {k: v for k, v in driver_doc.items() if k != "password"}
+    driver_response = {k: v for k, v in driver_doc.items() if k not in ["password", "verification_token"]}
     
     await db.drivers.insert_one(driver_doc)
+    
+    # Store verification token
+    await db.email_verifications.insert_one({
+        "token": verification_token,
+        "user_id": driver_id,
+        "user_type": "driver",
+        "email": data.email,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
+    })
+    
+    host_url = str(request.headers.get("origin", ""))
+    verification_url = f"{host_url}/verify-email?token={verification_token}"
     
     token = create_token(driver_id, "driver")
     return {"token": token, "driver": driver_response}
