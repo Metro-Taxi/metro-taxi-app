@@ -1,0 +1,114 @@
+{
+  "hero": {
+    "title": "MÉTRO-TAXI",
+    "subtitle": "Det prenumerationsbaserade stadsmobilitetsnätverket",
+    "description": "Gå med i fordon som åker i din riktning. Obegränsade resor med en enkel prenumeration.",
+    "cta": "KOM IGÅNG"
+  },
+  "nav": {
+    "login": "Logga in",
+    "register": "Registrera dig",
+    "pricing": "Priser",
+    "howItWorks": "Hur det fungerar",
+    "drivers": "Förare"
+  },
+  "pricing": {
+    "title": "PRENUMERATIONER",
+    "subtitle": "Välj din plan",
+    "plans": {
+      "day": {
+        "name": "24 Timmar",
+        "price": "6,99 €",
+        "description": "Perfekt för tillfällig användning"
+      },
+      "week": {
+        "name": "1 Vecka",
+        "price": "16,99 €",
+        "description": "Idealisk för korta vistelser"
+      },
+      "month": {
+        "name": "1 Månad",
+        "price": "53,99 €",
+        "description": "Bäst värde för pengarna"
+      }
+    },
+    "features": {
+      "unlimited": "Obegränsade resor",
+      "allVehicles": "Tillgång till alla fordon",
+      "support": "Prioriterad support",
+      "noCommitment": "Ingen bindning"
+    },
+    "cta": "PRENUMERERA"
+  },
+  "howItWorks": {
+    "title": "HUR DET FUNGERAR",
+    "steps": {
+      "step1": {
+        "title": "Registrera dig",
+        "description": "Skapa ditt konto och välj din prenumeration"
+      },
+      "step2": {
+        "title": "Hitta ett fordon",
+        "description": "Hitta fordon som åker i din riktning"
+      },
+      "step3": {
+        "title": "Begär en resa",
+        "description": "Skicka en förfrågan till föraren med ett klick"
+      },
+      "step4": {
+        "title": "Res",
+        "description": "Njut av din resa och kliv av var du vill"
+      }
+    }
+  },
+  "drivers": {
+    "title": "BLI VTC-FÖRARE",
+    "subtitle": "Gå med i Métro-Taxi-nätverket och maximera din inkomst utan dolda avgifter",
+    "revenue": {
+      "title": "POTENTIELL FÖRARINKOMST",
+      "monthly": "per månad",
+      "upTo": "Kan nå upp till",
+      "depending": "beroende på aktivitet"
+    },
+    "benefits": {
+      "title": "FÖRARFÖRDELAR",
+      "noSubscription": "Ingen prenumeration att betala",
+      "noSubscriptionDesc": "Gå med i vårt nätverk gratis",
+      "noCommission": "Ingen provision per resa",
+      "noCommissionDesc": "Behåll 100% av dina intäkter",
+      "subscribedPassengers": "Förprenumererade passagerare",
+      "subscribedPassengersDesc": "Inget behov av att hitta kunder",
+      "optimizedRoutes": "Ruttoptimering",
+      "optimizedRoutesDesc": "Smart matchningsalgoritm",
+      "morePassengers": "Fler passagerare genom nätverket",
+      "morePassengersDesc": "Maximera din körtid"
+    },
+    "app": {
+      "title": "FÖRARAPPEN",
+      "subtitle": "Allt du behöver på en skärm",
+      "requests": "Passagerarförfrågningar",
+      "requestsDesc": "Ta emot förfrågningar i realtid i ditt område",
+      "routes": "Optimerade rutter",
+      "routesDesc": "Rutter beräknade för att maximera dina resor",
+      "transfers": "Föreslagna anslutningar",
+      "transfersDesc": "Intelligent övergångssystem"
+    },
+    "cta": "GÅ MED I NÄTVERKET NU",
+    "ctaSubtext": "Gratis registrering • Ingen bindning"
+  },
+  "video": {
+    "title": "Upptäck Métro-Taxi",
+    "loading": "Laddar röstkommentar..."
+  },
+  "footer": {
+    "rights": "Alla rättigheter förbehållna",
+    "contact": "Kontakt",
+    "legal": "Juridiskt",
+    "privacy": "Integritet"
+  },
+  "common": {
+    "loading": "Laddar...",
+    "error": "Ett fel uppstod",
+    "retry": "Försök igen"
+  }
+}
