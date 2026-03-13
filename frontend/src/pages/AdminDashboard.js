@@ -4,10 +4,11 @@ import { motion } from 'framer-motion';
 import { 
   Car, Users, CreditCard, MapPin, LogOut, Menu, X, 
   Check, XCircle, Eye, UserCheck, UserX, BarChart3,
-  TrendingUp, Activity
+  TrendingUp, Activity, Mail, Phone, Calendar, IdCard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import axios from 'axios';
@@ -21,7 +22,10 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [drivers, setDrivers] = useState([]);
   const [users, setUsers] = useState([]);
+  const [virtualCards, setVirtualCards] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [cardDialogOpen, setCardDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -30,20 +34,34 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [statsRes, driversRes, usersRes] = await Promise.all([
+      const [statsRes, driversRes, usersRes, cardsRes] = await Promise.all([
         axios.get(`${API}/admin/stats`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API}/admin/drivers`, { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(`${API}/admin/users`, { headers: { Authorization: `Bearer ${token}` } })
+        axios.get(`${API}/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${API}/admin/cards`, { headers: { Authorization: `Bearer ${token}` } })
       ]);
       
       setStats(statsRes.data);
       setDrivers(driversRes.data.drivers || []);
       setUsers(usersRes.data.users || []);
+      setVirtualCards(cardsRes.data.cards || []);
     } catch (error) {
       console.error('Fetch error:', error);
       toast.error('Erreur lors du chargement des données');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const viewUserCard = async (userId) => {
+    try {
+      const response = await axios.get(`${API}/admin/cards/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSelectedCard(response.data.card);
+      setCardDialogOpen(true);
+    } catch (error) {
+      toast.error('Erreur lors du chargement de la carte');
     }
   };
 
