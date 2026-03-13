@@ -480,6 +480,55 @@ const UserDashboard = () => {
                 </div>
               </div>
               
+              {/* Transfer Suggestions Button */}
+              {transfers.length > 0 && (
+                <Button
+                  onClick={() => setShowTransfers(!showTransfers)}
+                  variant="outline"
+                  className="w-full mb-3 border-blue-500/50 text-blue-400 hover:bg-blue-500/10"
+                  data-testid="show-transfers-btn"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  {showTransfers ? 'Masquer' : 'Voir'} les transbordements ({transfers.length})
+                </Button>
+              )}
+              
+              {/* Transfer Options */}
+              <AnimatePresence>
+                {showTransfers && transfers.length > 0 && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="mb-4 overflow-hidden"
+                  >
+                    <p className="text-zinc-400 text-sm mb-2">Suggestions de transbordement :</p>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {transfers.map((transfer, index) => (
+                        <div key={index} className="bg-zinc-800/50 p-3 rounded border border-zinc-700">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded">
+                              Efficacité: {transfer.estimated_efficiency}%
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <div className="flex-1">
+                              <p className="text-white">{transfer.first_driver.name}</p>
+                              <p className="text-zinc-500 text-xs">{transfer.first_driver.vehicle}</p>
+                            </div>
+                            <ArrowRight className="w-4 h-4 text-[#FFD60A]" />
+                            <div className="flex-1">
+                              <p className="text-white">{transfer.second_driver.name}</p>
+                              <p className="text-zinc-500 text-xs">{transfer.second_driver.vehicle}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
               <Button
                 onClick={handleRequestRide}
                 disabled={loading}
@@ -499,6 +548,19 @@ const UserDashboard = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Email Verification Banner */}
+      {!emailVerified && (
+        <div className="absolute top-16 left-4 right-4 z-[1000] bg-yellow-500/20 border border-yellow-500/50 rounded p-3">
+          <div className="flex items-center gap-3">
+            <Mail className="w-5 h-5 text-yellow-500" />
+            <div className="flex-1">
+              <p className="text-yellow-400 text-sm font-medium">Email non vérifié</p>
+              <p className="text-yellow-400/70 text-xs">Vérifiez votre email pour profiter de toutes les fonctionnalités</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Drivers count indicator */}
       <div className="absolute bottom-24 left-4 z-[1000] glass-panel px-4 py-2 rounded">
