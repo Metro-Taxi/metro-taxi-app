@@ -91,7 +91,7 @@ const Landing = () => {
         </motion.div>
       </section>
       
-      {/* Video Section - 3 Moments Forts */}
+      {/* Video Section */}
       <section className="py-20 px-6 bg-[#09090B]">
         <div className="max-w-5xl mx-auto">
           <motion.div
@@ -107,78 +107,22 @@ const Landing = () => {
             <p className="text-zinc-400 text-lg">La nouvelle façon de se déplacer en ville</p>
           </motion.div>
           
-          {/* Video 1 - Environnement */}
+          {/* Video Player */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="mb-8"
+            className="relative aspect-video bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800"
           >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
-              <h3 className="text-xl font-bold text-white">Notre engagement environnemental</h3>
-            </div>
-            <div className="relative aspect-video bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800">
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube.com/embed/uKZYQhBbzfA?rel=0"
-                title="Métro-Taxi - Engagement environnemental"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
-            </div>
-            <p className="text-zinc-400 mt-3 text-sm">Métro-Taxi s'engage pour une mobilité plus verte et durable.</p>
-          </motion.div>
-
-          {/* Video 2 - Covoiturage */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="mb-8"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-[#FFD60A] rounded-full flex items-center justify-center text-black font-bold">2</div>
-              <h3 className="text-xl font-bold text-white">Le covoiturage intelligent</h3>
-            </div>
-            <div className="relative aspect-video bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800">
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube.com/embed/xWm1JmAFdvw?rel=0&start=45"
-                title="Métro-Taxi - Covoiturage intelligent"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
-            </div>
-            <p className="text-zinc-400 mt-3 text-sm">Partagez vos trajets avec d'autres usagers allant dans la même direction.</p>
-          </motion.div>
-
-          {/* Video 3 - Transbordement */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">3</div>
-              <h3 className="text-xl font-bold text-white">Le transbordement optimisé</h3>
-            </div>
-            <div className="relative aspect-video bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800">
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube.com/embed/Bb7wKN3VdRY?rel=0"
-                title="Métro-Taxi - Transbordement"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
-            </div>
-            <p className="text-zinc-400 mt-3 text-sm">Changez facilement de véhicule pour optimiser votre trajet jusqu'à destination.</p>
+            <iframe
+              className="w-full h-full"
+              src="https://www.youtube.com/embed/uKZYQhBbzfA?rel=0"
+              title="Métro-Taxi - La mobilité urbaine réinventée"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
           </motion.div>
         </div>
       </section>
