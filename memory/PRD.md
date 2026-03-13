@@ -33,6 +33,7 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 - [x] Demande de trajet en un clic
 - [x] **Suggestions de transbordement** (changement véhicule)
 - [x] **Progression du trajet** avec timeline visuelle
+- [x] **Sélection destination sur carte**
 
 ### Section 4 - Écran Chauffeur ✅
 - [x] Carte avec usagers demandeurs
@@ -41,13 +42,28 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 - [x] Indicateur places restantes
 - [x] **Mise à jour progression trajet**
 
-### Section 5 - Algorithme Matching ✅
-- [x] **Algorithme intelligent** basé sur:
-  - Distance usager-chauffeur
+### Section 5 - Algorithme Central ✅ (NOUVEAU - 13/03/2026)
+- [x] **Algorithme intelligent de matching** basé sur:
+  - Distance usager-chauffeur (score pondéré)
   - Direction du trajet (cosine similarity)
   - Nombre de places libres
-- [x] Score de matching calculé
-- [x] **Optimisation des correspondances** (transbordements)
+  - ETA (temps estimé d'arrivée)
+- [x] **Calcul de route optimale** avec segments
+  - Segments optimisés entre 1.5km et 3km
+  - Suggestion transbordement automatique
+  - Maximum 2 transbordements
+- [x] **APIs de matching**:
+  - `/api/matching/optimal-route` - Route optimale avec segments
+  - `/api/matching/network-status` - Statut réseau temps réel
+  - `/api/matching/transfers` - Suggestions transbordement
+  - `/api/matching/find-drivers` - Chauffeurs compatibles
+  - `/api/matching/driver-passengers/{id}` - Passagers compatibles
+- [x] **Panneau itinéraire optimal** avec:
+  - Distance totale
+  - Nombre de transbordements
+  - Temps estimé
+  - Efficacité du trajet
+  - Détail des segments
 
 ### Section 6 - Backend Admin ✅
 - [x] Dashboard avec statistiques (usagers, chauffeurs, abonnements, trajets)
@@ -66,31 +82,67 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 - [x] Section vidéo présentation
 - [x] Section forfaits
 - [x] Section "Comment ça marche"
-- [x] CTA Devenir chauffeur
+- [x] **Section "Devenir Chauffeur VTC"** avec revenus et avantages
 
 ### Section 9 - Sécurité ✅
-- [x] **Vérification email** à l'inscription
+- [x] **Vérification email** à l'inscription (MOCK - pas d'envoi réel)
 - [x] Authentification JWT sécurisée
 - [x] Validation chauffeur par admin
 - [x] Protection des routes
 
 ## 📊 Statut Tests
-- Backend: 94.4% ✅
-- Frontend: 90% ✅
+- Backend: 100% ✅ (18/18 tests)
+- Frontend: 100% ✅
 
-## 🔄 Backlog (P2/P3)
-- [ ] P2: Notifications push mobiles
-- [ ] P2: Historique complet des trajets usager
-- [ ] P2: Système de notation chauffeur
-- [ ] P3: Version mobile native
-- [ ] P3: Envoi réel email (intégration SendGrid/Resend)
+## 🔄 Backlog
+
+### P0 - Prioritaire
+- [ ] Connecter domaine `metro-taxi.com`
+- [ ] Créer email professionnel `judeesouleymane@metro-taxi.com`
+
+### P1 - Important
+- [ ] Implémenter vérification email réelle (SendGrid/Resend)
+- [ ] Vidéo promotionnelle AI (Sora 2) - bloqué par balance
+
+### P2 - Améliorations
+- [ ] Notifications push mobiles
+- [ ] Historique complet des trajets usager
+- [ ] Système de notation chauffeur
+
+### P3 - Futur
+- [ ] Version mobile native
 
 ## 🔑 Credentials Test
 - Admin: admin@metrotaxi.fr / admin123
+- User test: marie.test@example.com / test123
 - Stripe: sk_test_emergent (env)
 
 ## 📁 Fichiers Clés
-- `/app/backend/server.py` - API FastAPI complète
-- `/app/frontend/src/pages/` - Toutes les pages React
+- `/app/backend/server.py` - API FastAPI avec algorithme central
+- `/app/frontend/src/pages/UserDashboard.js` - Dashboard usager avec carte
+- `/app/frontend/src/pages/Landing.js` - Page d'accueil avec section chauffeurs
 - `/app/frontend/src/contexts/AuthContext.js` - Gestion auth
-- `/app/frontend/src/pages/VerifyEmail.js` - Page vérification email
+- `/app/scripts/video_script_v2.md` - Script vidéo pour future génération
+
+## 🧮 Algorithme Central - Détails Techniques
+
+### Constantes
+```python
+SEGMENT_MIN_KM = 1.5  # Distance minimum par segment
+SEGMENT_MAX_KM = 3.0  # Distance maximum (suggère transbordement)
+MAX_PICKUP_DISTANCE_KM = 2.0  # Distance max de prise en charge
+MAX_TRANSFERS = 2  # Nombre max de transbordements
+DIRECTION_THRESHOLD = 60  # Score direction minimum (0-100)
+```
+
+### Calcul du Score de Matching
+- Distance (40 points max): `40 - (distance * 20)`
+- Direction (40 points max): `cosine_similarity * 0.4`
+- Places (20 points max): `min(20, seats * 5)`
+
+### Fonctions Clés
+- `calculate_distance()` - Haversine formula
+- `calculate_direction_score()` - Cosine similarity
+- `calculate_eta_minutes()` - ETA basé sur vitesse moyenne
+- `find_optimal_transfer_point()` - Point de transbordement optimal
+- `calculate_multi_transfer_route()` - Route complète avec segments
