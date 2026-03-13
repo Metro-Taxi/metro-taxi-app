@@ -711,7 +711,127 @@ const UserDashboard = () => {
           <Car className="w-4 h-4 text-[#FFD60A]" />
           <span className="text-sm">{drivers.length} véhicules disponibles</span>
         </div>
+        {networkStatus && (
+          <div className="text-xs text-zinc-400 mt-1">
+            {networkStatus.total_available_seats} places • {networkStatus.active_rides} trajets actifs
+          </div>
+        )}
       </div>
+
+      {/* Destination picker button */}
+      {!destination && !activeRide && (
+        <div className="absolute bottom-24 right-4 z-[1000]">
+          <Button
+            onClick={() => setShowDestinationPicker(!showDestinationPicker)}
+            className={`${showDestinationPicker ? 'bg-red-500 hover:bg-red-600' : 'bg-[#FFD60A] hover:bg-[#E6C209]'} text-black font-bold`}
+            data-testid="set-destination-btn"
+          >
+            <MapPin className="w-4 h-4 mr-2" />
+            {showDestinationPicker ? 'Annuler' : 'Définir destination'}
+          </Button>
+        </div>
+      )}
+
+      {/* Destination picker hint */}
+      {showDestinationPicker && (
+        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[1000] bg-blue-500 text-white px-4 py-2 rounded-full text-sm">
+          Cliquez sur la carte pour définir votre destination
+        </div>
+      )}
+
+      {/* Optimal Route Panel */}
+      <AnimatePresence>
+        {destination && optimalRoute && !selectedDriver && !activeRide && (
+          <motion.div
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            className="ride-panel"
+          >
+            <div className="max-w-lg mx-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-white text-lg flex items-center gap-2">
+                  <Route className="w-5 h-5 text-[#FFD60A]" />
+                  Itinéraire optimal
+                </h3>
+                <button 
+                  onClick={() => {
+                    setDestination(null);
+                    setOptimalRoute(null);
+                  }}
+                  className="text-zinc-400 hover:text-white"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Route summary */}
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="bg-zinc-800/50 p-3 rounded text-center">
+                  <p className="text-2xl font-bold text-[#FFD60A]">{optimalRoute.total_distance_km}</p>
+                  <p className="text-xs text-zinc-400">km total</p>
+                </div>
+                <div className="bg-zinc-800/50 p-3 rounded text-center">
+                  <p className="text-2xl font-bold text-blue-400">{optimalRoute.total_transfers}</p>
+                  <p className="text-xs text-zinc-400">transbordements</p>
+                </div>
+                <div className="bg-zinc-800/50 p-3 rounded text-center">
+                  <p className="text-2xl font-bold text-green-400">{optimalRoute.estimated_total_time_minutes}</p>
+                  <p className="text-xs text-zinc-400">minutes</p>
+                </div>
+              </div>
+
+              {/* Route efficiency */}
+              <div className="mb-4">
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-zinc-400">Efficacité du trajet</span>
+                  <span className="text-[#FFD60A]">{optimalRoute.route_efficiency}%</span>
+                </div>
+                <Progress value={optimalRoute.route_efficiency} className="h-2" />
+              </div>
+
+              {/* Segments */}
+              {optimalRoute.segments && optimalRoute.segments.length > 0 && (
+                <div className="space-y-2 mb-4">
+                  <p className="text-sm text-zinc-400">Segments du trajet :</p>
+                  {optimalRoute.segments.map((segment, index) => (
+                    <div key={index} className="bg-zinc-800/30 p-3 rounded border border-zinc-700">
+                      <div className="flex items-center justify-between">
+                        <span className="text-white font-medium">Segment {segment.index}</span>
+                        <span className="text-xs text-zinc-400">{segment.distance_km} km • {segment.eta_minutes} min</span>
+                      </div>
+                      {segment.driver && (
+                        <div className="flex items-center gap-2 mt-2 text-sm">
+                          <Car className="w-4 h-4 text-[#FFD60A]" />
+                          <span className="text-zinc-300">{segment.driver.first_name}</span>
+                          <span className="text-zinc-500">•</span>
+                          <span className="text-zinc-400">{segment.driver.vehicle_plate}</span>
+                          <span className="text-green-400 ml-auto">{segment.driver.available_seats} places</span>
+                        </div>
+                      )}
+                      {!segment.driver && (
+                        <p className="text-xs text-yellow-400 mt-1">Recherche d'un chauffeur...</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Select first driver */}
+              {optimalRoute.segments && optimalRoute.segments[0]?.driver && (
+                <Button
+                  onClick={() => handleDriverSelect(optimalRoute.segments[0].driver)}
+                  className="w-full bg-[#FFD60A] text-black font-bold h-12 hover:bg-[#E6C209]"
+                  data-testid="select-route-btn"
+                >
+                  Demander ce trajet
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
