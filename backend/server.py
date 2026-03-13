@@ -4,6 +4,8 @@ from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import secrets
+import math
 from pathlib import Path
 from pydantic import BaseModel, Field, EmailStr, ConfigDict
 from typing import List, Optional, Dict, Any
@@ -39,6 +41,182 @@ app = FastAPI()
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
+
+# ============================================
+# MATCHING ALGORITHM HELPER FUNCTIONS
+# ============================================
+
+def calculate_distance(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
+    """Calculate distance between two points in km using Haversine formula"""
+    R = 6371  # Earth's radius in km
+    lat1_rad = math.radians(lat1)
+    lat2_rad = math.radians(lat2)
+    delta_lat = math.radians(lat2 - lat1)
+    delta_lng = math.radians(lng2 - lng1)
+    
+    a = math.sin(delta_lat/2)**2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(delta_lng/2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    
+    return R * c
+
+def calculate_direction_score(user_dest_lat: float, user_dest_lng: float, 
+                               driver_dest_lat: float, driver_dest_lng: float,
+                               driver_lat: float, driver_lng: float) -> float:
+    """Calculate how well the user's destination aligns with the driver's direction (0-100)"""
+    if not driver_dest_lat or not driver_dest_lng:
+        return 50  # Default score if driver has no destination
+    
+    # Vector from driver to driver's destination
+    driver_vector = (driver_dest_lat - driver_lat, driver_dest_lng - driver_lng)
+    # Vector from driver to user's destination
+    user_vector = (user_dest_lat - driver_lat, user_dest_lng - driver_lng)
+    
+    # Calculate dot product and magnitudes
+    dot_product = driver_vector[0] * user_vector[0] + driver_vector[1] * user_vector[1]
+    mag_driver = math.sqrt(driver_vector[0]**2 + driver_vector[1]**2)
+    mag_user = math.sqrt(user_vector[0]**2 + user_vector[1]**2)
+    
+    if mag_driver == 0 or mag_user == 0:
+        return 50
+    
+    # Cosine similarity (-1 to 1), convert to 0-100
+    cos_sim = dot_product / (mag_driver * mag_user)
+    return max(0, min(100, (cos_sim + 1) * 50))
+
+def calculate_matching_score(driver: dict, user_lat: float, user_lng: float,
+                              dest_lat: float, dest_lng: float) -> dict:
+    """Calculate overall matching score for a driver"""
+    if not driver.get('location'):
+        return {"score": 0, "distance": float('inf'), "direction_score": 0, "seats_score": 0}
+    
+    driver_lat = driver['location']['lat']
+    driver_lng = driver['location']['lng']
+    
+    # Distance score (closer = better, max 40 points)
+    distance = calculate_distance(user_lat, user_lng, driver_lat, driver_lng)
+    distance_score = max(0, 40 - (distance * 10))  # Penalize 10 points per km
+    
+    # Direction score (max 40 points)
+    driver_dest = driver.get('destination', {})
+    direction_score = calculate_direction_score(
+        dest_lat, dest_lng,
+        driver_dest.get('lat'), driver_dest.get('lng'),
+        driver_lat, driver_lng
+    ) * 0.4  # Scale to max 40 points
+    
+    # Seats score (more seats = better, max 20 points)
+    available_seats = driver.get('available_seats', 0)
+    seats_score = min(20, available_seats * 5)
+    
+    total_score = distance_score + direction_score + seats_score
+    
+    return {
+        "score": round(total_score, 2),
+        "distance": round(distance, 2),
+        "direction_score": round(direction_score, 2),
+        "seats_score": round(seats_score, 2)
+    }
+
+async def find_transfer_options(user_lat: float, user_lng: float, 
+                                 dest_lat: float, dest_lng: float) -> List[dict]:
+    """Find transfer (transbordement) options for optimized routing"""
+    drivers = await db.drivers.find(
+        {"is_active": True, "is_validated": True, "location": {"$ne": None}},
+        {"_id": 0, "password": 0}
+    ).to_list(100)
+    
+    if len(drivers) < 2:
+        return []
+    
+    transfers = []
+    direct_distance = calculate_distance(user_lat, user_lng, dest_lat, dest_lng)
+    
+    # Find potential transfer points (midpoint area)
+    mid_lat = (user_lat + dest_lat) / 2
+    mid_lng = (user_lng + dest_lng) / 2
+    
+    # Find first leg drivers (from user to midpoint area)
+    first_leg_drivers = []
+    for driver in drivers:
+        if driver.get('available_seats', 0) < 1:
+            continue
+        driver_lat = driver['location']['lat']
+        driver_lng = driver['location']['lng']
+        
+        # Check if driver is near user and heading towards midpoint
+        dist_to_user = calculate_distance(user_lat, user_lng, driver_lat, driver_lng)
+        if dist_to_user < 3:  # Within 3km
+            first_leg_drivers.append(driver)
+    
+    # Find second leg drivers (from midpoint to destination)
+    second_leg_drivers = []
+    for driver in drivers:
+        if driver.get('available_seats', 0) < 1:
+            continue
+        driver_lat = driver['location']['lat']
+        driver_lng = driver['location']['lng']
+        
+        # Check if driver is near midpoint and heading towards destination
+        dist_to_mid = calculate_distance(mid_lat, mid_lng, driver_lat, driver_lng)
+        if dist_to_mid < 3:  # Within 3km
+            dest = driver.get('destination', {})
+            if dest:
+                dest_direction = calculate_direction_score(
+                    dest_lat, dest_lng,
+                    dest.get('lat'), dest.get('lng'),
+                    driver_lat, driver_lng
+                )
+                if dest_direction > 60:  # Good direction match
+                    second_leg_drivers.append(driver)
+    
+    # Create transfer combinations
+    for first_driver in first_leg_drivers[:3]:
+        for second_driver in second_leg_drivers[:3]:
+            if first_driver['id'] == second_driver['id']:
+                continue
+            
+            # Calculate transfer efficiency
+            first_pickup_dist = calculate_distance(
+                user_lat, user_lng,
+                first_driver['location']['lat'], first_driver['location']['lng']
+            )
+            
+            transfer_point_lat = (first_driver['location']['lat'] + second_driver['location']['lat']) / 2
+            transfer_point_lng = (first_driver['location']['lng'] + second_driver['location']['lng']) / 2
+            
+            second_dropoff_dist = calculate_distance(
+                second_driver['location']['lat'], second_driver['location']['lng'],
+                dest_lat, dest_lng
+            )
+            
+            total_transfer_dist = first_pickup_dist + second_dropoff_dist
+            
+            # Only suggest if transfer is reasonably efficient
+            if total_transfer_dist < direct_distance * 1.5:
+                transfers.append({
+                    "type": "transfer",
+                    "first_driver": {
+                        "id": first_driver['id'],
+                        "name": first_driver['first_name'],
+                        "vehicle": first_driver['vehicle_plate'],
+                        "vehicle_type": first_driver['vehicle_type']
+                    },
+                    "second_driver": {
+                        "id": second_driver['id'],
+                        "name": second_driver['first_name'],
+                        "vehicle": second_driver['vehicle_plate'],
+                        "vehicle_type": second_driver['vehicle_type']
+                    },
+                    "transfer_point": {
+                        "lat": transfer_point_lat,
+                        "lng": transfer_point_lng
+                    },
+                    "estimated_efficiency": round((1 - total_transfer_dist / direct_distance) * 100, 1)
+                })
+    
+    # Sort by efficiency and return top 3
+    transfers.sort(key=lambda x: x['estimated_efficiency'], reverse=True)
+    return transfers[:3]
 
 # WebSocket connection manager
 class ConnectionManager:
