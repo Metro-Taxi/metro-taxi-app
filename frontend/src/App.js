@@ -15,6 +15,7 @@ import AdminDashboard from "@/pages/AdminDashboard";
 import Subscription from "@/pages/Subscription";
 import SubscriptionSuccess from "@/pages/SubscriptionSuccess";
 import Profile from "@/pages/Profile";
+import VerifyEmail from "@/pages/VerifyEmail";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
