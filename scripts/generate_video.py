@@ -38,7 +38,7 @@ def generate_metro_taxi_video():
         prompt=prompt,
         model="sora-2",
         size="1280x720",  # HD format
-        duration=10,  # 10 seconds for more detailed scenes
+        duration=12,  # 12 seconds for more detailed scenes
         max_wait_time=600
     )
     
