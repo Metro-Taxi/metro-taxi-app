@@ -383,13 +383,13 @@ const UserDashboard = () => {
         zoom={14}
         className="h-full w-full z-0"
         zoomControl={false}
-        onClick={handleMapClick}
       >
         <TileLayer
           attribution='&copy; OpenStreetMap'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <MapUpdater center={userLocation} />
+        <MapClickHandler onMapClick={handleMapClick} isActive={showDestinationPicker} />
         
         {/* User location */}
         {userLocation && (
