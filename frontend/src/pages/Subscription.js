@@ -67,7 +67,7 @@ const Subscription = () => {
     { 
       id: '1month', 
       name: '1 MOIS', 
-      price: '50,99', 
+      price: '53,99', 
       period: 'mois',
       features: ['Trajets illimités pendant 30 jours', 'Accès prioritaire', 'Transbordements optimisés', 'Support prioritaire', 'Économie maximale']
     }

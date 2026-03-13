@@ -206,7 +206,7 @@ const Landing = () => {
             {[
               { name: "24 HEURES", price: "6,99", period: "jour" },
               { name: "1 SEMAINE", price: "16,99", period: "semaine", popular: true },
-              { name: "1 MOIS", price: "50,99", period: "mois" }
+              { name: "1 MOIS", price: "53,99", period: "mois" }
             ].map((plan, index) => (
               <motion.div
                 key={index}

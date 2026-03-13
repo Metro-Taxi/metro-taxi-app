@@ -31,7 +31,7 @@ JWT_EXPIRATION_HOURS = 24
 SUBSCRIPTION_PLANS = {
     "24h": {"name": "24 heures", "price": 6.99, "duration_hours": 24},
     "1week": {"name": "1 semaine", "price": 16.99, "duration_hours": 168},
-    "1month": {"name": "1 mois", "price": 50.99, "duration_hours": 720}
+    "1month": {"name": "1 mois", "price": 53.99, "duration_hours": 720}
 }
 
 # Create the main app
