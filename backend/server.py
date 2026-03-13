@@ -1110,9 +1110,94 @@ async def find_transfer_routes(data: MatchingRequest, current_user: dict = Depen
     
     return {"transfers": transfers, "count": len(transfers)}
 
+@api_router.post("/matching/optimal-route")
+async def get_optimal_route(data: MatchingRequest, current_user: dict = Depends(get_current_user)):
+    """
+    Calculate optimal route with automatic transfer optimization
+    Returns complete route plan with segments (1.5-3km) and up to 2 transfers
+    """
+    route = await calculate_multi_transfer_route(
+        data.user_lat, data.user_lng, data.dest_lat, data.dest_lng
+    )
+    
+    return {
+        "route": route,
+        "algorithm_config": {
+            "segment_min_km": SEGMENT_MIN_KM,
+            "segment_max_km": SEGMENT_MAX_KM,
+            "max_transfers": MAX_TRANSFERS,
+            "direction_threshold": DIRECTION_THRESHOLD
+        }
+    }
+
+@api_router.get("/matching/driver-passengers/{driver_id}")
+async def get_driver_compatible_passengers(driver_id: str, current_user: dict = Depends(get_current_user)):
+    """Get passengers compatible with driver's route direction"""
+    if current_user["role"] != "driver" and current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    
+    passengers = await find_compatible_passengers_for_driver(driver_id)
+    
+    return {
+        "passengers": passengers,
+        "count": len(passengers),
+        "auto_match_enabled": True
+    }
+
+@api_router.get("/matching/network-status")
+async def get_network_status(current_user: dict = Depends(get_current_user)):
+    """Get real-time network status - available vehicles, coverage, etc."""
+    active_drivers = await db.drivers.find(
+        {"is_active": True, "is_validated": True, "location": {"$ne": None}},
+        {"_id": 0, "password": 0}
+    ).to_list(1000)
+    
+    total_seats = sum(d.get('available_seats', 0) for d in active_drivers)
+    
+    # Calculate network coverage (approximate bounding box)
+    if active_drivers:
+        lats = [d['location']['lat'] for d in active_drivers]
+        lngs = [d['location']['lng'] for d in active_drivers]
+        coverage_area = {
+            "min_lat": min(lats),
+            "max_lat": max(lats),
+            "min_lng": min(lngs),
+            "max_lng": max(lngs)
+        }
+    else:
+        coverage_area = None
+    
+    # Active rides
+    active_rides = await db.ride_requests.count_documents(
+        {"status": {"$in": ["accepted", "pickup", "in_progress"]}}
+    )
+    
+    # Pending requests
+    pending_requests = await db.ride_requests.count_documents({"status": "pending"})
+    
+    return {
+        "network_status": "active" if active_drivers else "limited",
+        "active_vehicles": len(active_drivers),
+        "total_available_seats": total_seats,
+        "active_rides": active_rides,
+        "pending_requests": pending_requests,
+        "coverage_area": coverage_area,
+        "vehicles": [{
+            "id": d["id"],
+            "location": d["location"],
+            "destination": d.get("destination"),
+            "vehicle_type": d["vehicle_type"],
+            "available_seats": d.get("available_seats", 0),
+            "direction_bearing": calculate_bearing(
+                d["location"]["lat"], d["location"]["lng"],
+                d["destination"]["lat"], d["destination"]["lng"]
+            ) if d.get("destination") else None
+        } for d in active_drivers]
+    }
+
 @api_router.get("/matching/suggestions/{user_id}")
 async def get_ride_suggestions(user_id: str, current_user: dict = Depends(get_current_user)):
-    """Get personalized ride suggestions based on user location and common destinations"""
+    """Get personalized ride suggestions based on user location and nearby drivers"""
     user = await db.users.find_one({"id": user_id}, {"_id": 0})
     if not user:
         raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
@@ -1134,7 +1219,7 @@ async def get_ride_suggestions(user_id: str, current_user: dict = Depends(get_cu
                 user_location["lat"], user_location["lng"],
                 driver["location"]["lat"], driver["location"]["lng"]
             )
-            if distance < 5:  # Within 5km
+            if distance < MAX_PICKUP_DISTANCE_KM:
                 suggestions.append({
                     "driver_id": driver["id"],
                     "driver_name": driver["first_name"],
@@ -1142,11 +1227,16 @@ async def get_ride_suggestions(user_id: str, current_user: dict = Depends(get_cu
                     "vehicle_type": driver["vehicle_type"],
                     "destination": driver["destination"],
                     "distance_km": round(distance, 2),
-                    "available_seats": driver["available_seats"]
+                    "available_seats": driver["available_seats"],
+                    "eta_minutes": calculate_eta_minutes(distance),
+                    "direction_bearing": calculate_bearing(
+                        driver["location"]["lat"], driver["location"]["lng"],
+                        driver["destination"]["lat"], driver["destination"]["lng"]
+                    )
                 })
     
     suggestions.sort(key=lambda x: x["distance_km"])
-    return {"suggestions": suggestions[:5]}
+    return {"suggestions": suggestions[:10]}
 
 @api_router.post("/drivers/toggle-active")
 async def toggle_driver_active(current_user: dict = Depends(get_current_user)):
