@@ -1,0 +1,114 @@
+{
+  "hero": {
+    "title": "MÉTRO-TAXI",
+    "subtitle": "Le réseau de mobilité urbaine par abonnement",
+    "description": "Rejoignez des véhicules allant dans votre direction. Trajets illimités avec un simple abonnement.",
+    "cta": "COMMENCER"
+  },
+  "nav": {
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "pricing": "Tarifs",
+    "howItWorks": "Comment ça marche",
+    "drivers": "Chauffeurs"
+  },
+  "pricing": {
+    "title": "ABONNEMENTS",
+    "subtitle": "Choisissez votre forfait",
+    "plans": {
+      "day": {
+        "name": "24 Heures",
+        "price": "6,99 €",
+        "description": "Parfait pour un usage ponctuel"
+      },
+      "week": {
+        "name": "1 Semaine",
+        "price": "16,99 €",
+        "description": "Idéal pour les courts séjours"
+      },
+      "month": {
+        "name": "1 Mois",
+        "price": "53,99 €",
+        "description": "Le meilleur rapport qualité-prix"
+      }
+    },
+    "features": {
+      "unlimited": "Trajets illimités",
+      "allVehicles": "Accès à tous les véhicules",
+      "support": "Support prioritaire",
+      "noCommitment": "Sans engagement"
+    },
+    "cta": "S'ABONNER"
+  },
+  "howItWorks": {
+    "title": "COMMENT ÇA MARCHE",
+    "steps": {
+      "step1": {
+        "title": "Inscrivez-vous",
+        "description": "Créez votre compte et choisissez votre abonnement"
+      },
+      "step2": {
+        "title": "Trouvez un véhicule",
+        "description": "Localisez les véhicules allant dans votre direction"
+      },
+      "step3": {
+        "title": "Demandez à monter",
+        "description": "Envoyez une demande au chauffeur d'un simple clic"
+      },
+      "step4": {
+        "title": "Voyagez",
+        "description": "Profitez de votre trajet et descendez où vous voulez"
+      }
+    }
+  },
+  "drivers": {
+    "title": "DEVENEZ CHAUFFEUR VTC",
+    "subtitle": "Rejoignez le réseau Métro-Taxi et maximisez vos revenus sans frais cachés",
+    "revenue": {
+      "title": "REVENU POTENTIEL CHAUFFEUR",
+      "monthly": "par mois",
+      "upTo": "Pouvant atteindre jusqu'à",
+      "depending": "selon l'activité"
+    },
+    "benefits": {
+      "title": "AVANTAGES CHAUFFEURS",
+      "noSubscription": "Aucun abonnement à payer",
+      "noSubscriptionDesc": "Rejoignez gratuitement notre réseau",
+      "noCommission": "Aucune commission par course",
+      "noCommissionDesc": "Gardez 100% de vos gains",
+      "subscribedPassengers": "Passagers déjà abonnés",
+      "subscribedPassengersDesc": "Plus besoin de chercher des clients",
+      "optimizedRoutes": "Optimisation des trajets",
+      "optimizedRoutesDesc": "Algorithme intelligent de matching",
+      "morePassengers": "Plus de passagers grâce au réseau",
+      "morePassengersDesc": "Maximisez votre temps de conduite"
+    },
+    "app": {
+      "title": "L'APPLICATION CHAUFFEUR",
+      "subtitle": "Tout ce dont vous avez besoin sur un seul écran",
+      "requests": "Demandes de passagers",
+      "requestsDesc": "Recevez les demandes en temps réel dans votre zone",
+      "routes": "Itinéraires optimisés",
+      "routesDesc": "Routes calculées pour maximiser vos trajets",
+      "transfers": "Correspondances proposées",
+      "transfersDesc": "Système de transbordement intelligent"
+    },
+    "cta": "REJOINDRE LE RÉSEAU MAINTENANT",
+    "ctaSubtext": "Inscription gratuite • Aucun engagement"
+  },
+  "video": {
+    "title": "Découvrez Métro-Taxi",
+    "loading": "Chargement de la voix off..."
+  },
+  "footer": {
+    "rights": "Tous droits réservés",
+    "contact": "Contact",
+    "legal": "Mentions légales",
+    "privacy": "Confidentialité"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "retry": "Réessayer"
+  }
+}
