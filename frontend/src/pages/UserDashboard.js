@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Circle, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, CheckCircle, AlertCircle } from 'lucide-react';
+import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,16 +29,34 @@ const userIcon = L.divIcon({
   iconAnchor: [8, 8],
 });
 
-const driverIcon = L.divIcon({
-  className: 'custom-icon',
-  html: '<div style="background:#FFD60A;border:2px solid #000;border-radius:4px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-2-4H8L6 10l-2.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></div>',
-  iconSize: [28, 28],
-  iconAnchor: [14, 14],
-});
+// Create driver icon with direction arrow
+const createDriverIcon = (bearing, seats) => {
+  const rotation = bearing ? `transform: rotate(${bearing}deg);` : '';
+  const seatColor = seats > 2 ? '#22C55E' : seats > 0 ? '#FFD60A' : '#EF4444';
+  return L.divIcon({
+    className: 'custom-icon',
+    html: `<div style="position:relative;">
+      <div style="background:#FFD60A;border:2px solid #000;border-radius:4px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-2-4H8L6 10l-2.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+      </div>
+      ${bearing ? `<div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%) ${rotation};"><svg width="14" height="14" viewBox="0 0 24 24" fill="#FFD60A"><path d="M12 2l7 20-7-5-7 5z"/></svg></div>` : ''}
+      <div style="position:absolute;bottom:-6px;right:-6px;background:${seatColor};border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;color:black;">${seats}</div>
+    </div>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+  });
+};
 
 const transferIcon = L.divIcon({
   className: 'custom-icon',
-  html: '<div style="background:#3B82F6;border:2px solid white;border-radius:50%;width:16px;height:16px;"></div>',
+  html: '<div style="background:#3B82F6;border:2px solid white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg></div>',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+});
+
+const destinationIcon = L.divIcon({
+  className: 'custom-icon',
+  html: '<div style="background:#EF4444;border:2px solid white;border-radius:50%;width:16px;height:16px;"></div>',
   iconSize: [16, 16],
   iconAnchor: [8, 8],
 });
