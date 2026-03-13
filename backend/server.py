@@ -1772,6 +1772,125 @@ async def get_user_card(user_id: str, current_user: dict = Depends(get_current_u
     
     return {"card": card}
 
+# ============================================
+# TEXT-TO-SPEECH API FOR VIDEO VOICEOVER
+# ============================================
+
+# Video voiceover scripts for each language
+VIDEO_SCRIPTS = {
+    "fr": """Bienvenue sur Métro-Taxi, le réseau de mobilité urbaine par abonnement.
+Inscrivez-vous et choisissez votre forfait. Localisez les véhicules allant dans votre direction.
+Demandez à monter d'un simple clic. Le chauffeur vous récupère et vous dépose où vous voulez.
+Grâce à notre système de transbordement intelligent, changez de véhicule en route pour atteindre votre destination.
+Métro-Taxi, vos trajets sans limites.""",
+
+    "en": """Welcome to Métro-Taxi, the subscription-based urban mobility network.
+Sign up and choose your plan. Locate vehicles heading in your direction.
+Request a ride with a single click. The driver picks you up and drops you off wherever you want.
+Thanks to our intelligent transfer system, switch vehicles along the way to reach your destination.
+Métro-Taxi, your rides without limits.""",
+
+    "es": """Bienvenido a Métro-Taxi, la red de movilidad urbana por suscripción.
+Regístrate y elige tu plan. Localiza vehículos que van en tu dirección.
+Solicita un viaje con un solo clic. El conductor te recoge y te deja donde quieras.
+Gracias a nuestro sistema inteligente de transbordo, cambia de vehículo en ruta para llegar a tu destino.
+Métro-Taxi, tus viajes sin límites.""",
+
+    "pt": """Bem-vindo ao Métro-Taxi, a rede de mobilidade urbana por assinatura.
+Registe-se e escolha o seu plano. Localize veículos que vão na sua direção.
+Peça uma viagem com um clique. O motorista apanha-o e deixa-o onde quiser.
+Graças ao nosso sistema inteligente de transbordo, mude de veículo no caminho para chegar ao seu destino.
+Métro-Taxi, as suas viagens sem limites.""",
+
+    "no": """Velkommen til Métro-Taxi, det abonnementsbaserte bymobilitetsnettverket.
+Registrer deg og velg din plan. Finn kjøretøy som går i din retning.
+Be om en tur med ett klikk. Sjåføren henter deg og setter deg av hvor du vil.
+Takket være vårt intelligente overgangssystem kan du bytte kjøretøy underveis for å nå målet ditt.
+Métro-Taxi, dine turer uten grenser.""",
+
+    "sv": """Välkommen till Métro-Taxi, det prenumerationsbaserade stadsmobilitetsnätverket.
+Registrera dig och välj din plan. Hitta fordon som åker i din riktning.
+Begär en resa med ett klick. Föraren hämtar dig och släpper av dig var du vill.
+Tack vare vårt intelligenta övergångssystem kan du byta fordon på vägen för att nå ditt mål.
+Métro-Taxi, dina resor utan gränser.""",
+
+    "da": """Velkommen til Métro-Taxi, det abonnementsbaserede bymobilitetsnetværk.
+Tilmeld dig og vælg din plan. Find køretøjer, der kører i din retning.
+Anmod om en tur med ét klik. Chaufføren henter dig og sætter dig af, hvor du vil.
+Takket være vores intelligente overgangssystem kan du skifte køretøj undervejs for at nå dit mål.
+Métro-Taxi, dine ture uden grænser.""",
+
+    "zh": """欢迎来到Métro-Taxi，订阅式城市交通网络。
+注册并选择您的计划。找到前往您方向的车辆。
+一键请求乘车。司机会接您并送您到想去的地方。
+借助我们的智能换乘系统，您可以在途中换乘车辆以到达目的地。
+Métro-Taxi，无限出行。""",
+
+    "ur": """میٹرو ٹیکسی میں خوش آمدید، سبسکرپشن پر مبنی شہری نقل و حمل کا نیٹ ورک۔
+رجسٹر کریں اور اپنا پلان منتخب کریں۔ اپنی سمت جانے والی گاڑیاں تلاش کریں۔
+ایک کلک سے سفر کی درخواست کریں۔ ڈرائیور آپ کو لے کر جہاں چاہیں چھوڑ دے گا۔
+ہمارے ذہین ٹرانسفر سسٹم کی بدولت، اپنی منزل تک پہنچنے کے لیے راستے میں گاڑی بدلیں۔
+میٹرو ٹیکسی، بے حد سفر۔"""
+}
+
+class TTSRequest(BaseModel):
+    language: str = Field(..., description="Language code (fr, en, es, pt, no, sv, da, zh, ur)")
+    voice: str = Field(default="nova", description="Voice to use")
+
+@api_router.post("/tts/voiceover")
+async def generate_voiceover(request: TTSRequest):
+    """Generate voiceover audio for the promotional video in the specified language"""
+    if request.language not in VIDEO_SCRIPTS:
+        raise HTTPException(status_code=400, detail=f"Language '{request.language}' not supported")
+    
+    script = VIDEO_SCRIPTS[request.language]
+    
+    try:
+        api_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not api_key:
+            raise HTTPException(status_code=500, detail="TTS API key not configured")
+        
+        tts = OpenAITextToSpeech(api_key=api_key)
+        
+        # Generate speech
+        audio_bytes = await tts.generate_speech(
+            text=script,
+            model="tts-1",
+            voice=request.voice,
+            speed=1.0,
+            response_format="mp3"
+        )
+        
+        # Return audio as response
+        return Response(
+            content=audio_bytes,
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": f"inline; filename=voiceover_{request.language}.mp3"
+            }
+        )
+        
+    except Exception as e:
+        logging.error(f"TTS generation error: {e}")
+        raise HTTPException(status_code=500, detail=f"Error generating voiceover: {str(e)}")
+
+@api_router.get("/tts/languages")
+async def get_available_languages():
+    """Get list of available languages for voiceover"""
+    return {
+        "languages": [
+            {"code": "fr", "name": "Français", "flag": "🇫🇷"},
+            {"code": "en", "name": "English", "flag": "🇬🇧"},
+            {"code": "es", "name": "Español", "flag": "🇪🇸"},
+            {"code": "pt", "name": "Português", "flag": "🇵🇹"},
+            {"code": "no", "name": "Norsk", "flag": "🇳🇴"},
+            {"code": "sv", "name": "Svenska", "flag": "🇸🇪"},
+            {"code": "da", "name": "Dansk", "flag": "🇩🇰"},
+            {"code": "zh", "name": "中文", "flag": "🇨🇳"},
+            {"code": "ur", "name": "اردو", "flag": "🇵🇰"}
+        ]
+    }
+
 # Create default admin
 @app.on_event("startup")
 async def create_default_admin():
