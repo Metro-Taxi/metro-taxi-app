@@ -107,7 +107,7 @@ const Landing = () => {
             <p className="text-zinc-400 text-lg">La nouvelle façon de se déplacer en ville</p>
           </motion.div>
           
-          {/* Video Player */}
+          {/* Video Player with Pexels Stock Video */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -115,14 +115,18 @@ const Landing = () => {
             viewport={{ once: true }}
             className="relative aspect-video bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800"
           >
-            <iframe
-              src="https://www.youtube.com/embed/Ep_1jgPEqzs?rel=0&modestbranding=1"
-              title="Métro-Taxi - La mobilité urbaine réinventée"
-              className="w-full h-full"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+            <video
+              className="w-full h-full object-cover"
+              controls
+              poster="https://images.unsplash.com/photo-1651393313280-cc00aa0eda2c?crop=entropy&cs=srgb&fm=jpg&q=85"
+              preload="metadata"
+            >
+              <source 
+                src="https://videos.pexels.com/video-files/3129957/3129957-uhd_2560_1440_30fps.mp4" 
+                type="video/mp4" 
+              />
+              Votre navigateur ne supporte pas la lecture vidéo.
+            </video>
           </motion.div>
         </div>
       </section>
