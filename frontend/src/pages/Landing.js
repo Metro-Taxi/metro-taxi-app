@@ -107,7 +107,7 @@ const Landing = () => {
             <p className="text-zinc-400 text-lg">La nouvelle façon de se déplacer en ville</p>
           </motion.div>
           
-          {/* Video Player with Pexels Stock Video */}
+          {/* Video Player with Pexels Stock Video - City Traffic */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -118,11 +118,11 @@ const Landing = () => {
             <video
               className="w-full h-full object-cover"
               controls
-              poster="https://images.unsplash.com/photo-1651393313280-cc00aa0eda2c?crop=entropy&cs=srgb&fm=jpg&q=85"
+              poster="https://images.unsplash.com/photo-1768297941301-1009a05e5514?crop=entropy&cs=srgb&fm=jpg&q=85"
               preload="metadata"
             >
               <source 
-                src="https://videos.pexels.com/video-files/2053100/2053100-uhd_2560_1440_30fps.mp4" 
+                src="https://videos.pexels.com/video-files/1721294/1721294-uhd_2560_1440_25fps.mp4" 
                 type="video/mp4" 
               />
               Votre navigateur ne supporte pas la lecture vidéo.
