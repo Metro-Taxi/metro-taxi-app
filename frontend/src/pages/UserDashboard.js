@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup, useMap, Circle, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Circle, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass } from 'lucide-react';
