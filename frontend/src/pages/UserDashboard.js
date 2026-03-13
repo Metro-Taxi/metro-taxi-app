@@ -371,6 +371,7 @@ const UserDashboard = () => {
         zoom={14}
         className="h-full w-full z-0"
         zoomControl={false}
+        onClick={handleMapClick}
       >
         <TileLayer
           attribution='&copy; OpenStreetMap'
@@ -395,36 +396,114 @@ const UserDashboard = () => {
             />
           </>
         )}
-        
-        {/* Drivers */}
-        {drivers.map((driver) => (
+
+        {/* Destination marker */}
+        {destination && (
+          <Marker position={destination} icon={destinationIcon}>
+            <Popup>
+              <div className="p-2 text-center">
+                <p className="font-bold">Destination</p>
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="mt-2 text-red-500"
+                  onClick={() => setDestination(null)}
+                >
+                  Supprimer
+                </Button>
+              </div>
+            </Popup>
+          </Marker>
+        )}
+
+        {/* Route line from user to destination */}
+        {userLocation && destination && (
+          <Polyline 
+            positions={[userLocation, destination]} 
+            pathOptions={{ color: '#FFD60A', weight: 3, dashArray: '10, 10' }}
+          />
+        )}
+
+        {/* Optimal route segments */}
+        {optimalRoute && optimalRoute.segments && optimalRoute.segments.map((segment, index) => (
+          <React.Fragment key={`segment-${index}`}>
+            <Polyline 
+              positions={[
+                [segment.start.lat, segment.start.lng],
+                [segment.end.lat, segment.end.lng]
+              ]} 
+              pathOptions={{ 
+                color: index === 0 ? '#22C55E' : '#3B82F6', 
+                weight: 4 
+              }}
+            />
+          </React.Fragment>
+        ))}
+
+        {/* Transfer points */}
+        {optimalRoute && optimalRoute.transfer_points && optimalRoute.transfer_points.map((point, index) => (
           <Marker 
-            key={driver.id} 
-            position={[driver.location.lat, driver.location.lng]}
-            icon={driverIcon}
-            eventHandlers={{
-              click: () => handleDriverSelect(driver)
-            }}
+            key={`transfer-${index}`}
+            position={[point.location.lat, point.location.lng]} 
+            icon={transferIcon}
           >
             <Popup>
-              <div className="p-2 min-w-[180px]">
-                <p className="font-bold text-lg">{driver.first_name}</p>
-                <p className="text-sm text-zinc-600 font-mono">{driver.vehicle_plate}</p>
-                <p className="text-sm">{driver.vehicle_type}</p>
-                <div className="flex items-center gap-1 mt-2 text-[#FFD60A]">
-                  <Users className="w-4 h-4" />
-                  <span>{driver.available_seats} places libres</span>
-                </div>
-                {driver.destination && (
-                  <div className="flex items-center gap-1 mt-1 text-zinc-500">
-                    <Navigation className="w-4 h-4" />
-                    <span className="text-xs">Direction définie</span>
-                  </div>
-                )}
+              <div className="p-2 text-center">
+                <p className="font-bold text-blue-600">Point de transbordement {index + 1}</p>
+                <p className="text-sm text-gray-600">Changez de véhicule ici</p>
               </div>
             </Popup>
           </Marker>
         ))}
+        
+        {/* Drivers with direction */}
+        {drivers.map((driver) => {
+          const bearing = driver.destination ? 
+            Math.atan2(
+              driver.destination.lng - driver.location.lng,
+              driver.destination.lat - driver.location.lat
+            ) * (180 / Math.PI) : null;
+          
+          return (
+            <Marker 
+              key={driver.id} 
+              position={[driver.location.lat, driver.location.lng]}
+              icon={createDriverIcon(bearing, driver.available_seats || 0)}
+              eventHandlers={{
+                click: () => handleDriverSelect(driver)
+              }}
+            >
+              <Popup>
+                <div className="p-2 min-w-[200px]">
+                  <p className="font-bold text-lg">{driver.first_name}</p>
+                  <p className="text-sm text-zinc-600 font-mono">{driver.vehicle_plate}</p>
+                  <p className="text-sm">{driver.vehicle_type}</p>
+                  <div className="flex items-center gap-1 mt-2 text-[#FFD60A]">
+                    <Users className="w-4 h-4" />
+                    <span>{driver.available_seats} places libres</span>
+                  </div>
+                  {driver.destination && (
+                    <div className="flex items-center gap-1 mt-1 text-blue-500">
+                      <Compass className="w-4 h-4" />
+                      <span className="text-xs">Direction: {Math.round(bearing || 0)}°</span>
+                    </div>
+                  )}
+                  {driver.matching && (
+                    <div className="mt-2 pt-2 border-t border-gray-200">
+                      <div className="flex items-center gap-1 text-green-600">
+                        <Clock className="w-4 h-4" />
+                        <span className="text-sm">ETA: {driver.matching.eta_minutes} min</span>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        Score: {driver.matching.score} | Direction: {Math.round(driver.matching.direction_score)}%
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
 
       {/* Bottom Panel - Active Ride with Progress */}
