@@ -107,7 +107,7 @@ const Landing = () => {
             <p className="text-zinc-400 text-lg">La nouvelle façon de se déplacer en ville</p>
           </motion.div>
           
-          {/* Video Player */}
+          {/* Video Player - YouTube Embed */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -115,18 +115,14 @@ const Landing = () => {
             viewport={{ once: true }}
             className="relative aspect-video bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800"
           >
-            <video
-              className="w-full h-full object-cover"
-              controls
-              playsInline
-              poster="https://images.unsplash.com/photo-1768297941301-1009a05e5514?crop=entropy&cs=srgb&fm=jpg&q=85"
-            >
-              <source 
-                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" 
-                type="video/mp4" 
-              />
-              Votre navigateur ne supporte pas la lecture vidéo.
-            </video>
+            <iframe
+              className="w-full h-full"
+              src="https://www.youtube.com/embed/5NV6Rdv1a3I?rel=0"
+              title="Métro-Taxi - Mobilité Urbaine"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
           </motion.div>
         </div>
       </section>
