@@ -122,20 +122,62 @@ const UserDashboard = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setActiveRide(response.data.ride);
+      if (response.data.ride) {
+        setRideProgress(response.data.ride.progress_percent || 0);
+      }
     } catch (error) {
       console.error('Fetch active ride error:', error);
     }
   }, [token]);
 
+  // Check email verification status
+  const checkEmailVerification = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API}/auth/verification-status`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setEmailVerified(response.data.email_verified);
+    } catch (error) {
+      console.error('Email verification check error:', error);
+    }
+  }, [token]);
+
+  // Fetch transfer suggestions
+  const fetchTransfers = useCallback(async () => {
+    if (!userLocation || !destination) return;
+    
+    try {
+      const response = await axios.post(`${API}/matching/transfers`, {
+        user_lat: userLocation[0],
+        user_lng: userLocation[1],
+        dest_lat: destination[0],
+        dest_lng: destination[1]
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setTransfers(response.data.transfers || []);
+    } catch (error) {
+      console.error('Fetch transfers error:', error);
+    }
+  }, [token, userLocation, destination]);
+
   useEffect(() => {
     fetchDrivers();
     fetchActiveRide();
+    checkEmailVerification();
     const interval = setInterval(() => {
       fetchDrivers();
       fetchActiveRide();
     }, 5000);
     return () => clearInterval(interval);
-  }, [fetchDrivers, fetchActiveRide]);
+  }, [fetchDrivers, fetchActiveRide, checkEmailVerification]);
+
+  // Fetch transfers when destination changes
+  useEffect(() => {
+    if (destination) {
+      fetchTransfers();
+    }
+  }, [destination, fetchTransfers]);
 
   const handleDriverSelect = (driver) => {
     if (!user?.subscription_active) {
