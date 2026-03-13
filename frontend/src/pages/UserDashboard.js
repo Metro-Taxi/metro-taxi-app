@@ -651,18 +651,32 @@ const UserDashboard = () => {
                         <div key={index} className="bg-zinc-800/50 p-3 rounded border border-zinc-700">
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded">
-                              Efficacité: {transfer.estimated_efficiency}%
+                              Efficacité: {transfer.efficiency_percent || transfer.estimated_efficiency}%
                             </span>
+                            {transfer.total_time_minutes && (
+                              <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">
+                                {transfer.total_time_minutes} min
+                              </span>
+                            )}
                           </div>
                           <div className="flex items-center gap-2 text-sm">
                             <div className="flex-1">
                               <p className="text-white">{transfer.first_driver.name}</p>
                               <p className="text-zinc-500 text-xs">{transfer.first_driver.vehicle}</p>
+                              {transfer.first_segment_km && (
+                                <p className="text-xs text-[#FFD60A]">{transfer.first_segment_km} km</p>
+                              )}
                             </div>
-                            <ArrowRight className="w-4 h-4 text-[#FFD60A]" />
-                            <div className="flex-1">
+                            <div className="flex flex-col items-center">
+                              <ArrowRight className="w-4 h-4 text-[#FFD60A]" />
+                              <span className="text-xs text-zinc-500">Transbordement</span>
+                            </div>
+                            <div className="flex-1 text-right">
                               <p className="text-white">{transfer.second_driver.name}</p>
                               <p className="text-zinc-500 text-xs">{transfer.second_driver.vehicle}</p>
+                              {transfer.second_segment_km && (
+                                <p className="text-xs text-[#FFD60A]">{transfer.second_segment_km} km</p>
+                              )}
                             </div>
                           </div>
                         </div>
