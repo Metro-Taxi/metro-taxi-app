@@ -227,6 +227,14 @@ const AdminDashboard = () => {
               Usagers
             </TabsTrigger>
             <TabsTrigger 
+              value="subscriptions"
+              className="data-[state=active]:bg-[#FFD60A] data-[state=active]:text-black"
+              data-testid="subscriptions-tab"
+            >
+              <CreditCard className="w-4 h-4 mr-2" />
+              Abonnements
+            </TabsTrigger>
+            <TabsTrigger 
               value="cards"
               className="data-[state=active]:bg-[#FFD60A] data-[state=active]:text-black"
               data-testid="cards-tab"
