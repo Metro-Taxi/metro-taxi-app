@@ -107,7 +107,7 @@ const Landing = () => {
             <p className="text-zinc-400 text-lg">La nouvelle façon de se déplacer en ville</p>
           </motion.div>
           
-          {/* Video Player */}
+          {/* Video Player - AI Generated Promo */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -115,15 +115,23 @@ const Landing = () => {
             viewport={{ once: true }}
             className="relative aspect-video bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800"
           >
-            <iframe
-              className="w-full h-full"
-              src="https://www.youtube.com/embed/uKZYQhBbzfA?rel=0"
-              title="Métro-Taxi - La mobilité urbaine réinventée"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-            />
+            <video
+              className="w-full h-full object-cover"
+              controls
+              autoPlay
+              muted
+              loop
+              playsInline
+              poster="https://images.unsplash.com/photo-1768297941301-1009a05e5514?crop=entropy&cs=srgb&fm=jpg&q=85"
+            >
+              <source src="/videos/metro-taxi-promo.mp4" type="video/mp4" />
+              Votre navigateur ne supporte pas la lecture vidéo.
+            </video>
           </motion.div>
+          
+          <p className="text-center text-zinc-500 text-sm mt-4">
+            🎬 Vidéo générée par IA - Métro-Taxi : mobilité durable et transbordement intelligent
+          </p>
         </div>
       </section>
       
