@@ -1025,16 +1025,125 @@ async def get_active_ride(current_user: dict = Depends(get_current_user)):
     
     if role == "user":
         ride = await db.ride_requests.find_one(
-            {"user_id": user_id, "status": {"$in": ["pending", "accepted"]}},
+            {"user_id": user_id, "status": {"$in": ["pending", "accepted", "pickup", "in_progress"]}},
             {"_id": 0}
         )
     else:
         ride = await db.ride_requests.find_one(
-            {"driver_id": user_id, "status": "accepted"},
+            {"driver_id": user_id, "status": {"$in": ["accepted", "pickup", "in_progress"]}},
             {"_id": 0}
         )
     
     return {"ride": ride}
+
+# ============================================
+# RIDE PROGRESS TRACKING
+# ============================================
+
+@api_router.post("/rides/{ride_id}/progress")
+async def update_ride_progress(ride_id: str, data: RideProgressUpdate, current_user: dict = Depends(get_current_user)):
+    """Update ride progress status with real-time tracking"""
+    if current_user["role"] != "driver":
+        raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
+    
+    driver_id = current_user["user_id"]
+    ride = await db.ride_requests.find_one({"id": ride_id, "driver_id": driver_id}, {"_id": 0})
+    
+    if not ride:
+        raise HTTPException(status_code=404, detail="Trajet non trouvé")
+    
+    valid_statuses = ["pickup", "in_progress", "near_destination", "completed"]
+    if data.status not in valid_statuses:
+        raise HTTPException(status_code=400, detail="Statut invalide")
+    
+    update_data = {
+        "status": data.status,
+        f"{data.status}_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    if data.current_lat and data.current_lng:
+        update_data["current_location"] = {"lat": data.current_lat, "lng": data.current_lng}
+    
+    # Calculate progress percentage
+    if data.status == "pickup":
+        update_data["progress_percent"] = 10
+    elif data.status == "in_progress":
+        update_data["progress_percent"] = 50
+    elif data.status == "near_destination":
+        update_data["progress_percent"] = 90
+    elif data.status == "completed":
+        update_data["progress_percent"] = 100
+        await db.drivers.update_one({"id": driver_id}, {"$inc": {"available_seats": 1}})
+    
+    await db.ride_requests.update_one({"id": ride_id}, {"$set": update_data})
+    
+    # Notify user in real-time
+    status_messages = {
+        "pickup": "Le chauffeur arrive pour vous récupérer",
+        "in_progress": "Vous êtes en route vers votre destination",
+        "near_destination": "Vous approchez de votre destination",
+        "completed": "Vous êtes arrivé à destination"
+    }
+    
+    await manager.send_personal_message({
+        "type": "ride_progress",
+        "ride_id": ride_id,
+        "status": data.status,
+        "message": status_messages.get(data.status, ""),
+        "progress_percent": update_data.get("progress_percent", 0),
+        "current_location": update_data.get("current_location")
+    }, ride["user_id"])
+    
+    return {
+        "status": data.status,
+        "progress_percent": update_data.get("progress_percent", 0),
+        "message": status_messages.get(data.status, "")
+    }
+
+@api_router.get("/rides/{ride_id}/tracking")
+async def get_ride_tracking(ride_id: str, current_user: dict = Depends(get_current_user)):
+    """Get detailed tracking information for a ride"""
+    user_id = current_user["user_id"]
+    role = current_user["role"]
+    
+    if role == "user":
+        ride = await db.ride_requests.find_one({"id": ride_id, "user_id": user_id}, {"_id": 0})
+    else:
+        ride = await db.ride_requests.find_one({"id": ride_id, "driver_id": user_id}, {"_id": 0})
+    
+    if not ride:
+        raise HTTPException(status_code=404, detail="Trajet non trouvé")
+    
+    # Get driver info for tracking
+    driver = await db.drivers.find_one({"id": ride["driver_id"]}, {"_id": 0, "password": 0})
+    
+    tracking_info = {
+        "ride": ride,
+        "driver": {
+            "id": driver["id"] if driver else None,
+            "name": f"{driver['first_name']} {driver['last_name']}" if driver else None,
+            "vehicle": driver["vehicle_plate"] if driver else None,
+            "vehicle_type": driver["vehicle_type"] if driver else None,
+            "current_location": driver.get("location") if driver else None
+        },
+        "progress": {
+            "status": ride.get("status"),
+            "percent": ride.get("progress_percent", 0),
+            "current_location": ride.get("current_location"),
+            "pickup_location": {"lat": ride["pickup_lat"], "lng": ride["pickup_lng"]},
+            "destination": {"lat": ride["destination_lat"], "lng": ride["destination_lng"]}
+        },
+        "timeline": {
+            "requested_at": ride.get("created_at"),
+            "accepted_at": ride.get("accepted_at"),
+            "pickup_at": ride.get("pickup_at"),
+            "in_progress_at": ride.get("in_progress_at"),
+            "near_destination_at": ride.get("near_destination_at"),
+            "completed_at": ride.get("completed_at")
+        }
+    }
+    
+    return tracking_info
 
 # User Location Route
 @api_router.post("/users/location")
