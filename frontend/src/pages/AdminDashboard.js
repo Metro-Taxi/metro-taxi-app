@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import { 
   Car, Users, CreditCard, MapPin, LogOut, Menu, X, 
   Check, XCircle, Eye, UserCheck, UserX, BarChart3,
-  TrendingUp, Activity, Mail, Phone, Calendar, IdCard
+  TrendingUp, Activity, Mail, Phone, Calendar, IdCard,
+  Clock, AlertTriangle, RefreshCw, Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -23,9 +24,11 @@ const AdminDashboard = () => {
   const [drivers, setDrivers] = useState([]);
   const [users, setUsers] = useState([]);
   const [virtualCards, setVirtualCards] = useState([]);
+  const [subscriptionStats, setSubscriptionStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState(null);
   const [cardDialogOpen, setCardDialogOpen] = useState(false);
+  const [cleanupLoading, setCleanupLoading] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -34,17 +37,19 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [statsRes, driversRes, usersRes, cardsRes] = await Promise.all([
+      const [statsRes, driversRes, usersRes, cardsRes, subsRes] = await Promise.all([
         axios.get(`${API}/admin/stats`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API}/admin/drivers`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API}/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(`${API}/admin/cards`, { headers: { Authorization: `Bearer ${token}` } })
+        axios.get(`${API}/admin/cards`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${API}/admin/subscriptions`, { headers: { Authorization: `Bearer ${token}` } })
       ]);
       
       setStats(statsRes.data);
       setDrivers(driversRes.data.drivers || []);
       setUsers(usersRes.data.users || []);
       setVirtualCards(cardsRes.data.cards || []);
+      setSubscriptionStats(subsRes.data);
     } catch (error) {
       console.error('Fetch error:', error);
       toast.error('Erreur lors du chargement des données');
