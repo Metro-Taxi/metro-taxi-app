@@ -206,6 +206,14 @@ const AdminDashboard = () => {
               <Users className="w-4 h-4 mr-2" />
               Usagers
             </TabsTrigger>
+            <TabsTrigger 
+              value="cards"
+              className="data-[state=active]:bg-[#FFD60A] data-[state=active]:text-black"
+              data-testid="cards-tab"
+            >
+              <IdCard className="w-4 h-4 mr-2" />
+              Cartes Virtuelles
+            </TabsTrigger>
           </TabsList>
 
           {/* Drivers Tab */}
