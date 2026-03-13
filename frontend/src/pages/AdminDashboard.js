@@ -422,6 +422,197 @@ const AdminDashboard = () => {
             </div>
           </TabsContent>
 
+          {/* Subscriptions Tab */}
+          <TabsContent value="subscriptions">
+            <div className="space-y-6">
+              {/* Subscription Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-[#18181B] border border-green-500/30 p-6 rounded"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <Check className="w-8 h-8 text-green-500" />
+                    <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">ACTIFS</span>
+                  </div>
+                  <p className="text-3xl font-black text-white">{subscriptionStats?.summary?.total_active || 0}</p>
+                  <p className="text-zinc-400 text-sm">Abonnements actifs</p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-[#18181B] border border-yellow-500/30 p-6 rounded"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <Clock className="w-8 h-8 text-yellow-500" />
+                    <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded">BIENTÔT</span>
+                  </div>
+                  <p className="text-3xl font-black text-white">{subscriptionStats?.summary?.expiring_soon_24h || 0}</p>
+                  <p className="text-zinc-400 text-sm">Expirent dans 24h</p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="bg-[#18181B] border border-red-500/30 p-6 rounded"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <XCircle className="w-8 h-8 text-red-500" />
+                    <span className="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded">EXPIRÉS</span>
+                  </div>
+                  <p className="text-3xl font-black text-white">{subscriptionStats?.summary?.total_expired || 0}</p>
+                  <p className="text-zinc-400 text-sm">Abonnements expirés</p>
+                </motion.div>
+              </div>
+
+              {/* Cleanup Button */}
+              <div className="flex justify-end">
+                <Button
+                  onClick={cleanupExpiredSubscriptions}
+                  disabled={cleanupLoading}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                  data-testid="cleanup-subscriptions-btn"
+                >
+                  {cleanupLoading ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  ) : (
+                    <Trash2 className="w-4 h-4 mr-2" />
+                  )}
+                  Désactiver les expirés
+                </Button>
+              </div>
+
+              {/* Active Subscriptions */}
+              <div className="bg-[#18181B] border border-zinc-800 rounded overflow-hidden">
+                <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                      <Check className="w-5 h-5 text-green-500" />
+                      Abonnements Actifs
+                    </h2>
+                    <p className="text-zinc-400 text-sm">Liste des abonnements en cours de validité</p>
+                  </div>
+                  <Button variant="ghost" onClick={fetchData} className="text-zinc-400 hover:text-white">
+                    <RefreshCw className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                {loading ? (
+                  <div className="p-8 text-center">
+                    <div className="w-8 h-8 border-4 border-[#FFD60A] border-t-transparent rounded-full animate-spin mx-auto"></div>
+                  </div>
+                ) : (subscriptionStats?.active_subscriptions || []).length === 0 ? (
+                  <div className="p-8 text-center text-zinc-400">
+                    Aucun abonnement actif
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Usager</th>
+                          <th>Email</th>
+                          <th>Plan</th>
+                          <th>Expiration</th>
+                          <th>Statut</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(subscriptionStats?.active_subscriptions || []).map((sub) => {
+                          const isExpiringSoon = subscriptionStats?.expiring_soon?.some(e => e.id === sub.id);
+                          return (
+                            <tr key={sub.id}>
+                              <td>
+                                <p className="font-medium text-white">{sub.name}</p>
+                              </td>
+                              <td>
+                                <p className="text-white text-sm">{sub.email}</p>
+                              </td>
+                              <td>
+                                <span className="text-[#FFD60A] font-bold">
+                                  {sub.plan === '24h' ? '24 Heures' :
+                                   sub.plan === '1week' ? '1 Semaine' :
+                                   sub.plan === '1month' ? '1 Mois' : sub.plan || '-'}
+                                </span>
+                              </td>
+                              <td>
+                                <p className="text-white text-sm">{formatDate(sub.expires)}</p>
+                              </td>
+                              <td>
+                                {isExpiringSoon ? (
+                                  <span className="text-xs px-2 py-1 rounded bg-yellow-500/20 text-yellow-400 flex items-center gap-1 w-fit">
+                                    <AlertTriangle className="w-3 h-3" />
+                                    Expire bientôt
+                                  </span>
+                                ) : (
+                                  <span className="text-xs px-2 py-1 rounded bg-green-500/20 text-green-400">
+                                    Actif
+                                  </span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
+              {/* Expired Subscriptions */}
+              {(subscriptionStats?.expired_subscriptions || []).length > 0 && (
+                <div className="bg-[#18181B] border border-red-500/30 rounded overflow-hidden">
+                  <div className="p-4 border-b border-zinc-800">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                      <XCircle className="w-5 h-5 text-red-500" />
+                      Abonnements Expirés
+                    </h2>
+                    <p className="text-zinc-400 text-sm">Ces abonnements doivent être désactivés</p>
+                  </div>
+                  
+                  <div className="overflow-x-auto">
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Usager</th>
+                          <th>Email</th>
+                          <th>Plan</th>
+                          <th>Expiré le</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(subscriptionStats?.expired_subscriptions || []).map((sub) => (
+                          <tr key={sub.id}>
+                            <td>
+                              <p className="font-medium text-white">{sub.name}</p>
+                            </td>
+                            <td>
+                              <p className="text-white text-sm">{sub.email}</p>
+                            </td>
+                            <td>
+                              <span className="text-zinc-400">
+                                {sub.plan === '24h' ? '24 Heures' :
+                                 sub.plan === '1week' ? '1 Semaine' :
+                                 sub.plan === '1month' ? '1 Mois' : sub.plan || '-'}
+                              </span>
+                            </td>
+                            <td>
+                              <p className="text-red-400 text-sm">{formatDate(sub.expires)}</p>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
           {/* Virtual Cards Tab */}
           <TabsContent value="cards">
             <div className="bg-[#18181B] border border-zinc-800 rounded overflow-hidden">
