@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, Circle, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight } from 'lucide-react';
+import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import axios from 'axios';
@@ -35,6 +36,13 @@ const driverIcon = L.divIcon({
   iconAnchor: [14, 14],
 });
 
+const transferIcon = L.divIcon({
+  className: 'custom-icon',
+  html: '<div style="background:#3B82F6;border:2px solid white;border-radius:50%;width:16px;height:16px;"></div>',
+  iconSize: [16, 16],
+  iconAnchor: [8, 8],
+});
+
 // Map component that updates center
 const MapUpdater = ({ center }) => {
   const map = useMap();
@@ -56,6 +64,10 @@ const UserDashboard = () => {
   const [destination, setDestination] = useState(null);
   const [activeRide, setActiveRide] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [transfers, setTransfers] = useState([]);
+  const [showTransfers, setShowTransfers] = useState(false);
+  const [rideProgress, setRideProgress] = useState(null);
+  const [emailVerified, setEmailVerified] = useState(true);
 
   // Paris center as default
   const defaultCenter = [48.8566, 2.3522];
