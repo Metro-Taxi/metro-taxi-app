@@ -554,13 +554,13 @@ const Landing = () => {
               <span className="text-xl font-black text-white">MÉTRO-TAXI</span>
             </div>
             <div className="flex gap-8 text-zinc-400">
-              <Link to="/login" className="hover:text-white transition-colors">Connexion</Link>
-              <Link to="/register/user" className="hover:text-white transition-colors">S'inscrire</Link>
-              <Link to="/register/driver" className="hover:text-white transition-colors">Devenir chauffeur</Link>
+              <Link to="/login" className="hover:text-white transition-colors">{t('nav.login')}</Link>
+              <Link to="/register/user" className="hover:text-white transition-colors">{t('nav.register')}</Link>
+              <Link to="/register/driver" className="hover:text-white transition-colors">{t('nav.drivers')}</Link>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-zinc-800 text-center text-zinc-500">
-            <p>© 2024 Métro-Taxi. Tous droits réservés.</p>
+            <p>© 2024 Métro-Taxi. {t('footer.rights')}.</p>
           </div>
         </div>
       </footer>
