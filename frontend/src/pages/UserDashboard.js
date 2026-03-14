@@ -88,6 +88,7 @@ const MapClickHandler = ({ onMapClick, isActive }) => {
 const UserDashboard = () => {
   const { user, token, logout, refreshUser } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const [drivers, setDrivers] = useState([]);
