@@ -217,7 +217,7 @@ const DriverDashboard = () => {
         <div className="flex justify-between items-center px-4 py-3">
           <div className="flex items-center gap-2">
             <Car className="w-6 h-6 text-[#FFD60A]" />
-            <span className="text-lg font-bold text-white">CHAUFFEUR</span>
+            <span className="text-lg font-bold text-white">{t('dashboard.driver.title').toUpperCase()}</span>
           </div>
           
           <div className="flex items-center gap-2">
@@ -226,7 +226,7 @@ const DriverDashboard = () => {
                 ? 'bg-green-500/20 text-green-400 border border-green-500/50' 
                 : 'bg-zinc-700/50 text-zinc-400 border border-zinc-600'
             }`}>
-              {isActive ? 'En ligne' : 'Hors ligne'}
+              {isActive ? t('dashboard.driver.online') : t('dashboard.driver.offline')}
             </span>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -262,11 +262,11 @@ const DriverDashboard = () => {
               
               <div className="space-y-4 mb-6">
                 <div className="bg-zinc-900 p-4 rounded border border-zinc-800">
-                  <p className="text-zinc-400 text-sm">Véhicule</p>
+                  <p className="text-zinc-400 text-sm">{t('dashboard.user.vehicle')}</p>
                   <p className="text-white font-medium">{driver?.vehicle_type}</p>
                 </div>
                 <div className="bg-zinc-900 p-4 rounded border border-zinc-800">
-                  <p className="text-zinc-400 text-sm">Places disponibles</p>
+                  <p className="text-zinc-400 text-sm">{t('dashboard.driver.availableSeats')}</p>
                   <p className="text-[#FFD60A] font-bold text-2xl">{availableSeats} / {driver?.seats}</p>
                 </div>
               </div>
