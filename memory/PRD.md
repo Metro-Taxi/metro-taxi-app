@@ -163,3 +163,19 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 - [x] **Alignement prix ES/PT**: Les prix espagnols et portugais n'étaient pas alignés sur la France
   - **Solution**: Mise à jour des fichiers es.json et pt.json avec les mêmes prix que fr.json (6,99€, 16,99€, 53,99€)
   - **Revenus chauffeurs**: 2 250€ - 3 000€ (max 7 500€)
+- [x] **Badge POPULAIRE non traduit**: Le badge utilisait un pseudo-élément CSS `::before` non traduisible
+  - **Solution**: Remplacement par un élément JSX `<span className="popular-badge">` avec clé de traduction `pricing.popularBadge`
+- [x] **Traduction dashboards**: Ajout des traductions dans les 3 dashboards (User, Driver, Admin)
+  - **Solution**: Remplacement du texte en dur par des clés de traduction `t('common.xxx')` et `t('dashboard.admin.xxx')`
+
+## 📺 Génération Vidéo Sora 2
+- **Statut**: Tentative échouée (budget Emergent LLM dépassé)
+- **Vidéo existante**: `/app/frontend/public/videos/metro-taxi-promo.mp4` (4.9 MB)
+- **Script prêt**: `/app/scripts/video_script_v2.md`
+- **Pour générer**: Ajouter du budget sur Emergent (Profile → Universal Key → Add Balance)
+
+## 🌐 Domaine Personnalisé
+- **Domaine**: metro-taxi.com (chez Hostinger)
+- **Emails créés**: jhs@metro-taxi.com, judeesouleymane@metro-taxi.com
+- **À créer**: contact@metro-taxi.com
+- **Configuration DNS**: En attente (voir instructions deployment_agent)
