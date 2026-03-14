@@ -310,12 +310,12 @@ const UserDashboard = () => {
           <div className="flex items-center gap-2">
             {user?.subscription_active ? (
               <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded border border-green-500/50">
-                Abonné
+                {t('common.subscribed')}
               </span>
             ) : (
               <Link to="/subscription">
                 <span className="text-xs bg-[#FFD60A]/20 text-[#FFD60A] px-2 py-1 rounded border border-[#FFD60A]/50 cursor-pointer">
-                  S'abonner
+                  {t('common.subscribe')}
                 </span>
               </Link>
             )}
