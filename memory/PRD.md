@@ -103,19 +103,20 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 - [x] **Scripts TTS traduits** avec slogan écologique dans toutes les langues
 
 ## 📊 Statut Tests
-- Backend: 100% ✅
-- Frontend: 100% ✅
+- Backend: 100% ✅ (11/11 tests - iteration_4.json)
+- Frontend: 100% ✅ (i18n complet testé)
 
 ## 🔄 Backlog
 
 ### P0 - Prioritaire
-- [ ] **Traduire les dashboards** (Admin, Usager, Chauffeur) - Partiellement traduit
-- [ ] Connecter domaine `metro-taxi.com`
+- [x] **Traduire les dashboards** (Admin, Usager, Chauffeur) ✅
+- [ ] Connecter domaine `metro-taxi.com` (DNS chez Hostinger)
 
-### P1 - Important
-- [ ] Créer email professionnel `judeesouleymane@metro-taxi.com`
-- [ ] Implémenter vérification email réelle (SendGrid/Resend)
-- [ ] Vidéo promotionnelle AI (Sora 2) - script prêt
+### P1 - Important  
+- [x] Emails créés: jhs@metro-taxi.com, judeesouleymane@metro-taxi.com ✅
+- [x] Implémenter vérification email réelle via **Resend** ✅
+- [ ] Vidéo promotionnelle AI (Sora 2) - **Budget Emergent insuffisant** (~$5 requis)
+- [ ] Vérifier domaine metro-taxi.com sur Resend pour envoi emails en production
 
 ### P2 - Améliorations
 - [ ] Notifications push mobiles
