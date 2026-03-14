@@ -275,17 +275,20 @@
     "plans": {
       "day": {
         "name": "24 Heures",
-        "price": "6,99 €",
+        "price": "7 €",
+        "priceLocal": "7 €",
         "description": "Parfait pour un usage ponctuel"
       },
       "week": {
         "name": "1 Semaine",
-        "price": "16,99 €",
+        "price": "17 €",
+        "priceLocal": "17 €",
         "description": "Idéal pour les courts séjours"
       },
       "month": {
         "name": "1 Mois",
-        "price": "53,99 €",
+        "price": "54 €",
+        "priceLocal": "54 €",
         "description": "Le meilleur rapport qualité-prix"
       }
     },
@@ -293,7 +296,8 @@
       "unlimited": "Trajets illimités",
       "allVehicles": "Accès à tous les véhicules",
       "support": "Support prioritaire",
-      "noCommitment": "Sans engagement"
+      "noCommitment": "Sans engagement",
+      "eco": "🌿 Transport éco-responsable"
     },
     "cta": "S'ABONNER"
   },
