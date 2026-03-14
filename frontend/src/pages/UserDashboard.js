@@ -531,7 +531,7 @@ const UserDashboard = () => {
           >
             <div className="max-w-lg mx-auto">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-white text-lg">Trajet en cours</h3>
+                <h3 className="font-bold text-white text-lg">{t('dashboard.user.activeRide')}</h3>
                 <span className={`text-xs px-2 py-1 rounded ${
                   activeRide.status === 'in_progress' ? 'bg-blue-500/20 text-blue-400' :
                   activeRide.status === 'pickup' ? 'bg-purple-500/20 text-purple-400' :
@@ -539,22 +539,22 @@ const UserDashboard = () => {
                   activeRide.status === 'accepted' ? 'bg-yellow-500/20 text-yellow-400' : 
                   'bg-zinc-500/20 text-zinc-400'
                 }`}>
-                  {activeRide.status === 'in_progress' ? 'En route' :
-                   activeRide.status === 'pickup' ? 'Prise en charge' :
-                   activeRide.status === 'near_destination' ? 'Arrivée proche' :
-                   activeRide.status === 'accepted' ? 'Accepté' : 'En attente'}
+                  {activeRide.status === 'in_progress' ? t('dashboard.user.inProgress') :
+                   activeRide.status === 'pickup' ? t('dashboard.user.pickup') :
+                   activeRide.status === 'near_destination' ? t('dashboard.user.dropoff') :
+                   activeRide.status === 'accepted' ? t('common.confirm') : t('common.loading')}
                 </span>
               </div>
               
               {/* Progress Bar */}
               <div className="mb-4">
                 <div className="flex justify-between text-xs text-zinc-400 mb-2">
-                  <span>Départ</span>
-                  <span>Destination</span>
+                  <span>{t('dashboard.user.pickup')}</span>
+                  <span>{t('dashboard.user.destination')}</span>
                 </div>
                 <Progress value={activeRide.progress_percent || (activeRide.status === 'accepted' ? 10 : 0)} className="h-2" />
                 <p className="text-center text-xs text-zinc-500 mt-1">
-                  {activeRide.progress_percent || 0}% du trajet
+                  {activeRide.progress_percent || 0}% {t('dashboard.user.progress')}
                 </p>
               </div>
               
@@ -564,11 +564,11 @@ const UserDashboard = () => {
                 </div>
                 <div className="flex-1">
                   <p className="text-white font-medium">
-                    {activeRide.status === 'pickup' ? 'Le chauffeur vous récupère' :
-                     activeRide.status === 'in_progress' ? 'En route vers votre destination' :
-                     activeRide.status === 'near_destination' ? 'Vous approchez de l\'arrivée' :
-                     activeRide.status === 'accepted' ? 'Le chauffeur arrive !' : 
-                     'En attente de confirmation...'}
+                    {activeRide.status === 'pickup' ? t('dashboard.user.pickup') :
+                     activeRide.status === 'in_progress' ? t('dashboard.user.inProgress') :
+                     activeRide.status === 'near_destination' ? t('dashboard.user.dropoff') :
+                     activeRide.status === 'accepted' ? t('dashboard.user.searchingDriver') : 
+                     t('common.loading')}
                   </p>
                   <p className="text-zinc-400 text-sm">ID: {activeRide.id.slice(0, 8)}</p>
                 </div>
