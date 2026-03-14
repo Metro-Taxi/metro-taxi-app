@@ -10,7 +10,262 @@
     "register": "Sign Up",
     "pricing": "Pricing",
     "howItWorks": "How It Works",
-    "drivers": "Drivers"
+    "drivers": "Drivers",
+    "logout": "Logout",
+    "profile": "Profile",
+    "dashboard": "Dashboard"
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "Access your Métro-Taxi account",
+      "email": "Email",
+      "password": "Password",
+      "submit": "LOG IN",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "asUser": "as a user",
+      "asDriver": "as a driver",
+      "or": "or",
+      "error": "Incorrect email or password",
+      "success": "Login successful"
+    },
+    "register": {
+      "user": {
+        "title": "User Registration",
+        "subtitle": "Create your account to access the Métro-Taxi network"
+      },
+      "driver": {
+        "title": "VTC Driver Registration",
+        "subtitle": "Join the Métro-Taxi network"
+      },
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "vehiclePlate": "License Plate",
+      "vehicleType": "Vehicle Type",
+      "seats": "Number of Seats",
+      "vtcLicense": "VTC License Number",
+      "submit": "SIGN UP",
+      "haveAccount": "Already have an account?",
+      "login": "Log in",
+      "success": "Registration successful!",
+      "error": "Registration error",
+      "passwordMismatch": "Passwords do not match",
+      "vehicleTypes": {
+        "sedan": "Sedan",
+        "suv": "SUV",
+        "van": "Van",
+        "luxury": "Luxury"
+      }
+    }
+  },
+  "dashboard": {
+    "user": {
+      "title": "Dashboard",
+      "welcome": "Welcome",
+      "availableVehicles": "available vehicles",
+      "seats": "seats",
+      "activeRides": "active rides",
+      "setDestination": "Set destination",
+      "cancel": "Cancel",
+      "clickMap": "Click on the map to set your destination",
+      "requestRide": "Request this ride",
+      "yourPosition": "Your position",
+      "destination": "Destination",
+      "remove": "Remove",
+      "optimalRoute": "Optimal route",
+      "totalDistance": "km total",
+      "transfers": "transfers",
+      "minutes": "minutes",
+      "efficiency": "Route efficiency",
+      "segments": "Route segments",
+      "segment": "Segment",
+      "searchingDriver": "Searching for a driver...",
+      "freeSeats": "free seats",
+      "direction": "Direction",
+      "eta": "ETA",
+      "min": "min",
+      "score": "Score",
+      "transferSuggestions": "Transfer suggestions",
+      "showTransfers": "Show transfers",
+      "hideTransfers": "Hide",
+      "transfer": "Transfer",
+      "emailNotVerified": "Email not verified",
+      "verifyEmail": "Verify my email",
+      "subscriptionRequired": "Subscription required",
+      "subscribe": "Subscribe",
+      "activeRide": "Active ride",
+      "driver": "Driver",
+      "vehicle": "Vehicle",
+      "progress": "Progress",
+      "pickup": "Pickup",
+      "inProgress": "In progress",
+      "dropoff": "Drop-off"
+    },
+    "driver": {
+      "title": "Driver Dashboard",
+      "goOnline": "Go online",
+      "goOffline": "Go offline",
+      "online": "Online",
+      "offline": "Offline",
+      "availableSeats": "Available seats",
+      "updateSeats": "Update",
+      "pendingRequests": "Pending requests",
+      "noRequests": "No pending requests",
+      "accept": "Accept",
+      "decline": "Decline",
+      "passenger": "Passenger",
+      "distance": "Distance",
+      "currentRide": "Current ride",
+      "startRide": "Start",
+      "completeRide": "Complete",
+      "setDestination": "Set my direction",
+      "yourDestination": "Your destination",
+      "nearbyUsers": "Nearby users"
+    },
+    "admin": {
+      "title": "Administration",
+      "stats": {
+        "users": "Registered users",
+        "drivers": "Drivers",
+        "subscriptions": "Active subscriptions",
+        "rides": "Rides in progress"
+      },
+      "tabs": {
+        "drivers": "Drivers",
+        "users": "Users",
+        "subscriptions": "Subscriptions",
+        "cards": "Virtual Cards"
+      },
+      "drivers": {
+        "title": "Driver management",
+        "subtitle": "Validate or deactivate driver accounts",
+        "driver": "Driver",
+        "contact": "Contact",
+        "vehicle": "Vehicle",
+        "license": "VTC License",
+        "status": "Status",
+        "actions": "Actions",
+        "validated": "Validated",
+        "pending": "Pending",
+        "online": "Online",
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "noDrivers": "No registered drivers"
+      },
+      "users": {
+        "title": "User list",
+        "subtitle": "View registered user information",
+        "user": "User",
+        "contact": "Contact",
+        "subscription": "Subscription",
+        "expiration": "Expiration",
+        "registration": "Registration",
+        "active": "Active",
+        "inactive": "Inactive",
+        "noUsers": "No registered users"
+      },
+      "subscriptions": {
+        "title": "Subscriptions",
+        "active": "Active subscriptions",
+        "activeDesc": "List of currently valid subscriptions",
+        "expired": "Expired subscriptions",
+        "expiredDesc": "These subscriptions need to be deactivated",
+        "expiringSoon": "Expiring in 24h",
+        "expiredLabel": "EXPIRED",
+        "activeLabel": "ACTIVE",
+        "soonLabel": "SOON",
+        "cleanup": "Deactivate expired",
+        "refresh": "Refresh",
+        "status": "Status",
+        "expiresSoon": "Expiring soon",
+        "noActive": "No active subscriptions"
+      },
+      "cards": {
+        "title": "Virtual Cards",
+        "subtitle": "View user virtual cards",
+        "holder": "HOLDER",
+        "cardNumber": "CARD NO.",
+        "phone": "PHONE",
+        "subscription": "SUBSCRIPTION",
+        "expires": "EXPIRES ON",
+        "memberSince": "Member since",
+        "totalRides": "Total rides",
+        "rides": "rides",
+        "verified": "Verified",
+        "notVerified": "Not verified",
+        "noCards": "No virtual cards"
+      }
+    }
+  },
+  "subscription": {
+    "title": "Choose your subscription",
+    "subtitle": "Unlimited rides on the entire Métro-Taxi network",
+    "plans": {
+      "day": {
+        "name": "24 Hours",
+        "price": "€6.99",
+        "description": "Perfect for occasional use"
+      },
+      "week": {
+        "name": "1 Week",
+        "price": "€16.99",
+        "description": "Ideal for short stays"
+      },
+      "month": {
+        "name": "1 Month",
+        "price": "€53.99",
+        "description": "Best value for money",
+        "popular": "POPULAR"
+      }
+    },
+    "features": {
+      "unlimited": "Unlimited rides",
+      "allVehicles": "Access to all vehicles",
+      "support": "Priority support",
+      "noCommitment": "No commitment"
+    },
+    "cta": "SUBSCRIBE",
+    "perDay": "/day",
+    "perWeek": "/week",
+    "perMonth": "/month",
+    "processing": "Processing...",
+    "success": {
+      "title": "Payment successful!",
+      "subtitle": "Your subscription is now active",
+      "details": "Subscription details",
+      "plan": "Plan",
+      "validUntil": "Valid until",
+      "goDashboard": "Go to dashboard"
+    }
+  },
+  "profile": {
+    "title": "My Profile",
+    "personalInfo": "Personal Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "memberSince": "Member since",
+    "subscription": {
+      "title": "My subscription",
+      "plan": "Plan",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "expires": "Expires on",
+      "subscribe": "Subscribe",
+      "renew": "Renew"
+    },
+    "virtualCard": {
+      "title": "My virtual card",
+      "cardNumber": "Card No."
+    },
+    "logout": "Logout"
   },
   "pricing": {
     "title": "SUBSCRIPTIONS",
@@ -109,6 +364,38 @@
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",
-    "retry": "Retry"
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "or": "or"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email",
+    "invalidPhone": "Invalid phone number",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "serverError": "Server error, please try again"
+  },
+  "verifyEmail": {
+    "title": "Email Verification",
+    "verifying": "Verifying...",
+    "success": "Email verified successfully!",
+    "successDesc": "Your account is now activated.",
+    "error": "Verification failed",
+    "errorDesc": "The link is invalid or has expired.",
+    "goLogin": "Log in",
+    "goHome": "Back to home"
   }
 }
