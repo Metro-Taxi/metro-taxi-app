@@ -232,7 +232,7 @@
       "support": "Prioritäts-Support",
       "noCommitment": "Keine Bindung"
     },
-    "cta": "ABONNIEREN",
+    "cta": "ABONNIEREN", "popularBadge": "BELIEBT",
     "perDay": "/Tag",
     "perWeek": "/Woche",
     "perMonth": "/Monat",
@@ -300,7 +300,7 @@
       "noCommitment": "Keine Bindung",
       "eco": "🌿 Umweltfreundlicher Transport"
     },
-    "cta": "ABONNIEREN"
+    "cta": "ABONNIEREN", "popularBadge": "BELIEBT"
   },
   "howItWorks": {
     "title": "SO FUNKTIONIERT'S",

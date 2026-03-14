@@ -286,7 +286,7 @@
       "support": "Priority support",
       "noCommitment": "No commitment"
     },
-    "cta": "SUBSCRIBE",
+    "cta": "SUBSCRIBE", "popularBadge": "POPULAR",
     "perDay": "/day",
     "perWeek": "/week",
     "perMonth": "/month",
@@ -354,7 +354,7 @@
       "noCommitment": "No commitment",
       "eco": "🌿 Eco-friendly transport"
     },
-    "cta": "SUBSCRIBE"
+    "cta": "SUBSCRIBE", "popularBadge": "POPULAR"
   },
   "howItWorks": {
     "title": "HOW IT WORKS",
