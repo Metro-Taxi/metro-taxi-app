@@ -1,5 +1,5 @@
 {
-  "hero": {"title": "MÉTRO-TAXI", "subtitle": "A rede de mobilidade urbana por assinatura", "description": "Junte-se a veículos que vão na sua direção. Viagens ilimitadas com uma simples assinatura.", "cta": "COMEÇAR", "ecoSlogan": "Sistema de transporte inteligente por boleia partilhada", "ecoMessage": "Reduza a sua pegada de carbono partilhando as suas viagens"},
+  "hero": {"title": "MÉTRO-TAXI", "subtitle": "A rede de mobilidade urbana por assinatura", "subtitleHighlight": "POR ASSINATURA", "description": "Junte-se a veículos que vão na sua direção. Viagens ilimitadas com uma simples assinatura.", "cta": "COMEÇAR", "ecoSlogan": "Sistema de transporte inteligente por boleia partilhada", "ecoMessage": "Reduza a sua pegada de carbono partilhando as suas viagens"},
   "nav": {"login": "Entrar", "register": "Registar", "pricing": "Preços", "howItWorks": "Como funciona", "drivers": "Motoristas", "logout": "Sair", "profile": "Perfil", "dashboard": "Painel"},
   "auth": {
     "login": {"title": "Entrar", "subtitle": "Aceda à sua conta Métro-Taxi", "email": "Email", "password": "Palavra-passe", "submit": "ENTRAR", "noAccount": "Não tem conta?", "signUp": "Registe-se", "asUser": "como utilizador", "asDriver": "como motorista", "or": "ou", "error": "Email ou palavra-passe incorretos", "success": "Login bem-sucedido"},

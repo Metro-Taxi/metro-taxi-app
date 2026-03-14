@@ -1,5 +1,5 @@
 {
-  "hero": {"title": "MÉTRO-TAXI", "subtitle": "Det abonnementsbaserede bymobilitetsnetværk", "description": "Kør med køretøjer der kører i din retning. Ubegrænsede ture med et simpelt abonnement.", "cta": "KOM I GANG", "ecoSlogan": "Intelligent samkørselssystem", "ecoMessage": "Reducer dit CO2-aftryk ved at dele ture"},
+  "hero": {"title": "MÉTRO-TAXI", "subtitle": "Det abonnementsbaserede bymobilitetsnetværk", "subtitleHighlight": "MED ABONNEMENT", "description": "Kør med køretøjer der kører i din retning. Ubegrænsede ture med et simpelt abonnement.", "cta": "KOM I GANG", "ecoSlogan": "Intelligent samkørselssystem", "ecoMessage": "Reducer dit CO2-aftryk ved at dele ture"},
   "nav": {"login": "Logg inn", "register": "Registrer deg", "pricing": "Priser", "howItWorks": "Slik fungerer det", "drivers": "Sjåfører", "logout": "Logg ut", "profile": "Profil", "dashboard": "Dashboard"},
   "auth": {
     "login": {"title": "Logg inn", "subtitle": "Få tilgang til din Métro-Taxi-konto", "email": "E-post", "password": "Passord", "submit": "LOGG INN", "noAccount": "Har du ikke konto?", "signUp": "Registrer deg", "asUser": "som bruker", "asDriver": "som sjåfør", "or": "eller", "error": "Feil e-post eller passord", "success": "Innlogging vellykket"},

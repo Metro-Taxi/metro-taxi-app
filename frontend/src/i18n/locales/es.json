@@ -1,5 +1,5 @@
 {
-  "hero": {"title": "MÉTRO-TAXI", "subtitle": "La red de movilidad urbana por suscripción", "description": "Únete a vehículos que van en tu dirección. Viajes ilimitados con una simple suscripción.", "cta": "COMENZAR", "ecoSlogan": "Sistema de transporte inteligente por coche compartido", "ecoMessage": "Reduce tu huella de carbono compartiendo tus viajes"},
+  "hero": {"title": "MÉTRO-TAXI", "subtitle": "La red de movilidad urbana por suscripción", "subtitleHighlight": "POR SUSCRIPCIÓN", "description": "Únete a vehículos que van en tu dirección. Viajes ilimitados con una simple suscripción.", "cta": "COMENZAR", "ecoSlogan": "Sistema de transporte inteligente por coche compartido", "ecoMessage": "Reduce tu huella de carbono compartiendo tus viajes"},
   "nav": {"login": "Iniciar sesión", "register": "Registrarse", "pricing": "Precios", "howItWorks": "Cómo funciona", "drivers": "Conductores", "logout": "Cerrar sesión", "profile": "Perfil", "dashboard": "Panel"},
   "auth": {
     "login": {"title": "Iniciar sesión", "subtitle": "Accede a tu cuenta Métro-Taxi", "email": "Email", "password": "Contraseña", "submit": "ENTRAR", "noAccount": "¿No tienes cuenta?", "signUp": "Regístrate", "asUser": "como usuario", "asDriver": "como conductor", "or": "o", "error": "Email o contraseña incorrectos", "success": "Inicio de sesión exitoso"},
