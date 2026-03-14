@@ -311,7 +311,7 @@ const Landing = () => {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-              COMMENT ÇA <span className="text-[#FFD60A]">MARCHE</span>
+              {t('howItWorks.title')}
             </h2>
           </motion.div>
           
@@ -319,18 +319,18 @@ const Landing = () => {
             {[
               {
                 icon: CreditCard,
-                title: "ABONNEZ-VOUS",
-                description: "Choisissez votre forfait : 24h, 1 semaine ou 1 mois. Payez une fois, voyagez sans compter."
+                title: t('howItWorks.steps.step1.title'),
+                description: t('howItWorks.steps.step1.description')
               },
               {
                 icon: MapPin,
-                title: "LOCALISEZ",
-                description: "Trouvez les véhicules disponibles autour de vous en temps réel sur la carte."
+                title: t('howItWorks.steps.step2.title'),
+                description: t('howItWorks.steps.step2.description')
               },
               {
                 icon: Car,
-                title: "VOYAGEZ",
-                description: "Demandez votre trajet en un clic. Le chauffeur vous récupère sur le chemin."
+                title: t('howItWorks.steps.step3.title'),
+                description: t('howItWorks.steps.step3.description')
               }
             ].map((feature, index) => (
               <motion.div
