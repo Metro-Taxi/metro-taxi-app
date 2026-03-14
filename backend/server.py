@@ -1794,6 +1794,14 @@ Request a ride with a single click. The driver picks you up and drops you off wh
 Thanks to our intelligent transfer system, switch vehicles along the way to reach your destination.
 Métro-Taxi, your rides without limits, for a greener future.""",
 
+    "de": """Métro-Taxi, das intelligente Fahrgemeinschafts-Transportsystem.
+Willkommen bei Métro-Taxi, dem abonnementbasierten urbanen Mobilitätsnetzwerk.
+Durch die Wahl intelligenter Fahrgemeinschaften tragen Sie zum Umweltschutz bei, indem Sie Ihren CO2-Fußabdruck reduzieren.
+Registrieren Sie sich und wählen Sie Ihren Plan. Finden Sie Fahrzeuge, die in Ihre Richtung fahren.
+Fordern Sie eine Fahrt mit einem Klick an. Der Fahrer holt Sie ab und setzt Sie ab, wo Sie möchten.
+Dank unseres intelligenten Umstiegssystems können Sie unterwegs das Fahrzeug wechseln, um Ihr Ziel zu erreichen.
+Métro-Taxi, Ihre Fahrten ohne Grenzen, für eine grünere Zukunft.""",
+
     "es": """Métro-Taxi, el sistema de transporte inteligente por coche compartido.
 Bienvenido a Métro-Taxi, la red de movilidad urbana por suscripción.
 Al elegir el coche compartido inteligente, contribuyes a la protección del medio ambiente reduciendo tu huella de carbono.
