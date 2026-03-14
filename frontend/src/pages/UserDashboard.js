@@ -632,7 +632,7 @@ const UserDashboard = () => {
                   <p className="text-zinc-400 font-mono">{selectedDriver.vehicle_plate}</p>
                   <div className="flex items-center gap-3 mt-1">
                     <span className="text-sm text-zinc-500">{selectedDriver.vehicle_type}</span>
-                    <span className="text-sm text-[#FFD60A]">{selectedDriver.available_seats} places</span>
+                    <span className="text-sm text-[#FFD60A]">{selectedDriver.available_seats} {t('dashboard.user.seats')}</span>
                   </div>
                 </div>
               </div>
@@ -646,7 +646,7 @@ const UserDashboard = () => {
                   data-testid="show-transfers-btn"
                 >
                   <RefreshCw className="w-4 h-4 mr-2" />
-                  {showTransfers ? 'Masquer' : 'Voir'} les transbordements ({transfers.length})
+                  {showTransfers ? t('dashboard.user.hideTransfers') : t('dashboard.user.showTransfers')} ({transfers.length})
                 </Button>
               )}
               
@@ -659,17 +659,17 @@ const UserDashboard = () => {
                     exit={{ height: 0, opacity: 0 }}
                     className="mb-4 overflow-hidden"
                   >
-                    <p className="text-zinc-400 text-sm mb-2">Suggestions de transbordement :</p>
+                    <p className="text-zinc-400 text-sm mb-2">{t('dashboard.user.transferSuggestions')}:</p>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
                       {transfers.map((transfer, index) => (
                         <div key={index} className="bg-zinc-800/50 p-3 rounded border border-zinc-700">
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded">
-                              Efficacité: {transfer.efficiency_percent || transfer.estimated_efficiency}%
+                              {t('dashboard.user.efficiency')}: {transfer.efficiency_percent || transfer.estimated_efficiency}%
                             </span>
                             {transfer.total_time_minutes && (
                               <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">
-                                {transfer.total_time_minutes} min
+                                {transfer.total_time_minutes} {t('dashboard.user.min')}
                               </span>
                             )}
                           </div>
@@ -683,7 +683,7 @@ const UserDashboard = () => {
                             </div>
                             <div className="flex flex-col items-center">
                               <ArrowRight className="w-4 h-4 text-[#FFD60A]" />
-                              <span className="text-xs text-zinc-500">Transbordement</span>
+                              <span className="text-xs text-zinc-500">{t('dashboard.user.transfer')}</span>
                             </div>
                             <div className="flex-1 text-right">
                               <p className="text-white">{transfer.second_driver.name}</p>
