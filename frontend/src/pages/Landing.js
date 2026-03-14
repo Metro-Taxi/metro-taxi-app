@@ -453,16 +453,16 @@ const Landing = () => {
                 <div className="text-center">
                   <p className="text-black/70 text-sm uppercase tracking-wide mb-2">{t('drivers.revenue.monthly')}</p>
                   <div className="flex items-baseline justify-center gap-2">
-                    <span className="text-4xl md:text-5xl font-black text-black">2 250 €</span>
-                    <span className="text-2xl text-black/70">à</span>
-                    <span className="text-4xl md:text-5xl font-black text-black">3 000 €</span>
+                    <span className="text-4xl md:text-5xl font-black text-black">{t('drivers.revenue.rangeMin')}</span>
+                    <span className="text-2xl text-black/70">-</span>
+                    <span className="text-4xl md:text-5xl font-black text-black">{t('drivers.revenue.rangeMax')}</span>
                   </div>
                   <p className="text-black/60 mt-2">{t('drivers.revenue.monthly')}</p>
                 </div>
               </div>
               <div className="bg-black text-white rounded-lg p-4 text-center">
                 <p className="text-sm text-zinc-400 mb-1">{t('drivers.revenue.upTo')}</p>
-                <p className="text-3xl font-black text-[#FFD60A]">7 500 €</p>
+                <p className="text-3xl font-black text-[#FFD60A]">{t('drivers.revenue.maxRevenue')}</p>
                 <p className="text-sm text-zinc-400">{t('drivers.revenue.depending')}</p>
               </div>
             </motion.div>
