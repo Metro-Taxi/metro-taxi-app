@@ -253,13 +253,13 @@ const UserDashboard = () => {
     if (showDestinationPicker) {
       setDestination([e.latlng.lat, e.latlng.lng]);
       setShowDestinationPicker(false);
-      toast.success('Destination définie !');
+      toast.success(t('common.destinationSet'));
     }
   };
 
   const handleDriverSelect = (driver) => {
     if (!user?.subscription_active) {
-      toast.error('Abonnement requis pour demander un trajet');
+      toast.error(t('common.subscriptionRequired'));
       navigate('/subscription');
       return;
     }
@@ -283,9 +283,9 @@ const UserDashboard = () => {
       
       setActiveRide(response.data.ride);
       setSelectedDriver(null);
-      toast.success('Demande envoyée au chauffeur !');
+      toast.success(t('common.requestSent'));
     } catch (error) {
-      const message = error.response?.data?.detail || 'Erreur lors de la demande';
+      const message = error.response?.data?.detail || t('common.requestError');
       toast.error(message);
     } finally {
       setLoading(false);
