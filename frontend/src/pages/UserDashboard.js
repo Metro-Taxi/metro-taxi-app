@@ -355,7 +355,7 @@ const UserDashboard = () => {
                 <Link to="/profile" onClick={() => setMenuOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start text-white hover:bg-zinc-800" data-testid="profile-link">
                     <User className="w-5 h-5 mr-3" />
-                    Mon Profil
+                    {t('common.myProfile')}
                   </Button>
                 </Link>
                 <Link to="/subscription" onClick={() => setMenuOpen(false)}>
