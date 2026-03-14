@@ -559,6 +559,8 @@ class DriverRegister(BaseModel):
     vehicle_type: str
     seats: int
     vtc_license: str
+    iban: Optional[str] = None
+    bic: Optional[str] = None
 
 class LoginRequest(BaseModel):
     email: EmailStr
@@ -591,6 +593,8 @@ class DriverResponse(BaseModel):
     is_validated: bool
     role: str
     created_at: str
+    iban: Optional[str] = None
+    bic: Optional[str] = None
 
 class LocationUpdate(BaseModel):
     latitude: float
