@@ -965,8 +965,10 @@ async def register_driver(data: DriverRegister, request: Request):
         "vehicle_type": data.vehicle_type,
         "seats": data.seats,
         "vtc_license": data.vtc_license,
+        "iban": data.iban,
+        "bic": data.bic,
         "is_active": False,
-        "is_validated": False,
+        "is_validated": True,  # Auto-validated at registration
         "email_verified": False,
         "verification_token": verification_token,
         "role": "driver",
