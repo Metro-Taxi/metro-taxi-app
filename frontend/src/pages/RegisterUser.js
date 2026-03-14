@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 const RegisterUser = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -30,12 +32,12 @@ const RegisterUser = () => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Les mots de passe ne correspondent pas');
+      toast.error(t('auth.register.passwordMismatch'));
       return;
     }
 
     if (formData.password.length < 6) {
-      toast.error('Le mot de passe doit contenir au moins 6 caractères');
+      toast.error(t('errors.passwordTooShort'));
       return;
     }
 
@@ -44,10 +46,10 @@ const RegisterUser = () => {
     try {
       const { confirmPassword, ...submitData } = formData;
       await registerUser(submitData);
-      toast.success('Inscription réussie !');
+      toast.success(t('auth.register.success'));
       navigate('/subscription');
     } catch (error) {
-      const message = error.response?.data?.detail || 'Erreur lors de l\'inscription';
+      const message = error.response?.data?.detail || t('auth.register.error');
       toast.error(message);
     } finally {
       setLoading(false);
@@ -70,13 +72,13 @@ const RegisterUser = () => {
 
         {/* Register Form */}
         <div className="bg-[#18181B] border border-zinc-800 p-8 rounded-sm">
-          <h1 className="text-2xl font-bold text-white mb-2 text-center">Inscription Usager</h1>
-          <p className="text-zinc-400 text-center mb-6">Créez votre compte pour commencer à voyager</p>
+          <h1 className="text-2xl font-bold text-white mb-2 text-center">{t('auth.register.user.title')}</h1>
+          <p className="text-zinc-400 text-center mb-6">{t('auth.register.user.subtitle')}</p>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="first_name" className="text-zinc-300">Prénom</Label>
+                <Label htmlFor="first_name" className="text-zinc-300">{t('auth.register.firstName')}</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                   <Input
@@ -92,7 +94,7 @@ const RegisterUser = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last_name" className="text-zinc-300">Nom</Label>
+                <Label htmlFor="last_name" className="text-zinc-300">{t('auth.register.lastName')}</Label>
                 <Input
                   id="last_name"
                   name="last_name"
@@ -107,7 +109,7 @@ const RegisterUser = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-zinc-300">Email</Label>
+              <Label htmlFor="email" className="text-zinc-300">{t('auth.register.email')}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                 <Input
@@ -125,7 +127,7 @@ const RegisterUser = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone" className="text-zinc-300">Téléphone</Label>
+              <Label htmlFor="phone" className="text-zinc-300">{t('auth.register.phone')}</Label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                 <Input
@@ -143,7 +145,7 @@ const RegisterUser = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-zinc-300">Mot de passe</Label>
+              <Label htmlFor="password" className="text-zinc-300">{t('auth.register.password')}</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                 <Input
@@ -168,7 +170,7 @@ const RegisterUser = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-zinc-300">Confirmer le mot de passe</Label>
+              <Label htmlFor="confirmPassword" className="text-zinc-300">{t('auth.register.confirmPassword')}</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                 <Input
@@ -194,15 +196,15 @@ const RegisterUser = () => {
               {loading ? (
                 <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
               ) : (
-                'CRÉER MON COMPTE'
+                t('auth.register.submit')
               )}
             </Button>
           </form>
 
           <p className="text-zinc-400 text-center mt-6">
-            Déjà inscrit ?{' '}
+            {t('auth.register.haveAccount')}{' '}
             <Link to="/login" className="text-[#FFD60A] hover:underline">
-              Se connecter
+              {t('auth.register.login')}
             </Link>
           </p>
         </div>
