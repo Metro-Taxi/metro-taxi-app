@@ -143,13 +143,13 @@ const DriverDashboard = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setIsActive(response.data.is_active);
-      toast.success(response.data.is_active ? 'Vous êtes maintenant en ligne !' : 'Vous êtes hors ligne');
+      toast.success(response.data.is_active ? t('common.nowOnline') : t('common.nowOffline'));
       
       if (response.data.is_active && driverLocation) {
         updateDriverLocation(driverLocation[0], driverLocation[1]);
       }
     } catch (error) {
-      toast.error('Erreur lors du changement de statut');
+      toast.error(t('common.statusChangeError'));
     } finally {
       setLoading(false);
     }
@@ -161,12 +161,12 @@ const DriverDashboard = () => {
       await axios.post(`${API}/rides/${rideId}/accept`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success('Trajet accepté !');
+      toast.success(t('common.rideAccepted'));
       fetchPendingRides();
       fetchActiveRide();
       setAvailableSeats(prev => Math.max(0, prev - 1));
     } catch (error) {
-      toast.error('Erreur lors de l\'acceptation');
+      toast.error(t('common.acceptError'));
     } finally {
       setLoading(false);
     }
@@ -178,10 +178,10 @@ const DriverDashboard = () => {
       await axios.post(`${API}/rides/${rideId}/reject`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.info('Demande refusée');
+      toast.info(t('common.requestDeclined'));
       fetchPendingRides();
     } catch (error) {
-      toast.error('Erreur lors du refus');
+      toast.error(t('common.declineError'));
     } finally {
       setLoading(false);
     }
@@ -193,12 +193,12 @@ const DriverDashboard = () => {
       await axios.post(`${API}/rides/${rideId}/complete`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success('Trajet terminé !');
+      toast.success(t('common.rideCompleted'));
       setActiveRide(null);
       setAvailableSeats(prev => Math.min(driver?.seats || 4, prev + 1));
       fetchActiveRide();
     } catch (error) {
-      toast.error('Erreur lors de la complétion');
+      toast.error(t('common.completeError'));
     } finally {
       setLoading(false);
     }
