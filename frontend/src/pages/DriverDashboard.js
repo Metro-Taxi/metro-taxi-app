@@ -351,7 +351,7 @@ const DriverDashboard = () => {
         
         {!driver?.is_validated && (
           <p className="text-yellow-500 text-xs mt-2 bg-yellow-500/10 px-3 py-1 rounded">
-            Compte en attente de validation
+            {t('dashboard.admin.drivers.pending')}
           </p>
         )}
       </div>
@@ -367,7 +367,7 @@ const DriverDashboard = () => {
           >
             <div className="p-4">
               <h3 className="font-bold text-white text-lg mb-4">
-                Demandes en attente ({pendingRides.length})
+                {t('dashboard.driver.pendingRequests')} ({pendingRides.length})
               </h3>
               
               <div className="space-y-3">
@@ -380,7 +380,7 @@ const DriverDashboard = () => {
                       </div>
                       <div className="flex items-center gap-1 text-zinc-400">
                         <MapPin className="w-4 h-4" />
-                        <span className="text-xs">À proximité</span>
+                        <span className="text-xs">{t('dashboard.driver.nearbyUsers')}</span>
                       </div>
                     </div>
                     
@@ -392,7 +392,7 @@ const DriverDashboard = () => {
                         data-testid={`accept-ride-${ride.id}`}
                       >
                         <Check className="w-4 h-4 mr-2" />
-                        Accepter
+                        {t('dashboard.driver.accept')}
                       </Button>
                       <Button
                         onClick={() => rejectRide(ride.id)}
@@ -402,7 +402,7 @@ const DriverDashboard = () => {
                         data-testid={`reject-ride-${ride.id}`}
                       >
                         <XCircle className="w-4 h-4 mr-2" />
-                        Refuser
+                        {t('dashboard.driver.decline')}
                       </Button>
                     </div>
                   </div>
@@ -424,9 +424,9 @@ const DriverDashboard = () => {
           >
             <div className="max-w-lg mx-auto">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-white text-lg">Passager en cours</h3>
+                <h3 className="font-bold text-white text-lg">{t('dashboard.driver.currentRide')}</h3>
                 <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded border border-green-500/50">
-                  En route
+                  {t('dashboard.user.inProgress')}
                 </span>
               </div>
               
