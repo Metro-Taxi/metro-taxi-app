@@ -152,3 +152,6 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 - [x] **Bug i18n**: Le détecteur de langue retournait "en-US@posix" au lieu de "en", causant un mismatch
 - [x] **Fix**: Ajout de `load: 'languageOnly'` dans la config i18next
 - [x] **Fix**: Ajout de `getBaseLanguage()` pour extraire le code de langue de base
+- [x] **Bug Hero Subtitle**: Le concept "PAR ABONNEMENT" n'était pas visible dans plusieurs langues (EN, DE, NL, ZH, EN-GB)
+  - **Cause**: Le code prenait les 2 derniers mots du sous-titre qui ne correspondaient pas au concept d'abonnement dans toutes les langues
+  - **Solution**: Ajout d'une clé de traduction dédiée `hero.subtitleHighlight` dans les 13 fichiers de traduction pour mettre en évidence le concept d'abonnement dans chaque langue
