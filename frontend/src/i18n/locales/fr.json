@@ -3,7 +3,9 @@
     "title": "MÉTRO-TAXI",
     "subtitle": "Le réseau de mobilité urbaine par abonnement",
     "description": "Rejoignez des véhicules allant dans votre direction. Trajets illimités avec un simple abonnement.",
-    "cta": "COMMENCER"
+    "cta": "COMMENCER",
+    "ecoSlogan": "Système de déplacement intelligent par covoiturage",
+    "ecoMessage": "Réduisez votre empreinte carbone en partageant vos trajets"
   },
   "nav": {
     "login": "Connexion",
