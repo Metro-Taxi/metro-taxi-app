@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 const Login = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +24,7 @@ const Login = () => {
 
     try {
       const result = await login(email, password);
-      toast.success('Connexion réussie !');
+      toast.success(t('auth.login.success'));
       
       if (result.admin) {
         navigate('/admin');
@@ -32,7 +34,7 @@ const Login = () => {
         navigate('/dashboard');
       }
     } catch (error) {
-      const message = error.response?.data?.detail || 'Erreur de connexion';
+      const message = error.response?.data?.detail || t('auth.login.error');
       toast.error(message);
     } finally {
       setLoading(false);
@@ -55,11 +57,11 @@ const Login = () => {
 
         {/* Login Form */}
         <div className="bg-[#18181B] border border-zinc-800 p-8 rounded-sm">
-          <h1 className="text-2xl font-bold text-white mb-6 text-center">Connexion</h1>
+          <h1 className="text-2xl font-bold text-white mb-6 text-center">{t('auth.login.title')}</h1>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-zinc-300">Email</Label>
+              <Label htmlFor="email" className="text-zinc-300">{t('auth.login.email')}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                 <Input
@@ -67,7 +69,7 @@ const Login = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="votre@email.com"
+                  placeholder="your@email.com"
                   className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A] focus:ring-[#FFD60A]"
                   required
                   data-testid="login-email-input"
@@ -76,7 +78,7 @@ const Login = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-zinc-300">Mot de passe</Label>
+              <Label htmlFor="password" className="text-zinc-300">{t('auth.login.password')}</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                 <Input
@@ -108,13 +110,13 @@ const Login = () => {
               {loading ? (
                 <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
               ) : (
-                'SE CONNECTER'
+                t('auth.login.submit')
               )}
             </Button>
           </form>
 
           <div className="mt-8 pt-6 border-t border-zinc-800">
-            <p className="text-zinc-400 text-center mb-4">Pas encore de compte ?</p>
+            <p className="text-zinc-400 text-center mb-4">{t('auth.login.noAccount')}</p>
             <div className="flex flex-col gap-3">
               <Link to="/register/user">
                 <Button 
@@ -122,7 +124,7 @@ const Login = () => {
                   className="w-full border-zinc-700 text-white hover:bg-zinc-800"
                   data-testid="register-user-link"
                 >
-                  S'inscrire comme usager
+                  {t('auth.login.signUp')} {t('auth.login.asUser')}
                 </Button>
               </Link>
               <Link to="/register/driver">
@@ -131,7 +133,7 @@ const Login = () => {
                   className="w-full border-zinc-700 text-white hover:bg-zinc-800"
                   data-testid="register-driver-link"
                 >
-                  S'inscrire comme chauffeur
+                  {t('auth.login.signUp')} {t('auth.login.asDriver')}
                 </Button>
               </Link>
             </div>
@@ -144,7 +146,7 @@ const Login = () => {
             Admin: admin@metrotaxi.fr / admin123
           </p>
           <p className="text-zinc-600 text-xs text-center">
-            💡 Si vous êtes déjà connecté, <a href="/admin" className="text-[#FFD60A] hover:underline">cliquez ici pour l'admin</a>
+            💡 <a href="/admin" className="text-[#FFD60A] hover:underline">Admin Dashboard</a>
           </p>
         </div>
       </motion.div>
