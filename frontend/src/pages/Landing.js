@@ -394,6 +394,9 @@ const Landing = () => {
                 viewport={{ once: true }}
                 className={`subscription-card ${plan.popular ? 'popular' : ''}`}
               >
+                {plan.popular && (
+                  <span className="popular-badge">{t('pricing.popularBadge')}</span>
+                )}
                 <h3 className="text-lg font-bold text-zinc-400 mb-4">{plan.name}</h3>
                 <div className="mb-6">
                   <span className="text-5xl font-black text-[#FFD60A]">{plan.price}</span>
