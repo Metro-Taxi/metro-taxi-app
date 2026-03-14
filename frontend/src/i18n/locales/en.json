@@ -275,20 +275,20 @@
     "plans": {
       "day": {
         "name": "24 Hours",
-        "price": "$8",
-        "priceLocal": "$8 / £6",
+        "price": "$7.99",
+        "priceLocal": "$7.99",
         "description": "Perfect for occasional use"
       },
       "week": {
         "name": "1 Week",
-        "price": "$19",
-        "priceLocal": "$19 / £15",
+        "price": "$18.99",
+        "priceLocal": "$18.99",
         "description": "Ideal for short stays"
       },
       "month": {
         "name": "1 Month",
-        "price": "$59",
-        "priceLocal": "$59 / £47",
+        "price": "$59.99",
+        "priceLocal": "$59.99",
         "description": "Best value for money"
       }
     },
@@ -329,7 +329,10 @@
       "title": "POTENTIAL DRIVER INCOME",
       "monthly": "per month",
       "upTo": "Can reach up to",
-      "depending": "depending on activity"
+      "depending": "depending on activity",
+      "rangeMin": "$2,499",
+      "rangeMax": "$3,299",
+      "maxRevenue": "$8,249"
     },
     "benefits": {
       "title": "DRIVER BENEFITS",
