@@ -164,13 +164,30 @@ const Landing = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
+            {/* Eco Badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="inline-flex items-center gap-2 bg-green-500/20 border border-green-500/50 px-4 py-2 rounded-full mb-6"
+            >
+              <span className="text-green-400 text-2xl">🌿</span>
+              <span className="text-green-400 font-medium text-sm md:text-base">{t('hero.ecoSlogan')}</span>
+            </motion.div>
+
             <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
               {t('hero.title')}
               <br />
               <span className="text-[#FFD60A]">{t('hero.subtitle').split(' ').slice(-2).join(' ')}</span>
             </h1>
-            <p className="text-xl md:text-2xl text-zinc-300 mb-10 max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl text-zinc-300 mb-4 max-w-2xl mx-auto">
               {t('hero.description')}
+            </p>
+            
+            {/* Environmental message */}
+            <p className="text-sm md:text-base text-green-400 mb-10 max-w-xl mx-auto flex items-center justify-center gap-2">
+              <span>🌍</span>
+              {t('hero.ecoMessage')}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
