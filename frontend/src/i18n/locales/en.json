@@ -305,16 +305,16 @@
     "title": "HOW IT WORKS",
     "steps": {
       "step1": {
-        "title": "Sign Up",
-        "description": "Create your account and choose your subscription"
+        "title": "SUBSCRIBE",
+        "description": "Choose your plan: 24h, 1 week or 1 month. Pay once, travel without counting."
       },
       "step2": {
-        "title": "Find a Vehicle",
-        "description": "Locate vehicles heading in your direction"
+        "title": "LOCATE",
+        "description": "Find available vehicles around you in real-time on the map."
       },
       "step3": {
-        "title": "Request a Ride",
-        "description": "Send a request to the driver with a single click"
+        "title": "TRAVEL",
+        "description": "Request your ride with one click. The driver picks you up on the way."
       },
       "step4": {
         "title": "Travel",
