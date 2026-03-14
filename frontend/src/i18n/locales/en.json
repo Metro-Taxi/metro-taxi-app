@@ -3,7 +3,9 @@
     "title": "MÉTRO-TAXI",
     "subtitle": "The subscription-based urban mobility network",
     "description": "Join vehicles heading in your direction. Unlimited rides with a simple subscription.",
-    "cta": "GET STARTED"
+    "cta": "GET STARTED",
+    "ecoSlogan": "Intelligent ridesharing transportation system",
+    "ecoMessage": "Reduce your carbon footprint by sharing your rides"
   },
   "nav": {
     "login": "Login",
