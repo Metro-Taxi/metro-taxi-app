@@ -1496,6 +1496,43 @@ async def toggle_driver_active(current_user: dict = Depends(get_current_user)):
     
     return {"is_active": new_status}
 
+class BankInfoUpdate(BaseModel):
+    iban: str
+    bic: str
+
+@api_router.put("/drivers/bank-info")
+async def update_driver_bank_info(data: BankInfoUpdate, current_user: dict = Depends(get_current_user)):
+    """Update driver's bank account information (IBAN + BIC/SWIFT)"""
+    if current_user["role"] != "driver":
+        raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
+    
+    driver_id = current_user["user_id"]
+    driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0})
+    
+    if not driver:
+        raise HTTPException(status_code=404, detail="Chauffeur non trouvé")
+    
+    await db.drivers.update_one(
+        {"id": driver_id}, 
+        {"$set": {"iban": data.iban, "bic": data.bic}}
+    )
+    
+    return {"message": "Informations bancaires mises à jour", "iban": data.iban, "bic": data.bic}
+
+@api_router.get("/drivers/bank-info")
+async def get_driver_bank_info(current_user: dict = Depends(get_current_user)):
+    """Get driver's bank account information"""
+    if current_user["role"] != "driver":
+        raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
+    
+    driver_id = current_user["user_id"]
+    driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0, "iban": 1, "bic": 1})
+    
+    if not driver:
+        raise HTTPException(status_code=404, detail="Chauffeur non trouvé")
+    
+    return {"iban": driver.get("iban"), "bic": driver.get("bic")}
+
 # Ride Request Routes
 @api_router.post("/rides/request")
 async def create_ride_request(data: RideRequestCreate, current_user: dict = Depends(get_current_user)):
