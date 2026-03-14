@@ -1860,7 +1860,7 @@ Métro-Taxi，无限出行，共创绿色未来。""",
 }
 
 class TTSRequest(BaseModel):
-    language: str = Field(..., description="Language code (fr, en, es, pt, no, sv, da, zh, ur)")
+    language: str = Field(..., description="Language code (fr, en, de, es, pt, no, sv, da, zh, ur)")
     voice: str = Field(default="nova", description="Voice to use")
 
 @api_router.post("/tts/voiceover")
