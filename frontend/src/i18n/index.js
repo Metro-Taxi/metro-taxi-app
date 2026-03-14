@@ -71,5 +71,7 @@ export const languages = [
   { code: 'da', name: 'Dansk', flag: '🇩🇰' },
   { code: 'zh', name: '中文', flag: '🇨🇳' },
   { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
-  { code: 'pa', name: 'ਪੰਜਾਬੀ', flag: '🇵🇰' }
+  { code: 'pa', name: 'ਪੰਜਾਬੀ', flag: '🇵🇰' },
+  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+  { code: 'ru', name: 'Русский', flag: '🇷🇺' }
 ];
