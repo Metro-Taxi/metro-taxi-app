@@ -180,7 +180,7 @@ const Landing = () => {
                   className="bg-[#FFD60A] text-black font-bold text-lg px-8 py-6 hover:bg-[#E6C209] btn-press"
                   data-testid="signup-user-btn"
                 >
-                  S'INSCRIRE ET S'ABONNER
+                  {t('pricing.cta')}
                 </Button>
               </Link>
               <Link to="/register/driver">
@@ -190,7 +190,7 @@ const Landing = () => {
                   className="border-2 border-white text-white font-bold text-lg px-8 py-6 hover:bg-white hover:text-black btn-press"
                   data-testid="signup-driver-btn"
                 >
-                  DEVENIR CHAUFFEUR
+                  {t('drivers.cta').split(' ').slice(0, 3).join(' ')}
                 </Button>
               </Link>
             </div>
