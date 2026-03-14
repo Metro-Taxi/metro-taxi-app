@@ -1,5 +1,5 @@
 {
-  "hero": {"title": "MÉTRO-TAXI", "subtitle": "The subscription-based urban mobility network", "description": "Join vehicles heading in your direction. Unlimited rides with a simple subscription.", "cta": "GET STARTED", "ecoSlogan": "Intelligent ridesharing transportation system", "ecoMessage": "Reduce your carbon footprint by sharing rides"},
+  "hero": {"title": "MÉTRO-TAXI", "subtitle": "The subscription-based urban mobility network", "subtitleHighlight": "SUBSCRIPTION-BASED", "description": "Join vehicles heading in your direction. Unlimited rides with a simple subscription.", "cta": "GET STARTED", "ecoSlogan": "Intelligent ridesharing transportation system", "ecoMessage": "Reduce your carbon footprint by sharing rides"},
   "nav": {"login": "Login", "register": "Register", "pricing": "Pricing", "howItWorks": "How it Works", "drivers": "Drivers", "logout": "Logout", "profile": "Profile", "dashboard": "Dashboard"},
   "auth": {
     "login": {"title": "Login", "subtitle": "Access your Métro-Taxi account", "email": "Email", "password": "Password", "submit": "LOGIN", "noAccount": "No account yet?", "signUp": "Sign up", "asUser": "as a user", "asDriver": "as a driver", "or": "or", "error": "Incorrect email or password", "success": "Successfully logged in"},
