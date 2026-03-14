@@ -463,8 +463,8 @@ const UserDashboard = () => {
           >
             <Popup>
               <div className="p-2 text-center">
-                <p className="font-bold text-blue-600">Point de transbordement {index + 1}</p>
-                <p className="text-sm text-gray-600">Changez de véhicule ici</p>
+                <p className="font-bold text-blue-600">{t('common.transferPoint')} {index + 1}</p>
+                <p className="text-sm text-gray-600">{t('common.changeVehicle')}</p>
               </div>
             </Popup>
           </Marker>
