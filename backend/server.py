@@ -1778,46 +1778,78 @@ async def get_user_card(user_id: str, current_user: dict = Depends(get_current_u
 
 # Video voiceover scripts for each language
 VIDEO_SCRIPTS = {
-    "fr": """Bienvenue sur Métro-Taxi, le réseau de mobilité urbaine par abonnement.
+    "fr": """Métro-Taxi, le système de déplacement intelligent par covoiturage.
+Bienvenue sur Métro-Taxi, le réseau de mobilité urbaine par abonnement.
+En choisissant le covoiturage intelligent, vous contribuez à la protection de l'environnement en réduisant votre empreinte carbone.
 Inscrivez-vous et choisissez votre forfait. Localisez les véhicules allant dans votre direction.
 Demandez à monter d'un simple clic. Le chauffeur vous récupère et vous dépose où vous voulez.
 Grâce à notre système de transbordement intelligent, changez de véhicule en route pour atteindre votre destination.
-Métro-Taxi, vos trajets sans limites.""",
+Métro-Taxi, vos trajets sans limites, pour un avenir plus vert.""",
 
-    "en": """Welcome to Métro-Taxi, the subscription-based urban mobility network.
+    "en": """Métro-Taxi, the intelligent ridesharing transportation system.
+Welcome to Métro-Taxi, the subscription-based urban mobility network.
+By choosing intelligent ridesharing, you contribute to environmental protection by reducing your carbon footprint.
 Sign up and choose your plan. Locate vehicles heading in your direction.
 Request a ride with a single click. The driver picks you up and drops you off wherever you want.
 Thanks to our intelligent transfer system, switch vehicles along the way to reach your destination.
-Métro-Taxi, your rides without limits.""",
+Métro-Taxi, your rides without limits, for a greener future.""",
 
-    "es": """Bienvenido a Métro-Taxi, la red de movilidad urbana por suscripción.
+    "es": """Métro-Taxi, el sistema de transporte inteligente por coche compartido.
+Bienvenido a Métro-Taxi, la red de movilidad urbana por suscripción.
+Al elegir el coche compartido inteligente, contribuyes a la protección del medio ambiente reduciendo tu huella de carbono.
 Regístrate y elige tu plan. Localiza vehículos que van en tu dirección.
 Solicita un viaje con un solo clic. El conductor te recoge y te deja donde quieras.
 Gracias a nuestro sistema inteligente de transbordo, cambia de vehículo en ruta para llegar a tu destino.
-Métro-Taxi, tus viajes sin límites.""",
+Métro-Taxi, tus viajes sin límites, para un futuro más verde.""",
 
-    "pt": """Bem-vindo ao Métro-Taxi, a rede de mobilidade urbana por assinatura.
+    "pt": """Métro-Taxi, o sistema de transporte inteligente por boleias partilhadas.
+Bem-vindo ao Métro-Taxi, a rede de mobilidade urbana por assinatura.
+Ao escolher boleias partilhadas inteligentes, contribui para a proteção do ambiente reduzindo a sua pegada de carbono.
 Registe-se e escolha o seu plano. Localize veículos que vão na sua direção.
 Peça uma viagem com um clique. O motorista apanha-o e deixa-o onde quiser.
 Graças ao nosso sistema inteligente de transbordo, mude de veículo no caminho para chegar ao seu destino.
-Métro-Taxi, as suas viagens sem limites.""",
+Métro-Taxi, as suas viagens sem limites, para um futuro mais verde.""",
 
-    "no": """Velkommen til Métro-Taxi, det abonnementsbaserte bymobilitetsnettverket.
+    "no": """Métro-Taxi, det intelligente samkjøringssystemet.
+Velkommen til Métro-Taxi, det abonnementsbaserte bymobilitetsnettverket.
+Ved å velge intelligent samkjøring bidrar du til miljøvern ved å redusere ditt karbonavtrykk.
 Registrer deg og velg din plan. Finn kjøretøy som går i din retning.
 Be om en tur med ett klikk. Sjåføren henter deg og setter deg av hvor du vil.
 Takket være vårt intelligente overgangssystem kan du bytte kjøretøy underveis for å nå målet ditt.
-Métro-Taxi, dine turer uten grenser.""",
+Métro-Taxi, dine turer uten grenser, for en grønnere fremtid.""",
 
-    "sv": """Välkommen till Métro-Taxi, det prenumerationsbaserade stadsmobilitetsnätverket.
+    "sv": """Métro-Taxi, det intelligenta samåkningssystemet.
+Välkommen till Métro-Taxi, det prenumerationsbaserade stadsmobilitetsnätverket.
+Genom att välja intelligent samåkning bidrar du till miljöskydd genom att minska ditt koldioxidavtryck.
 Registrera dig och välj din plan. Hitta fordon som åker i din riktning.
 Begär en resa med ett klick. Föraren hämtar dig och släpper av dig var du vill.
 Tack vare vårt intelligenta övergångssystem kan du byta fordon på vägen för att nå ditt mål.
-Métro-Taxi, dina resor utan gränser.""",
+Métro-Taxi, dina resor utan gränser, för en grönare framtid.""",
 
-    "da": """Velkommen til Métro-Taxi, det abonnementsbaserede bymobilitetsnetværk.
+    "da": """Métro-Taxi, det intelligente samkørselssystem.
+Velkommen til Métro-Taxi, det abonnementsbaserede bymobilitetsnetværk.
+Ved at vælge intelligent samkørsel bidrager du til miljøbeskyttelse ved at reducere dit CO2-aftryk.
 Tilmeld dig og vælg din plan. Find køretøjer, der kører i din retning.
 Anmod om en tur med ét klik. Chaufføren henter dig og sætter dig af, hvor du vil.
 Takket være vores intelligente overgangssystem kan du skifte køretøj undervejs for at nå dit mål.
+Métro-Taxi, dine ture uden grænser, for en grønnere fremtid.""",
+
+    "zh": """Métro-Taxi，智能拼车出行系统。
+欢迎来到Métro-Taxi，订阅式城市交通网络。
+选择智能拼车，您将通过减少碳足迹为环境保护做出贡献。
+注册并选择您的计划。找到前往您方向的车辆。
+一键请求乘车。司机会接您并送您到想去的地方。
+借助我们的智能换乘系统，您可以在途中换乘车辆以到达目的地。
+Métro-Taxi，无限出行，共创绿色未来。""",
+
+    "ur": """میٹرو ٹیکسی، ذہین رائیڈ شیئرنگ ٹرانسپورٹ سسٹم۔
+میٹرو ٹیکسی میں خوش آمدید، سبسکرپشن پر مبنی شہری نقل و حمل کا نیٹ ورک۔
+ذہین رائیڈ شیئرنگ کا انتخاب کرکے، آپ اپنے کاربن فوٹ پرنٹ کو کم کرکے ماحولیاتی تحفظ میں حصہ ڈالتے ہیں۔
+رجسٹر کریں اور اپنا پلان منتخب کریں۔ اپنی سمت جانے والی گاڑیاں تلاش کریں۔
+ایک کلک سے سفر کی درخواست کریں۔ ڈرائیور آپ کو لے کر جہاں چاہیں چھوڑ دے گا۔
+ہمارے ذہین ٹرانسفر سسٹم کی بدولت، اپنی منزل تک پہنچنے کے لیے راستے میں گاڑی بدلیں۔
+میٹرو ٹیکسی، بے حد سفر، سبز مستقبل کے لیے۔"""
+}
 Métro-Taxi, dine ture uden grænser.""",
 
     "zh": """欢迎来到Métro-Taxi，订阅式城市交通网络。
