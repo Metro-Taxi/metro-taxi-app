@@ -58,10 +58,10 @@ const RegisterDriver = () => {
       const { confirmPassword, ...submitData } = formData;
       submitData.seats = parseInt(submitData.seats);
       await registerDriver(submitData);
-      toast.success('Inscription réussie ! Votre compte est en attente de validation par un administrateur.');
+      toast.success(t('auth.register.driver.successAuto', 'Inscription réussie ! Votre compte est activé. Vous pouvez vous connecter.'));
       navigate('/login');
     } catch (error) {
-      const message = error.response?.data?.detail || 'Erreur lors de l\'inscription';
+      const message = error.response?.data?.detail || t('auth.register.error', 'Erreur lors de l\'inscription');
       toast.error(message);
     } finally {
       setLoading(false);
