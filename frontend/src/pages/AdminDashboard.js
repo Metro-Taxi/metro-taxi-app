@@ -54,7 +54,7 @@ const AdminDashboard = () => {
       setSubscriptionStats(subsRes.data);
     } catch (error) {
       console.error('Fetch error:', error);
-      toast.error('Erreur lors du chargement des données');
+      toast.error(t('dashboard.admin.common.loadingError'));
     } finally {
       setLoading(false);
     }
@@ -68,7 +68,7 @@ const AdminDashboard = () => {
       setSelectedCard(response.data.card);
       setCardDialogOpen(true);
     } catch (error) {
-      toast.error('Erreur lors du chargement de la carte');
+      toast.error(t('common.cardLoadError'));
     }
   };
 
@@ -77,10 +77,10 @@ const AdminDashboard = () => {
       await axios.post(`${API}/admin/drivers/${driverId}/validate`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success('Chauffeur activé');
+      toast.success(t('common.driverActivated'));
       fetchData();
     } catch (error) {
-      toast.error('Erreur lors de l\'activation');
+      toast.error(t('common.activateError'));
     }
   };
 
@@ -89,10 +89,10 @@ const AdminDashboard = () => {
       await axios.post(`${API}/admin/drivers/${driverId}/deactivate`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success('Chauffeur désactivé');
+      toast.success(t('common.driverDeactivated'));
       fetchData();
     } catch (error) {
-      toast.error('Erreur lors de la désactivation');
+      toast.error(t('common.deactivateError'));
     }
   };
 
@@ -105,7 +105,7 @@ const AdminDashboard = () => {
       toast.success(response.data.message);
       fetchData();
     } catch (error) {
-      toast.error('Erreur lors du nettoyage');
+      toast.error(t('common.cleanupError'));
     } finally {
       setCleanupLoading(false);
     }
