@@ -399,7 +399,7 @@ const UserDashboard = () => {
             <Marker position={userLocation} icon={userIcon}>
               <Popup className="custom-popup">
                 <div className="text-center p-2">
-                  <p className="font-bold">Votre position</p>
+                  <p className="font-bold">{t('dashboard.user.yourPosition')}</p>
                 </div>
               </Popup>
             </Marker>
