@@ -1794,6 +1794,14 @@ Request a ride with a single click. The driver picks you up and drops you off wh
 Thanks to our intelligent transfer system, switch vehicles along the way to reach your destination.
 Métro-Taxi, your rides without limits, for a greener future.""",
 
+    "en-GB": """Métro-Taxi, the intelligent ridesharing transportation system.
+Welcome to Métro-Taxi, the subscription-based urban mobility network.
+By choosing intelligent ridesharing, you contribute to environmental protection by reducing your carbon footprint.
+Sign up and choose your plan. Locate vehicles heading in your direction.
+Request a ride with a single click. The driver picks you up and drops you off wherever you want.
+Thanks to our intelligent transfer system, switch vehicles along the way to reach your destination.
+Métro-Taxi, your rides without limits, for a greener future.""",
+
     "de": """Métro-Taxi, das intelligente Fahrgemeinschafts-Transportsystem.
 Willkommen bei Métro-Taxi, dem abonnementbasierten urbanen Mobilitätsnetzwerk.
 Durch die Wahl intelligenter Fahrgemeinschaften tragen Sie zum Umweltschutz bei, indem Sie Ihren CO2-Fußabdruck reduzieren.
@@ -1801,6 +1809,14 @@ Registrieren Sie sich und wählen Sie Ihren Plan. Finden Sie Fahrzeuge, die in I
 Fordern Sie eine Fahrt mit einem Klick an. Der Fahrer holt Sie ab und setzt Sie ab, wo Sie möchten.
 Dank unseres intelligenten Umstiegssystems können Sie unterwegs das Fahrzeug wechseln, um Ihr Ziel zu erreichen.
 Métro-Taxi, Ihre Fahrten ohne Grenzen, für eine grünere Zukunft.""",
+
+    "nl": """Métro-Taxi, het intelligente carpoolsysteem voor vervoer.
+Welkom bij Métro-Taxi, het abonnementsgebaseerde stedelijke mobiliteitsnetwerk.
+Door te kiezen voor intelligent carpoolen, draagt u bij aan milieubescherming door uw CO2-voetafdruk te verminderen.
+Registreer en kies uw plan. Vind voertuigen die uw richting uitgaan.
+Vraag een rit aan met één klik. De chauffeur pikt u op en zet u af waar u wilt.
+Dankzij ons intelligente overstapsysteem kunt u onderweg van voertuig wisselen om uw bestemming te bereiken.
+Métro-Taxi, uw ritten zonder grenzen, voor een groenere toekomst.""",
 
     "es": """Métro-Taxi, el sistema de transporte inteligente por coche compartido.
 Bienvenido a Métro-Taxi, la red de movilidad urbana por suscripción.
@@ -1850,13 +1866,21 @@ Métro-Taxi, dine ture uden grænser, for en grønnere fremtid.""",
 借助我们的智能换乘系统，您可以在途中换乘车辆以到达目的地。
 Métro-Taxi，无限出行，共创绿色未来。""",
 
-    "ur": """میٹرو ٹیکسی، ذہین رائیڈ شیئرنگ ٹرانسپورٹ سسٹم۔
-میٹرو ٹیکسی میں خوش آمدید، سبسکرپشن پر مبنی شہری نقل و حمل کا نیٹ ورک۔
-ذہین رائیڈ شیئرنگ کا انتخاب کرکے، آپ اپنے کاربن فوٹ پرنٹ کو کم کرکے ماحولیاتی تحفظ میں حصہ ڈالتے ہیں۔
-رجسٹر کریں اور اپنا پلان منتخب کریں۔ اپنی سمت جانے والی گاڑیاں تلاش کریں۔
-ایک کلک سے سفر کی درخواست کریں۔ ڈرائیور آپ کو لے کر جہاں چاہیں چھوڑ دے گا۔
-ہمارے ذہین ٹرانسفر سسٹم کی بدولت، اپنی منزل تک پہنچنے کے لیے راستے میں گاڑی بدلیں۔
-میٹرو ٹیکسی، بے حد سفر، سبز مستقبل کے لیے۔"""
+    "hi": """मेट्रो-टैक्सी, स्मार्ट राइड शेयरिंग ट्रांसपोर्ट सिस्टम।
+मेट्रो-टैक्सी में आपका स्वागत है, सदस्यता-आधारित शहरी गतिशीलता नेटवर्क।
+स्मार्ट राइड शेयरिंग चुनकर, आप अपने कार्बन फुटप्रिंट को कम करके पर्यावरण संरक्षण में योगदान करते हैं।
+रजिस्टर करें और अपना प्लान चुनें। अपनी दिशा में जाने वाले वाहन खोजें।
+एक क्लिक से यात्रा का अनुरोध करें। ड्राइवर आपको उठाएगा और जहां चाहें वहां छोड़ देगा।
+हमारे स्मार्ट ट्रांसफर सिस्टम के कारण, अपने गंतव्य तक पहुंचने के लिए रास्ते में वाहन बदलें।
+मेट्रो-टैक्सी, असीमित यात्रा, हरित भविष्य के लिए।""",
+
+    "pa": """ਮੈਟਰੋ-ਟੈਕਸੀ, ਸਮਾਰਟ ਰਾਈਡ ਸ਼ੇਅਰਿੰਗ ਟ੍ਰਾਂਸਪੋਰਟ ਸਿਸਟਮ।
+ਮੈਟਰੋ-ਟੈਕਸੀ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ, ਸਬਸਕ੍ਰਿਪਸ਼ਨ-ਅਧਾਰਤ ਸ਼ਹਿਰੀ ਗਤੀਸ਼ੀਲਤਾ ਨੈੱਟਵਰਕ।
+ਸਮਾਰਟ ਰਾਈਡ ਸ਼ੇਅਰਿੰਗ ਚੁਣ ਕੇ, ਤੁਸੀਂ ਆਪਣੇ ਕਾਰਬਨ ਫੁੱਟਪ੍ਰਿੰਟ ਨੂੰ ਘਟਾ ਕੇ ਵਾਤਾਵਰਣ ਦੀ ਸੁਰੱਖਿਆ ਵਿੱਚ ਯੋਗਦਾਨ ਪਾਉਂਦੇ ਹੋ।
+ਰਜਿਸਟਰ ਕਰੋ ਅਤੇ ਆਪਣਾ ਪਲਾਨ ਚੁਣੋ। ਆਪਣੀ ਦਿਸ਼ਾ ਵੱਲ ਜਾਣ ਵਾਲੀਆਂ ਗੱਡੀਆਂ ਲੱਭੋ।
+ਇੱਕ ਕਲਿੱਕ ਨਾਲ ਸਫ਼ਰ ਦੀ ਬੇਨਤੀ ਕਰੋ। ਡਰਾਈਵਰ ਤੁਹਾਨੂੰ ਲੈ ਜਾਵੇਗਾ ਅਤੇ ਜਿੱਥੇ ਚਾਹੋ ਉੱਥੇ ਛੱਡ ਦੇਵੇਗਾ।
+ਸਾਡੇ ਸਮਾਰਟ ਟ੍ਰਾਂਸਫਰ ਸਿਸਟਮ ਕਰਕੇ, ਆਪਣੀ ਮੰਜ਼ਿਲ ਤੱਕ ਪਹੁੰਚਣ ਲਈ ਰਸਤੇ ਵਿੱਚ ਗੱਡੀ ਬਦਲੋ।
+ਮੈਟਰੋ-ਟੈਕਸੀ, ਬੇਅੰਤ ਸਫ਼ਰ, ਹਰੇ ਭਰੇ ਭਵਿੱਖ ਲਈ।"""
 }
 
 class TTSRequest(BaseModel):
