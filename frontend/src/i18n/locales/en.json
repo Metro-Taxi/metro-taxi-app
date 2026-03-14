@@ -275,17 +275,20 @@
     "plans": {
       "day": {
         "name": "24 Hours",
-        "price": "€6.99",
+        "price": "$8",
+        "priceLocal": "$8 / £6",
         "description": "Perfect for occasional use"
       },
       "week": {
         "name": "1 Week",
-        "price": "€16.99",
+        "price": "$19",
+        "priceLocal": "$19 / £15",
         "description": "Ideal for short stays"
       },
       "month": {
         "name": "1 Month",
-        "price": "€53.99",
+        "price": "$59",
+        "priceLocal": "$59 / £47",
         "description": "Best value for money"
       }
     },
@@ -293,7 +296,8 @@
       "unlimited": "Unlimited rides",
       "allVehicles": "Access to all vehicles",
       "support": "Priority support",
-      "noCommitment": "No commitment"
+      "noCommitment": "No commitment",
+      "eco": "🌿 Eco-friendly transport"
     },
     "cta": "SUBSCRIBE"
   },
