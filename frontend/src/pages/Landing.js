@@ -16,13 +16,19 @@ const Landing = () => {
   const audioRef = useRef(null);
   const videoRef = useRef(null);
 
-  // Get base language code (e.g., 'en' from 'en-US')
-  const getBaseLanguage = (langCode) => {
+  // Get language code - keep full code if it exists in languages list, otherwise get base
+  const getLanguageCode = (langCode) => {
     if (!langCode) return 'fr';
-    return langCode.split('-')[0].split('@')[0];
+    // First try the full code
+    const fullCode = langCode.split('@')[0];
+    if (languages.find(l => l.code === fullCode)) {
+      return fullCode;
+    }
+    // Otherwise return base language
+    return fullCode.split('-')[0];
   };
   
-  const currentLanguage = languages.find(l => l.code === getBaseLanguage(i18n.language)) || languages[0];
+  const currentLanguage = languages.find(l => l.code === getLanguageCode(i18n.language)) || languages[0];
 
   const changeLanguage = (code) => {
     i18n.changeLanguage(code);
