@@ -155,3 +155,9 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 - [x] **Bug Hero Subtitle**: Le concept "PAR ABONNEMENT" n'était pas visible dans plusieurs langues (EN, DE, NL, ZH, EN-GB)
   - **Cause**: Le code prenait les 2 derniers mots du sous-titre qui ne correspondaient pas au concept d'abonnement dans toutes les langues
   - **Solution**: Ajout d'une clé de traduction dédiée `hero.subtitleHighlight` dans les 13 fichiers de traduction pour mettre en évidence le concept d'abonnement dans chaque langue
+- [x] **Bug i18n en-GB**: La configuration `load: 'languageOnly'` empêchait le chargement du fichier en-GB.json
+  - **Cause**: i18next réduisait `en-GB` à `en`, utilisant le fichier américain
+  - **Solution**: Changement de `load: 'all'` et ajout de `nonExplicitSupportedLngs: true`
+- [x] **Alignement prix ES/PT**: Les prix espagnols et portugais n'étaient pas alignés sur la France
+  - **Solution**: Mise à jour des fichiers es.json et pt.json avec les mêmes prix que fr.json (6,99€, 16,99€, 53,99€)
+  - **Revenus chauffeurs**: 2 250€ - 3 000€ (max 7 500€)
