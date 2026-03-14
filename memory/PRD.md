@@ -24,7 +24,8 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 - [x] Vérification email avec token sécurisé (MOCK)
 
 ### Section 2 - Abonnements ✅
-- [x] 3 forfaits: 24h (6,99€), 1 semaine (16,99€), 1 mois (53,99€)
+- [x] 3 forfaits: 24h (7€), 1 semaine (17€), 1 mois (54€) - Prix arrondis
+- [x] **Prix en devises locales** selon la langue (EUR, NOK, SEK, DKK, CNY, PKR)
 - [x] Paiement Stripe (Visa, MasterCard, American Express)
 - [x] Activation automatique après paiement
 - [x] **Désactivation automatique des abonnements expirés** (toutes les 5 min)
@@ -59,35 +60,34 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 
 ### Section 7 - Landing Page ✅
 - [x] Hero section avec CTA
-- [x] Section vidéo avec voix off TTS
-- [x] Section forfaits
+- [x] **Slogan écologique**: "Système de déplacement intelligent par covoiturage"
+- [x] **Message environnemental**: "Réduisez votre empreinte carbone"
+- [x] Section vidéo avec voix off TTS dynamique
+- [x] Section forfaits avec prix locaux arrondis
 - [x] Section "Comment ça marche"
 - [x] Section "Devenir Chauffeur VTC" avec revenus et avantages
 
-### Section 8 - Internationalisation (i18n) ✅ (NOUVEAU - 14/03/2026)
+### Section 8 - Internationalisation (i18n) ✅ (Mis à jour - 14/03/2026)
 - [x] **Sélecteur de langue** sur la page d'accueil (9 langues)
+- [x] **Détection automatique** de la langue du navigateur
 - [x] **Langues supportées**:
   - 🇫🇷 Français (défaut)
   - 🇬🇧 English
   - 🇪🇸 Español
   - 🇵🇹 Português
-  - 🇳🇴 Norsk
-  - 🇸🇪 Svenska
-  - 🇩🇰 Dansk
-  - 🇨🇳 中文 (Mandarin)
-  - 🇵🇰 اردو (Urdu)
+  - 🇳🇴 Norsk (NOK)
+  - 🇸🇪 Svenska (SEK)
+  - 🇩🇰 Dansk (DKK)
+  - 🇨🇳 中文 (CNY)
+  - 🇵🇰 اردو (PKR)
 - [x] **Traduction complète** de TOUTES les pages:
   - Landing page (héro, forfaits, fonctionnement, section chauffeurs)
   - Page de connexion
   - Page d'inscription usager
   - Page d'inscription chauffeur
-  - Dashboard usager
-  - Dashboard chauffeur
-  - Dashboard admin
-  - Page de profil
-  - Page d'abonnement
 - [x] **Voix off TTS** pour la vidéo dans chaque langue
 - [x] **API TTS**: `/api/tts/voiceover` et `/api/tts/languages`
+- [x] **Scripts TTS traduits** avec slogan écologique dans toutes les langues
 
 ## 📊 Statut Tests
 - Backend: 100% ✅
@@ -96,10 +96,11 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 ## 🔄 Backlog
 
 ### P0 - Prioritaire
+- [ ] **Traduire les dashboards** (Admin, Usager, Chauffeur) - Partiellement traduit
 - [ ] Connecter domaine `metro-taxi.com`
-- [ ] Créer email professionnel `judeesouleymane@metro-taxi.com`
 
 ### P1 - Important
+- [ ] Créer email professionnel `judeesouleymane@metro-taxi.com`
 - [ ] Implémenter vérification email réelle (SendGrid/Resend)
 - [ ] Vidéo promotionnelle AI (Sora 2) - script prêt
 
@@ -122,7 +123,7 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 ## 🌍 Configuration i18n
 ```
 /app/frontend/src/i18n/
-├── index.js          # Configuration i18next
+├── index.js          # Configuration i18next (avec load: 'languageOnly')
 └── locales/
     ├── fr.json       # Français
     ├── en.json       # English
@@ -134,3 +135,9 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
     ├── zh.json       # 中文
     └── ur.json       # اردو
 ```
+
+## 🐛 Bugs Corrigés (14/03/2026)
+- [x] **Bug TTS**: Les scripts VIDEO_SCRIPTS avaient des entrées dupliquées cassant le dict Python
+- [x] **Bug i18n**: Le détecteur de langue retournait "en-US@posix" au lieu de "en", causant un mismatch
+- [x] **Fix**: Ajout de `load: 'languageOnly'` dans la config i18next
+- [x] **Fix**: Ajout de `getBaseLanguage()` pour extraire le code de langue de base
