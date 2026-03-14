@@ -322,9 +322,9 @@ const RegisterDriver = () => {
               </div>
             </div>
 
-            <div className="bg-zinc-900/50 p-4 rounded border border-zinc-800 mt-4">
-              <p className="text-zinc-400 text-sm">
-                ⚠️ Votre compte sera validé par un administrateur avant de pouvoir recevoir des demandes de trajet.
+            <div className="bg-green-900/30 p-4 rounded border border-green-700 mt-4">
+              <p className="text-green-400 text-sm">
+                ✅ {t('auth.register.driver.autoValidation', 'Votre compte sera automatiquement activé. Vous pourrez recevoir des demandes de trajet immédiatement.')}
               </p>
             </div>
 
@@ -337,7 +337,7 @@ const RegisterDriver = () => {
               {loading ? (
                 <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
               ) : (
-                'SOUMETTRE MA CANDIDATURE'
+                t('auth.register.driver.submitBtn', 'S\'INSCRIRE EN TANT QUE CHAUFFEUR')
               )}
             </Button>
           </form>
