@@ -37,7 +37,9 @@ i18n
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage']
-    }
+    },
+    // Handle language variants like en-US, en-GB -> en
+    load: 'languageOnly'
   });
 
 export default i18n;
