@@ -6,6 +6,7 @@ import fr from './locales/fr.json';
 import en from './locales/en.json';
 import es from './locales/es.json';
 import pt from './locales/pt.json';
+import de from './locales/de.json';
 import no from './locales/no.json';
 import sv from './locales/sv.json';
 import da from './locales/da.json';
@@ -17,6 +18,7 @@ const resources = {
   en: { translation: en },
   es: { translation: es },
   pt: { translation: pt },
+  de: { translation: de },
   no: { translation: no },
   sv: { translation: sv },
   da: { translation: da },
@@ -47,6 +49,7 @@ export default i18n;
 export const languages = [
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
   { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
   { code: 'es', name: 'Español', flag: '🇪🇸' },
   { code: 'pt', name: 'Português', flag: '🇵🇹' },
   { code: 'no', name: 'Norsk', flag: '🇳🇴' },
