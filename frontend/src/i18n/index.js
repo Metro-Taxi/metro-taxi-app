@@ -68,6 +68,7 @@ export const languages = [
   { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
   { code: 'es', name: 'Español', flag: '🇪🇸' },
   { code: 'pt', name: 'Português', flag: '🇵🇹' },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
   { code: 'no', name: 'Norsk', flag: '🇳🇴' },
   { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
   { code: 'da', name: 'Dansk', flag: '🇩🇰' },
