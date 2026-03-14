@@ -436,10 +436,10 @@ const AdminDashboard = () => {
                 >
                   <div className="flex items-center justify-between mb-4">
                     <Check className="w-8 h-8 text-green-500" />
-                    <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">ACTIFS</span>
+                    <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">{t('dashboard.admin.subscriptions.activeLabel')}</span>
                   </div>
                   <p className="text-3xl font-black text-white">{subscriptionStats?.summary?.total_active || 0}</p>
-                  <p className="text-zinc-400 text-sm">Abonnements actifs</p>
+                  <p className="text-zinc-400 text-sm">{t('dashboard.admin.subscriptions.active')}</p>
                 </motion.div>
 
                 <motion.div
@@ -450,10 +450,10 @@ const AdminDashboard = () => {
                 >
                   <div className="flex items-center justify-between mb-4">
                     <Clock className="w-8 h-8 text-yellow-500" />
-                    <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded">BIENTÔT</span>
+                    <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded">{t('dashboard.admin.subscriptions.soonLabel')}</span>
                   </div>
                   <p className="text-3xl font-black text-white">{subscriptionStats?.summary?.expiring_soon_24h || 0}</p>
-                  <p className="text-zinc-400 text-sm">Expirent dans 24h</p>
+                  <p className="text-zinc-400 text-sm">{t('dashboard.admin.subscriptions.expiringSoon')}</p>
                 </motion.div>
 
                 <motion.div
@@ -464,10 +464,10 @@ const AdminDashboard = () => {
                 >
                   <div className="flex items-center justify-between mb-4">
                     <XCircle className="w-8 h-8 text-red-500" />
-                    <span className="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded">EXPIRÉS</span>
+                    <span className="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded">{t('dashboard.admin.subscriptions.expiredLabel')}</span>
                   </div>
                   <p className="text-3xl font-black text-white">{subscriptionStats?.summary?.total_expired || 0}</p>
-                  <p className="text-zinc-400 text-sm">Abonnements expirés</p>
+                  <p className="text-zinc-400 text-sm">{t('dashboard.admin.subscriptions.expired')}</p>
                 </motion.div>
               </div>
 
@@ -484,7 +484,7 @@ const AdminDashboard = () => {
                   ) : (
                     <Trash2 className="w-4 h-4 mr-2" />
                   )}
-                  Désactiver les expirés
+                  {t('dashboard.admin.subscriptions.cleanup')}
                 </Button>
               </div>
 
@@ -494,9 +494,9 @@ const AdminDashboard = () => {
                   <div>
                     <h2 className="text-xl font-bold text-white flex items-center gap-2">
                       <Check className="w-5 h-5 text-green-500" />
-                      Abonnements Actifs
+                      {t('dashboard.admin.subscriptions.active')}
                     </h2>
-                    <p className="text-zinc-400 text-sm">Liste des abonnements en cours de validité</p>
+                    <p className="text-zinc-400 text-sm">{t('dashboard.admin.subscriptions.activeDesc')}</p>
                   </div>
                   <Button variant="ghost" onClick={fetchData} className="text-zinc-400 hover:text-white">
                     <RefreshCw className="w-4 h-4" />
@@ -509,18 +509,18 @@ const AdminDashboard = () => {
                   </div>
                 ) : (subscriptionStats?.active_subscriptions || []).length === 0 ? (
                   <div className="p-8 text-center text-zinc-400">
-                    Aucun abonnement actif
+                    {t('dashboard.admin.subscriptions.noActive')}
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="admin-table">
                       <thead>
                         <tr>
-                          <th>Usager</th>
+                          <th>{t('dashboard.admin.users.user')}</th>
                           <th>Email</th>
                           <th>Plan</th>
-                          <th>Expiration</th>
-                          <th>Statut</th>
+                          <th>{t('dashboard.admin.users.expiration')}</th>
+                          <th>{t('dashboard.admin.subscriptions.status')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -536,9 +536,9 @@ const AdminDashboard = () => {
                               </td>
                               <td>
                                 <span className="text-[#FFD60A] font-bold">
-                                  {sub.plan === '24h' ? '24 Heures' :
-                                   sub.plan === '1week' ? '1 Semaine' :
-                                   sub.plan === '1month' ? '1 Mois' : sub.plan || '-'}
+                                  {sub.plan === '24h' ? t('subscription.plans.day.name') :
+                                   sub.plan === '1week' ? t('subscription.plans.week.name') :
+                                   sub.plan === '1month' ? t('subscription.plans.month.name') : sub.plan || '-'}
                                 </span>
                               </td>
                               <td>
@@ -548,11 +548,11 @@ const AdminDashboard = () => {
                                 {isExpiringSoon ? (
                                   <span className="text-xs px-2 py-1 rounded bg-yellow-500/20 text-yellow-400 flex items-center gap-1 w-fit">
                                     <AlertTriangle className="w-3 h-3" />
-                                    Expire bientôt
+                                    {t('dashboard.admin.subscriptions.expiresSoon')}
                                   </span>
                                 ) : (
                                   <span className="text-xs px-2 py-1 rounded bg-green-500/20 text-green-400">
-                                    Actif
+                                    {t('dashboard.admin.users.active')}
                                   </span>
                                 )}
                               </td>
@@ -571,19 +571,19 @@ const AdminDashboard = () => {
                   <div className="p-4 border-b border-zinc-800">
                     <h2 className="text-xl font-bold text-white flex items-center gap-2">
                       <XCircle className="w-5 h-5 text-red-500" />
-                      Abonnements Expirés
+                      {t('dashboard.admin.subscriptions.expired')}
                     </h2>
-                    <p className="text-zinc-400 text-sm">Ces abonnements doivent être désactivés</p>
+                    <p className="text-zinc-400 text-sm">{t('dashboard.admin.subscriptions.expiredDesc')}</p>
                   </div>
                   
                   <div className="overflow-x-auto">
                     <table className="admin-table">
                       <thead>
                         <tr>
-                          <th>Usager</th>
+                          <th>{t('dashboard.admin.users.user')}</th>
                           <th>Email</th>
                           <th>Plan</th>
-                          <th>Expiré le</th>
+                          <th>{t('dashboard.admin.users.expiration')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -597,9 +597,9 @@ const AdminDashboard = () => {
                             </td>
                             <td>
                               <span className="text-zinc-400">
-                                {sub.plan === '24h' ? '24 Heures' :
-                                 sub.plan === '1week' ? '1 Semaine' :
-                                 sub.plan === '1month' ? '1 Mois' : sub.plan || '-'}
+                                {sub.plan === '24h' ? t('subscription.plans.day.name') :
+                                 sub.plan === '1week' ? t('subscription.plans.week.name') :
+                                 sub.plan === '1month' ? t('subscription.plans.month.name') : sub.plan || '-'}
                               </span>
                             </td>
                             <td>
