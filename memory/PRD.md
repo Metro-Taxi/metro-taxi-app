@@ -68,26 +68,35 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 - [x] Section "Devenir Chauffeur VTC" avec revenus et avantages
 
 ### Section 8 - Internationalisation (i18n) ✅ (Mis à jour - 14/03/2026)
-- [x] **Sélecteur de langue** sur la page d'accueil (10 langues)
+- [x] **Sélecteur de langue** sur la page d'accueil (13 langues)
 - [x] **Détection automatique** de la langue du navigateur
 - [x] **Langues supportées**:
   - 🇫🇷 Français (défaut) - Prix: 6,99€, 16,99€, 53,99€
-  - 🇬🇧 English - Prix: $7.99, $18.99, $59.99
-  - 🇩🇪 Deutsch - Prix: 7,99€, 18,99€, 59,99€ (NOUVEAU)
+  - 🇺🇸 English (US) - Prix: $7.99, $18.99, $59.99
+  - 🇬🇧 English (UK) - Prix: £5.99, £14.99, £45.99 (NOUVEAU)
+  - 🇩🇪 Deutsch - Prix: 6,99€, 16,99€, 53,99€ (identique FR)
+  - 🇳🇱 Nederlands - Prix: 6,99€, 16,99€, 53,99€ (NOUVEAU)
   - 🇪🇸 Español - Prix: 7,99€, 18,99€, 59,99€
   - 🇵🇹 Português - Prix: 7,99€, 18,99€, 59,99€
   - 🇳🇴 Norsk (NOK) - Prix: 79,99kr, 189,99kr, 599,99kr
   - 🇸🇪 Svenska (SEK) - Prix: 79,99kr, 189,99kr, 599,99kr
   - 🇩🇰 Dansk (DKK) - Prix: 54,99kr, 129,99kr, 409,99kr
   - 🇨🇳 中文 (CNY) - Prix: ¥54.99, ¥129.99, ¥419.99
-  - 🇵🇰 اردو (PKR) - Prix: ₨1,999, ₨4,799, ₨14,999
-- [x] **Revenus chauffeurs localisés** par devise (EUR, USD, NOK, SEK, DKK, CNY, PKR)
-- [x] **Traduction complète** de TOUTES les pages:
-  - Landing page (héro, forfaits, fonctionnement, section chauffeurs)
-  - Page de connexion
-  - Page d'inscription usager
-  - Page d'inscription chauffeur
-- [x] **Voix off TTS** pour la vidéo dans chaque langue (10 langues)
+  - 🇮🇳 हिन्दी (Hindi) - Prix: ₹629, ₹1,529, ₹4,859 (NOUVEAU)
+  - 🇵🇰 ਪੰਜਾਬੀ (Punjabi) - Prix: ₨1,999, ₨4,799, ₨14,999 (remplace Ourdou)
+- [x] **Revenus chauffeurs localisés** par devise :
+  - EUR: 2 250 € - 3 000 € (max 7 500 €) - FR, DE, NL, ES, PT
+  - GBP: £1,999 - £2,599 (max £6,499) - UK
+  - NOK/SEK: 25 899 kr - 34 499 kr (max 86 249 kr)
+  - DKK: 16 799 kr - 22 399 kr (max 55 999 kr)
+  - CNY: ¥17,499 - ¥23,399 (max ¥58,499)
+  - INR: ₹1,99,999 - ₹2,69,999 (max ₹6,74,999)
+  - PKR: ₨629,999 - ₨839,999 (max ₨2,099,999)
+- [x] **Traduction des dashboards** (en cours):
+  - UserDashboard: Partiellement traduit
+  - DriverDashboard: Partiellement traduit  
+  - AdminDashboard: Import ajouté
+- [x] **Voix off TTS** pour la vidéo dans chaque langue (13 langues)
 - [x] **API TTS**: `/api/tts/voiceover` et `/api/tts/languages`
 - [x] **Scripts TTS traduits** avec slogan écologique dans toutes les langues
 
