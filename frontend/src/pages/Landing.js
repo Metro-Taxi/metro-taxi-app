@@ -16,7 +16,13 @@ const Landing = () => {
   const audioRef = useRef(null);
   const videoRef = useRef(null);
 
-  const currentLanguage = languages.find(l => l.code === i18n.language) || languages[0];
+  // Get base language code (e.g., 'en' from 'en-US')
+  const getBaseLanguage = (langCode) => {
+    if (!langCode) return 'fr';
+    return langCode.split('-')[0].split('@')[0];
+  };
+  
+  const currentLanguage = languages.find(l => l.code === getBaseLanguage(i18n.language)) || languages[0];
 
   const changeLanguage = (code) => {
     i18n.changeLanguage(code);
