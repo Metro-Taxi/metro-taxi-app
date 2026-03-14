@@ -244,9 +244,10 @@ class TestSubscriptionPlans:
         assert "plans" in data
         
         plans = data["plans"]
-        assert "day" in plans
-        assert "week" in plans
-        assert "month" in plans
+        # Plan IDs are: 24h, 1week, 1month
+        assert "24h" in plans
+        assert "1week" in plans
+        assert "1month" in plans
         
         # Verify plan structure
         for plan_id, plan in plans.items():
@@ -254,7 +255,7 @@ class TestSubscriptionPlans:
             assert "price" in plan
             assert "duration_hours" in plan
         
-        print(f"SUCCESS: Subscription plans - Day: {plans['day']['price']}€, Week: {plans['week']['price']}€, Month: {plans['month']['price']}€")
+        print(f"SUCCESS: Subscription plans - 24h: {plans['24h']['price']}€, 1week: {plans['1week']['price']}€, 1month: {plans['1month']['price']}€")
 
 
 if __name__ == "__main__":
