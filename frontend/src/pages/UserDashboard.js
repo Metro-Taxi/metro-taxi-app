@@ -494,7 +494,7 @@ const UserDashboard = () => {
                   <p className="text-sm">{driver.vehicle_type}</p>
                   <div className="flex items-center gap-1 mt-2 text-[#FFD60A]">
                     <Users className="w-4 h-4" />
-                    <span>{driver.available_seats} places libres</span>
+                    <span>{driver.available_seats} {t('common.places')}</span>
                   </div>
                   {driver.destination && (
                     <div className="flex items-center gap-1 mt-1 text-blue-500">
