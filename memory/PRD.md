@@ -115,7 +115,7 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 ### P1 - Important  
 - [x] Emails créés: jhs@metro-taxi.com, judeesouleymane@metro-taxi.com ✅
 - [x] Implémenter vérification email réelle via **Resend** ✅
-- [ ] Vidéo promotionnelle AI (Sora 2) - **Budget Emergent insuffisant** (~$5 requis)
+- [x] **Vidéo promotionnelle AI Sora 2** générée (12 secondes, HD 720p) ✅
 - [ ] Vérifier domaine metro-taxi.com sur Resend pour envoi emails en production
 
 ### P2 - Améliorations
