@@ -1,0 +1,410 @@
+{
+  "hero": {
+    "title": "MÉTRO-TAXI",
+    "subtitle": "Das abonnementbasierte urbane Mobilitätsnetzwerk",
+    "description": "Fahren Sie mit Fahrzeugen, die in Ihre Richtung fahren. Unbegrenzte Fahrten mit einem einfachen Abonnement.",
+    "cta": "LOSLEGEN",
+    "ecoSlogan": "Intelligentes Fahrgemeinschafts-Transportsystem",
+    "ecoMessage": "Reduzieren Sie Ihren CO2-Fußabdruck durch gemeinsame Fahrten"
+  },
+  "nav": {
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "pricing": "Preise",
+    "howItWorks": "So funktioniert's",
+    "drivers": "Fahrer",
+    "logout": "Abmelden",
+    "profile": "Profil",
+    "dashboard": "Dashboard"
+  },
+  "auth": {
+    "login": {
+      "title": "Anmelden",
+      "subtitle": "Greifen Sie auf Ihr Métro-Taxi-Konto zu",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "submit": "ANMELDEN",
+      "noAccount": "Noch kein Konto?",
+      "signUp": "Registrieren Sie sich",
+      "asUser": "als Nutzer",
+      "asDriver": "als Fahrer",
+      "or": "oder",
+      "error": "E-Mail oder Passwort falsch",
+      "success": "Erfolgreich angemeldet"
+    },
+    "register": {
+      "user": {
+        "title": "Nutzer-Registrierung",
+        "subtitle": "Erstellen Sie Ihr Konto für den Zugang zum Métro-Taxi-Netzwerk"
+      },
+      "driver": {
+        "title": "Fahrer-Registrierung",
+        "subtitle": "Treten Sie dem Métro-Taxi-Netzwerk bei"
+      },
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "password": "Passwort",
+      "confirmPassword": "Passwort bestätigen",
+      "vehiclePlate": "Kennzeichen",
+      "vehicleType": "Fahrzeugtyp",
+      "seats": "Anzahl der Sitze",
+      "vtcLicense": "VTC-Lizenznummer",
+      "submit": "REGISTRIEREN",
+      "haveAccount": "Bereits ein Konto?",
+      "login": "Anmelden",
+      "success": "Registrierung erfolgreich!",
+      "error": "Fehler bei der Registrierung",
+      "passwordMismatch": "Passwörter stimmen nicht überein",
+      "vehicleTypes": {
+        "sedan": "Limousine",
+        "suv": "SUV",
+        "van": "Van",
+        "luxury": "Luxus"
+      }
+    }
+  },
+  "dashboard": {
+    "user": {
+      "title": "Dashboard",
+      "welcome": "Willkommen",
+      "availableVehicles": "verfügbare Fahrzeuge",
+      "seats": "Sitze",
+      "activeRides": "aktive Fahrten",
+      "setDestination": "Ziel festlegen",
+      "cancel": "Abbrechen",
+      "clickMap": "Klicken Sie auf die Karte, um Ihr Ziel festzulegen",
+      "requestRide": "Diese Fahrt anfordern",
+      "yourPosition": "Ihre Position",
+      "destination": "Ziel",
+      "remove": "Entfernen",
+      "optimalRoute": "Optimale Route",
+      "totalDistance": "km gesamt",
+      "transfers": "Umstiege",
+      "minutes": "Minuten",
+      "efficiency": "Fahrteffizienz",
+      "segments": "Fahrtsegmente",
+      "segment": "Segment",
+      "searchingDriver": "Suche nach Fahrer...",
+      "freeSeats": "freie Sitze",
+      "direction": "Richtung",
+      "eta": "ETA",
+      "min": "Min",
+      "score": "Punktzahl",
+      "transferSuggestions": "Umstiegsvorschläge",
+      "showTransfers": "Umstiege anzeigen",
+      "hideTransfers": "Ausblenden",
+      "transfer": "Umstieg",
+      "emailNotVerified": "E-Mail nicht verifiziert",
+      "verifyEmail": "E-Mail verifizieren",
+      "subscriptionRequired": "Abonnement erforderlich",
+      "subscribe": "Abonnieren",
+      "activeRide": "Aktive Fahrt",
+      "driver": "Fahrer",
+      "vehicle": "Fahrzeug",
+      "progress": "Fortschritt",
+      "pickup": "Abholung",
+      "inProgress": "Unterwegs",
+      "dropoff": "Ankunft"
+    },
+    "driver": {
+      "title": "Fahrer-Dashboard",
+      "goOnline": "Online gehen",
+      "goOffline": "Offline gehen",
+      "online": "Online",
+      "offline": "Offline",
+      "availableSeats": "Verfügbare Sitze",
+      "updateSeats": "Aktualisieren",
+      "pendingRequests": "Ausstehende Anfragen",
+      "noRequests": "Keine ausstehenden Anfragen",
+      "accept": "Annehmen",
+      "decline": "Ablehnen",
+      "passenger": "Passagier",
+      "distance": "Entfernung",
+      "currentRide": "Aktuelle Fahrt",
+      "startRide": "Starten",
+      "completeRide": "Beenden",
+      "setDestination": "Meine Richtung festlegen",
+      "yourDestination": "Ihr Ziel",
+      "nearbyUsers": "Nutzer in der Nähe"
+    },
+    "admin": {
+      "title": "Administration",
+      "stats": {
+        "users": "Registrierte Nutzer",
+        "drivers": "Fahrer",
+        "subscriptions": "Aktive Abonnements",
+        "rides": "Laufende Fahrten"
+      },
+      "tabs": {
+        "drivers": "Fahrer",
+        "users": "Nutzer",
+        "subscriptions": "Abonnements",
+        "cards": "Virtuelle Karten"
+      },
+      "drivers": {
+        "title": "Fahrerverwaltung",
+        "subtitle": "Validieren oder deaktivieren Sie Fahrerkonten",
+        "driver": "Fahrer",
+        "contact": "Kontakt",
+        "vehicle": "Fahrzeug",
+        "license": "VTC-Lizenz",
+        "status": "Status",
+        "actions": "Aktionen",
+        "validated": "Validiert",
+        "pending": "Ausstehend",
+        "online": "Online",
+        "activate": "Aktivieren",
+        "deactivate": "Deaktivieren",
+        "noDrivers": "Keine Fahrer registriert"
+      },
+      "users": {
+        "title": "Nutzerliste",
+        "subtitle": "Informationen zu registrierten Nutzern einsehen",
+        "user": "Nutzer",
+        "contact": "Kontakt",
+        "subscription": "Abonnement",
+        "expiration": "Ablauf",
+        "registration": "Registrierung",
+        "active": "Aktiv",
+        "inactive": "Inaktiv",
+        "noUsers": "Keine Nutzer registriert"
+      },
+      "subscriptions": {
+        "title": "Abonnements",
+        "active": "Aktive Abonnements",
+        "activeDesc": "Liste der gültigen Abonnements",
+        "expired": "Abgelaufene Abonnements",
+        "expiredDesc": "Diese Abonnements müssen deaktiviert werden",
+        "expiringSoon": "Läuft in 24h ab",
+        "expiredLabel": "ABGELAUFEN",
+        "activeLabel": "AKTIV",
+        "soonLabel": "BALD",
+        "cleanup": "Abgelaufene deaktivieren",
+        "refresh": "Aktualisieren",
+        "status": "Status",
+        "expiresSoon": "Läuft bald ab",
+        "noActive": "Keine aktiven Abonnements"
+      },
+      "cards": {
+        "title": "Virtuelle Karten",
+        "subtitle": "Virtuelle Karten der Nutzer einsehen",
+        "holder": "INHABER",
+        "cardNumber": "KARTENNR.",
+        "phone": "TELEFON",
+        "subscription": "ABONNEMENT",
+        "expires": "LÄUFT AB AM",
+        "memberSince": "Mitglied seit",
+        "totalRides": "Getätigte Fahrten",
+        "rides": "Fahrten",
+        "verified": "Verifiziert",
+        "notVerified": "Nicht verifiziert",
+        "noCards": "Keine virtuellen Karten"
+      }
+    }
+  },
+  "subscription": {
+    "title": "Wählen Sie Ihr Abonnement",
+    "subtitle": "Unbegrenzte Fahrten im gesamten Métro-Taxi-Netzwerk",
+    "plans": {
+      "day": {
+        "name": "24 Stunden",
+        "price": "7,99 €",
+        "description": "Perfekt für gelegentliche Nutzung"
+      },
+      "week": {
+        "name": "1 Woche",
+        "price": "18,99 €",
+        "description": "Ideal für Kurzaufenthalte"
+      },
+      "month": {
+        "name": "1 Monat",
+        "price": "59,99 €",
+        "description": "Bestes Preis-Leistungs-Verhältnis",
+        "popular": "BELIEBT"
+      }
+    },
+    "features": {
+      "unlimited": "Unbegrenzte Fahrten",
+      "allVehicles": "Zugang zu allen Fahrzeugen",
+      "support": "Prioritäts-Support",
+      "noCommitment": "Keine Bindung"
+    },
+    "cta": "ABONNIEREN",
+    "perDay": "/Tag",
+    "perWeek": "/Woche",
+    "perMonth": "/Monat",
+    "processing": "Verarbeitung...",
+    "success": {
+      "title": "Zahlung erfolgreich!",
+      "subtitle": "Ihr Abonnement ist jetzt aktiv",
+      "details": "Abonnementdetails",
+      "plan": "Tarif",
+      "validUntil": "Gültig bis",
+      "goDashboard": "Zum Dashboard"
+    }
+  },
+  "profile": {
+    "title": "Mein Profil",
+    "personalInfo": "Persönliche Informationen",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "memberSince": "Mitglied seit",
+    "subscription": {
+      "title": "Mein Abonnement",
+      "plan": "Tarif",
+      "status": "Status",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "expires": "Läuft ab am",
+      "subscribe": "Abonnieren",
+      "renew": "Erneuern"
+    },
+    "virtualCard": {
+      "title": "Meine virtuelle Karte",
+      "cardNumber": "Kartennr."
+    },
+    "logout": "Abmelden"
+  },
+  "pricing": {
+    "title": "ABONNEMENTS",
+    "subtitle": "Wählen Sie Ihren Tarif",
+    "plans": {
+      "day": {
+        "name": "24 Stunden",
+        "price": "7,99 €",
+        "priceLocal": "7,99 €",
+        "description": "Perfekt für gelegentliche Nutzung"
+      },
+      "week": {
+        "name": "1 Woche",
+        "price": "18,99 €",
+        "priceLocal": "18,99 €",
+        "description": "Ideal für Kurzaufenthalte"
+      },
+      "month": {
+        "name": "1 Monat",
+        "price": "59,99 €",
+        "priceLocal": "59,99 €",
+        "description": "Bestes Preis-Leistungs-Verhältnis"
+      }
+    },
+    "features": {
+      "unlimited": "Unbegrenzte Fahrten",
+      "allVehicles": "Zugang zu allen Fahrzeugen",
+      "support": "Prioritäts-Support",
+      "noCommitment": "Keine Bindung",
+      "eco": "🌿 Umweltfreundlicher Transport"
+    },
+    "cta": "ABONNIEREN"
+  },
+  "howItWorks": {
+    "title": "SO FUNKTIONIERT'S",
+    "steps": {
+      "step1": {
+        "title": "ABONNIEREN",
+        "description": "Wählen Sie Ihren Tarif: 24h, 1 Woche oder 1 Monat. Einmal zahlen, unbegrenzt fahren."
+      },
+      "step2": {
+        "title": "FINDEN",
+        "description": "Finden Sie verfügbare Fahrzeuge in Ihrer Nähe in Echtzeit auf der Karte."
+      },
+      "step3": {
+        "title": "FAHREN",
+        "description": "Fordern Sie Ihre Fahrt mit einem Klick an. Der Fahrer holt Sie unterwegs ab."
+      },
+      "step4": {
+        "title": "Fahren",
+        "description": "Genießen Sie Ihre Fahrt und steigen Sie aus, wo Sie möchten"
+      }
+    }
+  },
+  "drivers": {
+    "title": "WERDEN SIE VTC-FAHRER",
+    "subtitle": "Treten Sie dem Métro-Taxi-Netzwerk bei und maximieren Sie Ihre Einnahmen ohne versteckte Gebühren",
+    "revenue": {
+      "title": "POTENZIELLES FAHREREINKOMMEN",
+      "monthly": "pro Monat",
+      "upTo": "Bis zu",
+      "depending": "je nach Aktivität",
+      "rangeMin": "2.499 €",
+      "rangeMax": "3.299 €",
+      "maxRevenue": "8.249 €"
+    },
+    "benefits": {
+      "title": "FAHRERVORTEILE",
+      "noSubscription": "Kein Abonnement zu zahlen",
+      "noSubscriptionDesc": "Treten Sie kostenlos unserem Netzwerk bei",
+      "noCommission": "Keine Provision pro Fahrt",
+      "noCommissionDesc": "Behalten Sie 100% Ihrer Einnahmen",
+      "subscribedPassengers": "Bereits abonnierte Passagiere",
+      "subscribedPassengersDesc": "Keine Kundensuche mehr nötig",
+      "optimizedRoutes": "Routenoptimierung",
+      "optimizedRoutesDesc": "Intelligenter Matching-Algorithmus",
+      "morePassengers": "Mehr Passagiere durch das Netzwerk",
+      "morePassengersDesc": "Maximieren Sie Ihre Fahrzeit"
+    },
+    "app": {
+      "title": "DIE FAHRER-APP",
+      "subtitle": "Alles was Sie brauchen auf einem Bildschirm",
+      "requests": "Passagieranfragen",
+      "requestsDesc": "Erhalten Sie Anfragen in Echtzeit in Ihrer Zone",
+      "routes": "Optimierte Routen",
+      "routesDesc": "Berechnete Routen zur Maximierung Ihrer Fahrten",
+      "transfers": "Vorgeschlagene Umstiege",
+      "transfersDesc": "Intelligentes Umstiegssystem"
+    },
+    "cta": "JETZT DEM NETZWERK BEITRETEN",
+    "ctaSubtext": "Kostenlose Registrierung • Keine Bindung"
+  },
+  "video": {
+    "title": "Entdecken Sie Métro-Taxi",
+    "loading": "Sprachausgabe wird geladen..."
+  },
+  "footer": {
+    "rights": "Alle Rechte vorbehalten",
+    "contact": "Kontakt",
+    "legal": "Rechtliches",
+    "privacy": "Datenschutz"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Ein Fehler ist aufgetreten",
+    "retry": "Erneut versuchen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "back": "Zurück",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "all": "Alle",
+    "none": "Keine",
+    "yes": "Ja",
+    "no": "Nein",
+    "or": "oder"
+  },
+  "errors": {
+    "required": "Dieses Feld ist erforderlich",
+    "invalidEmail": "Ungültige E-Mail",
+    "invalidPhone": "Ungültige Telefonnummer",
+    "passwordTooShort": "Das Passwort muss mindestens 6 Zeichen haben",
+    "serverError": "Serverfehler, bitte erneut versuchen"
+  },
+  "verifyEmail": {
+    "title": "E-Mail-Verifizierung",
+    "verifying": "Verifizierung läuft...",
+    "success": "E-Mail erfolgreich verifiziert!",
+    "successDesc": "Ihr Konto ist jetzt aktiviert.",
+    "error": "Verifizierung fehlgeschlagen",
+    "errorDesc": "Der Link ist ungültig oder abgelaufen.",
+    "goLogin": "Anmelden",
+    "goHome": "Zurück zur Startseite"
+  }
+}
