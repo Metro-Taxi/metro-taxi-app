@@ -4,26 +4,32 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import fr from './locales/fr.json';
 import en from './locales/en.json';
+import enGB from './locales/en-GB.json';
+import de from './locales/de.json';
+import nl from './locales/nl.json';
 import es from './locales/es.json';
 import pt from './locales/pt.json';
-import de from './locales/de.json';
 import no from './locales/no.json';
 import sv from './locales/sv.json';
 import da from './locales/da.json';
 import zh from './locales/zh.json';
-import ur from './locales/ur.json';
+import hi from './locales/hi.json';
+import pa from './locales/pa.json';
 
 const resources = {
   fr: { translation: fr },
   en: { translation: en },
+  'en-GB': { translation: enGB },
+  de: { translation: de },
+  nl: { translation: nl },
   es: { translation: es },
   pt: { translation: pt },
-  de: { translation: de },
   no: { translation: no },
   sv: { translation: sv },
   da: { translation: da },
   zh: { translation: zh },
-  ur: { translation: ur }
+  hi: { translation: hi },
+  pa: { translation: pa }
 };
 
 i18n
@@ -48,13 +54,16 @@ export default i18n;
 
 export const languages = [
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'en', name: 'English (US)', flag: '🇺🇸' },
+  { code: 'en-GB', name: 'English (UK)', flag: '🇬🇧' },
   { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
   { code: 'es', name: 'Español', flag: '🇪🇸' },
   { code: 'pt', name: 'Português', flag: '🇵🇹' },
   { code: 'no', name: 'Norsk', flag: '🇳🇴' },
   { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
   { code: 'da', name: 'Dansk', flag: '🇩🇰' },
   { code: 'zh', name: '中文', flag: '🇨🇳' },
-  { code: 'ur', name: 'اردو', flag: '🇵🇰' }
+  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'pa', name: 'ਪੰਜਾਬੀ', flag: '🇵🇰' }
 ];
