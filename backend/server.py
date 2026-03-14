@@ -662,6 +662,207 @@ def create_token(user_id: str, role: str) -> str:
 def generate_verification_token() -> str:
     return secrets.token_urlsafe(32)
 
+async def send_verification_email(email: str, name: str, verification_url: str, lang: str = "fr"):
+    """Send verification email using Resend"""
+    if not RESEND_API_KEY:
+        logging.warning("RESEND_API_KEY not configured, skipping email")
+        return False
+    
+    # Email templates per language
+    templates = {
+        "fr": {
+            "subject": "Vérifiez votre email - Métro-Taxi",
+            "title": "Bienvenue sur Métro-Taxi !",
+            "greeting": f"Bonjour {name},",
+            "message": "Merci de vous être inscrit sur Métro-Taxi. Pour activer votre compte, veuillez cliquer sur le bouton ci-dessous :",
+            "button": "Vérifier mon email",
+            "footer": "Ce lien expire dans 24 heures.",
+            "ignore": "Si vous n'avez pas créé de compte, vous pouvez ignorer cet email."
+        },
+        "en": {
+            "subject": "Verify your email - Métro-Taxi",
+            "title": "Welcome to Métro-Taxi!",
+            "greeting": f"Hello {name},",
+            "message": "Thank you for signing up for Métro-Taxi. To activate your account, please click the button below:",
+            "button": "Verify my email",
+            "footer": "This link expires in 24 hours.",
+            "ignore": "If you didn't create an account, you can ignore this email."
+        },
+        "es": {
+            "subject": "Verifica tu email - Métro-Taxi",
+            "title": "¡Bienvenido a Métro-Taxi!",
+            "greeting": f"Hola {name},",
+            "message": "Gracias por registrarte en Métro-Taxi. Para activar tu cuenta, haz clic en el botón de abajo:",
+            "button": "Verificar mi email",
+            "footer": "Este enlace expira en 24 horas.",
+            "ignore": "Si no creaste una cuenta, puedes ignorar este email."
+        },
+        "de": {
+            "subject": "Bestätigen Sie Ihre E-Mail - Métro-Taxi",
+            "title": "Willkommen bei Métro-Taxi!",
+            "greeting": f"Hallo {name},",
+            "message": "Vielen Dank für Ihre Anmeldung bei Métro-Taxi. Um Ihr Konto zu aktivieren, klicken Sie bitte auf die Schaltfläche unten:",
+            "button": "E-Mail bestätigen",
+            "footer": "Dieser Link läuft in 24 Stunden ab.",
+            "ignore": "Wenn Sie kein Konto erstellt haben, können Sie diese E-Mail ignorieren."
+        },
+        "pt": {
+            "subject": "Verifique seu email - Métro-Taxi",
+            "title": "Bem-vindo ao Métro-Taxi!",
+            "greeting": f"Olá {name},",
+            "message": "Obrigado por se registrar no Métro-Taxi. Para ativar sua conta, clique no botão abaixo:",
+            "button": "Verificar meu email",
+            "footer": "Este link expira em 24 horas.",
+            "ignore": "Se você não criou uma conta, pode ignorar este email."
+        }
+    }
+    
+    # Get template for language (default to French)
+    t = templates.get(lang[:2], templates["fr"])
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #0a0a0a;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0a; padding: 40px 0;">
+            <tr>
+                <td align="center">
+                    <table width="600" cellpadding="0" cellspacing="0" style="background-color: #18181b; border-radius: 8px; overflow: hidden;">
+                        <!-- Header -->
+                        <tr>
+                            <td style="background-color: #FFD60A; padding: 30px; text-align: center;">
+                                <h1 style="margin: 0; color: #000; font-size: 28px; font-weight: bold;">MÉTRO-TAXI</h1>
+                            </td>
+                        </tr>
+                        <!-- Content -->
+                        <tr>
+                            <td style="padding: 40px 30px;">
+                                <h2 style="color: #ffffff; margin: 0 0 20px 0; font-size: 24px;">{t['title']}</h2>
+                                <p style="color: #a1a1aa; margin: 0 0 10px 0; font-size: 16px;">{t['greeting']}</p>
+                                <p style="color: #a1a1aa; margin: 0 0 30px 0; font-size: 16px;">{t['message']}</p>
+                                <table width="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td align="center">
+                                            <a href="{verification_url}" style="display: inline-block; background-color: #FFD60A; color: #000; text-decoration: none; padding: 15px 40px; border-radius: 8px; font-weight: bold; font-size: 16px;">{t['button']}</a>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <p style="color: #71717a; margin: 30px 0 0 0; font-size: 14px;">{t['footer']}</p>
+                                <p style="color: #52525b; margin: 20px 0 0 0; font-size: 12px;">{t['ignore']}</p>
+                            </td>
+                        </tr>
+                        <!-- Footer -->
+                        <tr>
+                            <td style="background-color: #09090b; padding: 20px 30px; text-align: center;">
+                                <p style="color: #52525b; margin: 0; font-size: 12px;">© 2026 Métro-Taxi. Système de déplacement intelligent par covoiturage.</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
+    """
+    
+    try:
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [email],
+            "subject": t['subject'],
+            "html": html_content
+        }
+        result = await asyncio.to_thread(resend.Emails.send, params)
+        logging.info(f"Verification email sent to {email}, ID: {result.get('id')}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send verification email to {email}: {str(e)}")
+        return False
+
+async def send_subscription_confirmation_email(email: str, name: str, plan_name: str, expires_at: str, lang: str = "fr"):
+    """Send subscription confirmation email using Resend"""
+    if not RESEND_API_KEY:
+        logging.warning("RESEND_API_KEY not configured, skipping email")
+        return False
+    
+    templates = {
+        "fr": {
+            "subject": "Abonnement activé - Métro-Taxi",
+            "title": "Votre abonnement est actif !",
+            "greeting": f"Bonjour {name},",
+            "message": f"Votre abonnement <strong>{plan_name}</strong> a été activé avec succès.",
+            "valid_until": f"Valide jusqu'au : <strong>{expires_at}</strong>",
+            "cta": "Accéder à mon compte",
+            "enjoy": "Profitez de trajets illimités sur tout le réseau Métro-Taxi !"
+        },
+        "en": {
+            "subject": "Subscription activated - Métro-Taxi",
+            "title": "Your subscription is active!",
+            "greeting": f"Hello {name},",
+            "message": f"Your <strong>{plan_name}</strong> subscription has been successfully activated.",
+            "valid_until": f"Valid until: <strong>{expires_at}</strong>",
+            "cta": "Access my account",
+            "enjoy": "Enjoy unlimited rides across the entire Métro-Taxi network!"
+        }
+    }
+    
+    t = templates.get(lang[:2], templates["fr"])
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #0a0a0a;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0a; padding: 40px 0;">
+            <tr>
+                <td align="center">
+                    <table width="600" cellpadding="0" cellspacing="0" style="background-color: #18181b; border-radius: 8px;">
+                        <tr>
+                            <td style="background-color: #22c55e; padding: 30px; text-align: center;">
+                                <h1 style="margin: 0; color: #fff; font-size: 28px;">✓ {t['title']}</h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 40px 30px;">
+                                <p style="color: #a1a1aa; margin: 0 0 10px 0; font-size: 16px;">{t['greeting']}</p>
+                                <p style="color: #ffffff; margin: 0 0 20px 0; font-size: 18px;">{t['message']}</p>
+                                <p style="color: #FFD60A; margin: 0 0 30px 0; font-size: 16px;">{t['valid_until']}</p>
+                                <p style="color: #a1a1aa; margin: 0; font-size: 14px;">{t['enjoy']}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="background-color: #09090b; padding: 20px; text-align: center;">
+                                <p style="color: #52525b; margin: 0; font-size: 12px;">© 2026 Métro-Taxi</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
+    """
+    
+    try:
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [email],
+            "subject": t['subject'],
+            "html": html_content
+        }
+        result = await asyncio.to_thread(resend.Emails.send, params)
+        logging.info(f"Subscription email sent to {email}, ID: {result.get('id')}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send subscription email to {email}: {str(e)}")
+        return False
+
 async def get_current_user(request: Request) -> dict:
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
