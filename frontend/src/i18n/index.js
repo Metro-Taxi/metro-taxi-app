@@ -46,8 +46,10 @@ i18n
       order: ['localStorage', 'navigator'],
       caches: ['localStorage']
     },
-    // Handle language variants like en-US, en-GB -> en
-    load: 'languageOnly'
+    // Load all language codes including region variants like en-GB
+    load: 'all',
+    // Use specific language if available, fall back to base language
+    nonExplicitSupportedLngs: true
   });
 
 export default i18n;
