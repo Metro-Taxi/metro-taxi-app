@@ -677,7 +677,7 @@ const AdminDashboard = () => {
         <Dialog open={cardDialogOpen} onOpenChange={setCardDialogOpen}>
           <DialogContent className="bg-[#18181B] border-zinc-800 max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-white">Carte Virtuelle</DialogTitle>
+              <DialogTitle className="text-white">{t('dashboard.admin.cards.title')}</DialogTitle>
             </DialogHeader>
             {selectedCard && (
               <div>
@@ -693,20 +693,20 @@ const AdminDashboard = () => {
                         ? 'bg-green-500/20 text-green-400 border border-green-500/50' 
                         : 'bg-zinc-700 text-zinc-400'
                     }`}>
-                      {selectedCard.subscription_active ? 'ACTIF' : 'INACTIF'}
+                      {selectedCard.subscription_active ? t('dashboard.admin.users.active').toUpperCase() : t('dashboard.admin.users.inactive').toUpperCase()}
                     </span>
                   </div>
                   
-                  <p className="text-zinc-400 text-xs mb-1">TITULAIRE</p>
+                  <p className="text-zinc-400 text-xs mb-1">{t('dashboard.admin.cards.holder')}</p>
                   <p className="text-white font-bold text-xl mb-4">{selectedCard.name}</p>
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-zinc-400 text-xs mb-1">N° CARTE</p>
+                      <p className="text-zinc-400 text-xs mb-1">{t('dashboard.admin.cards.cardNumber')}</p>
                       <p className="text-[#FFD60A] font-mono text-sm">{selectedCard.card_number}</p>
                     </div>
                     <div>
-                      <p className="text-zinc-400 text-xs mb-1">TÉLÉPHONE</p>
+                      <p className="text-zinc-400 text-xs mb-1">{t('dashboard.admin.cards.phone')}</p>
                       <p className="text-white text-sm">{selectedCard.phone}</p>
                     </div>
                   </div>
@@ -715,15 +715,15 @@ const AdminDashboard = () => {
                     <div className="mt-4 pt-4 border-t border-zinc-700">
                       <div className="flex justify-between">
                         <div>
-                          <p className="text-zinc-400 text-xs">ABONNEMENT</p>
+                          <p className="text-zinc-400 text-xs">{t('dashboard.admin.cards.subscription')}</p>
                           <p className="text-[#FFD60A] font-bold">
-                            {selectedCard.subscription_plan === '24h' ? '24 Heures' :
-                             selectedCard.subscription_plan === '1week' ? '1 Semaine' :
-                             selectedCard.subscription_plan === '1month' ? '1 Mois' : '-'}
+                            {selectedCard.subscription_plan === '24h' ? t('subscription.plans.day.name') :
+                             selectedCard.subscription_plan === '1week' ? t('subscription.plans.week.name') :
+                             selectedCard.subscription_plan === '1month' ? t('subscription.plans.month.name') : '-'}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-zinc-400 text-xs">EXPIRE LE</p>
+                          <p className="text-zinc-400 text-xs">{t('dashboard.admin.cards.expires')}</p>
                           <p className="text-white">{formatDate(selectedCard.subscription_expires)}</p>
                         </div>
                       </div>
@@ -742,14 +742,14 @@ const AdminDashboard = () => {
                     <span className={`text-xs px-2 py-0.5 rounded ${
                       selectedCard.email_verified ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
                     }`}>
-                      {selectedCard.email_verified ? 'Vérifié' : 'Non vérifié'}
+                      {selectedCard.email_verified ? t('dashboard.admin.cards.verified') : t('dashboard.admin.cards.notVerified')}
                     </span>
                   </div>
                   
                   <div className="flex items-center gap-3 p-3 bg-zinc-900 rounded">
                     <Calendar className="w-5 h-5 text-zinc-400" />
                     <div>
-                      <p className="text-zinc-400 text-xs">Membre depuis</p>
+                      <p className="text-zinc-400 text-xs">{t('dashboard.admin.cards.memberSince')}</p>
                       <p className="text-white text-sm">{formatDate(selectedCard.created_at)}</p>
                     </div>
                   </div>
@@ -757,8 +757,8 @@ const AdminDashboard = () => {
                   <div className="flex items-center gap-3 p-3 bg-zinc-900 rounded">
                     <MapPin className="w-5 h-5 text-zinc-400" />
                     <div>
-                      <p className="text-zinc-400 text-xs">Trajets effectués</p>
-                      <p className="text-white text-sm">{selectedCard.total_rides || 0} trajets</p>
+                      <p className="text-zinc-400 text-xs">{t('dashboard.admin.cards.totalRides')}</p>
+                      <p className="text-white text-sm">{selectedCard.total_rides || 0} {t('dashboard.admin.cards.rides')}</p>
                     </div>
                   </div>
                 </div>
