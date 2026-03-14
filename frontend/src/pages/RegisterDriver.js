@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Car, Mail, Lock, User, Phone, Eye, EyeOff, CreditCard, FileText, Users } from 'lucide-react';
+import { Car, Mail, Lock, User, Phone, Eye, EyeOff, CreditCard, FileText, Users, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const RegisterDriver = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -20,7 +22,9 @@ const RegisterDriver = () => {
     vehicle_plate: '',
     vehicle_type: '',
     seats: 4,
-    vtc_license: ''
+    vtc_license: '',
+    iban: '',
+    bic: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
