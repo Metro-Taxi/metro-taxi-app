@@ -1,5 +1,5 @@
 {
-  "hero": {"title": "MÉTRO-TAXI", "subtitle": "Het abonnementsgebaseerde stedelijke mobiliteitsnetwerk", "description": "Reis mee met voertuigen die uw richting uitgaan. Onbeperkte ritten met een eenvoudig abonnement.", "cta": "AAN DE SLAG", "ecoSlogan": "Intelligent carpoolsysteem voor vervoer", "ecoMessage": "Verminder uw CO2-voetafdruk door ritten te delen"},
+  "hero": {"title": "MÉTRO-TAXI", "subtitle": "Het abonnementsgebaseerde stedelijke mobiliteitsnetwerk", "subtitleHighlight": "MET ABONNEMENT", "description": "Reis mee met voertuigen die uw richting uitgaan. Onbeperkte ritten met een eenvoudig abonnement.", "cta": "AAN DE SLAG", "ecoSlogan": "Intelligent carpoolsysteem voor vervoer", "ecoMessage": "Verminder uw CO2-voetafdruk door ritten te delen"},
   "nav": {"login": "Inloggen", "register": "Registreren", "pricing": "Prijzen", "howItWorks": "Hoe het werkt", "drivers": "Chauffeurs", "logout": "Uitloggen", "profile": "Profiel", "dashboard": "Dashboard"},
   "auth": {
     "login": {"title": "Inloggen", "subtitle": "Toegang tot uw Métro-Taxi account", "email": "E-mail", "password": "Wachtwoord", "submit": "INLOGGEN", "noAccount": "Nog geen account?", "signUp": "Registreer u", "asUser": "als gebruiker", "asDriver": "als chauffeur", "or": "of", "error": "Onjuiste e-mail of wachtwoord", "success": "Succesvol ingelogd"},
