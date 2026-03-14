@@ -426,10 +426,10 @@ const Landing = () => {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-              DEVENEZ <span className="text-[#FFD60A]">CHAUFFEUR VTC</span>
+              {t('drivers.title')}
             </h2>
             <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-              Rejoignez le réseau Métro-Taxi et maximisez vos revenus sans frais cachés
+              {t('drivers.subtitle')}
             </p>
           </motion.div>
 
@@ -442,22 +442,22 @@ const Landing = () => {
               viewport={{ once: true }}
               className="bg-gradient-to-br from-[#FFD60A] to-[#E6C209] p-8 rounded-lg"
             >
-              <h3 className="text-2xl font-black text-black mb-6">REVENU POTENTIEL CHAUFFEUR</h3>
+              <h3 className="text-2xl font-black text-black mb-6">{t('drivers.revenue.title')}</h3>
               <div className="bg-black/10 backdrop-blur-sm rounded-lg p-6 mb-6">
                 <div className="text-center">
-                  <p className="text-black/70 text-sm uppercase tracking-wide mb-2">Revenus mensuels estimés</p>
+                  <p className="text-black/70 text-sm uppercase tracking-wide mb-2">{t('drivers.revenue.monthly')}</p>
                   <div className="flex items-baseline justify-center gap-2">
                     <span className="text-4xl md:text-5xl font-black text-black">2 250 €</span>
                     <span className="text-2xl text-black/70">à</span>
                     <span className="text-4xl md:text-5xl font-black text-black">3 000 €</span>
                   </div>
-                  <p className="text-black/60 mt-2">par mois</p>
+                  <p className="text-black/60 mt-2">{t('drivers.revenue.monthly')}</p>
                 </div>
               </div>
               <div className="bg-black text-white rounded-lg p-4 text-center">
-                <p className="text-sm text-zinc-400 mb-1">Pouvant atteindre jusqu'à</p>
+                <p className="text-sm text-zinc-400 mb-1">{t('drivers.revenue.upTo')}</p>
                 <p className="text-3xl font-black text-[#FFD60A]">7 500 €</p>
-                <p className="text-sm text-zinc-400">selon l'activité</p>
+                <p className="text-sm text-zinc-400">{t('drivers.revenue.depending')}</p>
               </div>
             </motion.div>
 
@@ -468,14 +468,14 @@ const Landing = () => {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h3 className="text-2xl font-bold text-white mb-8">AVANTAGES CHAUFFEURS</h3>
+              <h3 className="text-2xl font-bold text-white mb-8">{t('drivers.benefits.title')}</h3>
               <div className="space-y-4">
                 {[
-                  { icon: "💰", text: "Aucun abonnement à payer", desc: "Rejoignez gratuitement notre réseau" },
-                  { icon: "📊", text: "Aucune commission par course", desc: "Gardez 100% de vos gains" },
-                  { icon: "👥", text: "Passagers déjà abonnés", desc: "Plus besoin de chercher des clients" },
-                  { icon: "🗺️", text: "Optimisation des trajets", desc: "Algorithme intelligent de matching" },
-                  { icon: "🚀", text: "Plus de passagers grâce au réseau", desc: "Maximisez votre temps de conduite" }
+                  { icon: "💰", text: t('drivers.benefits.noSubscription'), desc: t('drivers.benefits.noSubscriptionDesc') },
+                  { icon: "📊", text: t('drivers.benefits.noCommission'), desc: t('drivers.benefits.noCommissionDesc') },
+                  { icon: "👥", text: t('drivers.benefits.subscribedPassengers'), desc: t('drivers.benefits.subscribedPassengersDesc') },
+                  { icon: "🗺️", text: t('drivers.benefits.optimizedRoutes'), desc: t('drivers.benefits.optimizedRoutesDesc') },
+                  { icon: "🚀", text: t('drivers.benefits.morePassengers'), desc: t('drivers.benefits.morePassengersDesc') }
                 ].map((benefit, index) => (
                   <motion.div
                     key={index}
@@ -505,14 +505,14 @@ const Landing = () => {
             className="mt-16 bg-zinc-900 border border-zinc-800 rounded-lg p-8"
           >
             <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-white mb-2">L'APPLICATION CHAUFFEUR</h3>
-              <p className="text-zinc-400">Tout ce dont vous avez besoin sur un seul écran</p>
+              <h3 className="text-2xl font-bold text-white mb-2">{t('drivers.app.title')}</h3>
+              <p className="text-zinc-400">{t('drivers.app.subtitle')}</p>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {[
-                { icon: "📱", title: "Demandes de passagers", desc: "Recevez les demandes en temps réel dans votre zone" },
-                { icon: "🛣️", title: "Itinéraires optimisés", desc: "Routes calculées pour maximiser vos trajets" },
-                { icon: "🔄", title: "Correspondances proposées", desc: "Système de transbordement intelligent" }
+                { icon: "📱", title: t('drivers.app.requests'), desc: t('drivers.app.requestsDesc') },
+                { icon: "🛣️", title: t('drivers.app.routes'), desc: t('drivers.app.routesDesc') },
+                { icon: "🔄", title: t('drivers.app.transfers'), desc: t('drivers.app.transfersDesc') }
               ].map((feature, index) => (
                 <div key={index} className="text-center p-4">
                   <span className="text-4xl mb-4 block">{feature.icon}</span>
@@ -537,10 +537,10 @@ const Landing = () => {
                 className="bg-[#FFD60A] text-black font-bold text-lg px-10 py-6 hover:bg-[#E6C209] btn-press"
                 data-testid="driver-cta-btn"
               >
-                REJOINDRE LE RÉSEAU MAINTENANT
+                {t('drivers.cta')}
               </Button>
             </Link>
-            <p className="text-zinc-500 mt-4 text-sm">Inscription gratuite • Aucun engagement</p>
+            <p className="text-zinc-500 mt-4 text-sm">{t('drivers.ctaSubtext')}</p>
           </motion.div>
         </div>
       </section>
