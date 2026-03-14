@@ -250,8 +250,8 @@ const AdminDashboard = () => {
           <TabsContent value="drivers">
             <div className="bg-[#18181B] border border-zinc-800 rounded overflow-hidden">
               <div className="p-4 border-b border-zinc-800">
-                <h2 className="text-xl font-bold text-white">Gestion des chauffeurs</h2>
-                <p className="text-zinc-400 text-sm">Validez ou désactivez les comptes chauffeurs</p>
+                <h2 className="text-xl font-bold text-white">{t('dashboard.admin.drivers.title')}</h2>
+                <p className="text-zinc-400 text-sm">{t('dashboard.admin.drivers.subtitle')}</p>
               </div>
               
               {loading ? (
@@ -260,19 +260,19 @@ const AdminDashboard = () => {
                 </div>
               ) : drivers.length === 0 ? (
                 <div className="p-8 text-center text-zinc-400">
-                  Aucun chauffeur inscrit
+                  {t('dashboard.admin.drivers.noDrivers')}
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="admin-table">
                     <thead>
                       <tr>
-                        <th>Chauffeur</th>
-                        <th>Contact</th>
-                        <th>Véhicule</th>
-                        <th>Licence VTC</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
+                        <th>{t('dashboard.admin.drivers.driver')}</th>
+                        <th>{t('dashboard.admin.drivers.contact')}</th>
+                        <th>{t('dashboard.admin.drivers.vehicle')}</th>
+                        <th>{t('dashboard.admin.drivers.license')}</th>
+                        <th>{t('dashboard.admin.drivers.status')}</th>
+                        <th>{t('dashboard.admin.drivers.actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -285,7 +285,7 @@ const AdminDashboard = () => {
                               </div>
                               <div>
                                 <p className="font-medium text-white">{driver.first_name} {driver.last_name}</p>
-                                <p className="text-xs text-zinc-500">Inscrit le {formatDate(driver.created_at)}</p>
+                                <p className="text-xs text-zinc-500">{t('dashboard.admin.common.registeredOn')} {formatDate(driver.created_at)}</p>
                               </div>
                             </div>
                           </td>
@@ -295,7 +295,7 @@ const AdminDashboard = () => {
                           </td>
                           <td>
                             <p className="text-white font-mono">{driver.vehicle_plate}</p>
-                            <p className="text-zinc-500 text-xs">{driver.vehicle_type} • {driver.seats} places</p>
+                            <p className="text-zinc-500 text-xs">{driver.vehicle_type} • {driver.seats} {t('dashboard.admin.common.seats')}</p>
                           </td>
                           <td>
                             <p className="text-white font-mono text-sm">{driver.vtc_license}</p>
@@ -308,11 +308,11 @@ const AdminDashboard = () => {
                                   : 'bg-yellow-500/20 text-yellow-400'
                               }`}>
                                 {driver.is_validated ? <Check className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-                                {driver.is_validated ? 'Validé' : 'En attente'}
+                                {driver.is_validated ? t('dashboard.admin.drivers.validated') : t('dashboard.admin.drivers.pending')}
                               </span>
                               {driver.is_active && (
                                 <span className="text-xs px-2 py-1 rounded bg-blue-500/20 text-blue-400 w-fit">
-                                  En ligne
+                                  {t('dashboard.admin.drivers.online')}
                                 </span>
                               )}
                             </div>
@@ -327,7 +327,7 @@ const AdminDashboard = () => {
                                   data-testid={`validate-driver-${driver.id}`}
                                 >
                                   <UserCheck className="w-4 h-4 mr-1" />
-                                  Activer
+                                  {t('dashboard.admin.drivers.activate')}
                                 </Button>
                               ) : (
                                 <Button
@@ -338,7 +338,7 @@ const AdminDashboard = () => {
                                   data-testid={`deactivate-driver-${driver.id}`}
                                 >
                                   <UserX className="w-4 h-4 mr-1" />
-                                  Désactiver
+                                  {t('dashboard.admin.drivers.deactivate')}
                                 </Button>
                               )}
                             </div>
