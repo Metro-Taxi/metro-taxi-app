@@ -356,8 +356,8 @@ const AdminDashboard = () => {
           <TabsContent value="users">
             <div className="bg-[#18181B] border border-zinc-800 rounded overflow-hidden">
               <div className="p-4 border-b border-zinc-800">
-                <h2 className="text-xl font-bold text-white">Liste des usagers</h2>
-                <p className="text-zinc-400 text-sm">Consultez les informations des usagers inscrits</p>
+                <h2 className="text-xl font-bold text-white">{t('dashboard.admin.users.title')}</h2>
+                <p className="text-zinc-400 text-sm">{t('dashboard.admin.users.subtitle')}</p>
               </div>
               
               {loading ? (
@@ -366,18 +366,18 @@ const AdminDashboard = () => {
                 </div>
               ) : users.length === 0 ? (
                 <div className="p-8 text-center text-zinc-400">
-                  Aucun usager inscrit
+                  {t('dashboard.admin.users.noUsers')}
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="admin-table">
                     <thead>
                       <tr>
-                        <th>Usager</th>
-                        <th>Contact</th>
-                        <th>Abonnement</th>
-                        <th>Expiration</th>
-                        <th>Inscription</th>
+                        <th>{t('dashboard.admin.users.user')}</th>
+                        <th>{t('dashboard.admin.users.contact')}</th>
+                        <th>{t('dashboard.admin.users.subscription')}</th>
+                        <th>{t('dashboard.admin.users.expiration')}</th>
+                        <th>{t('dashboard.admin.users.registration')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -404,7 +404,7 @@ const AdminDashboard = () => {
                                 ? 'bg-green-500/20 text-green-400' 
                                 : 'bg-zinc-700/50 text-zinc-400'
                             }`}>
-                              {user.subscription_active ? 'Actif' : 'Inactif'}
+                              {user.subscription_active ? t('dashboard.admin.users.active') : t('dashboard.admin.users.inactive')}
                             </span>
                           </td>
                           <td>
