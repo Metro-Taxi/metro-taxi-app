@@ -217,7 +217,7 @@ const RegisterDriver = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="vtc_license" className="text-zinc-300">Numéro licence VTC</Label>
+                  <Label htmlFor="vtc_license" className="text-zinc-300">{t('auth.register.driver.vtcLicense', 'Numéro licence VTC')}</Label>
                   <div className="relative">
                     <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                     <Input
@@ -229,6 +229,47 @@ const RegisterDriver = () => {
                       className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
                       required
                       data-testid="driver-license-input"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bank Information */}
+            <div className="space-y-4 pt-4 border-t border-zinc-800">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-[#FFD60A]" />
+                {t('auth.register.driver.bankInfo', 'Informations bancaires')}
+              </h3>
+              <p className="text-zinc-500 text-sm">{t('auth.register.driver.bankInfoDesc', 'Pour recevoir vos paiements. Facultatif, modifiable plus tard.')}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="iban" className="text-zinc-300">IBAN</Label>
+                  <div className="relative">
+                    <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                    <Input
+                      id="iban"
+                      name="iban"
+                      value={formData.iban}
+                      onChange={handleChange}
+                      placeholder="FR76 XXXX XXXX XXXX XXXX XXXX XXX"
+                      className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A] font-mono"
+                      data-testid="driver-iban-input"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="bic" className="text-zinc-300">BIC / SWIFT</Label>
+                  <div className="relative">
+                    <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                    <Input
+                      id="bic"
+                      name="bic"
+                      value={formData.bic}
+                      onChange={handleChange}
+                      placeholder="BNPAFRPP"
+                      className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A] font-mono"
+                      data-testid="driver-bic-input"
                     />
                   </div>
                 </div>
