@@ -305,16 +305,16 @@
     "title": "COMMENT ÇA MARCHE",
     "steps": {
       "step1": {
-        "title": "Inscrivez-vous",
-        "description": "Créez votre compte et choisissez votre abonnement"
+        "title": "ABONNEZ-VOUS",
+        "description": "Choisissez votre forfait : 24h, 1 semaine ou 1 mois. Payez une fois, voyagez sans compter."
       },
       "step2": {
-        "title": "Trouvez un véhicule",
-        "description": "Localisez les véhicules allant dans votre direction"
+        "title": "LOCALISEZ",
+        "description": "Trouvez les véhicules disponibles autour de vous en temps réel sur la carte."
       },
       "step3": {
-        "title": "Demandez à monter",
-        "description": "Envoyez une demande au chauffeur d'un simple clic"
+        "title": "VOYAGEZ",
+        "description": "Demandez votre trajet en un clic. Le chauffeur vous récupère sur le chemin."
       },
       "step4": {
         "title": "Voyagez",
