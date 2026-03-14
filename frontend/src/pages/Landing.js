@@ -220,9 +220,9 @@ const Landing = () => {
             className="text-center mb-12"
           >
             <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-              DÉCOUVREZ <span className="text-[#FFD60A]">MÉTRO-TAXI</span>
+              {t('video.title').split(' ')[0]} <span className="text-[#FFD60A]">MÉTRO-TAXI</span>
             </h2>
-            <p className="text-zinc-400 text-lg">La nouvelle façon de se déplacer en ville</p>
+            <p className="text-zinc-400 text-lg">{t('hero.subtitle')}</p>
           </motion.div>
           
           {/* Video Player - AI Generated Promo */}
@@ -234,6 +234,7 @@ const Landing = () => {
             className="relative aspect-video bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800"
           >
             <video
+              ref={videoRef}
               className="w-full h-full object-cover"
               controls
               autoPlay
@@ -243,12 +244,41 @@ const Landing = () => {
               poster="https://images.unsplash.com/photo-1768297941301-1009a05e5514?crop=entropy&cs=srgb&fm=jpg&q=85"
             >
               <source src="/videos/metro-taxi-promo.mp4" type="video/mp4" />
-              Votre navigateur ne supporte pas la lecture vidéo.
+              {t('common.error')}
             </video>
+            
+            {/* Voiceover Button */}
+            <button
+              onClick={playVoiceover}
+              disabled={audioLoading}
+              className={`absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 rounded-full font-bold transition-all ${
+                audioPlaying 
+                  ? 'bg-[#FFD60A] text-black' 
+                  : 'bg-black/70 text-white hover:bg-black/90'
+              }`}
+              data-testid="voiceover-btn"
+            >
+              {audioLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span className="hidden sm:inline">{t('video.loading')}</span>
+                </>
+              ) : audioPlaying ? (
+                <>
+                  <VolumeX className="w-5 h-5" />
+                  <span className="hidden sm:inline">Stop</span>
+                </>
+              ) : (
+                <>
+                  <Volume2 className="w-5 h-5" />
+                  <span className="hidden sm:inline">{currentLanguage.flag} Voix off</span>
+                </>
+              )}
+            </button>
           </motion.div>
           
           <p className="text-center text-zinc-500 text-sm mt-4">
-            🎬 Vidéo générée par IA - Métro-Taxi : mobilité durable et transbordement intelligent
+            🎬 {t('video.title')} - {t('hero.subtitle')}
           </p>
         </div>
       </section>
