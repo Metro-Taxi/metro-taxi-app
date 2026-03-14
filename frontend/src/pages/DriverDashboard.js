@@ -50,6 +50,8 @@ const MapUpdater = ({ center }) => {
 const DriverDashboard = () => {
   const { driver, token, logout, refreshUser } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [driverLocation, setDriverLocation] = useState(null);
   const [isActive, setIsActive] = useState(driver?.is_active || false);
