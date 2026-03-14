@@ -275,20 +275,20 @@
     "plans": {
       "day": {
         "name": "24 Stunden",
-        "price": "7,99 €",
-        "priceLocal": "7,99 €",
+        "price": "6,99 €",
+        "priceLocal": "6,99 €",
         "description": "Perfekt für gelegentliche Nutzung"
       },
       "week": {
         "name": "1 Woche",
-        "price": "18,99 €",
-        "priceLocal": "18,99 €",
+        "price": "16,99 €",
+        "priceLocal": "16,99 €",
         "description": "Ideal für Kurzaufenthalte"
       },
       "month": {
         "name": "1 Monat",
-        "price": "59,99 €",
-        "priceLocal": "59,99 €",
+        "price": "53,99 €",
+        "priceLocal": "53,99 €",
         "description": "Bestes Preis-Leistungs-Verhältnis"
       }
     },
@@ -330,9 +330,9 @@
       "monthly": "pro Monat",
       "upTo": "Bis zu",
       "depending": "je nach Aktivität",
-      "rangeMin": "2.499 €",
-      "rangeMax": "3.299 €",
-      "maxRevenue": "8.249 €"
+      "rangeMin": "2 250 €",
+      "rangeMax": "3 000 €",
+      "maxRevenue": "7 500 €"
     },
     "benefits": {
       "title": "FAHRERVORTEILE",
