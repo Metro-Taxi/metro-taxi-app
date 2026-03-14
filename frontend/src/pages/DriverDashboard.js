@@ -303,8 +303,8 @@ const DriverDashboard = () => {
             <Marker position={driverLocation} icon={driverIcon}>
               <Popup>
                 <div className="text-center p-2">
-                  <p className="font-bold">Votre position</p>
-                  <p className="text-sm text-zinc-600">{availableSeats} places libres</p>
+                  <p className="font-bold">{t('dashboard.user.yourPosition')}</p>
+                  <p className="text-sm text-zinc-600">{availableSeats} {t('dashboard.user.freeSeats')}</p>
                 </div>
               </Popup>
             </Marker>
@@ -326,7 +326,7 @@ const DriverDashboard = () => {
             <Popup>
               <div className="p-2 min-w-[180px]">
                 <p className="font-bold">{ride.user_name}</p>
-                <p className="text-xs text-zinc-500">Demande de trajet</p>
+                <p className="text-xs text-zinc-500">{t('dashboard.driver.pendingRequests')}</p>
               </div>
             </Popup>
           </Marker>
@@ -346,7 +346,7 @@ const DriverDashboard = () => {
           data-testid="toggle-active-btn"
         >
           <Power className="w-5 h-5 mr-2" />
-          {isActive ? 'SE DÉCONNECTER' : 'SE CONNECTER'}
+          {isActive ? t('dashboard.driver.goOffline').toUpperCase() : t('dashboard.driver.goOnline').toUpperCase()}
         </Button>
         
         {!driver?.is_validated && (
