@@ -130,7 +130,7 @@ const AdminDashboard = () => {
             <Car className="w-8 h-8 text-[#FFD60A]" />
             <div>
               <span className="text-xl font-bold text-white">MÉTRO-TAXI</span>
-              <span className="text-xs text-zinc-400 block">Administration</span>
+              <span className="text-xs text-zinc-400 block">{t('dashboard.admin.title')}</span>
             </div>
           </div>
           
@@ -163,7 +163,7 @@ const AdminDashboard = () => {
               <TrendingUp className="w-4 h-4 text-green-500" />
             </div>
             <p className="text-3xl font-black text-white">{stats?.total_users || 0}</p>
-            <p className="text-zinc-400 text-sm">Usagers inscrits</p>
+            <p className="text-zinc-400 text-sm">{t('dashboard.admin.stats.users')}</p>
           </motion.div>
 
           <motion.div
@@ -177,7 +177,7 @@ const AdminDashboard = () => {
               <Activity className="w-4 h-4 text-[#FFD60A]" />
             </div>
             <p className="text-3xl font-black text-white">{stats?.total_drivers || 0}</p>
-            <p className="text-zinc-400 text-sm">Chauffeurs</p>
+            <p className="text-zinc-400 text-sm">{t('dashboard.admin.stats.drivers')}</p>
           </motion.div>
 
           <motion.div
@@ -191,7 +191,7 @@ const AdminDashboard = () => {
               <BarChart3 className="w-4 h-4 text-green-500" />
             </div>
             <p className="text-3xl font-black text-white">{stats?.active_subscriptions || 0}</p>
-            <p className="text-zinc-400 text-sm">Abonnements actifs</p>
+            <p className="text-zinc-400 text-sm">{t('dashboard.admin.stats.subscriptions')}</p>
           </motion.div>
 
           <motion.div
@@ -205,7 +205,7 @@ const AdminDashboard = () => {
               <Activity className="w-4 h-4 text-purple-500 animate-pulse" />
             </div>
             <p className="text-3xl font-black text-white">{stats?.active_rides || 0}</p>
-            <p className="text-zinc-400 text-sm">Trajets en cours</p>
+            <p className="text-zinc-400 text-sm">{t('dashboard.admin.stats.rides')}</p>
           </motion.div>
         </div>
 
