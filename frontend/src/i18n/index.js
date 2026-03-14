@@ -15,6 +15,8 @@ import da from './locales/da.json';
 import zh from './locales/zh.json';
 import hi from './locales/hi.json';
 import pa from './locales/pa.json';
+import ar from './locales/ar.json';
+import ru from './locales/ru.json';
 
 const resources = {
   fr: { translation: fr },
@@ -29,7 +31,9 @@ const resources = {
   da: { translation: da },
   zh: { translation: zh },
   hi: { translation: hi },
-  pa: { translation: pa }
+  pa: { translation: pa },
+  ar: { translation: ar },
+  ru: { translation: ru }
 };
 
 i18n
