@@ -710,7 +710,7 @@ const UserDashboard = () => {
                   <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
-                    DEMANDER CE TRAJET
+                    {t('dashboard.user.requestRide').toUpperCase()}
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </>
                 )}
@@ -726,8 +726,8 @@ const UserDashboard = () => {
           <div className="flex items-center gap-3">
             <Mail className="w-5 h-5 text-yellow-500" />
             <div className="flex-1">
-              <p className="text-yellow-400 text-sm font-medium">Email non vérifié</p>
-              <p className="text-yellow-400/70 text-xs">Vérifiez votre email pour profiter de toutes les fonctionnalités</p>
+              <p className="text-yellow-400 text-sm font-medium">{t('dashboard.user.emailNotVerified')}</p>
+              <p className="text-yellow-400/70 text-xs">{t('dashboard.user.verifyEmail')}</p>
             </div>
           </div>
         </div>
@@ -737,11 +737,11 @@ const UserDashboard = () => {
       <div className="absolute bottom-24 left-4 z-[1000] glass-panel px-4 py-2 rounded">
         <div className="flex items-center gap-2 text-white">
           <Car className="w-4 h-4 text-[#FFD60A]" />
-          <span className="text-sm">{drivers.length} véhicules disponibles</span>
+          <span className="text-sm">{drivers.length} {t('dashboard.user.availableVehicles')}</span>
         </div>
         {networkStatus && (
           <div className="text-xs text-zinc-400 mt-1">
-            {networkStatus.total_available_seats} places • {networkStatus.active_rides} trajets actifs
+            {networkStatus.total_available_seats} {t('dashboard.user.seats')} • {networkStatus.active_rides} {t('dashboard.user.activeRides')}
           </div>
         )}
       </div>
@@ -755,7 +755,7 @@ const UserDashboard = () => {
             data-testid="set-destination-btn"
           >
             <MapPin className="w-4 h-4 mr-2" />
-            {showDestinationPicker ? 'Annuler' : 'Définir destination'}
+            {showDestinationPicker ? t('dashboard.user.cancel') : t('dashboard.user.setDestination')}
           </Button>
         </div>
       )}
@@ -763,7 +763,7 @@ const UserDashboard = () => {
       {/* Destination picker hint */}
       {showDestinationPicker && (
         <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[1000] bg-blue-500 text-white px-4 py-2 rounded-full text-sm">
-          Cliquez sur la carte pour définir votre destination
+          {t('dashboard.user.clickMap')}
         </div>
       )}
 
