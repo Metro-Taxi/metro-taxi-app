@@ -278,7 +278,7 @@ const DriverDashboard = () => {
                 data-testid="driver-logout-btn"
               >
                 <LogOut className="w-5 h-5 mr-3" />
-                Déconnexion
+                {t('nav.logout')}
               </Button>
             </div>
           </motion.div>
