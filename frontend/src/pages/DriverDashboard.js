@@ -447,7 +447,7 @@ const DriverDashboard = () => {
                 data-testid="complete-ride-btn"
               >
                 <Check className="w-5 h-5 mr-2" />
-                TRAJET TERMINÉ
+                {t('dashboard.driver.completeRide').toUpperCase()}
               </Button>
             </div>
           </motion.div>
@@ -459,12 +459,12 @@ const DriverDashboard = () => {
         <div className="flex items-center gap-4 text-white">
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-[#FFD60A]" />
-            <span className="text-sm">{availableSeats} places</span>
+            <span className="text-sm">{availableSeats} {t('dashboard.user.seats')}</span>
           </div>
           {isActive && (
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm text-green-400">Visible</span>
+              <span className="text-sm text-green-400">{t('dashboard.driver.online')}</span>
             </div>
           )}
         </div>
