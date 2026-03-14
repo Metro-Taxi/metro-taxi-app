@@ -361,7 +361,7 @@ const UserDashboard = () => {
                 <Link to="/subscription" onClick={() => setMenuOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start text-white hover:bg-zinc-800" data-testid="subscription-link">
                     <CreditCard className="w-5 h-5 mr-3" />
-                    Abonnement
+                    {t('profile.subscription.title')}
                   </Button>
                 </Link>
                 <Button 
@@ -371,7 +371,7 @@ const UserDashboard = () => {
                   data-testid="logout-btn"
                 >
                   <LogOut className="w-5 h-5 mr-3" />
-                  Déconnexion
+                  {t('nav.logout')}
                 </Button>
               </nav>
             </div>
