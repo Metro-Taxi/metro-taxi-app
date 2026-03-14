@@ -76,7 +76,16 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
   - 🇩🇰 Dansk
   - 🇨🇳 中文 (Mandarin)
   - 🇵🇰 اردو (Urdu)
-- [x] **Traduction complète** de l'interface landing page
+- [x] **Traduction complète** de TOUTES les pages:
+  - Landing page (héro, forfaits, fonctionnement, section chauffeurs)
+  - Page de connexion
+  - Page d'inscription usager
+  - Page d'inscription chauffeur
+  - Dashboard usager
+  - Dashboard chauffeur
+  - Dashboard admin
+  - Page de profil
+  - Page d'abonnement
 - [x] **Voix off TTS** pour la vidéo dans chaque langue
 - [x] **API TTS**: `/api/tts/voiceover` et `/api/tts/languages`
 
