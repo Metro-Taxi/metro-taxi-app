@@ -40,7 +40,11 @@
       },
       "driver": {
         "title": "Inscription Chauffeur VTC",
-        "subtitle": "Rejoignez le réseau Métro-Taxi"
+        "subtitle": "Rejoignez le réseau Métro-Taxi",
+        "vtcLicense": "Numéro licence VTC",
+        "bankInfo": "Informations bancaires",
+        "bankInfoDesc": "Pour recevoir vos paiements. Facultatif, modifiable plus tard.",
+        "successAuto": "Inscription réussie ! Votre compte est activé. Vous pouvez vous connecter."
       },
       "firstName": "Prénom",
       "lastName": "Nom",
