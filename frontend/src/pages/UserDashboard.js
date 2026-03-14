@@ -579,22 +579,22 @@ const UserDashboard = () => {
                 <div className="flex justify-between">
                   <div className="flex flex-col items-center">
                     <div className={`w-3 h-3 rounded-full ${activeRide.status !== 'pending' ? 'bg-green-500' : 'bg-zinc-600'}`}></div>
-                    <span className="text-xs text-zinc-500 mt-1">Accepté</span>
+                    <span className="text-xs text-zinc-500 mt-1">{t('common.accepted')}</span>
                   </div>
                   <div className="flex-1 h-0.5 bg-zinc-700 self-center mx-2"></div>
                   <div className="flex flex-col items-center">
                     <div className={`w-3 h-3 rounded-full ${['pickup', 'in_progress', 'near_destination', 'completed'].includes(activeRide.status) ? 'bg-green-500' : 'bg-zinc-600'}`}></div>
-                    <span className="text-xs text-zinc-500 mt-1">Récupéré</span>
+                    <span className="text-xs text-zinc-500 mt-1">{t('common.pickedUp')}</span>
                   </div>
                   <div className="flex-1 h-0.5 bg-zinc-700 self-center mx-2"></div>
                   <div className="flex flex-col items-center">
                     <div className={`w-3 h-3 rounded-full ${['in_progress', 'near_destination', 'completed'].includes(activeRide.status) ? 'bg-green-500' : 'bg-zinc-600'}`}></div>
-                    <span className="text-xs text-zinc-500 mt-1">En route</span>
+                    <span className="text-xs text-zinc-500 mt-1">{t('common.enRoute')}</span>
                   </div>
                   <div className="flex-1 h-0.5 bg-zinc-700 self-center mx-2"></div>
                   <div className="flex flex-col items-center">
                     <div className={`w-3 h-3 rounded-full ${activeRide.status === 'completed' ? 'bg-green-500' : 'bg-zinc-600'}`}></div>
-                    <span className="text-xs text-zinc-500 mt-1">Arrivé</span>
+                    <span className="text-xs text-zinc-500 mt-1">{t('common.arrived')}</span>
                   </div>
                 </div>
               </div>
