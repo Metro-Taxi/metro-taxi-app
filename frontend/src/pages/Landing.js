@@ -363,16 +363,16 @@ const Landing = () => {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-              NOS <span className="text-[#FFD60A]">FORFAITS</span>
+              {t('pricing.title')}
             </h2>
-            <p className="text-zinc-400 text-lg">Des prix simples. Pas de frais cachés.</p>
+            <p className="text-zinc-400 text-lg">{t('pricing.subtitle')}</p>
           </motion.div>
           
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {[
-              { name: "24 HEURES", price: "6,99", period: "jour" },
-              { name: "1 SEMAINE", price: "16,99", period: "semaine", popular: true },
-              { name: "1 MOIS", price: "53,99", period: "mois" }
+              { name: t('pricing.plans.day.name'), price: t('pricing.plans.day.priceLocal'), period: t('subscription.perDay') },
+              { name: t('pricing.plans.week.name'), price: t('pricing.plans.week.priceLocal'), period: t('subscription.perWeek'), popular: true },
+              { name: t('pricing.plans.month.name'), price: t('pricing.plans.month.priceLocal'), period: t('subscription.perMonth') }
             ].map((plan, index) => (
               <motion.div
                 key={index}
@@ -385,29 +385,28 @@ const Landing = () => {
                 <h3 className="text-lg font-bold text-zinc-400 mb-4">{plan.name}</h3>
                 <div className="mb-6">
                   <span className="text-5xl font-black text-[#FFD60A]">{plan.price}</span>
-                  <span className="text-zinc-400">€</span>
                 </div>
-                <p className="text-zinc-500 mb-6">/ {plan.period}</p>
+                <p className="text-zinc-500 mb-6">{plan.period}</p>
                 <ul className="space-y-3 text-zinc-300 mb-8">
                   <li className="flex items-center gap-2">
                     <Shield className="w-4 h-4 text-[#FFD60A]" />
-                    Trajets illimités
+                    {t('pricing.features.unlimited')}
                   </li>
                   <li className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-[#FFD60A]" />
-                    Disponible 24h/24
+                    {t('pricing.features.allVehicles')}
                   </li>
                   <li className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-[#FFD60A]" />
-                    Transbordements optimisés
+                    {t('pricing.features.eco')}
                   </li>
                 </ul>
                 <Link to="/register/user">
                   <Button 
                     className={`w-full ${plan.popular ? 'bg-[#FFD60A] text-black hover:bg-[#E6C209]' : 'bg-zinc-800 text-white hover:bg-zinc-700'} font-bold`}
-                    data-testid={`plan-${plan.period}-btn`}
+                    data-testid={`plan-${index}-btn`}
                   >
-                    CHOISIR
+                    {t('pricing.cta')}
                   </Button>
                 </Link>
               </motion.div>
