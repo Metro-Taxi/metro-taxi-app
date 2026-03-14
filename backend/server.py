@@ -921,6 +921,18 @@ async def register_user(data: UserRegister, request: Request):
     host_url = str(request.headers.get("origin", ""))
     verification_url = f"{host_url}/verify-email?token={verification_token}"
     
+    # Get language from Accept-Language header
+    accept_lang = request.headers.get("accept-language", "fr")
+    lang = accept_lang.split(",")[0].split("-")[0] if accept_lang else "fr"
+    
+    # Send verification email (async, non-blocking)
+    asyncio.create_task(send_verification_email(
+        email=data.email,
+        name=data.first_name,
+        verification_url=verification_url,
+        lang=lang
+    ))
+    
     token = create_token(user_id, "user")
     return {
         "token": token, 
