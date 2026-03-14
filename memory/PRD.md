@@ -21,7 +21,7 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 - [x] Inscription usager (nom, prénom, email, téléphone, mot de passe)
 - [x] Inscription chauffeur (+ plaque, type véhicule, places, licence VTC)
 - [x] Validation chauffeur par admin
-- [x] Vérification email avec token sécurisé (MOCK)
+- [x] **Vérification email via Resend** (emails multilingues FR/EN/ES/DE/PT)
 
 ### Section 2 - Abonnements ✅
 - [x] 3 forfaits: 24h (7€), 1 semaine (17€), 1 mois (54€) - Prix arrondis
