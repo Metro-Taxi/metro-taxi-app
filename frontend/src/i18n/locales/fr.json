@@ -354,7 +354,8 @@
       "noCommitment": "Sans engagement",
       "eco": "🌿 Transport éco-responsable"
     },
-    "cta": "S'ABONNER"
+    "cta": "S'ABONNER",
+    "popularBadge": "POPULAIRE"
   },
   "howItWorks": {
     "title": "COMMENT ÇA MARCHE",
