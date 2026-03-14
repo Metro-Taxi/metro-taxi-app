@@ -614,7 +614,7 @@ const UserDashboard = () => {
           >
             <div className="max-w-lg mx-auto">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-white text-lg">Demander un trajet</h3>
+                <h3 className="font-bold text-white text-lg">{t('common.requestRide')}</h3>
                 <button 
                   onClick={() => setSelectedDriver(null)}
                   className="text-zinc-400 hover:text-white"
