@@ -275,20 +275,20 @@
     "plans": {
       "day": {
         "name": "24 Heures",
-        "price": "7 €",
-        "priceLocal": "7 €",
+        "price": "6,99 €",
+        "priceLocal": "6,99 €",
         "description": "Parfait pour un usage ponctuel"
       },
       "week": {
         "name": "1 Semaine",
-        "price": "17 €",
-        "priceLocal": "17 €",
+        "price": "16,99 €",
+        "priceLocal": "16,99 €",
         "description": "Idéal pour les courts séjours"
       },
       "month": {
         "name": "1 Mois",
-        "price": "54 €",
-        "priceLocal": "54 €",
+        "price": "53,99 €",
+        "priceLocal": "53,99 €",
         "description": "Le meilleur rapport qualité-prix"
       }
     },
@@ -329,7 +329,10 @@
       "title": "REVENU POTENTIEL CHAUFFEUR",
       "monthly": "par mois",
       "upTo": "Pouvant atteindre jusqu'à",
-      "depending": "selon l'activité"
+      "depending": "selon l'activité",
+      "rangeMin": "2 250 €",
+      "rangeMax": "3 000 €",
+      "maxRevenue": "7 500 €"
     },
     "benefits": {
       "title": "AVANTAGES CHAUFFEURS",
