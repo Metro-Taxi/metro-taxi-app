@@ -416,14 +416,14 @@ const UserDashboard = () => {
           <Marker position={destination} icon={destinationIcon}>
             <Popup>
               <div className="p-2 text-center">
-                <p className="font-bold">Destination</p>
+                <p className="font-bold">{t('dashboard.user.destination')}</p>
                 <Button 
                   size="sm" 
                   variant="ghost" 
                   className="mt-2 text-red-500"
                   onClick={() => setDestination(null)}
                 >
-                  Supprimer
+                  {t('dashboard.user.remove')}
                 </Button>
               </div>
             </Popup>
