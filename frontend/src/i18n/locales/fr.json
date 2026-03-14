@@ -44,7 +44,9 @@
         "vtcLicense": "Numéro licence VTC",
         "bankInfo": "Informations bancaires",
         "bankInfoDesc": "Pour recevoir vos paiements. Facultatif, modifiable plus tard.",
-        "successAuto": "Inscription réussie ! Votre compte est activé. Vous pouvez vous connecter."
+        "successAuto": "Inscription réussie ! Votre compte est activé. Vous pouvez vous connecter.",
+        "autoValidation": "Votre compte sera automatiquement activé. Vous pourrez recevoir des demandes de trajet immédiatement.",
+        "submitBtn": "S'INSCRIRE EN TANT QUE CHAUFFEUR"
       },
       "firstName": "Prénom",
       "lastName": "Nom",
