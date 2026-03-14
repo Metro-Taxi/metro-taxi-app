@@ -190,7 +190,7 @@ const Landing = () => {
             <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
               {t('hero.title')}
               <br />
-              <span className="text-[#FFD60A]">{t('hero.subtitle').split(' ').slice(-2).join(' ')}</span>
+              <span className="text-[#FFD60A]">{t('hero.subtitleHighlight')}</span>
             </h1>
             <p className="text-xl md:text-2xl text-zinc-300 mb-4 max-w-2xl mx-auto">
               {t('hero.description')}
