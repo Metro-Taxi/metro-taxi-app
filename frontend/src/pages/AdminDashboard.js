@@ -218,7 +218,7 @@ const AdminDashboard = () => {
               data-testid="drivers-tab"
             >
               <Car className="w-4 h-4 mr-2" />
-              Chauffeurs
+              {t('dashboard.admin.tabs.drivers')}
             </TabsTrigger>
             <TabsTrigger 
               value="users"
@@ -226,7 +226,7 @@ const AdminDashboard = () => {
               data-testid="users-tab"
             >
               <Users className="w-4 h-4 mr-2" />
-              Usagers
+              {t('dashboard.admin.tabs.users')}
             </TabsTrigger>
             <TabsTrigger 
               value="subscriptions"
@@ -234,7 +234,7 @@ const AdminDashboard = () => {
               data-testid="subscriptions-tab"
             >
               <CreditCard className="w-4 h-4 mr-2" />
-              Abonnements
+              {t('dashboard.admin.tabs.subscriptions')}
             </TabsTrigger>
             <TabsTrigger 
               value="cards"
@@ -242,7 +242,7 @@ const AdminDashboard = () => {
               data-testid="cards-tab"
             >
               <IdCard className="w-4 h-4 mr-2" />
-              Cartes Virtuelles
+              {t('dashboard.admin.tabs.cards')}
             </TabsTrigger>
           </TabsList>
 
