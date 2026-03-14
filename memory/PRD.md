@@ -70,14 +70,16 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 ### Section 8 - Internationalisation (i18n) ✅ (Mis à jour - 14/03/2026)
 - [x] **Sélecteur de langue** sur la page d'accueil (13 langues)
 - [x] **Détection automatique** de la langue du navigateur
+- [x] **Badge POPULAIRE traduisible** (était en CSS, maintenant JSX)
+- [x] **Concept PAR ABONNEMENT** mis en évidence dans toutes les langues
 - [x] **Langues supportées**:
   - 🇫🇷 Français (défaut) - Prix: 6,99€, 16,99€, 53,99€
   - 🇺🇸 English (US) - Prix: $7.99, $18.99, $59.99
-  - 🇬🇧 English (UK) - Prix: £5.99, £14.99, £45.99 (NOUVEAU)
+  - 🇬🇧 English (UK) - Prix: £5.99, £14.99, £45.99
   - 🇩🇪 Deutsch - Prix: 6,99€, 16,99€, 53,99€ (identique FR)
-  - 🇳🇱 Nederlands - Prix: 6,99€, 16,99€, 53,99€ (NOUVEAU)
-  - 🇪🇸 Español - Prix: 7,99€, 18,99€, 59,99€
-  - 🇵🇹 Português - Prix: 7,99€, 18,99€, 59,99€
+  - 🇳🇱 Nederlands - Prix: 6,99€, 16,99€, 53,99€
+  - 🇪🇸 Español - Prix: 6,99€, 16,99€, 53,99€ (aligné FR)
+  - 🇵🇹 Português - Prix: 6,99€, 16,99€, 53,99€ (aligné FR)
   - 🇳🇴 Norsk (NOK) - Prix: 79,99kr, 189,99kr, 599,99kr
   - 🇸🇪 Svenska (SEK) - Prix: 79,99kr, 189,99kr, 599,99kr
   - 🇩🇰 Dansk (DKK) - Prix: 54,99kr, 129,99kr, 409,99kr
