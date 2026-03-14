@@ -1,10 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Car, Users, MapPin, CreditCard, Shield, Clock } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Car, Users, MapPin, CreditCard, Shield, Clock, Globe, ChevronDown, Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
+import { languages } from '@/i18n';
+
+const API = process.env.REACT_APP_BACKEND_URL;
 
 const Landing = () => {
+  const { t, i18n } = useTranslation();
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const [audioPlaying, setAudioPlaying] = useState(false);
+  const [audioLoading, setAudioLoading] = useState(false);
+  const audioRef = useRef(null);
+  const videoRef = useRef(null);
+
+  const currentLanguage = languages.find(l => l.code === i18n.language) || languages[0];
+
+  const changeLanguage = (code) => {
+    i18n.changeLanguage(code);
+    setLanguageMenuOpen(false);
+    // Stop any playing audio when language changes
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+      setAudioPlaying(false);
+    }
+  };
+
+  const playVoiceover = async () => {
+    if (audioLoading) return;
+
+    // If audio is playing, stop it
+    if (audioPlaying && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+      setAudioPlaying(false);
+      return;
+    }
+
+    setAudioLoading(true);
+    try {
+      const response = await fetch(`${API}/api/tts/voiceover`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ language: i18n.language, voice: 'nova' })
+      });
+
+      if (!response.ok) throw new Error('TTS request failed');
+
+      const blob = await response.blob();
+      const audioUrl = URL.createObjectURL(blob);
+      
+      audioRef.current = new Audio(audioUrl);
+      audioRef.current.onended = () => {
+        setAudioPlaying(false);
+        audioRef.current = null;
+      };
+      
+      // Sync with video if present
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
+        videoRef.current.muted = true;
+        videoRef.current.play();
+      }
+      
+      await audioRef.current.play();
+      setAudioPlaying(true);
+    } catch (error) {
+      console.error('Voiceover error:', error);
+    } finally {
+      setAudioLoading(false);
+    }
+  };
+
+  // Cleanup audio on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#09090B]">
       {/* Hero Section */}
@@ -29,9 +108,49 @@ const Landing = () => {
               <span className="text-2xl font-black text-white tracking-tight">MÉTRO-TAXI</span>
             </div>
             <div className="flex items-center gap-4">
+              {/* Language Selector */}
+              <div className="relative">
+                <Button 
+                  variant="ghost" 
+                  className="text-white hover:text-[#FFD60A] flex items-center gap-2"
+                  onClick={() => setLanguageMenuOpen(!languageMenuOpen)}
+                  data-testid="language-selector-btn"
+                >
+                  <Globe className="w-5 h-5" />
+                  <span className="hidden sm:inline">{currentLanguage.flag} {currentLanguage.name}</span>
+                  <span className="sm:hidden">{currentLanguage.flag}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${languageMenuOpen ? 'rotate-180' : ''}`} />
+                </Button>
+                
+                <AnimatePresence>
+                  {languageMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 mt-2 w-48 bg-[#18181B] border border-zinc-700 rounded-lg shadow-xl overflow-hidden z-50"
+                    >
+                      {languages.map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => changeLanguage(lang.code)}
+                          className={`w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-zinc-800 transition-colors ${
+                            i18n.language === lang.code ? 'bg-[#FFD60A]/10 text-[#FFD60A]' : 'text-white'
+                          }`}
+                          data-testid={`lang-${lang.code}`}
+                        >
+                          <span className="text-xl">{lang.flag}</span>
+                          <span>{lang.name}</span>
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               <Link to="/login">
                 <Button variant="ghost" className="text-white hover:text-[#FFD60A]" data-testid="login-nav-btn">
-                  Connexion
+                  {t('nav.login')}
                 </Button>
               </Link>
             </div>
@@ -46,13 +165,12 @@ const Landing = () => {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
-              VOS TRAJETS.
+              {t('hero.title')}
               <br />
-              <span className="text-[#FFD60A]">SANS LIMITES.</span>
+              <span className="text-[#FFD60A]">{t('hero.subtitle').split(' ').slice(-2).join(' ')}</span>
             </h1>
             <p className="text-xl md:text-2xl text-zinc-300 mb-10 max-w-2xl mx-auto">
-              Abonnez-vous une fois. Voyagez à volonté. 
-              La mobilité urbaine réinventée.
+              {t('hero.description')}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
