@@ -272,6 +272,20 @@ const DriverDashboard = () => {
                 </div>
               </div>
               
+              {/* Earnings Button */}
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start text-[#FFD60A] hover:bg-[#FFD60A]/10 mb-4"
+                onClick={() => {
+                  setShowEarnings(true);
+                  setMenuOpen(false);
+                }}
+                data-testid="driver-earnings-btn"
+              >
+                <Wallet className="w-5 h-5 mr-3" />
+                {t('dashboard.driver.myEarnings', 'Mes Revenus')}
+              </Button>
+              
               <Button 
                 variant="ghost" 
                 className="w-full justify-start text-red-400 hover:bg-red-500/10 hover:text-red-400"
