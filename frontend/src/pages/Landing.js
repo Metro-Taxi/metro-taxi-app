@@ -140,18 +140,18 @@ const Landing = () => {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 mt-2 w-48 bg-[#18181B] border border-zinc-700 rounded-lg shadow-xl overflow-hidden z-50"
+                      className="absolute right-0 mt-2 w-52 bg-[#18181B] border border-zinc-700 rounded-lg shadow-xl overflow-hidden z-50 max-h-80 overflow-y-auto"
                     >
                       {languages.map((lang) => (
                         <button
                           key={lang.code}
                           onClick={() => changeLanguage(lang.code)}
-                          className={`w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-zinc-800 transition-colors ${
+                          className={`w-full px-4 py-2.5 text-left flex items-center gap-3 hover:bg-zinc-800 transition-colors text-sm ${
                             i18n.language === lang.code ? 'bg-[#FFD60A]/10 text-[#FFD60A]' : 'text-white'
                           }`}
                           data-testid={`lang-${lang.code}`}
                         >
-                          <span className="text-xl">{lang.flag}</span>
+                          <span className="text-lg">{lang.flag}</span>
                           <span>{lang.name}</span>
                         </button>
                       ))}
