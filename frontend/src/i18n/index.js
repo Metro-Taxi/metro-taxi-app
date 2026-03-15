@@ -60,21 +60,22 @@ i18n
 
 export default i18n;
 
+// Languages sorted alphabetically by name
 export const languages = [
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+  { code: 'da', name: 'Dansk', flag: '🇩🇰' },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
   { code: 'en', name: 'English (US)', flag: '🇺🇸' },
   { code: 'en-GB', name: 'English (UK)', flag: '🇬🇧' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
   { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'pt', name: 'Português', flag: '🇵🇹' },
-  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-  { code: 'no', name: 'Norsk', flag: '🇳🇴' },
-  { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
-  { code: 'da', name: 'Dansk', flag: '🇩🇰' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷' },
   { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+  { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
+  { code: 'no', name: 'Norsk', flag: '🇳🇴' },
   { code: 'pa', name: 'ਪੰਜਾਬੀ', flag: '🇵🇰' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-  { code: 'ru', name: 'Русский', flag: '🇷🇺' }
+  { code: 'pt', name: 'Português', flag: '🇵🇹' },
+  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+  { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
+  { code: 'zh', name: '中文', flag: '🇨🇳' }
 ];
