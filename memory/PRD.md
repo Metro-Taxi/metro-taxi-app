@@ -6,7 +6,7 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 ## 🏗️ Architecture
 - **Frontend**: React 19, TailwindCSS, Leaflet/OpenStreetMap, Framer Motion, i18next
 - **Backend**: FastAPI (Python), MongoDB, JWT Auth
-- **Paiement**: Stripe (emergentintegrations library)
+- **Paiement**: Stripe (emergentintegrations library) + Stripe Connect (SDK natif)
 - **TTS**: OpenAI Text-to-Speech (emergentintegrations library)
 - **Email**: Resend (vérification email)
 - **Temps réel**: WebSocket
@@ -19,127 +19,94 @@ Créer une plateforme web Métro-Taxi de mise en relation entre usagers abonnés
 ## ✅ Fonctionnalités Implémentées
 
 ### Section 1 - Inscription ✅
-- [x] Inscription usager (nom, prénom, email, téléphone, mot de passe)
-- [x] Inscription chauffeur (+ plaque, type véhicule, places, licence VTC)
-- [x] Champ compte bancaire (IBAN + BIC/SWIFT) pour les chauffeurs
-- [x] Activation automatique des chauffeurs à l'inscription
-- [x] Désactivation manuelle par admin toujours disponible
-- [x] Vérification email via Resend (emails multilingues)
-- [x] **Page inscription chauffeur traduite en 16 langues** (NOUVEAU - 15/03/2026)
+- [x] Inscription usager + chauffeur avec IBAN/BIC
+- [x] Activation automatique des chauffeurs
+- [x] Page inscription chauffeur traduite en 16 langues
 
 ### Section 2 - Abonnements ✅
 - [x] 3 forfaits: 24h (7€), 1 semaine (17€), 1 mois (54€)
-- [x] Prix en devises locales selon la langue
-- [x] Paiement Stripe (Visa, MasterCard, American Express)
-- [x] Activation automatique après paiement
-- [x] Désactivation automatique des abonnements expirés
+- [x] Paiement Stripe + prix en devises locales
 
-### Section 3 - Écran Usager ✅
-- [x] Carte géolocalisée avec véhicules disponibles
-- [x] Demande de trajet en un clic
-- [x] Progression du trajet avec timeline visuelle
-
-### Section 4 - Écran Chauffeur ✅
-- [x] Carte avec usagers demandeurs
-- [x] Accepter/Refuser demandes
-- [x] Bouton connexion/déconnexion en ligne
-- [x] Gestion des informations bancaires
-- [x] **Visualisation des revenus** (NOUVEAU - 15/03/2026)
-
-### Section 5 - Algorithme Central ✅
-- [x] Algorithme intelligent de matching
-- [x] Calcul de route optimale avec segments (1.5-3 km)
-- [x] Maximum 2 transbordements
-- [x] **Calcul des kilomètres par trajet** (pickup + ride) (NOUVEAU - 15/03/2026)
+### Section 3-5 - Trajets & Matching ✅
+- [x] Carte géolocalisée usagers/chauffeurs
+- [x] Algorithme de matching intelligent
+- [x] Calcul des kilomètres par trajet (pickup + ride)
 
 ### Section 6 - Backend Admin ✅
-- [x] Dashboard avec statistiques
-- [x] Gestion chauffeurs (activer/désactiver)
-- [x] Onglet Abonnements avec badges traduits (ACTIFS, BIENTÔT, EXPIRÉS)
-- [x] Cartes virtuelles avec détails
-- [x] **Gestion des revenus chauffeurs** (NOUVEAU - 15/03/2026)
-- [x] **Traitement des virements** (NOUVEAU - 15/03/2026)
+- [x] Dashboard statistiques
+- [x] Gestion chauffeurs + revenus
+- [x] Traitement des virements
 
 ### Section 7 - Landing Page ✅
-- [x] Hero section multilingue
-- [x] Vidéo promotionnelle avec voix off TTS
-- [x] Section forfaits avec prix locaux
+- [x] Hero multilingue + vidéo promo TTS
 
-### Section 8 - Internationalisation (i18n) ✅
-- [x] **16 langues supportées** triées alphabétiquement :
-  - 🇸🇦 العربية (Arabe)
-  - 🇩🇰 Dansk
-  - 🇩🇪 Deutsch
-  - 🇺🇸 English (US)
-  - 🇬🇧 English (UK)
-  - 🇪🇸 Español
-  - 🇫🇷 Français
-  - 🇮🇳 हिन्दी
-  - 🇮🇹 Italiano
-  - 🇳🇱 Nederlands
-  - 🇳🇴 Norsk
-  - 🇵🇰 ਪੰਜਾਬੀ
-  - 🇵🇹 Português
-  - 🇷🇺 Русский
-  - 🇸🇪 Svenska
-  - 🇨🇳 中文
-- [x] **Sélecteur de langues scrollable** (max-h-80, overflow-y-auto) (NOUVEAU - 15/03/2026)
-- [x] Badges admin traduits
-- [x] Voix off TTS pour toutes les langues
+### Section 8 - Internationalisation ✅
+- [x] 16 langues triées alphabétiquement (sélecteur scrollable)
 
-### Section 9 - Système de Revenus Chauffeurs ✅ (NOUVEAU - 15/03/2026)
+### Section 9 - Système de Revenus Chauffeurs ✅ (NOUVEAU)
 - [x] **Tarif : 1,50€ par kilomètre**
-- [x] **Kilomètres comptés : trajets avec passagers + déplacement vers point de prise en charge**
-- [x] **Virement automatique le 10 du mois suivant**
-- [x] Collection `driver_earnings` pour le suivi mensuel
-- [x] Collection `driver_payouts` pour l'historique des paiements
-- [x] API GET /api/drivers/earnings (chauffeur)
-- [x] API GET /api/admin/driver-earnings (admin)
-- [x] API POST /api/admin/process-payouts (admin)
-- [x] Tâche planifiée automatique (process_automatic_payouts)
-- [x] **Note: Virements bancaires MOCKÉS** - les paiements sont enregistrés mais non exécutés réellement
+- [x] **Kilomètres : trajets avec passagers + déplacement vers pickup**
+- [x] **Virement automatique le 10 du mois**
+- [x] **APIs implémentées** :
+  - GET /api/drivers/earnings (revenus chauffeur)
+  - GET /api/drivers/stripe-connect/status (statut compte Stripe)
+  - POST /api/drivers/stripe-connect/create-account (créer compte)
+  - GET /api/admin/driver-earnings (admin: tous les revenus)
+  - POST /api/admin/stripe-connect/process-payout/{driver_id} (virement individuel)
+  - POST /api/admin/stripe-connect/process-all-payouts (tous les virements)
+  - GET /api/stripe-connect/config (configuration Stripe)
+
+### Section 10 - Stripe Connect ✅ (NOUVEAU - 15/03/2026)
+- [x] **Création de comptes Stripe Connect Custom** pour les chauffeurs
+- [x] **Ajout automatique du compte bancaire SEPA** (IBAN/BIC)
+- [x] **Virements via Stripe Transfer API**
+- [x] **Tâche planifiée automatique** le 10 du mois
+- [x] **Documentation claire** des étapes d'activation
+
+## ⚠️ Configuration Requise pour Virements Réels
+
+**Stripe Connect nécessite une vraie clé API Stripe** (pas `sk_test_emergent`):
+
+1. Créer un compte Stripe sur https://dashboard.stripe.com
+2. Activer Stripe Connect dans les paramètres
+3. Obtenir une clé API (sk_live_xxx ou sk_test_xxx)
+4. Configurer dans `/app/backend/.env` : `STRIPE_API_KEY=sk_xxx`
+
+**Route de vérification**: GET /api/stripe-connect/config
 
 ## 📊 Statut Tests
-- Backend: 100% ✅ (iteration_6.json)
+- Backend: 100% ✅
 - Frontend: 100% ✅
 
 ## 🔄 Backlog
 
 ### P1 - Important  
+- [ ] Obtenir et configurer une vraie clé Stripe Connect
 - [ ] Vérifier domaine metro-taxi.com sur Resend
-- [ ] Connecter domaine personnalisé
 
 ### P2 - Améliorations
-- [ ] Intégration Stripe Connect réelle pour virements bancaires automatiques
-- [ ] Notifications push mobiles
-- [ ] Historique complet des trajets
-- [ ] Système de notation chauffeur
+- [ ] Interface chauffeur pour voir les revenus détaillés
+- [ ] Notifications push
+- [ ] Historique trajets complet
+- [ ] Système de notation
 
 ## 🔑 Credentials Test
 - Admin: admin@metrotaxi.fr / admin123
-- User test: marie.test@example.com / test123
 - Driver test: jean.dupont.test@example.com / test123456
 
 ## 📁 Fichiers Clés
-- `/app/backend/server.py` - API FastAPI avec système de revenus
+- `/app/backend/server.py` - API avec Stripe Connect (lignes 1768-2000)
 - `/app/frontend/src/pages/RegisterDriver.js` - Formulaire internationalisé
-- `/app/frontend/src/i18n/index.js` - 16 langues triées alphabétiquement
-- `/app/frontend/src/i18n/locales/` - Fichiers de traduction avec clés `driverRegister`
+- `/app/frontend/src/i18n/` - 16 langues
 
 ## 🔧 Dernières Modifications (15/03/2026)
-1. **Sélecteur de langues amélioré** : Scrollable (max-h-80), trié alphabétiquement
-2. **Inscription chauffeur traduite** : 16 langues avec clés `driverRegister.*`
-3. **Système de revenus chauffeurs** : 
-   - DRIVER_RATE_PER_KM = 1.50€
-   - PAYOUT_DAY = 10 (du mois)
-   - Calcul: pickup_km + ride_km
-   - Collections: driver_earnings, driver_payouts
+1. **Stripe Connect intégré** : Création comptes, virements SEPA
+2. **Tâche automatique améliorée** : Utilise Stripe Transfer API
+3. **Route de configuration** : /api/stripe-connect/config
+4. **Documentation claire** : Instructions pour activer les virements réels
 
 ## 🌐 3rd Party Integrations
-- **Stripe** — clé test disponible
-- **OpenAI Sora 2** — Emergent LLM Key
-- **OpenAI TTS** — Emergent LLM Key
+- **Stripe Checkout** — via emergentintegrations (clé test)
+- **Stripe Connect** — via SDK natif stripe (requiert vraie clé)
+- **OpenAI Sora 2 / TTS** — Emergent LLM Key
 - **Resend** — en attente vérification domaine
-
-## ⚠️ APIs Mockées
-- **Virements bancaires** : Les payouts sont enregistrés dans la base de données avec statut "processed" mais aucun virement SEPA n'est réellement exécuté. Pour une mise en production, il faudra intégrer Stripe Connect ou une API bancaire.
