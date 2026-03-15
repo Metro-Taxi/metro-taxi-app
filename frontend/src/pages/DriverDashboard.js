@@ -53,6 +53,7 @@ const DriverDashboard = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showEarnings, setShowEarnings] = useState(false);
   const [driverLocation, setDriverLocation] = useState(null);
   const [isActive, setIsActive] = useState(driver?.is_active || false);
   const [pendingRides, setPendingRides] = useState([]);
