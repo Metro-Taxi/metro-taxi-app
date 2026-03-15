@@ -1653,9 +1653,66 @@ async def complete_ride(ride_id: str, current_user: dict = Depends(get_current_u
     if not ride:
         raise HTTPException(status_code=404, detail="Demande non trouvée")
     
+    # Calculate kilometers for this ride
+    # 1. Pickup distance (driver to user pickup point)
+    driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0, "location": 1})
+    pickup_km = 0
+    ride_km = 0
+    
+    if driver and driver.get("location"):
+        pickup_km = calculate_distance(
+            driver["location"]["lat"], 
+            driver["location"]["lng"],
+            ride["pickup_lat"],
+            ride["pickup_lng"]
+        )
+    
+    # 2. Ride distance (pickup to destination)
+    ride_km = calculate_distance(
+        ride["pickup_lat"],
+        ride["pickup_lng"],
+        ride["destination_lat"],
+        ride["destination_lng"]
+    )
+    
+    total_km = round(pickup_km + ride_km, 2)
+    revenue = round(total_km * DRIVER_RATE_PER_KM, 2)
+    
+    # Update ride with km and revenue
+    completed_at = datetime.now(timezone.utc).isoformat()
     await db.ride_requests.update_one(
         {"id": ride_id},
-        {"$set": {"status": "completed", "completed_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {
+            "status": "completed", 
+            "completed_at": completed_at,
+            "pickup_km": round(pickup_km, 2),
+            "ride_km": round(ride_km, 2),
+            "total_km": total_km,
+            "driver_revenue": revenue
+        }}
+    )
+    
+    # Record in driver_earnings collection for monthly tracking
+    now = datetime.now(timezone.utc)
+    month_key = now.strftime("%Y-%m")
+    
+    await db.driver_earnings.update_one(
+        {"driver_id": driver_id, "month": month_key},
+        {
+            "$inc": {
+                "total_km": total_km,
+                "total_revenue": revenue,
+                "rides_count": 1
+            },
+            "$setOnInsert": {
+                "created_at": now.isoformat(),
+                "payout_status": "pending"
+            },
+            "$set": {
+                "updated_at": now.isoformat()
+            }
+        },
+        upsert=True
     )
     
     # Restore available seats
@@ -1664,10 +1721,18 @@ async def complete_ride(ride_id: str, current_user: dict = Depends(get_current_u
     # Notify user
     await manager.send_personal_message({
         "type": "ride_completed",
-        "ride_id": ride_id
+        "ride_id": ride_id,
+        "total_km": total_km,
+        "revenue": revenue
     }, ride["user_id"])
     
-    return {"status": "completed"}
+    return {
+        "status": "completed",
+        "total_km": total_km,
+        "pickup_km": round(pickup_km, 2),
+        "ride_km": round(ride_km, 2),
+        "revenue": revenue
+    }
 
 @api_router.get("/rides/active")
 async def get_active_ride(current_user: dict = Depends(get_current_user)):
