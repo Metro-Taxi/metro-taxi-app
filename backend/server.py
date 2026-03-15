@@ -2942,7 +2942,7 @@ async def start_subscription_checker():
 # AUTOMATIC DRIVER PAYOUT PROCESSING
 # ============================================
 async def process_automatic_payouts():
-    """Background task to automatically process driver payouts on the 10th of each month"""
+    """Background task to automatically process driver payouts on the 10th of each month using Stripe Connect"""
     while True:
         try:
             now = datetime.now(timezone.utc)
@@ -2957,57 +2957,112 @@ async def process_automatic_payouts():
                 )
                 
                 if not last_auto_payout:
-                    logging.info(f"Starting automatic payout processing for {today_str}")
+                    logging.info(f"Starting automatic Stripe Connect payout processing for {today_str}")
                     
                     # Get all pending earnings
                     pending_cursor = db.driver_earnings.find({"payout_status": "pending"}, {"_id": 0})
                     pending_earnings = await pending_cursor.to_list(length=1000)
                     
+                    # Group by driver
+                    driver_earnings_map = {}
+                    for earning in pending_earnings:
+                        driver_id = earning["driver_id"]
+                        if driver_id not in driver_earnings_map:
+                            driver_earnings_map[driver_id] = []
+                        driver_earnings_map[driver_id].append(earning)
+                    
                     processed_count = 0
                     total_amount = 0
                     errors = []
+                    stripe_transfers = []
                     
-                    for earning in pending_earnings:
+                    for driver_id, earnings in driver_earnings_map.items():
                         driver = await db.drivers.find_one(
-                            {"id": earning["driver_id"]},
-                            {"_id": 0, "first_name": 1, "last_name": 1, "email": 1, "iban": 1, "bic": 1}
+                            {"id": driver_id},
+                            {"_id": 0}
                         )
                         
-                        if not driver or not driver.get("iban") or not driver.get("bic"):
+                        if not driver:
+                            errors.append({"driver_id": driver_id, "reason": "Driver not found"})
+                            continue
+                        
+                        if not driver.get("stripe_account_id"):
                             errors.append({
-                                "driver_id": earning["driver_id"],
-                                "reason": "Missing bank info"
+                                "driver_id": driver_id,
+                                "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
+                                "reason": "No Stripe Connect account"
                             })
                             continue
+                        
+                        amount = sum(e.get("total_revenue", 0) for e in earnings)
+                        
+                        if amount <= 0:
+                            continue
+                        
+                        # Process Stripe transfer if API key is available
+                        if STRIPE_API_KEY:
+                            try:
+                                transfer = stripe.Transfer.create(
+                                    amount=int(amount * 100),
+                                    currency="eur",
+                                    destination=driver["stripe_account_id"],
+                                    metadata={
+                                        "driver_id": driver_id,
+                                        "months": ",".join([e["month"] for e in earnings]),
+                                        "platform": "metro-taxi",
+                                        "auto_payout": "true"
+                                    }
+                                )
+                                stripe_transfer_id = transfer.id
+                                status = "transferred"
+                                stripe_transfers.append(transfer.id)
+                            except stripe.error.StripeError as e:
+                                logging.error(f"Stripe transfer error for driver {driver_id}: {str(e)}")
+                                errors.append({
+                                    "driver_id": driver_id,
+                                    "reason": f"Stripe error: {str(e)}"
+                                })
+                                continue
+                        else:
+                            stripe_transfer_id = None
+                            status = "processed"
                         
                         # Create payout record
                         payout_id = str(uuid.uuid4())
                         payout_doc = {
                             "id": payout_id,
-                            "driver_id": earning["driver_id"],
+                            "driver_id": driver_id,
                             "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
                             "driver_email": driver.get("email"),
                             "iban": driver.get("iban"),
                             "bic": driver.get("bic"),
-                            "month": earning["month"],
-                            "total_km": earning.get("total_km", 0),
-                            "total_revenue": earning.get("total_revenue", 0),
-                            "rides_count": earning.get("rides_count", 0),
-                            "status": "processed",
+                            "stripe_account_id": driver.get("stripe_account_id"),
+                            "stripe_transfer_id": stripe_transfer_id,
+                            "months": [e["month"] for e in earnings],
+                            "total_km": sum(e.get("total_km", 0) for e in earnings),
+                            "total_revenue": amount,
+                            "rides_count": sum(e.get("rides_count", 0) for e in earnings),
+                            "status": status,
                             "created_at": now.isoformat(),
                             "processed_by": "system_auto"
                         }
                         
                         await db.driver_payouts.insert_one(payout_doc)
                         
-                        # Update earning status
-                        await db.driver_earnings.update_one(
-                            {"driver_id": earning["driver_id"], "month": earning["month"]},
-                            {"$set": {"payout_status": "paid", "payout_id": payout_id, "paid_at": now.isoformat()}}
-                        )
+                        # Update all earnings for this driver
+                        for earning in earnings:
+                            await db.driver_earnings.update_one(
+                                {"driver_id": driver_id, "month": earning["month"]},
+                                {"$set": {
+                                    "payout_status": "paid",
+                                    "payout_id": payout_id,
+                                    "stripe_transfer_id": stripe_transfer_id,
+                                    "paid_at": now.isoformat()
+                                }}
+                            )
                         
                         processed_count += 1
-                        total_amount += earning.get("total_revenue", 0)
+                        total_amount += amount
                     
                     # Log the auto payout run
                     await db.system_logs.insert_one({
@@ -3016,12 +3071,13 @@ async def process_automatic_payouts():
                         "processed_count": processed_count,
                         "total_amount": round(total_amount, 2),
                         "errors_count": len(errors),
+                        "stripe_transfers": stripe_transfers,
                         "created_at": now.isoformat()
                     })
                     
-                    logging.info(f"Automatic payout completed: {processed_count} drivers, €{total_amount:.2f} total")
+                    logging.info(f"Automatic Stripe payout completed: {processed_count} drivers, €{total_amount:.2f} total, {len(stripe_transfers)} transfers")
                     if errors:
-                        logging.warning(f"Payout errors: {len(errors)} drivers missing bank info")
+                        logging.warning(f"Payout errors: {len(errors)} drivers skipped")
             
         except Exception as e:
             logging.error(f"Error in automatic payout processing: {e}")
