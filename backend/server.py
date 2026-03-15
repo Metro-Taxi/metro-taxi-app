@@ -1775,6 +1775,37 @@ def get_country_from_iban(iban: str) -> str:
         return iban[:2].upper()
     return "FR"  # Default to France
 
+def is_stripe_connect_available() -> bool:
+    """Check if Stripe Connect is available (requires real API key, not sk_test_emergent)"""
+    if not STRIPE_API_KEY:
+        return False
+    # The emergent test key doesn't support Connect API
+    if STRIPE_API_KEY == "sk_test_emergent":
+        return False
+    return True
+
+@api_router.get("/stripe-connect/config")
+async def get_stripe_connect_config():
+    """Get Stripe Connect configuration status"""
+    connect_available = is_stripe_connect_available()
+    
+    return {
+        "stripe_connect_available": connect_available,
+        "message": "Stripe Connect actif - virements SEPA disponibles" if connect_available 
+                   else "Stripe Connect non configuré - une vraie clé API Stripe est requise pour les virements SEPA",
+        "payout_day": PAYOUT_DAY,
+        "rate_per_km": DRIVER_RATE_PER_KM,
+        "requirements": {
+            "description": "Pour activer Stripe Connect (virements réels vers les comptes bancaires des chauffeurs)",
+            "steps": [
+                "1. Créer un compte Stripe sur https://dashboard.stripe.com",
+                "2. Activer Stripe Connect dans les paramètres",
+                "3. Obtenir une clé API (sk_live_xxx ou sk_test_xxx)",
+                "4. Configurer la clé dans STRIPE_API_KEY du backend .env"
+            ]
+        }
+    }
+
 @api_router.post("/drivers/stripe-connect/create-account")
 async def create_stripe_connect_account(current_user: dict = Depends(get_current_user)):
     """Create a Stripe Connect Custom account for a driver"""
