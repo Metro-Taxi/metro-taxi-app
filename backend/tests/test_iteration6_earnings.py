@@ -165,17 +165,24 @@ class TestAdminDriverEarningsAPI:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
-        # Verify response structure
-        assert "pending_payouts" in data, "Missing 'pending_payouts' in response"
-        assert "total_pending_amount" in data, "Missing 'total_pending_amount' in response"
+        # Verify response structure (actual API response)
+        assert "current_month" in data, "Missing 'current_month' in response"
+        assert "payout_day" in data, "Missing 'payout_day' in response"
         assert "rate_per_km" in data, "Missing 'rate_per_km' in response"
+        assert "total_pending" in data, "Missing 'total_pending' in response"
+        assert "drivers_count" in data, "Missing 'drivers_count' in response"
+        assert "earnings" in data, "Missing 'earnings' in response"
         
         # Verify rate_per_km is 1.50
         assert data["rate_per_km"] == 1.50, f"Expected rate_per_km=1.50, got {data['rate_per_km']}"
         
+        # Verify payout_day is 10
+        assert data["payout_day"] == 10, f"Expected payout_day=10, got {data['payout_day']}"
+        
         print("SUCCESS: Admin driver earnings endpoint returns correct structure")
-        print(f"  - Pending payouts count: {len(data.get('pending_payouts', []))}")
-        print(f"  - Total pending amount: {data.get('total_pending_amount')}€")
+        print(f"  - Current month: {data.get('current_month')}")
+        print(f"  - Total pending: {data.get('total_pending')}€")
+        print(f"  - Drivers count: {data.get('drivers_count')}")
     
     def test_admin_driver_earnings_unauthorized(self):
         """Test that GET /api/admin/driver-earnings requires admin authentication"""
@@ -241,13 +248,16 @@ class TestAdminProcessPayoutsAPI:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
-        # Verify response structure
+        # Verify response structure (actual API response)
         assert "processed_count" in data, "Missing 'processed_count' in response"
+        assert "errors_count" in data, "Missing 'errors_count' in response"
         assert "total_amount" in data, "Missing 'total_amount' in response"
-        assert "payouts" in data, "Missing 'payouts' in response"
+        assert "processed" in data, "Missing 'processed' in response"
+        assert "errors" in data, "Missing 'errors' in response"
         
         print("SUCCESS: Admin process payouts endpoint returns correct structure")
         print(f"  - Processed count: {data.get('processed_count')}")
+        print(f"  - Errors count: {data.get('errors_count')}")
         print(f"  - Total amount: {data.get('total_amount')}€")
     
     def test_admin_process_payouts_unauthorized(self):
