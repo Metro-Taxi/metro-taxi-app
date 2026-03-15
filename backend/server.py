@@ -2584,6 +2584,103 @@ async def start_subscription_checker():
     asyncio.create_task(check_expired_subscriptions())
     logging.info("Subscription expiration checker started (runs every 5 minutes)")
 
+# ============================================
+# AUTOMATIC DRIVER PAYOUT PROCESSING
+# ============================================
+async def process_automatic_payouts():
+    """Background task to automatically process driver payouts on the 10th of each month"""
+    while True:
+        try:
+            now = datetime.now(timezone.utc)
+            
+            # Check if today is payout day (10th of month)
+            if now.day == PAYOUT_DAY:
+                # Check if we already processed payouts today
+                today_str = now.strftime("%Y-%m-%d")
+                last_auto_payout = await db.system_logs.find_one(
+                    {"type": "auto_payout", "date": today_str},
+                    {"_id": 0}
+                )
+                
+                if not last_auto_payout:
+                    logging.info(f"Starting automatic payout processing for {today_str}")
+                    
+                    # Get all pending earnings
+                    pending_cursor = db.driver_earnings.find({"payout_status": "pending"}, {"_id": 0})
+                    pending_earnings = await pending_cursor.to_list(length=1000)
+                    
+                    processed_count = 0
+                    total_amount = 0
+                    errors = []
+                    
+                    for earning in pending_earnings:
+                        driver = await db.drivers.find_one(
+                            {"id": earning["driver_id"]},
+                            {"_id": 0, "first_name": 1, "last_name": 1, "email": 1, "iban": 1, "bic": 1}
+                        )
+                        
+                        if not driver or not driver.get("iban") or not driver.get("bic"):
+                            errors.append({
+                                "driver_id": earning["driver_id"],
+                                "reason": "Missing bank info"
+                            })
+                            continue
+                        
+                        # Create payout record
+                        payout_id = str(uuid.uuid4())
+                        payout_doc = {
+                            "id": payout_id,
+                            "driver_id": earning["driver_id"],
+                            "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
+                            "driver_email": driver.get("email"),
+                            "iban": driver.get("iban"),
+                            "bic": driver.get("bic"),
+                            "month": earning["month"],
+                            "total_km": earning.get("total_km", 0),
+                            "total_revenue": earning.get("total_revenue", 0),
+                            "rides_count": earning.get("rides_count", 0),
+                            "status": "processed",
+                            "created_at": now.isoformat(),
+                            "processed_by": "system_auto"
+                        }
+                        
+                        await db.driver_payouts.insert_one(payout_doc)
+                        
+                        # Update earning status
+                        await db.driver_earnings.update_one(
+                            {"driver_id": earning["driver_id"], "month": earning["month"]},
+                            {"$set": {"payout_status": "paid", "payout_id": payout_id, "paid_at": now.isoformat()}}
+                        )
+                        
+                        processed_count += 1
+                        total_amount += earning.get("total_revenue", 0)
+                    
+                    # Log the auto payout run
+                    await db.system_logs.insert_one({
+                        "type": "auto_payout",
+                        "date": today_str,
+                        "processed_count": processed_count,
+                        "total_amount": round(total_amount, 2),
+                        "errors_count": len(errors),
+                        "created_at": now.isoformat()
+                    })
+                    
+                    logging.info(f"Automatic payout completed: {processed_count} drivers, €{total_amount:.2f} total")
+                    if errors:
+                        logging.warning(f"Payout errors: {len(errors)} drivers missing bank info")
+            
+        except Exception as e:
+            logging.error(f"Error in automatic payout processing: {e}")
+        
+        # Check every hour
+        await asyncio.sleep(3600)
+
+@app.on_event("startup")
+async def start_payout_processor():
+    """Start the background automatic payout processor"""
+    asyncio.create_task(process_automatic_payouts())
+    logging.info(f"Automatic payout processor started (processes on the {PAYOUT_DAY}th of each month)")
+
 # WebSocket endpoint
 @app.websocket("/ws/{user_id}/{user_type}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str, user_type: str):
