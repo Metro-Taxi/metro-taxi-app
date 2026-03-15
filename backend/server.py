@@ -46,6 +46,10 @@ SUBSCRIPTION_PLANS = {
     "1month": {"name": "1 mois", "price": 53.99, "duration_hours": 720}
 }
 
+# Driver Revenue Configuration
+DRIVER_RATE_PER_KM = 1.50  # €1.50 per kilometer
+PAYOUT_DAY = 10  # Day of month for automatic payouts
+
 # Create the main app
 app = FastAPI()
 
