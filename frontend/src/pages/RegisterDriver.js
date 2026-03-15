@@ -43,12 +43,12 @@ const RegisterDriver = () => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Les mots de passe ne correspondent pas');
+      toast.error(t('driverRegister.passwordMismatch'));
       return;
     }
 
     if (formData.password.length < 6) {
-      toast.error('Le mot de passe doit contenir au moins 6 caractères');
+      toast.error(t('driverRegister.passwordTooShort'));
       return;
     }
 
@@ -58,10 +58,10 @@ const RegisterDriver = () => {
       const { confirmPassword, ...submitData } = formData;
       submitData.seats = parseInt(submitData.seats);
       await registerDriver(submitData);
-      toast.success(t('auth.register.driver.successAuto', 'Inscription réussie ! Votre compte est activé. Vous pouvez vous connecter.'));
+      toast.success(t('driverRegister.successMessage'));
       navigate('/login');
     } catch (error) {
-      const message = error.response?.data?.detail || t('auth.register.error', 'Erreur lors de l\'inscription');
+      const message = error.response?.data?.detail || t('driverRegister.errorMessage');
       toast.error(message);
     } finally {
       setLoading(false);
@@ -84,14 +84,14 @@ const RegisterDriver = () => {
 
         {/* Register Form */}
         <div className="bg-[#18181B] border border-zinc-800 p-8 rounded-sm">
-          <h1 className="text-2xl font-bold text-white mb-2 text-center">Inscription Chauffeur VTC</h1>
-          <p className="text-zinc-400 text-center mb-6">Rejoignez notre réseau de chauffeurs partenaires</p>
+          <h1 className="text-2xl font-bold text-white mb-2 text-center">{t('driverRegister.title')}</h1>
+          <p className="text-zinc-400 text-center mb-6">{t('driverRegister.subtitle')}</p>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Personal Info */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="first_name" className="text-zinc-300">Prénom</Label>
+                <Label htmlFor="first_name" className="text-zinc-300">{t('driverRegister.firstName')}</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                   <Input
@@ -99,7 +99,7 @@ const RegisterDriver = () => {
                     name="first_name"
                     value={formData.first_name}
                     onChange={handleChange}
-                    placeholder="Jean"
+                    placeholder={t('driverRegister.firstNamePlaceholder')}
                     className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
                     required
                     data-testid="driver-firstname-input"
@@ -107,13 +107,13 @@ const RegisterDriver = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last_name" className="text-zinc-300">Nom</Label>
+                <Label htmlFor="last_name" className="text-zinc-300">{t('driverRegister.lastName')}</Label>
                 <Input
                   id="last_name"
                   name="last_name"
                   value={formData.last_name}
                   onChange={handleChange}
-                  placeholder="Dupont"
+                  placeholder={t('driverRegister.lastNamePlaceholder')}
                   className="bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
                   required
                   data-testid="driver-lastname-input"
@@ -122,7 +122,7 @@ const RegisterDriver = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-zinc-300">Email</Label>
+              <Label htmlFor="email" className="text-zinc-300">{t('driverRegister.email')}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                 <Input
@@ -131,7 +131,7 @@ const RegisterDriver = () => {
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="jean@exemple.com"
+                  placeholder={t('driverRegister.emailPlaceholder')}
                   className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
                   required
                   data-testid="driver-email-input"
@@ -140,7 +140,7 @@ const RegisterDriver = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone" className="text-zinc-300">Téléphone</Label>
+              <Label htmlFor="phone" className="text-zinc-300">{t('driverRegister.phone')}</Label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                 <Input
@@ -149,7 +149,7 @@ const RegisterDriver = () => {
                   type="tel"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="06 12 34 56 78"
+                  placeholder={t('driverRegister.phonePlaceholder')}
                   className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
                   required
                   data-testid="driver-phone-input"
@@ -159,11 +159,11 @@ const RegisterDriver = () => {
 
             {/* Vehicle Info */}
             <div className="pt-4 border-t border-zinc-800">
-              <h3 className="text-lg font-semibold text-white mb-4">Informations véhicule</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">{t('driverRegister.vehicleInfo')}</h3>
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="vehicle_plate" className="text-zinc-300">Plaque d'immatriculation</Label>
+                  <Label htmlFor="vehicle_plate" className="text-zinc-300">{t('driverRegister.vehiclePlate')}</Label>
                   <div className="relative">
                     <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                     <Input
@@ -179,19 +179,19 @@ const RegisterDriver = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="vehicle_type" className="text-zinc-300">Type de véhicule</Label>
+                  <Label htmlFor="vehicle_type" className="text-zinc-300">{t('driverRegister.vehicleType')}</Label>
                   <Select 
                     value={formData.vehicle_type} 
                     onValueChange={(value) => handleSelectChange('vehicle_type', value)}
                   >
                     <SelectTrigger className="bg-zinc-900 border-zinc-700 text-white h-12" data-testid="driver-vehicle-type-select">
-                      <SelectValue placeholder="Sélectionner" />
+                      <SelectValue placeholder={t('driverRegister.selectPlaceholder')} />
                     </SelectTrigger>
                     <SelectContent className="bg-zinc-900 border-zinc-700">
-                      <SelectItem value="berline">Berline</SelectItem>
-                      <SelectItem value="suv">SUV</SelectItem>
-                      <SelectItem value="monospace">Monospace</SelectItem>
-                      <SelectItem value="van">Van</SelectItem>
+                      <SelectItem value="berline">{t('driverRegister.vehicleTypes.sedan')}</SelectItem>
+                      <SelectItem value="suv">{t('driverRegister.vehicleTypes.suv')}</SelectItem>
+                      <SelectItem value="monospace">{t('driverRegister.vehicleTypes.minivan')}</SelectItem>
+                      <SelectItem value="van">{t('driverRegister.vehicleTypes.van')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -199,7 +199,7 @@ const RegisterDriver = () => {
 
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div className="space-y-2">
-                  <Label htmlFor="seats" className="text-zinc-300">Nombre de places</Label>
+                  <Label htmlFor="seats" className="text-zinc-300">{t('driverRegister.seats')}</Label>
                   <div className="relative">
                     <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                     <Input
@@ -217,7 +217,7 @@ const RegisterDriver = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="vtc_license" className="text-zinc-300">{t('auth.register.driver.vtcLicense', 'Numéro licence VTC')}</Label>
+                  <Label htmlFor="vtc_license" className="text-zinc-300">{t('driverRegister.vtcLicense')}</Label>
                   <div className="relative">
                     <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                     <Input
@@ -239,9 +239,9 @@ const RegisterDriver = () => {
             <div className="space-y-4 pt-4 border-t border-zinc-800">
               <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-[#FFD60A]" />
-                {t('auth.register.driver.bankInfo', 'Informations bancaires')}
+                {t('driverRegister.bankInfo')}
               </h3>
-              <p className="text-zinc-500 text-sm">{t('auth.register.driver.bankInfoDesc', 'Pour recevoir vos paiements. Facultatif, modifiable plus tard.')}</p>
+              <p className="text-zinc-500 text-sm">{t('driverRegister.bankInfoDesc')}</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="iban" className="text-zinc-300">IBAN</Label>
@@ -279,7 +279,7 @@ const RegisterDriver = () => {
             {/* Password */}
             <div className="pt-4 border-t border-zinc-800">
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-zinc-300">Mot de passe</Label>
+                <Label htmlFor="password" className="text-zinc-300">{t('driverRegister.password')}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                   <Input
@@ -304,7 +304,7 @@ const RegisterDriver = () => {
               </div>
 
               <div className="space-y-2 mt-4">
-                <Label htmlFor="confirmPassword" className="text-zinc-300">Confirmer le mot de passe</Label>
+                <Label htmlFor="confirmPassword" className="text-zinc-300">{t('driverRegister.confirmPassword')}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
                   <Input
@@ -324,7 +324,7 @@ const RegisterDriver = () => {
 
             <div className="bg-green-900/30 p-4 rounded border border-green-700 mt-4">
               <p className="text-green-400 text-sm">
-                ✅ {t('auth.register.driver.autoValidation', 'Votre compte sera automatiquement activé. Vous pourrez recevoir des demandes de trajet immédiatement.')}
+                ✅ {t('driverRegister.autoValidation')}
               </p>
             </div>
 
@@ -337,15 +337,15 @@ const RegisterDriver = () => {
               {loading ? (
                 <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
               ) : (
-                t('auth.register.driver.submitBtn', 'S\'INSCRIRE EN TANT QUE CHAUFFEUR')
+                t('driverRegister.submitBtn')
               )}
             </Button>
           </form>
 
           <p className="text-zinc-400 text-center mt-6">
-            Déjà inscrit ?{' '}
+            {t('driverRegister.alreadyRegistered')}{' '}
             <Link to="/login" className="text-[#FFD60A] hover:underline">
-              Se connecter
+              {t('driverRegister.loginLink')}
             </Link>
           </p>
         </div>
