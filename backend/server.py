@@ -1765,6 +1765,354 @@ async def admin_get_payouts_history(current_user: dict = Depends(get_current_use
     
     return {"payouts": payouts}
 
+# ============================================
+# STRIPE CONNECT - DRIVER PAYOUTS
+# ============================================
+
+def get_country_from_iban(iban: str) -> str:
+    """Extract country code from IBAN"""
+    if iban and len(iban) >= 2:
+        return iban[:2].upper()
+    return "FR"  # Default to France
+
+@api_router.post("/drivers/stripe-connect/create-account")
+async def create_stripe_connect_account(current_user: dict = Depends(get_current_user)):
+    """Create a Stripe Connect Custom account for a driver"""
+    if current_user["role"] != "driver":
+        raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
+    
+    if not STRIPE_API_KEY:
+        raise HTTPException(status_code=500, detail="Stripe non configuré")
+    
+    driver_id = current_user["user_id"]
+    driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0})
+    
+    if not driver:
+        raise HTTPException(status_code=404, detail="Chauffeur non trouvé")
+    
+    # Check if driver already has a Stripe account
+    if driver.get("stripe_account_id"):
+        return {
+            "status": "exists",
+            "stripe_account_id": driver["stripe_account_id"],
+            "message": "Compte Stripe déjà créé"
+        }
+    
+    if not driver.get("iban") or not driver.get("bic"):
+        raise HTTPException(status_code=400, detail="Informations bancaires (IBAN/BIC) requises")
+    
+    try:
+        country = get_country_from_iban(driver["iban"])
+        
+        # Create Stripe Connect Custom account
+        account = stripe.Account.create(
+            type="custom",
+            country=country,
+            email=driver["email"],
+            capabilities={
+                "transfers": {"requested": True},
+            },
+            tos_acceptance={
+                "date": int(datetime.now(timezone.utc).timestamp()),
+                "ip": "0.0.0.0",  # In production, get real IP from request
+            },
+            business_type="individual",
+            individual={
+                "first_name": driver.get("first_name", ""),
+                "last_name": driver.get("last_name", ""),
+                "email": driver["email"],
+            },
+            metadata={
+                "driver_id": driver_id,
+                "platform": "metro-taxi"
+            }
+        )
+        
+        # Add bank account to the connected account
+        external_account = stripe.Account.create_external_account(
+            account.id,
+            external_account={
+                "object": "bank_account",
+                "country": country,
+                "currency": "eur",
+                "account_number": driver["iban"],
+                "account_holder_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
+            }
+        )
+        
+        # Save Stripe account ID to driver record
+        await db.drivers.update_one(
+            {"id": driver_id},
+            {"$set": {
+                "stripe_account_id": account.id,
+                "stripe_external_account_id": external_account.id,
+                "stripe_account_created_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        logging.info(f"Stripe Connect account created for driver {driver_id}: {account.id}")
+        
+        return {
+            "status": "created",
+            "stripe_account_id": account.id,
+            "message": "Compte Stripe Connect créé avec succès"
+        }
+        
+    except stripe.error.StripeError as e:
+        logging.error(f"Stripe error creating account for driver {driver_id}: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Erreur Stripe: {str(e)}")
+
+@api_router.get("/drivers/stripe-connect/status")
+async def get_stripe_connect_status(current_user: dict = Depends(get_current_user)):
+    """Get driver's Stripe Connect account status"""
+    if current_user["role"] != "driver":
+        raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
+    
+    if not STRIPE_API_KEY:
+        raise HTTPException(status_code=500, detail="Stripe non configuré")
+    
+    driver_id = current_user["user_id"]
+    driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0})
+    
+    if not driver:
+        raise HTTPException(status_code=404, detail="Chauffeur non trouvé")
+    
+    if not driver.get("stripe_account_id"):
+        return {
+            "has_stripe_account": False,
+            "message": "Aucun compte Stripe Connect"
+        }
+    
+    try:
+        account = stripe.Account.retrieve(driver["stripe_account_id"])
+        
+        return {
+            "has_stripe_account": True,
+            "stripe_account_id": account.id,
+            "charges_enabled": account.charges_enabled,
+            "payouts_enabled": account.payouts_enabled,
+            "requirements": {
+                "currently_due": account.requirements.currently_due if account.requirements else [],
+                "eventually_due": account.requirements.eventually_due if account.requirements else [],
+                "disabled_reason": account.requirements.disabled_reason if account.requirements else None
+            }
+        }
+    except stripe.error.StripeError as e:
+        logging.error(f"Stripe error getting account status for driver {driver_id}: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Erreur Stripe: {str(e)}")
+
+@api_router.post("/admin/stripe-connect/process-payout/{driver_id}")
+async def admin_process_stripe_payout(driver_id: str, current_user: dict = Depends(get_current_user)):
+    """Admin: Process a real Stripe payout for a specific driver"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    if not STRIPE_API_KEY:
+        raise HTTPException(status_code=500, detail="Stripe non configuré")
+    
+    driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0})
+    if not driver:
+        raise HTTPException(status_code=404, detail="Chauffeur non trouvé")
+    
+    if not driver.get("stripe_account_id"):
+        raise HTTPException(status_code=400, detail="Le chauffeur n'a pas de compte Stripe Connect")
+    
+    # Get pending earnings for this driver
+    pending_earnings = await db.driver_earnings.find(
+        {"driver_id": driver_id, "payout_status": "pending"},
+        {"_id": 0}
+    ).to_list(length=100)
+    
+    if not pending_earnings:
+        return {"message": "Aucun revenu en attente pour ce chauffeur", "amount": 0}
+    
+    total_amount = sum(e.get("total_revenue", 0) for e in pending_earnings)
+    
+    if total_amount <= 0:
+        return {"message": "Montant insuffisant pour un virement", "amount": 0}
+    
+    try:
+        now = datetime.now(timezone.utc)
+        
+        # Create a transfer to the connected account
+        # Note: In production, you need sufficient balance in your platform account
+        transfer = stripe.Transfer.create(
+            amount=int(total_amount * 100),  # Convert to cents
+            currency="eur",
+            destination=driver["stripe_account_id"],
+            metadata={
+                "driver_id": driver_id,
+                "driver_email": driver.get("email"),
+                "months": ",".join([e["month"] for e in pending_earnings]),
+                "platform": "metro-taxi"
+            }
+        )
+        
+        # Create payout record
+        payout_id = str(uuid.uuid4())
+        payout_doc = {
+            "id": payout_id,
+            "driver_id": driver_id,
+            "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
+            "driver_email": driver.get("email"),
+            "iban": driver.get("iban"),
+            "bic": driver.get("bic"),
+            "stripe_transfer_id": transfer.id,
+            "stripe_account_id": driver["stripe_account_id"],
+            "months": [e["month"] for e in pending_earnings],
+            "total_km": sum(e.get("total_km", 0) for e in pending_earnings),
+            "total_revenue": total_amount,
+            "rides_count": sum(e.get("rides_count", 0) for e in pending_earnings),
+            "status": "transferred",
+            "created_at": now.isoformat(),
+            "processed_by": current_user["user_id"]
+        }
+        
+        await db.driver_payouts.insert_one(payout_doc)
+        
+        # Update all pending earnings to paid
+        for earning in pending_earnings:
+            await db.driver_earnings.update_one(
+                {"driver_id": driver_id, "month": earning["month"]},
+                {"$set": {
+                    "payout_status": "paid",
+                    "payout_id": payout_id,
+                    "stripe_transfer_id": transfer.id,
+                    "paid_at": now.isoformat()
+                }}
+            )
+        
+        logging.info(f"Stripe payout processed for driver {driver_id}: €{total_amount} (transfer: {transfer.id})")
+        
+        return {
+            "status": "success",
+            "payout_id": payout_id,
+            "stripe_transfer_id": transfer.id,
+            "amount": total_amount,
+            "message": f"Virement de €{total_amount:.2f} effectué avec succès"
+        }
+        
+    except stripe.error.StripeError as e:
+        logging.error(f"Stripe error processing payout for driver {driver_id}: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Erreur Stripe: {str(e)}")
+
+@api_router.post("/admin/stripe-connect/process-all-payouts")
+async def admin_process_all_stripe_payouts(current_user: dict = Depends(get_current_user)):
+    """Admin: Process Stripe payouts for all eligible drivers"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    if not STRIPE_API_KEY:
+        raise HTTPException(status_code=500, detail="Stripe non configuré")
+    
+    now = datetime.now(timezone.utc)
+    
+    # Get all pending earnings
+    pending_cursor = db.driver_earnings.find({"payout_status": "pending"}, {"_id": 0})
+    pending_earnings = await pending_cursor.to_list(length=1000)
+    
+    # Group by driver
+    driver_earnings_map = {}
+    for earning in pending_earnings:
+        driver_id = earning["driver_id"]
+        if driver_id not in driver_earnings_map:
+            driver_earnings_map[driver_id] = []
+        driver_earnings_map[driver_id].append(earning)
+    
+    processed = []
+    errors = []
+    
+    for driver_id, earnings in driver_earnings_map.items():
+        driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0})
+        
+        if not driver:
+            errors.append({"driver_id": driver_id, "error": "Chauffeur non trouvé"})
+            continue
+        
+        if not driver.get("stripe_account_id"):
+            errors.append({
+                "driver_id": driver_id,
+                "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
+                "error": "Pas de compte Stripe Connect"
+            })
+            continue
+        
+        total_amount = sum(e.get("total_revenue", 0) for e in earnings)
+        
+        if total_amount <= 0:
+            continue
+        
+        try:
+            # Create transfer
+            transfer = stripe.Transfer.create(
+                amount=int(total_amount * 100),
+                currency="eur",
+                destination=driver["stripe_account_id"],
+                metadata={
+                    "driver_id": driver_id,
+                    "months": ",".join([e["month"] for e in earnings]),
+                    "platform": "metro-taxi"
+                }
+            )
+            
+            # Create payout record
+            payout_id = str(uuid.uuid4())
+            payout_doc = {
+                "id": payout_id,
+                "driver_id": driver_id,
+                "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
+                "driver_email": driver.get("email"),
+                "stripe_transfer_id": transfer.id,
+                "stripe_account_id": driver["stripe_account_id"],
+                "months": [e["month"] for e in earnings],
+                "total_km": sum(e.get("total_km", 0) for e in earnings),
+                "total_revenue": total_amount,
+                "rides_count": sum(e.get("rides_count", 0) for e in earnings),
+                "status": "transferred",
+                "created_at": now.isoformat(),
+                "processed_by": current_user["user_id"]
+            }
+            
+            await db.driver_payouts.insert_one(payout_doc)
+            
+            # Update earnings
+            for earning in earnings:
+                await db.driver_earnings.update_one(
+                    {"driver_id": driver_id, "month": earning["month"]},
+                    {"$set": {
+                        "payout_status": "paid",
+                        "payout_id": payout_id,
+                        "stripe_transfer_id": transfer.id,
+                        "paid_at": now.isoformat()
+                    }}
+                )
+            
+            processed.append({
+                "driver_id": driver_id,
+                "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
+                "amount": total_amount,
+                "stripe_transfer_id": transfer.id
+            })
+            
+        except stripe.error.StripeError as e:
+            errors.append({
+                "driver_id": driver_id,
+                "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
+                "error": str(e)
+            })
+    
+    total_processed = sum(p["amount"] for p in processed)
+    
+    logging.info(f"Bulk Stripe payouts: {len(processed)} processed, {len(errors)} errors, €{total_processed:.2f} total")
+    
+    return {
+        "processed_count": len(processed),
+        "errors_count": len(errors),
+        "total_amount": round(total_processed, 2),
+        "processed": processed,
+        "errors": errors
+    }
+
 # Ride Request Routes
 @api_router.post("/rides/request")
 async def create_ride_request(data: RideRequestCreate, current_user: dict = Depends(get_current_user)):
