@@ -485,6 +485,43 @@ const DriverDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Earnings Panel */}
+      <AnimatePresence>
+        {showEarnings && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25 }}
+            className="fixed inset-0 z-[2000] bg-[#09090B]"
+          >
+            <div className="h-full flex flex-col">
+              {/* Header */}
+              <div className="flex items-center gap-4 p-4 border-b border-zinc-800 bg-[#18181B]">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowEarnings(false)}
+                  className="text-white hover:bg-zinc-800"
+                  data-testid="earnings-back-btn"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+                <div className="flex items-center gap-2">
+                  <Car className="w-6 h-6 text-[#FFD60A]" />
+                  <span className="text-xl font-bold text-white">MÉTRO-TAXI</span>
+                </div>
+              </div>
+              
+              {/* Content */}
+              <div className="flex-1 overflow-hidden">
+                <DriverEarnings onClose={() => setShowEarnings(false)} />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
