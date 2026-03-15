@@ -1,16 +1,482 @@
 {
-  "hero": {"title": "MÉTRO-TAXI", "subtitle": "شبكة التنقل الحضري بالاشتراك", "subtitleHighlight": "بالاشتراك", "description": "انضم إلى المركبات المتجهة في اتجاهك. رحلات غير محدودة باشتراك بسيط.", "cta": "ابدأ الآن", "ecoSlogan": "نظام تنقل ذكي بالمشاركة", "ecoMessage": "قلل بصمتك الكربونية بمشاركة رحلاتك"},
-  "nav": {"login": "تسجيل الدخول", "register": "إنشاء حساب", "pricing": "الأسعار", "howItWorks": "كيف يعمل", "drivers": "السائقين", "logout": "تسجيل الخروج", "profile": "الملف الشخصي", "dashboard": "لوحة التحكم"},
-  "auth": {"login": {"title": "تسجيل الدخول", "subtitle": "ادخل إلى حسابك في Métro-Taxi", "email": "البريد الإلكتروني", "password": "كلمة المرور", "submit": "تسجيل الدخول", "noAccount": "ليس لديك حساب؟", "signUp": "سجل الآن", "asUser": "كمستخدم", "asDriver": "كسائق", "or": "أو", "error": "بريد إلكتروني أو كلمة مرور غير صحيحة", "success": "تم تسجيل الدخول بنجاح"}, "register": {"user": {"title": "تسجيل المستخدم", "subtitle": "أنشئ حسابك للوصول إلى شبكة Métro-Taxi"}, "driver": {"title": "تسجيل سائق VTC", "subtitle": "انضم إلى شبكة Métro-Taxi"}, "firstName": "الاسم الأول", "lastName": "اسم العائلة", "email": "البريد الإلكتروني", "phone": "الهاتف", "password": "كلمة المرور", "confirmPassword": "تأكيد كلمة المرور", "vehiclePlate": "رقم اللوحة", "vehicleType": "نوع المركبة", "seats": "عدد المقاعد", "vtcLicense": "رقم رخصة VTC", "submit": "إنشاء حساب", "haveAccount": "لديك حساب بالفعل؟", "login": "تسجيل الدخول", "success": "تم التسجيل بنجاح!", "error": "خطأ في التسجيل", "passwordMismatch": "كلمات المرور غير متطابقة", "vehicleTypes": {"sedan": "سيدان", "suv": "SUV", "van": "فان", "luxury": "فاخرة"}}},
-  "dashboard": {"user": {"title": "لوحة التحكم", "welcome": "مرحباً", "availableVehicles": "مركبات متاحة", "seats": "مقاعد", "activeRides": "رحلات نشطة", "setDestination": "تحديد الوجهة", "cancel": "إلغاء", "clickMap": "انقر على الخريطة لتحديد وجهتك", "requestRide": "طلب هذه الرحلة", "yourPosition": "موقعك", "destination": "الوجهة", "remove": "إزالة", "optimalRoute": "المسار الأمثل", "totalDistance": "كم إجمالي", "transfers": "تحويلات", "minutes": "دقائق", "efficiency": "كفاءة المسار", "segments": "أجزاء المسار", "segment": "الجزء", "searchingDriver": "جاري البحث عن سائق...", "freeSeats": "مقاعد فارغة", "direction": "الاتجاه", "eta": "الوقت المتوقع", "min": "دقيقة", "score": "النتيجة", "transferSuggestions": "اقتراحات التحويل", "showTransfers": "عرض التحويلات", "hideTransfers": "إخفاء", "transfer": "تحويل", "emailNotVerified": "البريد غير مفعل", "verifyEmail": "تفعيل البريد", "subscriptionRequired": "يتطلب اشتراك", "subscribe": "اشترك الآن", "activeRide": "رحلة نشطة", "driver": "السائق", "vehicle": "المركبة", "progress": "التقدم", "pickup": "الاستلام", "inProgress": "في الطريق", "dropoff": "الوصول"}, "driver": {"title": "لوحة تحكم السائق", "goOnline": "الاتصال", "goOffline": "قطع الاتصال", "online": "متصل", "offline": "غير متصل", "availableSeats": "المقاعد المتاحة", "updateSeats": "تحديث", "pendingRequests": "الطلبات المعلقة", "noRequests": "لا توجد طلبات معلقة", "accept": "قبول", "decline": "رفض", "passenger": "الراكب", "distance": "المسافة", "currentRide": "الرحلة الحالية", "startRide": "بدء", "completeRide": "إنهاء", "setDestination": "تحديد اتجاهي", "yourDestination": "وجهتك", "nearbyUsers": "مستخدمون قريبون"}, "admin": {"title": "الإدارة", "stats": {"users": "المستخدمون المسجلون", "drivers": "السائقون", "subscriptions": "الاشتراكات النشطة", "rides": "الرحلات الجارية"}, "tabs": {"drivers": "السائقون", "users": "المستخدمون", "subscriptions": "الاشتراكات", "cards": "البطاقات الافتراضية"}, "drivers": {"title": "إدارة السائقين", "subtitle": "تفعيل أو تعطيل حسابات السائقين", "driver": "السائق", "contact": "الاتصال", "vehicle": "المركبة", "license": "رخصة VTC", "status": "الحالة", "actions": "الإجراءات", "validated": "مفعل", "pending": "قيد الانتظار", "online": "متصل", "activate": "تفعيل", "deactivate": "تعطيل", "noDrivers": "لا يوجد سائقون مسجلون"}, "users": {"title": "قائمة المستخدمين", "subtitle": "عرض معلومات المستخدمين المسجلين", "user": "المستخدم", "contact": "الاتصال", "subscription": "الاشتراك", "expiration": "انتهاء الصلاحية", "registration": "التسجيل", "active": "نشط", "inactive": "غير نشط", "noUsers": "لا يوجد مستخدمون مسجلون"}, "subscriptions": {"title": "الاشتراكات", "active": "الاشتراكات النشطة", "activeDesc": "قائمة الاشتراكات السارية", "expired": "الاشتراكات المنتهية", "expiredDesc": "يجب تعطيل هذه الاشتراكات", "expiringSoon": "تنتهي خلال 24 ساعة", "expiredLabel": "منتهية", "activeLabel": "نشطة", "soonLabel": "قريباً", "cleanup": "تعطيل المنتهية", "refresh": "تحديث", "status": "الحالة", "expiresSoon": "ينتهي قريباً", "noActive": "لا توجد اشتراكات نشطة"}, "cards": {"title": "البطاقات الافتراضية", "subtitle": "عرض بطاقات المستخدمين الافتراضية", "holder": "صاحب البطاقة", "cardNumber": "رقم البطاقة", "phone": "الهاتف", "subscription": "الاشتراك", "expires": "ينتهي في", "memberSince": "عضو منذ", "totalRides": "إجمالي الرحلات", "rides": "رحلات", "verified": "مفعل", "notVerified": "غير مفعل", "noCards": "لا توجد بطاقات افتراضية"}, "common": {"loadingError": "خطأ في تحميل البيانات", "registeredOn": "مسجل في", "seats": "مقاعد"}}},
-  "common": {"loading": "جاري التحميل...", "error": "خطأ", "success": "نجاح", "confirm": "تأكيد", "cancel": "إلغاء", "save": "حفظ", "delete": "حذف", "edit": "تعديل", "view": "عرض", "close": "إغلاق", "subscribed": "مشترك", "subscribe": "اشترك", "myProfile": "ملفي الشخصي", "accepted": "مقبول", "pickedUp": "تم الاستلام", "enRoute": "في الطريق", "arrived": "وصل", "requestRide": "طلب رحلة", "transferPoint": "نقطة التحويل", "changeVehicle": "غير المركبة هنا", "destinationSet": "تم تحديد الوجهة!", "subscriptionRequired": "يتطلب اشتراك لطلب رحلة", "requestSent": "تم إرسال الطلب للسائق!", "requestError": "خطأ في إرسال الطلب", "places": "مقاعد فارغة", "optimalRoute": "المسار الأمثل", "kmTotal": "كم إجمالي", "transfers": "تحويلات", "routeEfficiency": "كفاءة المسار", "routeSegments": "أجزاء المسار", "requestThisRide": "طلب هذه الرحلة", "searchingForDriver": "جاري البحث عن سائق...", "nowOnline": "أنت متصل الآن!", "nowOffline": "أنت غير متصل", "statusChangeError": "خطأ في تغيير الحالة", "rideAccepted": "تم قبول الرحلة!", "acceptError": "خطأ في القبول", "requestDeclined": "تم رفض الطلب", "declineError": "خطأ في الرفض", "rideCompleted": "اكتملت الرحلة!", "completeError": "خطأ في الإكمال", "driverActivated": "تم تفعيل السائق", "activateError": "خطأ في التفعيل", "driverDeactivated": "تم تعطيل السائق", "deactivateError": "خطأ في التعطيل", "cardLoadError": "خطأ في تحميل البطاقة", "cleanupError": "خطأ في التنظيف"},
-  "subscription": {"title": "اختر اشتراكك", "subtitle": "رحلات غير محدودة على شبكة Métro-Taxi بالكامل", "plans": {"day": {"name": "24 ساعة", "price": "6,99 €", "description": "مثالي للاستخدام العرضي"}, "week": {"name": "أسبوع واحد", "price": "16,99 €", "description": "مثالي للإقامات القصيرة"}, "month": {"name": "شهر واحد", "price": "53,99 €", "description": "أفضل قيمة مقابل السعر", "popular": "شائع"}}, "features": {"unlimited": "رحلات غير محدودة", "allVehicles": "الوصول إلى جميع المركبات", "support": "دعم ذو أولوية", "noCommitment": "بدون التزام"}, "cta": "اشترك الآن", "perDay": "/يوم", "perWeek": "/أسبوع", "perMonth": "/شهر", "processing": "جاري المعالجة...", "success": {"title": "تم الدفع بنجاح!", "subtitle": "اشتراكك نشط الآن", "details": "تفاصيل اشتراكك", "plan": "الباقة", "validUntil": "صالح حتى", "goDashboard": "الذهاب إلى لوحة التحكم"}},
-  "profile": {"title": "ملفي الشخصي", "personalInfo": "المعلومات الشخصية", "firstName": "الاسم الأول", "lastName": "اسم العائلة", "email": "البريد الإلكتروني", "phone": "الهاتف", "memberSince": "عضو منذ", "subscription": {"title": "اشتراكي", "plan": "الباقة", "status": "الحالة", "active": "نشط", "inactive": "غير نشط", "expires": "ينتهي في", "subscribe": "اشترك", "renew": "تجديد"}, "virtualCard": {"title": "بطاقتي الافتراضية", "cardNumber": "رقم البطاقة"}, "logout": "تسجيل الخروج"},
-  "pricing": {"title": "الاشتراكات", "subtitle": "اختر باقتك", "plans": {"day": {"name": "24 ساعة", "price": "6,99 €", "priceLocal": "6,99 €", "description": "مثالي للاستخدام العرضي"}, "week": {"name": "أسبوع واحد", "price": "16,99 €", "priceLocal": "16,99 €", "description": "مثالي للإقامات القصيرة"}, "month": {"name": "شهر واحد", "price": "53,99 €", "priceLocal": "53,99 €", "description": "أفضل قيمة مقابل السعر"}}, "features": {"unlimited": "رحلات غير محدودة", "allVehicles": "الوصول إلى جميع المركبات", "support": "دعم ذو أولوية", "noCommitment": "بدون التزام", "eco": "🌿 نقل صديق للبيئة"}, "cta": "اشترك الآن", "popularBadge": "شائع"},
-  "howItWorks": {"title": "كيف يعمل", "steps": {"step1": {"title": "اشترك", "description": "اختر باقتك: 24 ساعة، أسبوع واحد أو شهر واحد. ادفع مرة واحدة، سافر بلا حدود."}, "step2": {"title": "حدد الموقع", "description": "ابحث عن المركبات المتاحة حولك في الوقت الفعلي على الخريطة."}, "step3": {"title": "سافر", "description": "اطلب رحلتك بنقرة واحدة. السائق يأخذك في طريقه."}, "step4": {"title": "سافر", "description": "استمتع برحلتك وانزل أينما تريد"}}},
-  "drivers": {"title": "كن سائق VTC", "subtitle": "انضم إلى شبكة Métro-Taxi وزد دخلك بدون رسوم خفية", "revenue": {"title": "الدخل المحتمل للسائق", "monthly": "شهرياً", "upTo": "يمكن أن يصل إلى", "depending": "حسب النشاط", "rangeMin": "2,250 €", "rangeMax": "3,000 €", "maxRevenue": "7,500 €"}, "benefits": {"title": "مزايا السائقين", "noSubscription": "بدون رسوم اشتراك", "noSubscriptionDesc": "انضم لشبكتنا مجاناً", "noCommission": "بدون عمولة على الرحلات", "noCommissionDesc": "احتفظ بـ 100% من أرباحك", "subscribedPassengers": "ركاب مشتركون بالفعل", "subscribedPassengersDesc": "لا حاجة للبحث عن العملاء", "optimizedRoutes": "تحسين المسارات", "optimizedRoutesDesc": "خوارزمية مطابقة ذكية", "morePassengers": "المزيد من الركاب عبر الشبكة", "morePassengersDesc": "استفد من وقت قيادتك"}, "app": {"title": "تطبيق السائق", "subtitle": "كل ما تحتاجه على شاشة واحدة", "requests": "طلبات الركاب", "requestsDesc": "استقبل الطلبات في الوقت الفعلي في منطقتك", "routes": "مسارات محسنة", "routesDesc": "طرق محسوبة لزيادة رحلاتك", "transfers": "تحويلات مقترحة", "transfersDesc": "نظام تحويل ذكي"}, "cta": "انضم للشبكة الآن", "ctaSubtext": "تسجيل مجاني • بدون التزام"},
-  "video": {"title": "اكتشف Métro-Taxi", "loading": "جاري تحميل الصوت..."},
-  "footer": {"rights": "جميع الحقوق محفوظة", "contact": "اتصل بنا", "legal": "الشروط القانونية", "privacy": "الخصوصية"},
-  "errors": {"required": "هذا الحقل مطلوب", "invalidEmail": "بريد إلكتروني غير صالح", "invalidPhone": "رقم هاتف غير صالح", "passwordTooShort": "يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل", "serverError": "خطأ في الخادم، يرجى المحاولة مرة أخرى"},
-  "verifyEmail": {"title": "التحقق من البريد الإلكتروني", "verifying": "جاري التحقق...", "success": "تم التحقق من البريد بنجاح!", "successDesc": "حسابك مفعل الآن.", "error": "فشل التحقق", "errorDesc": "الرابط غير صالح أو منتهي الصلاحية.", "goLogin": "تسجيل الدخول", "goHome": "العودة للرئيسية"}
+  "hero": {
+    "title": "MÉTRO-TAXI",
+    "subtitle": "شبكة التنقل الحضري بالاشتراك",
+    "subtitleHighlight": "بالاشتراك",
+    "description": "انضم إلى المركبات المتجهة في اتجاهك. رحلات غير محدودة باشتراك بسيط.",
+    "cta": "ابدأ الآن",
+    "ecoSlogan": "نظام تنقل ذكي بالمشاركة",
+    "ecoMessage": "قلل بصمتك الكربونية بمشاركة رحلاتك"
+  },
+  "nav": {
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "pricing": "الأسعار",
+    "howItWorks": "كيف يعمل",
+    "drivers": "السائقين",
+    "logout": "تسجيل الخروج",
+    "profile": "الملف الشخصي",
+    "dashboard": "لوحة التحكم"
+  },
+  "auth": {
+    "login": {
+      "title": "تسجيل الدخول",
+      "subtitle": "ادخل إلى حسابك في Métro-Taxi",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "submit": "تسجيل الدخول",
+      "noAccount": "ليس لديك حساب؟",
+      "signUp": "سجل الآن",
+      "asUser": "كمستخدم",
+      "asDriver": "كسائق",
+      "or": "أو",
+      "error": "بريد إلكتروني أو كلمة مرور غير صحيحة",
+      "success": "تم تسجيل الدخول بنجاح"
+    },
+    "register": {
+      "user": {
+        "title": "تسجيل المستخدم",
+        "subtitle": "أنشئ حسابك للوصول إلى شبكة Métro-Taxi"
+      },
+      "driver": {
+        "title": "تسجيل سائق VTC",
+        "subtitle": "انضم إلى شبكة Métro-Taxi"
+      },
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "password": "كلمة المرور",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "vehiclePlate": "رقم اللوحة",
+      "vehicleType": "نوع المركبة",
+      "seats": "عدد المقاعد",
+      "vtcLicense": "رقم رخصة VTC",
+      "submit": "إنشاء حساب",
+      "haveAccount": "لديك حساب بالفعل؟",
+      "login": "تسجيل الدخول",
+      "success": "تم التسجيل بنجاح!",
+      "error": "خطأ في التسجيل",
+      "passwordMismatch": "كلمات المرور غير متطابقة",
+      "vehicleTypes": {
+        "sedan": "سيدان",
+        "suv": "SUV",
+        "van": "فان",
+        "luxury": "فاخرة"
+      }
+    }
+  },
+  "dashboard": {
+    "user": {
+      "title": "لوحة التحكم",
+      "welcome": "مرحباً",
+      "availableVehicles": "مركبات متاحة",
+      "seats": "مقاعد",
+      "activeRides": "رحلات نشطة",
+      "setDestination": "تحديد الوجهة",
+      "cancel": "إلغاء",
+      "clickMap": "انقر على الخريطة لتحديد وجهتك",
+      "requestRide": "طلب هذه الرحلة",
+      "yourPosition": "موقعك",
+      "destination": "الوجهة",
+      "remove": "إزالة",
+      "optimalRoute": "المسار الأمثل",
+      "totalDistance": "كم إجمالي",
+      "transfers": "تحويلات",
+      "minutes": "دقائق",
+      "efficiency": "كفاءة المسار",
+      "segments": "أجزاء المسار",
+      "segment": "الجزء",
+      "searchingDriver": "جاري البحث عن سائق...",
+      "freeSeats": "مقاعد فارغة",
+      "direction": "الاتجاه",
+      "eta": "الوقت المتوقع",
+      "min": "دقيقة",
+      "score": "النتيجة",
+      "transferSuggestions": "اقتراحات التحويل",
+      "showTransfers": "عرض التحويلات",
+      "hideTransfers": "إخفاء",
+      "transfer": "تحويل",
+      "emailNotVerified": "البريد غير مفعل",
+      "verifyEmail": "تفعيل البريد",
+      "subscriptionRequired": "يتطلب اشتراك",
+      "subscribe": "اشترك الآن",
+      "activeRide": "رحلة نشطة",
+      "driver": "السائق",
+      "vehicle": "المركبة",
+      "progress": "التقدم",
+      "pickup": "الاستلام",
+      "inProgress": "في الطريق",
+      "dropoff": "الوصول"
+    },
+    "driver": {
+      "title": "لوحة تحكم السائق",
+      "goOnline": "الاتصال",
+      "goOffline": "قطع الاتصال",
+      "online": "متصل",
+      "offline": "غير متصل",
+      "availableSeats": "المقاعد المتاحة",
+      "updateSeats": "تحديث",
+      "pendingRequests": "الطلبات المعلقة",
+      "noRequests": "لا توجد طلبات معلقة",
+      "accept": "قبول",
+      "decline": "رفض",
+      "passenger": "الراكب",
+      "distance": "المسافة",
+      "currentRide": "الرحلة الحالية",
+      "startRide": "بدء",
+      "completeRide": "إنهاء",
+      "setDestination": "تحديد اتجاهي",
+      "yourDestination": "وجهتك",
+      "nearbyUsers": "مستخدمون قريبون"
+    },
+    "admin": {
+      "title": "الإدارة",
+      "stats": {
+        "users": "المستخدمون المسجلون",
+        "drivers": "السائقون",
+        "subscriptions": "الاشتراكات النشطة",
+        "rides": "الرحلات الجارية"
+      },
+      "tabs": {
+        "drivers": "السائقون",
+        "users": "المستخدمون",
+        "subscriptions": "الاشتراكات",
+        "cards": "البطاقات الافتراضية"
+      },
+      "drivers": {
+        "title": "إدارة السائقين",
+        "subtitle": "تفعيل أو تعطيل حسابات السائقين",
+        "driver": "السائق",
+        "contact": "الاتصال",
+        "vehicle": "المركبة",
+        "license": "رخصة VTC",
+        "status": "الحالة",
+        "actions": "الإجراءات",
+        "validated": "مفعل",
+        "pending": "قيد الانتظار",
+        "online": "متصل",
+        "activate": "تفعيل",
+        "deactivate": "تعطيل",
+        "noDrivers": "لا يوجد سائقون مسجلون"
+      },
+      "users": {
+        "title": "قائمة المستخدمين",
+        "subtitle": "عرض معلومات المستخدمين المسجلين",
+        "user": "المستخدم",
+        "contact": "الاتصال",
+        "subscription": "الاشتراك",
+        "expiration": "انتهاء الصلاحية",
+        "registration": "التسجيل",
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "noUsers": "لا يوجد مستخدمون مسجلون"
+      },
+      "subscriptions": {
+        "title": "الاشتراكات",
+        "active": "الاشتراكات النشطة",
+        "activeDesc": "قائمة الاشتراكات السارية",
+        "expired": "الاشتراكات المنتهية",
+        "expiredDesc": "يجب تعطيل هذه الاشتراكات",
+        "expiringSoon": "تنتهي خلال 24 ساعة",
+        "expiredLabel": "منتهية",
+        "activeLabel": "نشطة",
+        "soonLabel": "قريباً",
+        "cleanup": "تعطيل المنتهية",
+        "refresh": "تحديث",
+        "status": "الحالة",
+        "expiresSoon": "ينتهي قريباً",
+        "noActive": "لا توجد اشتراكات نشطة"
+      },
+      "cards": {
+        "title": "البطاقات الافتراضية",
+        "subtitle": "عرض بطاقات المستخدمين الافتراضية",
+        "holder": "صاحب البطاقة",
+        "cardNumber": "رقم البطاقة",
+        "phone": "الهاتف",
+        "subscription": "الاشتراك",
+        "expires": "ينتهي في",
+        "memberSince": "عضو منذ",
+        "totalRides": "إجمالي الرحلات",
+        "rides": "رحلات",
+        "verified": "مفعل",
+        "notVerified": "غير مفعل",
+        "noCards": "لا توجد بطاقات افتراضية"
+      },
+      "common": {
+        "loadingError": "خطأ في تحميل البيانات",
+        "registeredOn": "مسجل في",
+        "seats": "مقاعد"
+      }
+    }
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
+    "success": "نجاح",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "view": "عرض",
+    "close": "إغلاق",
+    "subscribed": "مشترك",
+    "subscribe": "اشترك",
+    "myProfile": "ملفي الشخصي",
+    "accepted": "مقبول",
+    "pickedUp": "تم الاستلام",
+    "enRoute": "في الطريق",
+    "arrived": "وصل",
+    "requestRide": "طلب رحلة",
+    "transferPoint": "نقطة التحويل",
+    "changeVehicle": "غير المركبة هنا",
+    "destinationSet": "تم تحديد الوجهة!",
+    "subscriptionRequired": "يتطلب اشتراك لطلب رحلة",
+    "requestSent": "تم إرسال الطلب للسائق!",
+    "requestError": "خطأ في إرسال الطلب",
+    "places": "مقاعد فارغة",
+    "optimalRoute": "المسار الأمثل",
+    "kmTotal": "كم إجمالي",
+    "transfers": "تحويلات",
+    "routeEfficiency": "كفاءة المسار",
+    "routeSegments": "أجزاء المسار",
+    "requestThisRide": "طلب هذه الرحلة",
+    "searchingForDriver": "جاري البحث عن سائق...",
+    "nowOnline": "أنت متصل الآن!",
+    "nowOffline": "أنت غير متصل",
+    "statusChangeError": "خطأ في تغيير الحالة",
+    "rideAccepted": "تم قبول الرحلة!",
+    "acceptError": "خطأ في القبول",
+    "requestDeclined": "تم رفض الطلب",
+    "declineError": "خطأ في الرفض",
+    "rideCompleted": "اكتملت الرحلة!",
+    "completeError": "خطأ في الإكمال",
+    "driverActivated": "تم تفعيل السائق",
+    "activateError": "خطأ في التفعيل",
+    "driverDeactivated": "تم تعطيل السائق",
+    "deactivateError": "خطأ في التعطيل",
+    "cardLoadError": "خطأ في تحميل البطاقة",
+    "cleanupError": "خطأ في التنظيف"
+  },
+  "subscription": {
+    "title": "اختر اشتراكك",
+    "subtitle": "رحلات غير محدودة على شبكة Métro-Taxi بالكامل",
+    "plans": {
+      "day": {
+        "name": "24 ساعة",
+        "price": "6,99 €",
+        "description": "مثالي للاستخدام العرضي"
+      },
+      "week": {
+        "name": "أسبوع واحد",
+        "price": "16,99 €",
+        "description": "مثالي للإقامات القصيرة"
+      },
+      "month": {
+        "name": "شهر واحد",
+        "price": "53,99 €",
+        "description": "أفضل قيمة مقابل السعر",
+        "popular": "شائع"
+      }
+    },
+    "features": {
+      "unlimited": "رحلات غير محدودة",
+      "allVehicles": "الوصول إلى جميع المركبات",
+      "support": "دعم ذو أولوية",
+      "noCommitment": "بدون التزام"
+    },
+    "cta": "اشترك الآن",
+    "perDay": "/يوم",
+    "perWeek": "/أسبوع",
+    "perMonth": "/شهر",
+    "processing": "جاري المعالجة...",
+    "success": {
+      "title": "تم الدفع بنجاح!",
+      "subtitle": "اشتراكك نشط الآن",
+      "details": "تفاصيل اشتراكك",
+      "plan": "الباقة",
+      "validUntil": "صالح حتى",
+      "goDashboard": "الذهاب إلى لوحة التحكم"
+    }
+  },
+  "profile": {
+    "title": "ملفي الشخصي",
+    "personalInfo": "المعلومات الشخصية",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "memberSince": "عضو منذ",
+    "subscription": {
+      "title": "اشتراكي",
+      "plan": "الباقة",
+      "status": "الحالة",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "expires": "ينتهي في",
+      "subscribe": "اشترك",
+      "renew": "تجديد"
+    },
+    "virtualCard": {
+      "title": "بطاقتي الافتراضية",
+      "cardNumber": "رقم البطاقة"
+    },
+    "logout": "تسجيل الخروج"
+  },
+  "pricing": {
+    "title": "الاشتراكات",
+    "subtitle": "اختر باقتك",
+    "plans": {
+      "day": {
+        "name": "24 ساعة",
+        "price": "6,99 €",
+        "priceLocal": "6,99 €",
+        "description": "مثالي للاستخدام العرضي"
+      },
+      "week": {
+        "name": "أسبوع واحد",
+        "price": "16,99 €",
+        "priceLocal": "16,99 €",
+        "description": "مثالي للإقامات القصيرة"
+      },
+      "month": {
+        "name": "شهر واحد",
+        "price": "53,99 €",
+        "priceLocal": "53,99 €",
+        "description": "أفضل قيمة مقابل السعر"
+      }
+    },
+    "features": {
+      "unlimited": "رحلات غير محدودة",
+      "allVehicles": "الوصول إلى جميع المركبات",
+      "support": "دعم ذو أولوية",
+      "noCommitment": "بدون التزام",
+      "eco": "🌿 نقل صديق للبيئة"
+    },
+    "cta": "اشترك الآن",
+    "popularBadge": "شائع"
+  },
+  "howItWorks": {
+    "title": "كيف يعمل",
+    "steps": {
+      "step1": {
+        "title": "اشترك",
+        "description": "اختر باقتك: 24 ساعة، أسبوع واحد أو شهر واحد. ادفع مرة واحدة، سافر بلا حدود."
+      },
+      "step2": {
+        "title": "حدد الموقع",
+        "description": "ابحث عن المركبات المتاحة حولك في الوقت الفعلي على الخريطة."
+      },
+      "step3": {
+        "title": "سافر",
+        "description": "اطلب رحلتك بنقرة واحدة. السائق يأخذك في طريقه."
+      },
+      "step4": {
+        "title": "سافر",
+        "description": "استمتع برحلتك وانزل أينما تريد"
+      }
+    }
+  },
+  "drivers": {
+    "title": "كن سائق VTC",
+    "subtitle": "انضم إلى شبكة Métro-Taxi وزد دخلك بدون رسوم خفية",
+    "revenue": {
+      "title": "الدخل المحتمل للسائق",
+      "monthly": "شهرياً",
+      "upTo": "يمكن أن يصل إلى",
+      "depending": "حسب النشاط",
+      "rangeMin": "2,250 €",
+      "rangeMax": "3,000 €",
+      "maxRevenue": "7,500 €"
+    },
+    "benefits": {
+      "title": "مزايا السائقين",
+      "noSubscription": "بدون رسوم اشتراك",
+      "noSubscriptionDesc": "انضم لشبكتنا مجاناً",
+      "noCommission": "بدون عمولة على الرحلات",
+      "noCommissionDesc": "احتفظ بـ 100% من أرباحك",
+      "subscribedPassengers": "ركاب مشتركون بالفعل",
+      "subscribedPassengersDesc": "لا حاجة للبحث عن العملاء",
+      "optimizedRoutes": "تحسين المسارات",
+      "optimizedRoutesDesc": "خوارزمية مطابقة ذكية",
+      "morePassengers": "المزيد من الركاب عبر الشبكة",
+      "morePassengersDesc": "استفد من وقت قيادتك"
+    },
+    "app": {
+      "title": "تطبيق السائق",
+      "subtitle": "كل ما تحتاجه على شاشة واحدة",
+      "requests": "طلبات الركاب",
+      "requestsDesc": "استقبل الطلبات في الوقت الفعلي في منطقتك",
+      "routes": "مسارات محسنة",
+      "routesDesc": "طرق محسوبة لزيادة رحلاتك",
+      "transfers": "تحويلات مقترحة",
+      "transfersDesc": "نظام تحويل ذكي"
+    },
+    "cta": "انضم للشبكة الآن",
+    "ctaSubtext": "تسجيل مجاني • بدون التزام"
+  },
+  "video": {
+    "title": "اكتشف Métro-Taxi",
+    "loading": "جاري تحميل الصوت..."
+  },
+  "footer": {
+    "rights": "جميع الحقوق محفوظة",
+    "contact": "اتصل بنا",
+    "legal": "الشروط القانونية",
+    "privacy": "الخصوصية"
+  },
+  "errors": {
+    "required": "هذا الحقل مطلوب",
+    "invalidEmail": "بريد إلكتروني غير صالح",
+    "invalidPhone": "رقم هاتف غير صالح",
+    "passwordTooShort": "يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل",
+    "serverError": "خطأ في الخادم، يرجى المحاولة مرة أخرى"
+  },
+  "verifyEmail": {
+    "title": "التحقق من البريد الإلكتروني",
+    "verifying": "جاري التحقق...",
+    "success": "تم التحقق من البريد بنجاح!",
+    "successDesc": "حسابك مفعل الآن.",
+    "error": "فشل التحقق",
+    "errorDesc": "الرابط غير صالح أو منتهي الصلاحية.",
+    "goLogin": "تسجيل الدخول",
+    "goHome": "العودة للرئيسية"
+  },
+  "driverRegister": {
+    "title": "تسجيل سائق VTC",
+    "subtitle": "انضم إلى شبكة السائقين الشركاء",
+    "firstName": "الاسم الأول",
+    "firstNamePlaceholder": "محمد",
+    "lastName": "اسم العائلة",
+    "lastNamePlaceholder": "أحمد",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "mohamed@example.com",
+    "phone": "الهاتف",
+    "phonePlaceholder": "+966 50 123 4567",
+    "vehicleInfo": "معلومات المركبة",
+    "vehiclePlate": "رقم اللوحة",
+    "vehicleType": "نوع المركبة",
+    "selectPlaceholder": "اختر",
+    "vehicleTypes": {
+      "sedan": "سيدان",
+      "suv": "SUV",
+      "minivan": "ميني فان",
+      "van": "فان"
+    },
+    "seats": "عدد المقاعد",
+    "vtcLicense": "رقم رخصة VTC",
+    "bankInfo": "المعلومات البنكية",
+    "bankInfoDesc": "لاستلام أرباحك. اختياري، يمكن تعديله لاحقاً.",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "autoValidation": "سيتم تفعيل حسابك تلقائياً. يمكنك استلام طلبات الرحلات فوراً.",
+    "submitBtn": "التسجيل كسائق",
+    "alreadyRegistered": "مسجل بالفعل؟",
+    "loginLink": "تسجيل الدخول",
+    "passwordMismatch": "كلمات المرور غير متطابقة",
+    "passwordTooShort": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+    "successMessage": "تم التسجيل بنجاح! حسابك مفعل. يمكنك الآن تسجيل الدخول.",
+    "errorMessage": "فشل التسجيل"
+  }
 }

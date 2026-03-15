@@ -1,23 +1,449 @@
 {
-  "hero": {"title": "MÉTRO-TAXI", "subtitle": "Het abonnementsgebaseerde stedelijke mobiliteitsnetwerk", "subtitleHighlight": "MET ABONNEMENT", "description": "Reis mee met voertuigen die uw richting uitgaan. Onbeperkte ritten met een eenvoudig abonnement.", "cta": "AAN DE SLAG", "ecoSlogan": "Intelligent carpoolsysteem voor vervoer", "ecoMessage": "Verminder uw CO2-voetafdruk door ritten te delen"},
-  "nav": {"login": "Inloggen", "register": "Registreren", "pricing": "Prijzen", "howItWorks": "Hoe het werkt", "drivers": "Chauffeurs", "logout": "Uitloggen", "profile": "Profiel", "dashboard": "Dashboard"},
+  "hero": {
+    "title": "MÉTRO-TAXI",
+    "subtitle": "Het abonnementsgebaseerde stedelijke mobiliteitsnetwerk",
+    "subtitleHighlight": "MET ABONNEMENT",
+    "description": "Reis mee met voertuigen die uw richting uitgaan. Onbeperkte ritten met een eenvoudig abonnement.",
+    "cta": "AAN DE SLAG",
+    "ecoSlogan": "Intelligent carpoolsysteem voor vervoer",
+    "ecoMessage": "Verminder uw CO2-voetafdruk door ritten te delen"
+  },
+  "nav": {
+    "login": "Inloggen",
+    "register": "Registreren",
+    "pricing": "Prijzen",
+    "howItWorks": "Hoe het werkt",
+    "drivers": "Chauffeurs",
+    "logout": "Uitloggen",
+    "profile": "Profiel",
+    "dashboard": "Dashboard"
+  },
   "auth": {
-    "login": {"title": "Inloggen", "subtitle": "Toegang tot uw Métro-Taxi account", "email": "E-mail", "password": "Wachtwoord", "submit": "INLOGGEN", "noAccount": "Nog geen account?", "signUp": "Registreer u", "asUser": "als gebruiker", "asDriver": "als chauffeur", "or": "of", "error": "Onjuiste e-mail of wachtwoord", "success": "Succesvol ingelogd"},
-    "register": {"user": {"title": "Gebruikersregistratie", "subtitle": "Maak uw account aan voor toegang tot het Métro-Taxi netwerk"}, "driver": {"title": "VTC Chauffeur Registratie", "subtitle": "Word lid van het Métro-Taxi netwerk"}, "firstName": "Voornaam", "lastName": "Achternaam", "email": "E-mail", "phone": "Telefoon", "password": "Wachtwoord", "confirmPassword": "Bevestig wachtwoord", "vehiclePlate": "Kenteken", "vehicleType": "Voertuigtype", "seats": "Aantal zitplaatsen", "vtcLicense": "VTC-licentienummer", "submit": "REGISTREREN", "haveAccount": "Heeft u al een account?", "login": "Log in", "success": "Registratie geslaagd!", "error": "Registratiefout", "passwordMismatch": "Wachtwoorden komen niet overeen", "vehicleTypes": {"sedan": "Sedan", "suv": "SUV", "van": "Busje", "luxury": "Luxe"}}
+    "login": {
+      "title": "Inloggen",
+      "subtitle": "Toegang tot uw Métro-Taxi account",
+      "email": "E-mail",
+      "password": "Wachtwoord",
+      "submit": "INLOGGEN",
+      "noAccount": "Nog geen account?",
+      "signUp": "Registreer u",
+      "asUser": "als gebruiker",
+      "asDriver": "als chauffeur",
+      "or": "of",
+      "error": "Onjuiste e-mail of wachtwoord",
+      "success": "Succesvol ingelogd"
+    },
+    "register": {
+      "user": {
+        "title": "Gebruikersregistratie",
+        "subtitle": "Maak uw account aan voor toegang tot het Métro-Taxi netwerk"
+      },
+      "driver": {
+        "title": "VTC Chauffeur Registratie",
+        "subtitle": "Word lid van het Métro-Taxi netwerk"
+      },
+      "firstName": "Voornaam",
+      "lastName": "Achternaam",
+      "email": "E-mail",
+      "phone": "Telefoon",
+      "password": "Wachtwoord",
+      "confirmPassword": "Bevestig wachtwoord",
+      "vehiclePlate": "Kenteken",
+      "vehicleType": "Voertuigtype",
+      "seats": "Aantal zitplaatsen",
+      "vtcLicense": "VTC-licentienummer",
+      "submit": "REGISTREREN",
+      "haveAccount": "Heeft u al een account?",
+      "login": "Log in",
+      "success": "Registratie geslaagd!",
+      "error": "Registratiefout",
+      "passwordMismatch": "Wachtwoorden komen niet overeen",
+      "vehicleTypes": {
+        "sedan": "Sedan",
+        "suv": "SUV",
+        "van": "Busje",
+        "luxury": "Luxe"
+      }
+    }
   },
   "dashboard": {
-    "user": {"title": "Dashboard", "welcome": "Welkom", "availableVehicles": "beschikbare voertuigen", "seats": "zitplaatsen", "activeRides": "actieve ritten", "setDestination": "Bestemming instellen", "cancel": "Annuleren", "clickMap": "Klik op de kaart om uw bestemming in te stellen", "requestRide": "Deze rit aanvragen", "yourPosition": "Uw positie", "destination": "Bestemming", "remove": "Verwijderen", "optimalRoute": "Optimale route", "totalDistance": "km totaal", "transfers": "overstappen", "minutes": "minuten", "efficiency": "Route-efficiëntie", "segments": "Routesegmenten", "segment": "Segment", "searchingDriver": "Zoeken naar chauffeur...", "freeSeats": "vrije plaatsen", "direction": "Richting", "eta": "ETA", "min": "min", "score": "Score", "transferSuggestions": "Overstapvoorstellen", "showTransfers": "Overstappen tonen", "hideTransfers": "Verbergen", "transfer": "Overstap", "emailNotVerified": "E-mail niet geverifieerd", "verifyEmail": "E-mail verifiëren", "subscriptionRequired": "Abonnement vereist", "subscribe": "Abonneren", "activeRide": "Actieve rit", "driver": "Chauffeur", "vehicle": "Voertuig", "progress": "Voortgang", "pickup": "Ophalen", "inProgress": "Onderweg", "dropoff": "Afzetten"},
-    "driver": {"title": "Chauffeur Dashboard", "goOnline": "Online gaan", "goOffline": "Offline gaan", "online": "Online", "offline": "Offline", "availableSeats": "Beschikbare plaatsen", "updateSeats": "Bijwerken", "pendingRequests": "Wachtende aanvragen", "noRequests": "Geen wachtende aanvragen", "accept": "Accepteren", "decline": "Weigeren", "passenger": "Passagier", "distance": "Afstand", "currentRide": "Huidige rit", "startRide": "Starten", "completeRide": "Voltooien", "setDestination": "Mijn richting instellen", "yourDestination": "Uw bestemming", "nearbyUsers": "Gebruikers in de buurt"},
-    "admin": {"title": "Administratie", "stats": {"users": "Geregistreerde gebruikers", "drivers": "Chauffeurs", "subscriptions": "Actieve abonnementen", "rides": "Lopende ritten"}, "tabs": {"drivers": "Chauffeurs", "users": "Gebruikers", "subscriptions": "Abonnementen", "cards": "Virtuele Kaarten"}, "drivers": {"title": "Chauffeursbeheer", "subtitle": "Valideer of deactiveer chauffeuraccounts", "driver": "Chauffeur", "contact": "Contact", "vehicle": "Voertuig", "license": "VTC-licentie", "status": "Status", "actions": "Acties", "validated": "Gevalideerd", "pending": "In afwachting", "online": "Online", "activate": "Activeren", "deactivate": "Deactiveren", "noDrivers": "Geen chauffeurs geregistreerd"}, "users": {"title": "Gebruikerslijst", "subtitle": "Bekijk informatie van geregistreerde gebruikers", "user": "Gebruiker", "contact": "Contact", "subscription": "Abonnement", "expiration": "Vervaldatum", "registration": "Registratie", "active": "Actief", "inactive": "Inactief", "noUsers": "Geen gebruikers geregistreerd"}, "subscriptions": {"title": "Abonnementen", "active": "Actieve abonnementen", "activeDesc": "Lijst van geldige abonnementen", "expired": "Verlopen abonnementen", "expiredDesc": "Deze abonnementen moeten worden gedeactiveerd", "expiringSoon": "Verloopt binnen 24u", "expiredLabel": "VERLOPEN", "activeLabel": "ACTIEF", "soonLabel": "BINNENKORT", "cleanup": "Verlopen deactiveren", "refresh": "Vernieuwen", "status": "Status", "expiresSoon": "Verloopt binnenkort", "noActive": "Geen actieve abonnementen"}, "cards": {"title": "Virtuele Kaarten", "subtitle": "Bekijk virtuele kaarten van gebruikers", "holder": "HOUDER", "cardNumber": "KAARTNR.", "phone": "TELEFOON", "subscription": "ABONNEMENT", "expires": "VERLOOPT OP", "memberSince": "Lid sinds", "totalRides": "Gemaakte ritten", "rides": "ritten", "verified": "Geverifieerd", "notVerified": "Niet geverifieerd", "noCards": "Geen virtuele kaarten"}}
+    "user": {
+      "title": "Dashboard",
+      "welcome": "Welkom",
+      "availableVehicles": "beschikbare voertuigen",
+      "seats": "zitplaatsen",
+      "activeRides": "actieve ritten",
+      "setDestination": "Bestemming instellen",
+      "cancel": "Annuleren",
+      "clickMap": "Klik op de kaart om uw bestemming in te stellen",
+      "requestRide": "Deze rit aanvragen",
+      "yourPosition": "Uw positie",
+      "destination": "Bestemming",
+      "remove": "Verwijderen",
+      "optimalRoute": "Optimale route",
+      "totalDistance": "km totaal",
+      "transfers": "overstappen",
+      "minutes": "minuten",
+      "efficiency": "Route-efficiëntie",
+      "segments": "Routesegmenten",
+      "segment": "Segment",
+      "searchingDriver": "Zoeken naar chauffeur...",
+      "freeSeats": "vrije plaatsen",
+      "direction": "Richting",
+      "eta": "ETA",
+      "min": "min",
+      "score": "Score",
+      "transferSuggestions": "Overstapvoorstellen",
+      "showTransfers": "Overstappen tonen",
+      "hideTransfers": "Verbergen",
+      "transfer": "Overstap",
+      "emailNotVerified": "E-mail niet geverifieerd",
+      "verifyEmail": "E-mail verifiëren",
+      "subscriptionRequired": "Abonnement vereist",
+      "subscribe": "Abonneren",
+      "activeRide": "Actieve rit",
+      "driver": "Chauffeur",
+      "vehicle": "Voertuig",
+      "progress": "Voortgang",
+      "pickup": "Ophalen",
+      "inProgress": "Onderweg",
+      "dropoff": "Afzetten"
+    },
+    "driver": {
+      "title": "Chauffeur Dashboard",
+      "goOnline": "Online gaan",
+      "goOffline": "Offline gaan",
+      "online": "Online",
+      "offline": "Offline",
+      "availableSeats": "Beschikbare plaatsen",
+      "updateSeats": "Bijwerken",
+      "pendingRequests": "Wachtende aanvragen",
+      "noRequests": "Geen wachtende aanvragen",
+      "accept": "Accepteren",
+      "decline": "Weigeren",
+      "passenger": "Passagier",
+      "distance": "Afstand",
+      "currentRide": "Huidige rit",
+      "startRide": "Starten",
+      "completeRide": "Voltooien",
+      "setDestination": "Mijn richting instellen",
+      "yourDestination": "Uw bestemming",
+      "nearbyUsers": "Gebruikers in de buurt"
+    },
+    "admin": {
+      "title": "Administratie",
+      "stats": {
+        "users": "Geregistreerde gebruikers",
+        "drivers": "Chauffeurs",
+        "subscriptions": "Actieve abonnementen",
+        "rides": "Lopende ritten"
+      },
+      "tabs": {
+        "drivers": "Chauffeurs",
+        "users": "Gebruikers",
+        "subscriptions": "Abonnementen",
+        "cards": "Virtuele Kaarten"
+      },
+      "drivers": {
+        "title": "Chauffeursbeheer",
+        "subtitle": "Valideer of deactiveer chauffeuraccounts",
+        "driver": "Chauffeur",
+        "contact": "Contact",
+        "vehicle": "Voertuig",
+        "license": "VTC-licentie",
+        "status": "Status",
+        "actions": "Acties",
+        "validated": "Gevalideerd",
+        "pending": "In afwachting",
+        "online": "Online",
+        "activate": "Activeren",
+        "deactivate": "Deactiveren",
+        "noDrivers": "Geen chauffeurs geregistreerd"
+      },
+      "users": {
+        "title": "Gebruikerslijst",
+        "subtitle": "Bekijk informatie van geregistreerde gebruikers",
+        "user": "Gebruiker",
+        "contact": "Contact",
+        "subscription": "Abonnement",
+        "expiration": "Vervaldatum",
+        "registration": "Registratie",
+        "active": "Actief",
+        "inactive": "Inactief",
+        "noUsers": "Geen gebruikers geregistreerd"
+      },
+      "subscriptions": {
+        "title": "Abonnementen",
+        "active": "Actieve abonnementen",
+        "activeDesc": "Lijst van geldige abonnementen",
+        "expired": "Verlopen abonnementen",
+        "expiredDesc": "Deze abonnementen moeten worden gedeactiveerd",
+        "expiringSoon": "Verloopt binnen 24u",
+        "expiredLabel": "VERLOPEN",
+        "activeLabel": "ACTIEF",
+        "soonLabel": "BINNENKORT",
+        "cleanup": "Verlopen deactiveren",
+        "refresh": "Vernieuwen",
+        "status": "Status",
+        "expiresSoon": "Verloopt binnenkort",
+        "noActive": "Geen actieve abonnementen"
+      },
+      "cards": {
+        "title": "Virtuele Kaarten",
+        "subtitle": "Bekijk virtuele kaarten van gebruikers",
+        "holder": "HOUDER",
+        "cardNumber": "KAARTNR.",
+        "phone": "TELEFOON",
+        "subscription": "ABONNEMENT",
+        "expires": "VERLOOPT OP",
+        "memberSince": "Lid sinds",
+        "totalRides": "Gemaakte ritten",
+        "rides": "ritten",
+        "verified": "Geverifieerd",
+        "notVerified": "Niet geverifieerd",
+        "noCards": "Geen virtuele kaarten"
+      }
+    }
   },
-  "subscription": {"title": "Kies uw abonnement", "subtitle": "Onbeperkte ritten op het hele Métro-Taxi netwerk", "plans": {"day": {"name": "24 Uur", "price": "6,99 €", "description": "Perfect voor incidenteel gebruik"}, "week": {"name": "1 Week", "price": "16,99 €", "description": "Ideaal voor korte verblijven"}, "month": {"name": "1 Maand", "price": "53,99 €", "description": "Beste prijs-kwaliteit", "popular": "POPULAIR"}}, "features": {"unlimited": "Onbeperkte ritten", "allVehicles": "Toegang tot alle voertuigen", "support": "Prioritaire ondersteuning", "noCommitment": "Geen verplichtingen"}, "cta": "ABONNEREN", "popularBadge": "POPULAIR", "perDay": "/dag", "perWeek": "/week", "perMonth": "/maand", "processing": "Verwerken...", "success": {"title": "Betaling geslaagd!", "subtitle": "Uw abonnement is nu actief", "details": "Abonnementsdetails", "plan": "Plan", "validUntil": "Geldig tot", "goDashboard": "Naar dashboard"}},
-  "profile": {"title": "Mijn Profiel", "personalInfo": "Persoonlijke informatie", "firstName": "Voornaam", "lastName": "Achternaam", "email": "E-mail", "phone": "Telefoon", "memberSince": "Lid sinds", "subscription": {"title": "Mijn abonnement", "plan": "Plan", "status": "Status", "active": "Actief", "inactive": "Inactief", "expires": "Verloopt op", "subscribe": "Abonneren", "renew": "Verlengen"}, "virtualCard": {"title": "Mijn virtuele kaart", "cardNumber": "Kaartnr."}, "logout": "Uitloggen"},
-  "pricing": {"title": "ABONNEMENTEN", "subtitle": "Kies uw plan", "plans": {"day": {"name": "24 Uur", "price": "6,99 €", "priceLocal": "6,99 €", "description": "Perfect voor incidenteel gebruik"}, "week": {"name": "1 Week", "price": "16,99 €", "priceLocal": "16,99 €", "description": "Ideaal voor korte verblijven"}, "month": {"name": "1 Maand", "price": "53,99 €", "priceLocal": "53,99 €", "description": "Beste prijs-kwaliteit"}}, "features": {"unlimited": "Onbeperkte ritten", "allVehicles": "Toegang tot alle voertuigen", "support": "Prioritaire ondersteuning", "noCommitment": "Geen verplichtingen", "eco": "🌿 Milieuvriendelijk vervoer"}, "cta": "ABONNEREN", "popularBadge": "POPULAIR"},
-  "howItWorks": {"title": "HOE HET WERKT", "steps": {"step1": {"title": "ABONNEREN", "description": "Kies uw plan: 24u, 1 week of 1 maand. Betaal eenmalig, reis onbeperkt."}, "step2": {"title": "VINDEN", "description": "Vind beschikbare voertuigen in uw buurt in realtime op de kaart."}, "step3": {"title": "REIZEN", "description": "Vraag uw rit aan met één klik. De chauffeur pikt u onderweg op."}, "step4": {"title": "Reizen", "description": "Geniet van uw rit en stap uit waar u wilt"}}},
-  "drivers": {"title": "WORD VTC-CHAUFFEUR", "subtitle": "Word lid van het Métro-Taxi netwerk en maximaliseer uw inkomsten zonder verborgen kosten", "revenue": {"title": "POTENTIEEL CHAUFFEURINKOMEN", "monthly": "per maand", "upTo": "Kan oplopen tot", "depending": "afhankelijk van activiteit", "rangeMin": "2 250 €", "rangeMax": "3 000 €", "maxRevenue": "7 500 €"}, "benefits": {"title": "CHAUFFEURVOORDELEN", "noSubscription": "Geen abonnement te betalen", "noSubscriptionDesc": "Word gratis lid van ons netwerk", "noCommission": "Geen commissie per rit", "noCommissionDesc": "Houd 100% van uw verdiensten", "subscribedPassengers": "Geabonneerde passagiers", "subscribedPassengersDesc": "Geen klanten meer zoeken", "optimizedRoutes": "Geoptimaliseerde routes", "optimizedRoutesDesc": "Slim matching-algoritme", "morePassengers": "Meer passagiers via het netwerk", "morePassengersDesc": "Maximaliseer uw rijtijd"}, "app": {"title": "DE CHAUFFEUR-APP", "subtitle": "Alles wat u nodig heeft op één scherm", "requests": "Passagiersaanvragen", "requestsDesc": "Ontvang aanvragen in realtime in uw zone", "routes": "Geoptimaliseerde routes", "routesDesc": "Routes berekend om uw ritten te maximaliseren", "transfers": "Voorgestelde overstappen", "transfersDesc": "Intelligent overstapsysteem"}, "cta": "NU LID WORDEN", "ctaSubtext": "Gratis registratie • Geen verplichtingen"},
-  "video": {"title": "Ontdek Métro-Taxi", "loading": "Voice-over laden..."},
-  "footer": {"rights": "Alle rechten voorbehouden", "contact": "Contact", "legal": "Juridisch", "privacy": "Privacy"},
-  "common": {"loading": "Laden...", "error": "Er is een fout opgetreden", "retry": "Opnieuw proberen", "save": "Opslaan", "cancel": "Annuleren", "confirm": "Bevestigen", "delete": "Verwijderen", "edit": "Bewerken", "back": "Terug", "next": "Volgende", "previous": "Vorige", "search": "Zoeken", "filter": "Filteren", "all": "Alles", "none": "Geen", "yes": "Ja", "no": "Nee", "or": "of"},
-  "errors": {"required": "Dit veld is verplicht", "invalidEmail": "Ongeldige e-mail", "invalidPhone": "Ongeldig telefoonnummer", "passwordTooShort": "Wachtwoord moet minimaal 6 tekens bevatten", "serverError": "Serverfout, probeer opnieuw"},
-  "verifyEmail": {"title": "E-mailverificatie", "verifying": "Verifiëren...", "success": "E-mail geverifieerd!", "successDesc": "Uw account is nu geactiveerd.", "error": "Verificatie mislukt", "errorDesc": "De link is ongeldig of verlopen.", "goLogin": "Inloggen", "goHome": "Terug naar home"}
+  "subscription": {
+    "title": "Kies uw abonnement",
+    "subtitle": "Onbeperkte ritten op het hele Métro-Taxi netwerk",
+    "plans": {
+      "day": {
+        "name": "24 Uur",
+        "price": "6,99 €",
+        "description": "Perfect voor incidenteel gebruik"
+      },
+      "week": {
+        "name": "1 Week",
+        "price": "16,99 €",
+        "description": "Ideaal voor korte verblijven"
+      },
+      "month": {
+        "name": "1 Maand",
+        "price": "53,99 €",
+        "description": "Beste prijs-kwaliteit",
+        "popular": "POPULAIR"
+      }
+    },
+    "features": {
+      "unlimited": "Onbeperkte ritten",
+      "allVehicles": "Toegang tot alle voertuigen",
+      "support": "Prioritaire ondersteuning",
+      "noCommitment": "Geen verplichtingen"
+    },
+    "cta": "ABONNEREN",
+    "popularBadge": "POPULAIR",
+    "perDay": "/dag",
+    "perWeek": "/week",
+    "perMonth": "/maand",
+    "processing": "Verwerken...",
+    "success": {
+      "title": "Betaling geslaagd!",
+      "subtitle": "Uw abonnement is nu actief",
+      "details": "Abonnementsdetails",
+      "plan": "Plan",
+      "validUntil": "Geldig tot",
+      "goDashboard": "Naar dashboard"
+    }
+  },
+  "profile": {
+    "title": "Mijn Profiel",
+    "personalInfo": "Persoonlijke informatie",
+    "firstName": "Voornaam",
+    "lastName": "Achternaam",
+    "email": "E-mail",
+    "phone": "Telefoon",
+    "memberSince": "Lid sinds",
+    "subscription": {
+      "title": "Mijn abonnement",
+      "plan": "Plan",
+      "status": "Status",
+      "active": "Actief",
+      "inactive": "Inactief",
+      "expires": "Verloopt op",
+      "subscribe": "Abonneren",
+      "renew": "Verlengen"
+    },
+    "virtualCard": {
+      "title": "Mijn virtuele kaart",
+      "cardNumber": "Kaartnr."
+    },
+    "logout": "Uitloggen"
+  },
+  "pricing": {
+    "title": "ABONNEMENTEN",
+    "subtitle": "Kies uw plan",
+    "plans": {
+      "day": {
+        "name": "24 Uur",
+        "price": "6,99 €",
+        "priceLocal": "6,99 €",
+        "description": "Perfect voor incidenteel gebruik"
+      },
+      "week": {
+        "name": "1 Week",
+        "price": "16,99 €",
+        "priceLocal": "16,99 €",
+        "description": "Ideaal voor korte verblijven"
+      },
+      "month": {
+        "name": "1 Maand",
+        "price": "53,99 €",
+        "priceLocal": "53,99 €",
+        "description": "Beste prijs-kwaliteit"
+      }
+    },
+    "features": {
+      "unlimited": "Onbeperkte ritten",
+      "allVehicles": "Toegang tot alle voertuigen",
+      "support": "Prioritaire ondersteuning",
+      "noCommitment": "Geen verplichtingen",
+      "eco": "🌿 Milieuvriendelijk vervoer"
+    },
+    "cta": "ABONNEREN",
+    "popularBadge": "POPULAIR"
+  },
+  "howItWorks": {
+    "title": "HOE HET WERKT",
+    "steps": {
+      "step1": {
+        "title": "ABONNEREN",
+        "description": "Kies uw plan: 24u, 1 week of 1 maand. Betaal eenmalig, reis onbeperkt."
+      },
+      "step2": {
+        "title": "VINDEN",
+        "description": "Vind beschikbare voertuigen in uw buurt in realtime op de kaart."
+      },
+      "step3": {
+        "title": "REIZEN",
+        "description": "Vraag uw rit aan met één klik. De chauffeur pikt u onderweg op."
+      },
+      "step4": {
+        "title": "Reizen",
+        "description": "Geniet van uw rit en stap uit waar u wilt"
+      }
+    }
+  },
+  "drivers": {
+    "title": "WORD VTC-CHAUFFEUR",
+    "subtitle": "Word lid van het Métro-Taxi netwerk en maximaliseer uw inkomsten zonder verborgen kosten",
+    "revenue": {
+      "title": "POTENTIEEL CHAUFFEURINKOMEN",
+      "monthly": "per maand",
+      "upTo": "Kan oplopen tot",
+      "depending": "afhankelijk van activiteit",
+      "rangeMin": "2 250 €",
+      "rangeMax": "3 000 €",
+      "maxRevenue": "7 500 €"
+    },
+    "benefits": {
+      "title": "CHAUFFEURVOORDELEN",
+      "noSubscription": "Geen abonnement te betalen",
+      "noSubscriptionDesc": "Word gratis lid van ons netwerk",
+      "noCommission": "Geen commissie per rit",
+      "noCommissionDesc": "Houd 100% van uw verdiensten",
+      "subscribedPassengers": "Geabonneerde passagiers",
+      "subscribedPassengersDesc": "Geen klanten meer zoeken",
+      "optimizedRoutes": "Geoptimaliseerde routes",
+      "optimizedRoutesDesc": "Slim matching-algoritme",
+      "morePassengers": "Meer passagiers via het netwerk",
+      "morePassengersDesc": "Maximaliseer uw rijtijd"
+    },
+    "app": {
+      "title": "DE CHAUFFEUR-APP",
+      "subtitle": "Alles wat u nodig heeft op één scherm",
+      "requests": "Passagiersaanvragen",
+      "requestsDesc": "Ontvang aanvragen in realtime in uw zone",
+      "routes": "Geoptimaliseerde routes",
+      "routesDesc": "Routes berekend om uw ritten te maximaliseren",
+      "transfers": "Voorgestelde overstappen",
+      "transfersDesc": "Intelligent overstapsysteem"
+    },
+    "cta": "NU LID WORDEN",
+    "ctaSubtext": "Gratis registratie • Geen verplichtingen"
+  },
+  "video": {
+    "title": "Ontdek Métro-Taxi",
+    "loading": "Voice-over laden..."
+  },
+  "footer": {
+    "rights": "Alle rechten voorbehouden",
+    "contact": "Contact",
+    "legal": "Juridisch",
+    "privacy": "Privacy"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Er is een fout opgetreden",
+    "retry": "Opnieuw proberen",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "confirm": "Bevestigen",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "back": "Terug",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "search": "Zoeken",
+    "filter": "Filteren",
+    "all": "Alles",
+    "none": "Geen",
+    "yes": "Ja",
+    "no": "Nee",
+    "or": "of"
+  },
+  "errors": {
+    "required": "Dit veld is verplicht",
+    "invalidEmail": "Ongeldige e-mail",
+    "invalidPhone": "Ongeldig telefoonnummer",
+    "passwordTooShort": "Wachtwoord moet minimaal 6 tekens bevatten",
+    "serverError": "Serverfout, probeer opnieuw"
+  },
+  "verifyEmail": {
+    "title": "E-mailverificatie",
+    "verifying": "Verifiëren...",
+    "success": "E-mail geverifieerd!",
+    "successDesc": "Uw account is nu geactiveerd.",
+    "error": "Verificatie mislukt",
+    "errorDesc": "De link is ongeldig of verlopen.",
+    "goLogin": "Inloggen",
+    "goHome": "Terug naar home"
+  },
+  "driverRegister": {
+    "title": "VTC Chauffeur Registratie",
+    "subtitle": "Word lid van ons netwerk van partnerchauffeurs",
+    "firstName": "Voornaam",
+    "firstNamePlaceholder": "Jan",
+    "lastName": "Achternaam",
+    "lastNamePlaceholder": "de Vries",
+    "email": "E-mail",
+    "emailPlaceholder": "jan@voorbeeld.nl",
+    "phone": "Telefoon",
+    "phonePlaceholder": "+31 6 12345678",
+    "vehicleInfo": "Voertuiginformatie",
+    "vehiclePlate": "Kenteken",
+    "vehicleType": "Voertuigtype",
+    "selectPlaceholder": "Selecteren",
+    "vehicleTypes": {
+      "sedan": "Sedan",
+      "suv": "SUV",
+      "minivan": "MPV",
+      "van": "Bestelwagen"
+    },
+    "seats": "Aantal zitplaatsen",
+    "vtcLicense": "VTC Licentienummer",
+    "bankInfo": "Bankgegevens",
+    "bankInfoDesc": "Voor uw uitbetalingen. Optioneel, later aanpasbaar.",
+    "password": "Wachtwoord",
+    "confirmPassword": "Bevestig wachtwoord",
+    "autoValidation": "Uw account wordt automatisch geactiveerd. U kunt direct ritaanvragen ontvangen.",
+    "submitBtn": "REGISTREREN ALS CHAUFFEUR",
+    "alreadyRegistered": "Al geregistreerd?",
+    "loginLink": "Inloggen",
+    "passwordMismatch": "Wachtwoorden komen niet overeen",
+    "passwordTooShort": "Wachtwoord moet minimaal 6 tekens bevatten",
+    "successMessage": "Registratie geslaagd! Uw account is geactiveerd. U kunt nu inloggen.",
+    "errorMessage": "Registratie mislukt"
+  }
 }

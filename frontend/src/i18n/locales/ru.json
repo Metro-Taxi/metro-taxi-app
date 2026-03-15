@@ -1,16 +1,482 @@
 {
-  "hero": {"title": "MÉTRO-TAXI", "subtitle": "Сеть городской мобильности по подписке", "subtitleHighlight": "ПО ПОДПИСКЕ", "description": "Присоединяйтесь к автомобилям, едущим в вашем направлении. Неограниченные поездки с простой подпиской.", "cta": "НАЧАТЬ", "ecoSlogan": "Интеллектуальная система совместных поездок", "ecoMessage": "Уменьшите свой углеродный след, делясь поездками"},
-  "nav": {"login": "Вход", "register": "Регистрация", "pricing": "Цены", "howItWorks": "Как это работает", "drivers": "Водители", "logout": "Выход", "profile": "Профиль", "dashboard": "Панель управления"},
-  "auth": {"login": {"title": "Вход", "subtitle": "Войдите в свой аккаунт Métro-Taxi", "email": "Эл. почта", "password": "Пароль", "submit": "ВОЙТИ", "noAccount": "Нет аккаунта?", "signUp": "Зарегистрируйтесь", "asUser": "как пользователь", "asDriver": "как водитель", "or": "или", "error": "Неверный email или пароль", "success": "Вход выполнен успешно"}, "register": {"user": {"title": "Регистрация пользователя", "subtitle": "Создайте аккаунт для доступа к сети Métro-Taxi"}, "driver": {"title": "Регистрация водителя VTC", "subtitle": "Присоединяйтесь к сети Métro-Taxi"}, "firstName": "Имя", "lastName": "Фамилия", "email": "Эл. почта", "phone": "Телефон", "password": "Пароль", "confirmPassword": "Подтвердите пароль", "vehiclePlate": "Номер автомобиля", "vehicleType": "Тип автомобиля", "seats": "Количество мест", "vtcLicense": "Номер лицензии VTC", "submit": "ЗАРЕГИСТРИРОВАТЬСЯ", "haveAccount": "Уже есть аккаунт?", "login": "Войти", "success": "Регистрация успешна!", "error": "Ошибка регистрации", "passwordMismatch": "Пароли не совпадают", "vehicleTypes": {"sedan": "Седан", "suv": "Внедорожник", "van": "Минивэн", "luxury": "Люкс"}}},
-  "dashboard": {"user": {"title": "Панель управления", "welcome": "Добро пожаловать", "availableVehicles": "доступных автомобилей", "seats": "мест", "activeRides": "активных поездок", "setDestination": "Указать пункт назначения", "cancel": "Отмена", "clickMap": "Нажмите на карту, чтобы указать пункт назначения", "requestRide": "Запросить поездку", "yourPosition": "Ваше местоположение", "destination": "Пункт назначения", "remove": "Удалить", "optimalRoute": "Оптимальный маршрут", "totalDistance": "км всего", "transfers": "пересадок", "minutes": "минут", "efficiency": "Эффективность маршрута", "segments": "Сегменты маршрута", "segment": "Сегмент", "searchingDriver": "Поиск водителя...", "freeSeats": "свободных мест", "direction": "Направление", "eta": "Прибытие", "min": "мин", "score": "Оценка", "transferSuggestions": "Предложения пересадок", "showTransfers": "Показать пересадки", "hideTransfers": "Скрыть", "transfer": "Пересадка", "emailNotVerified": "Email не подтверждён", "verifyEmail": "Подтвердить email", "subscriptionRequired": "Требуется подписка", "subscribe": "Подписаться", "activeRide": "Активная поездка", "driver": "Водитель", "vehicle": "Автомобиль", "progress": "Прогресс", "pickup": "Посадка", "inProgress": "В пути", "dropoff": "Прибытие"}, "driver": {"title": "Панель водителя", "goOnline": "Выйти в сеть", "goOffline": "Выйти из сети", "online": "В сети", "offline": "Не в сети", "availableSeats": "Доступные места", "updateSeats": "Обновить", "pendingRequests": "Ожидающие запросы", "noRequests": "Нет ожидающих запросов", "accept": "Принять", "decline": "Отклонить", "passenger": "Пассажир", "distance": "Расстояние", "currentRide": "Текущая поездка", "startRide": "Начать", "completeRide": "Завершить", "setDestination": "Указать направление", "yourDestination": "Ваш пункт назначения", "nearbyUsers": "Пользователи поблизости"}, "admin": {"title": "Администрирование", "stats": {"users": "Зарегистрированные пользователи", "drivers": "Водители", "subscriptions": "Активные подписки", "rides": "Текущие поездки"}, "tabs": {"drivers": "Водители", "users": "Пользователи", "subscriptions": "Подписки", "cards": "Виртуальные карты"}, "drivers": {"title": "Управление водителями", "subtitle": "Активируйте или деактивируйте аккаунты водителей", "driver": "Водитель", "contact": "Контакт", "vehicle": "Автомобиль", "license": "Лицензия VTC", "status": "Статус", "actions": "Действия", "validated": "Подтверждён", "pending": "Ожидает", "online": "В сети", "activate": "Активировать", "deactivate": "Деактивировать", "noDrivers": "Нет зарегистрированных водителей"}, "users": {"title": "Список пользователей", "subtitle": "Просмотр информации о зарегистрированных пользователях", "user": "Пользователь", "contact": "Контакт", "subscription": "Подписка", "expiration": "Истечение", "registration": "Регистрация", "active": "Активен", "inactive": "Неактивен", "noUsers": "Нет зарегистрированных пользователей"}, "subscriptions": {"title": "Подписки", "active": "Активные подписки", "activeDesc": "Список действующих подписок", "expired": "Истёкшие подписки", "expiredDesc": "Эти подписки необходимо деактивировать", "expiringSoon": "Истекают через 24ч", "expiredLabel": "ИСТЁКШИЕ", "activeLabel": "АКТИВНЫЕ", "soonLabel": "СКОРО", "cleanup": "Деактивировать истёкшие", "refresh": "Обновить", "status": "Статус", "expiresSoon": "Скоро истечёт", "noActive": "Нет активных подписок"}, "cards": {"title": "Виртуальные карты", "subtitle": "Просмотр виртуальных карт пользователей", "holder": "ВЛАДЕЛЕЦ", "cardNumber": "№ КАРТЫ", "phone": "ТЕЛЕФОН", "subscription": "ПОДПИСКА", "expires": "ИСТЕКАЕТ", "memberSince": "Участник с", "totalRides": "Всего поездок", "rides": "поездок", "verified": "Подтверждён", "notVerified": "Не подтверждён", "noCards": "Нет виртуальных карт"}, "common": {"loadingError": "Ошибка загрузки данных", "registeredOn": "Зарегистрирован", "seats": "мест"}}},
-  "common": {"loading": "Загрузка...", "error": "Ошибка", "success": "Успех", "confirm": "Подтвердить", "cancel": "Отмена", "save": "Сохранить", "delete": "Удалить", "edit": "Редактировать", "view": "Просмотр", "close": "Закрыть", "subscribed": "Подписан", "subscribe": "Подписаться", "myProfile": "Мой профиль", "accepted": "Принято", "pickedUp": "Забрали", "enRoute": "В пути", "arrived": "Прибыл", "requestRide": "Запросить поездку", "transferPoint": "Точка пересадки", "changeVehicle": "Смените автомобиль здесь", "destinationSet": "Пункт назначения установлен!", "subscriptionRequired": "Для запроса поездки требуется подписка", "requestSent": "Запрос отправлен водителю!", "requestError": "Ошибка отправки запроса", "places": "свободных мест", "optimalRoute": "Оптимальный маршрут", "kmTotal": "км всего", "transfers": "пересадок", "routeEfficiency": "Эффективность маршрута", "routeSegments": "Сегменты маршрута", "requestThisRide": "Запросить эту поездку", "searchingForDriver": "Поиск водителя...", "nowOnline": "Вы теперь в сети!", "nowOffline": "Вы не в сети", "statusChangeError": "Ошибка смены статуса", "rideAccepted": "Поездка принята!", "acceptError": "Ошибка принятия", "requestDeclined": "Запрос отклонён", "declineError": "Ошибка отклонения", "rideCompleted": "Поездка завершена!", "completeError": "Ошибка завершения", "driverActivated": "Водитель активирован", "activateError": "Ошибка активации", "driverDeactivated": "Водитель деактивирован", "deactivateError": "Ошибка деактивации", "cardLoadError": "Ошибка загрузки карты", "cleanupError": "Ошибка очистки"},
-  "subscription": {"title": "Выберите подписку", "subtitle": "Неограниченные поездки по всей сети Métro-Taxi", "plans": {"day": {"name": "24 часа", "price": "6,99 €", "description": "Идеально для разовых поездок"}, "week": {"name": "1 неделя", "price": "16,99 €", "description": "Идеально для коротких визитов"}, "month": {"name": "1 месяц", "price": "53,99 €", "description": "Лучшее соотношение цены и качества", "popular": "ПОПУЛЯРНЫЙ"}}, "features": {"unlimited": "Неограниченные поездки", "allVehicles": "Доступ ко всем автомобилям", "support": "Приоритетная поддержка", "noCommitment": "Без обязательств"}, "cta": "ПОДПИСАТЬСЯ", "perDay": "/день", "perWeek": "/неделя", "perMonth": "/месяц", "processing": "Обработка...", "success": {"title": "Оплата успешна!", "subtitle": "Ваша подписка активирована", "details": "Детали подписки", "plan": "Тариф", "validUntil": "Действует до", "goDashboard": "Перейти в панель управления"}},
-  "profile": {"title": "Мой профиль", "personalInfo": "Личная информация", "firstName": "Имя", "lastName": "Фамилия", "email": "Эл. почта", "phone": "Телефон", "memberSince": "Участник с", "subscription": {"title": "Моя подписка", "plan": "Тариф", "status": "Статус", "active": "Активен", "inactive": "Неактивен", "expires": "Истекает", "subscribe": "Подписаться", "renew": "Продлить"}, "virtualCard": {"title": "Моя виртуальная карта", "cardNumber": "№ карты"}, "logout": "Выход"},
-  "pricing": {"title": "ПОДПИСКИ", "subtitle": "Выберите тариф", "plans": {"day": {"name": "24 часа", "price": "6,99 €", "priceLocal": "6,99 €", "description": "Идеально для разовых поездок"}, "week": {"name": "1 неделя", "price": "16,99 €", "priceLocal": "16,99 €", "description": "Идеально для коротких визитов"}, "month": {"name": "1 месяц", "price": "53,99 €", "priceLocal": "53,99 €", "description": "Лучшее соотношение цены и качества"}}, "features": {"unlimited": "Неограниченные поездки", "allVehicles": "Доступ ко всем автомобилям", "support": "Приоритетная поддержка", "noCommitment": "Без обязательств", "eco": "🌿 Экологичный транспорт"}, "cta": "ПОДПИСАТЬСЯ", "popularBadge": "ПОПУЛЯРНЫЙ"},
-  "howItWorks": {"title": "КАК ЭТО РАБОТАЕТ", "steps": {"step1": {"title": "ПОДПИШИТЕСЬ", "description": "Выберите тариф: 24ч, 1 неделя или 1 месяц. Платите один раз, путешествуйте без ограничений."}, "step2": {"title": "НАЙДИТЕ", "description": "Найдите доступные автомобили вокруг вас в реальном времени на карте."}, "step3": {"title": "ПУТЕШЕСТВУЙТЕ", "description": "Запросите поездку одним кликом. Водитель заберёт вас по пути."}, "step4": {"title": "Путешествуйте", "description": "Наслаждайтесь поездкой и выходите где хотите"}}},
-  "drivers": {"title": "СТАНЬТЕ ВОДИТЕЛЕМ VTC", "subtitle": "Присоединяйтесь к сети Métro-Taxi и увеличьте свой доход без скрытых комиссий", "revenue": {"title": "ПОТЕНЦИАЛЬНЫЙ ДОХОД ВОДИТЕЛЯ", "monthly": "в месяц", "upTo": "Может достигать до", "depending": "в зависимости от активности", "rangeMin": "2 250 €", "rangeMax": "3 000 €", "maxRevenue": "7 500 €"}, "benefits": {"title": "ПРЕИМУЩЕСТВА ДЛЯ ВОДИТЕЛЕЙ", "noSubscription": "Без абонентской платы", "noSubscriptionDesc": "Присоединяйтесь к нашей сети бесплатно", "noCommission": "Без комиссии за поездки", "noCommissionDesc": "Получайте 100% заработка", "subscribedPassengers": "Пассажиры уже подписаны", "subscribedPassengersDesc": "Не нужно искать клиентов", "optimizedRoutes": "Оптимизация маршрутов", "optimizedRoutesDesc": "Умный алгоритм подбора", "morePassengers": "Больше пассажиров через сеть", "morePassengersDesc": "Максимизируйте время вождения"}, "app": {"title": "ПРИЛОЖЕНИЕ ВОДИТЕЛЯ", "subtitle": "Всё необходимое на одном экране", "requests": "Запросы пассажиров", "requestsDesc": "Получайте запросы в реальном времени в вашей зоне", "routes": "Оптимизированные маршруты", "routesDesc": "Маршруты рассчитаны для максимизации поездок", "transfers": "Предложенные пересадки", "transfersDesc": "Умная система пересадок"}, "cta": "ПРИСОЕДИНИТЬСЯ К СЕТИ СЕЙЧАС", "ctaSubtext": "Бесплатная регистрация • Без обязательств"},
-  "video": {"title": "Откройте для себя Métro-Taxi", "loading": "Загрузка озвучки..."},
-  "footer": {"rights": "Все права защищены", "contact": "Контакты", "legal": "Юридическая информация", "privacy": "Конфиденциальность"},
-  "errors": {"required": "Это поле обязательно", "invalidEmail": "Неверный email", "invalidPhone": "Неверный номер телефона", "passwordTooShort": "Пароль должен содержать минимум 6 символов", "serverError": "Ошибка сервера, попробуйте снова"},
-  "verifyEmail": {"title": "Подтверждение email", "verifying": "Проверка...", "success": "Email успешно подтверждён!", "successDesc": "Ваш аккаунт активирован.", "error": "Ошибка подтверждения", "errorDesc": "Ссылка недействительна или истекла.", "goLogin": "Войти", "goHome": "На главную"}
+  "hero": {
+    "title": "MÉTRO-TAXI",
+    "subtitle": "Сеть городской мобильности по подписке",
+    "subtitleHighlight": "ПО ПОДПИСКЕ",
+    "description": "Присоединяйтесь к автомобилям, едущим в вашем направлении. Неограниченные поездки с простой подпиской.",
+    "cta": "НАЧАТЬ",
+    "ecoSlogan": "Интеллектуальная система совместных поездок",
+    "ecoMessage": "Уменьшите свой углеродный след, делясь поездками"
+  },
+  "nav": {
+    "login": "Вход",
+    "register": "Регистрация",
+    "pricing": "Цены",
+    "howItWorks": "Как это работает",
+    "drivers": "Водители",
+    "logout": "Выход",
+    "profile": "Профиль",
+    "dashboard": "Панель управления"
+  },
+  "auth": {
+    "login": {
+      "title": "Вход",
+      "subtitle": "Войдите в свой аккаунт Métro-Taxi",
+      "email": "Эл. почта",
+      "password": "Пароль",
+      "submit": "ВОЙТИ",
+      "noAccount": "Нет аккаунта?",
+      "signUp": "Зарегистрируйтесь",
+      "asUser": "как пользователь",
+      "asDriver": "как водитель",
+      "or": "или",
+      "error": "Неверный email или пароль",
+      "success": "Вход выполнен успешно"
+    },
+    "register": {
+      "user": {
+        "title": "Регистрация пользователя",
+        "subtitle": "Создайте аккаунт для доступа к сети Métro-Taxi"
+      },
+      "driver": {
+        "title": "Регистрация водителя VTC",
+        "subtitle": "Присоединяйтесь к сети Métro-Taxi"
+      },
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "email": "Эл. почта",
+      "phone": "Телефон",
+      "password": "Пароль",
+      "confirmPassword": "Подтвердите пароль",
+      "vehiclePlate": "Номер автомобиля",
+      "vehicleType": "Тип автомобиля",
+      "seats": "Количество мест",
+      "vtcLicense": "Номер лицензии VTC",
+      "submit": "ЗАРЕГИСТРИРОВАТЬСЯ",
+      "haveAccount": "Уже есть аккаунт?",
+      "login": "Войти",
+      "success": "Регистрация успешна!",
+      "error": "Ошибка регистрации",
+      "passwordMismatch": "Пароли не совпадают",
+      "vehicleTypes": {
+        "sedan": "Седан",
+        "suv": "Внедорожник",
+        "van": "Минивэн",
+        "luxury": "Люкс"
+      }
+    }
+  },
+  "dashboard": {
+    "user": {
+      "title": "Панель управления",
+      "welcome": "Добро пожаловать",
+      "availableVehicles": "доступных автомобилей",
+      "seats": "мест",
+      "activeRides": "активных поездок",
+      "setDestination": "Указать пункт назначения",
+      "cancel": "Отмена",
+      "clickMap": "Нажмите на карту, чтобы указать пункт назначения",
+      "requestRide": "Запросить поездку",
+      "yourPosition": "Ваше местоположение",
+      "destination": "Пункт назначения",
+      "remove": "Удалить",
+      "optimalRoute": "Оптимальный маршрут",
+      "totalDistance": "км всего",
+      "transfers": "пересадок",
+      "minutes": "минут",
+      "efficiency": "Эффективность маршрута",
+      "segments": "Сегменты маршрута",
+      "segment": "Сегмент",
+      "searchingDriver": "Поиск водителя...",
+      "freeSeats": "свободных мест",
+      "direction": "Направление",
+      "eta": "Прибытие",
+      "min": "мин",
+      "score": "Оценка",
+      "transferSuggestions": "Предложения пересадок",
+      "showTransfers": "Показать пересадки",
+      "hideTransfers": "Скрыть",
+      "transfer": "Пересадка",
+      "emailNotVerified": "Email не подтверждён",
+      "verifyEmail": "Подтвердить email",
+      "subscriptionRequired": "Требуется подписка",
+      "subscribe": "Подписаться",
+      "activeRide": "Активная поездка",
+      "driver": "Водитель",
+      "vehicle": "Автомобиль",
+      "progress": "Прогресс",
+      "pickup": "Посадка",
+      "inProgress": "В пути",
+      "dropoff": "Прибытие"
+    },
+    "driver": {
+      "title": "Панель водителя",
+      "goOnline": "Выйти в сеть",
+      "goOffline": "Выйти из сети",
+      "online": "В сети",
+      "offline": "Не в сети",
+      "availableSeats": "Доступные места",
+      "updateSeats": "Обновить",
+      "pendingRequests": "Ожидающие запросы",
+      "noRequests": "Нет ожидающих запросов",
+      "accept": "Принять",
+      "decline": "Отклонить",
+      "passenger": "Пассажир",
+      "distance": "Расстояние",
+      "currentRide": "Текущая поездка",
+      "startRide": "Начать",
+      "completeRide": "Завершить",
+      "setDestination": "Указать направление",
+      "yourDestination": "Ваш пункт назначения",
+      "nearbyUsers": "Пользователи поблизости"
+    },
+    "admin": {
+      "title": "Администрирование",
+      "stats": {
+        "users": "Зарегистрированные пользователи",
+        "drivers": "Водители",
+        "subscriptions": "Активные подписки",
+        "rides": "Текущие поездки"
+      },
+      "tabs": {
+        "drivers": "Водители",
+        "users": "Пользователи",
+        "subscriptions": "Подписки",
+        "cards": "Виртуальные карты"
+      },
+      "drivers": {
+        "title": "Управление водителями",
+        "subtitle": "Активируйте или деактивируйте аккаунты водителей",
+        "driver": "Водитель",
+        "contact": "Контакт",
+        "vehicle": "Автомобиль",
+        "license": "Лицензия VTC",
+        "status": "Статус",
+        "actions": "Действия",
+        "validated": "Подтверждён",
+        "pending": "Ожидает",
+        "online": "В сети",
+        "activate": "Активировать",
+        "deactivate": "Деактивировать",
+        "noDrivers": "Нет зарегистрированных водителей"
+      },
+      "users": {
+        "title": "Список пользователей",
+        "subtitle": "Просмотр информации о зарегистрированных пользователях",
+        "user": "Пользователь",
+        "contact": "Контакт",
+        "subscription": "Подписка",
+        "expiration": "Истечение",
+        "registration": "Регистрация",
+        "active": "Активен",
+        "inactive": "Неактивен",
+        "noUsers": "Нет зарегистрированных пользователей"
+      },
+      "subscriptions": {
+        "title": "Подписки",
+        "active": "Активные подписки",
+        "activeDesc": "Список действующих подписок",
+        "expired": "Истёкшие подписки",
+        "expiredDesc": "Эти подписки необходимо деактивировать",
+        "expiringSoon": "Истекают через 24ч",
+        "expiredLabel": "ИСТЁКШИЕ",
+        "activeLabel": "АКТИВНЫЕ",
+        "soonLabel": "СКОРО",
+        "cleanup": "Деактивировать истёкшие",
+        "refresh": "Обновить",
+        "status": "Статус",
+        "expiresSoon": "Скоро истечёт",
+        "noActive": "Нет активных подписок"
+      },
+      "cards": {
+        "title": "Виртуальные карты",
+        "subtitle": "Просмотр виртуальных карт пользователей",
+        "holder": "ВЛАДЕЛЕЦ",
+        "cardNumber": "№ КАРТЫ",
+        "phone": "ТЕЛЕФОН",
+        "subscription": "ПОДПИСКА",
+        "expires": "ИСТЕКАЕТ",
+        "memberSince": "Участник с",
+        "totalRides": "Всего поездок",
+        "rides": "поездок",
+        "verified": "Подтверждён",
+        "notVerified": "Не подтверждён",
+        "noCards": "Нет виртуальных карт"
+      },
+      "common": {
+        "loadingError": "Ошибка загрузки данных",
+        "registeredOn": "Зарегистрирован",
+        "seats": "мест"
+      }
+    }
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "success": "Успех",
+    "confirm": "Подтвердить",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "view": "Просмотр",
+    "close": "Закрыть",
+    "subscribed": "Подписан",
+    "subscribe": "Подписаться",
+    "myProfile": "Мой профиль",
+    "accepted": "Принято",
+    "pickedUp": "Забрали",
+    "enRoute": "В пути",
+    "arrived": "Прибыл",
+    "requestRide": "Запросить поездку",
+    "transferPoint": "Точка пересадки",
+    "changeVehicle": "Смените автомобиль здесь",
+    "destinationSet": "Пункт назначения установлен!",
+    "subscriptionRequired": "Для запроса поездки требуется подписка",
+    "requestSent": "Запрос отправлен водителю!",
+    "requestError": "Ошибка отправки запроса",
+    "places": "свободных мест",
+    "optimalRoute": "Оптимальный маршрут",
+    "kmTotal": "км всего",
+    "transfers": "пересадок",
+    "routeEfficiency": "Эффективность маршрута",
+    "routeSegments": "Сегменты маршрута",
+    "requestThisRide": "Запросить эту поездку",
+    "searchingForDriver": "Поиск водителя...",
+    "nowOnline": "Вы теперь в сети!",
+    "nowOffline": "Вы не в сети",
+    "statusChangeError": "Ошибка смены статуса",
+    "rideAccepted": "Поездка принята!",
+    "acceptError": "Ошибка принятия",
+    "requestDeclined": "Запрос отклонён",
+    "declineError": "Ошибка отклонения",
+    "rideCompleted": "Поездка завершена!",
+    "completeError": "Ошибка завершения",
+    "driverActivated": "Водитель активирован",
+    "activateError": "Ошибка активации",
+    "driverDeactivated": "Водитель деактивирован",
+    "deactivateError": "Ошибка деактивации",
+    "cardLoadError": "Ошибка загрузки карты",
+    "cleanupError": "Ошибка очистки"
+  },
+  "subscription": {
+    "title": "Выберите подписку",
+    "subtitle": "Неограниченные поездки по всей сети Métro-Taxi",
+    "plans": {
+      "day": {
+        "name": "24 часа",
+        "price": "6,99 €",
+        "description": "Идеально для разовых поездок"
+      },
+      "week": {
+        "name": "1 неделя",
+        "price": "16,99 €",
+        "description": "Идеально для коротких визитов"
+      },
+      "month": {
+        "name": "1 месяц",
+        "price": "53,99 €",
+        "description": "Лучшее соотношение цены и качества",
+        "popular": "ПОПУЛЯРНЫЙ"
+      }
+    },
+    "features": {
+      "unlimited": "Неограниченные поездки",
+      "allVehicles": "Доступ ко всем автомобилям",
+      "support": "Приоритетная поддержка",
+      "noCommitment": "Без обязательств"
+    },
+    "cta": "ПОДПИСАТЬСЯ",
+    "perDay": "/день",
+    "perWeek": "/неделя",
+    "perMonth": "/месяц",
+    "processing": "Обработка...",
+    "success": {
+      "title": "Оплата успешна!",
+      "subtitle": "Ваша подписка активирована",
+      "details": "Детали подписки",
+      "plan": "Тариф",
+      "validUntil": "Действует до",
+      "goDashboard": "Перейти в панель управления"
+    }
+  },
+  "profile": {
+    "title": "Мой профиль",
+    "personalInfo": "Личная информация",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "email": "Эл. почта",
+    "phone": "Телефон",
+    "memberSince": "Участник с",
+    "subscription": {
+      "title": "Моя подписка",
+      "plan": "Тариф",
+      "status": "Статус",
+      "active": "Активен",
+      "inactive": "Неактивен",
+      "expires": "Истекает",
+      "subscribe": "Подписаться",
+      "renew": "Продлить"
+    },
+    "virtualCard": {
+      "title": "Моя виртуальная карта",
+      "cardNumber": "№ карты"
+    },
+    "logout": "Выход"
+  },
+  "pricing": {
+    "title": "ПОДПИСКИ",
+    "subtitle": "Выберите тариф",
+    "plans": {
+      "day": {
+        "name": "24 часа",
+        "price": "6,99 €",
+        "priceLocal": "6,99 €",
+        "description": "Идеально для разовых поездок"
+      },
+      "week": {
+        "name": "1 неделя",
+        "price": "16,99 €",
+        "priceLocal": "16,99 €",
+        "description": "Идеально для коротких визитов"
+      },
+      "month": {
+        "name": "1 месяц",
+        "price": "53,99 €",
+        "priceLocal": "53,99 €",
+        "description": "Лучшее соотношение цены и качества"
+      }
+    },
+    "features": {
+      "unlimited": "Неограниченные поездки",
+      "allVehicles": "Доступ ко всем автомобилям",
+      "support": "Приоритетная поддержка",
+      "noCommitment": "Без обязательств",
+      "eco": "🌿 Экологичный транспорт"
+    },
+    "cta": "ПОДПИСАТЬСЯ",
+    "popularBadge": "ПОПУЛЯРНЫЙ"
+  },
+  "howItWorks": {
+    "title": "КАК ЭТО РАБОТАЕТ",
+    "steps": {
+      "step1": {
+        "title": "ПОДПИШИТЕСЬ",
+        "description": "Выберите тариф: 24ч, 1 неделя или 1 месяц. Платите один раз, путешествуйте без ограничений."
+      },
+      "step2": {
+        "title": "НАЙДИТЕ",
+        "description": "Найдите доступные автомобили вокруг вас в реальном времени на карте."
+      },
+      "step3": {
+        "title": "ПУТЕШЕСТВУЙТЕ",
+        "description": "Запросите поездку одним кликом. Водитель заберёт вас по пути."
+      },
+      "step4": {
+        "title": "Путешествуйте",
+        "description": "Наслаждайтесь поездкой и выходите где хотите"
+      }
+    }
+  },
+  "drivers": {
+    "title": "СТАНЬТЕ ВОДИТЕЛЕМ VTC",
+    "subtitle": "Присоединяйтесь к сети Métro-Taxi и увеличьте свой доход без скрытых комиссий",
+    "revenue": {
+      "title": "ПОТЕНЦИАЛЬНЫЙ ДОХОД ВОДИТЕЛЯ",
+      "monthly": "в месяц",
+      "upTo": "Может достигать до",
+      "depending": "в зависимости от активности",
+      "rangeMin": "2 250 €",
+      "rangeMax": "3 000 €",
+      "maxRevenue": "7 500 €"
+    },
+    "benefits": {
+      "title": "ПРЕИМУЩЕСТВА ДЛЯ ВОДИТЕЛЕЙ",
+      "noSubscription": "Без абонентской платы",
+      "noSubscriptionDesc": "Присоединяйтесь к нашей сети бесплатно",
+      "noCommission": "Без комиссии за поездки",
+      "noCommissionDesc": "Получайте 100% заработка",
+      "subscribedPassengers": "Пассажиры уже подписаны",
+      "subscribedPassengersDesc": "Не нужно искать клиентов",
+      "optimizedRoutes": "Оптимизация маршрутов",
+      "optimizedRoutesDesc": "Умный алгоритм подбора",
+      "morePassengers": "Больше пассажиров через сеть",
+      "morePassengersDesc": "Максимизируйте время вождения"
+    },
+    "app": {
+      "title": "ПРИЛОЖЕНИЕ ВОДИТЕЛЯ",
+      "subtitle": "Всё необходимое на одном экране",
+      "requests": "Запросы пассажиров",
+      "requestsDesc": "Получайте запросы в реальном времени в вашей зоне",
+      "routes": "Оптимизированные маршруты",
+      "routesDesc": "Маршруты рассчитаны для максимизации поездок",
+      "transfers": "Предложенные пересадки",
+      "transfersDesc": "Умная система пересадок"
+    },
+    "cta": "ПРИСОЕДИНИТЬСЯ К СЕТИ СЕЙЧАС",
+    "ctaSubtext": "Бесплатная регистрация • Без обязательств"
+  },
+  "video": {
+    "title": "Откройте для себя Métro-Taxi",
+    "loading": "Загрузка озвучки..."
+  },
+  "footer": {
+    "rights": "Все права защищены",
+    "contact": "Контакты",
+    "legal": "Юридическая информация",
+    "privacy": "Конфиденциальность"
+  },
+  "errors": {
+    "required": "Это поле обязательно",
+    "invalidEmail": "Неверный email",
+    "invalidPhone": "Неверный номер телефона",
+    "passwordTooShort": "Пароль должен содержать минимум 6 символов",
+    "serverError": "Ошибка сервера, попробуйте снова"
+  },
+  "verifyEmail": {
+    "title": "Подтверждение email",
+    "verifying": "Проверка...",
+    "success": "Email успешно подтверждён!",
+    "successDesc": "Ваш аккаунт активирован.",
+    "error": "Ошибка подтверждения",
+    "errorDesc": "Ссылка недействительна или истекла.",
+    "goLogin": "Войти",
+    "goHome": "На главную"
+  },
+  "driverRegister": {
+    "title": "Регистрация водителя VTC",
+    "subtitle": "Присоединяйтесь к нашей сети водителей-партнёров",
+    "firstName": "Имя",
+    "firstNamePlaceholder": "Иван",
+    "lastName": "Фамилия",
+    "lastNamePlaceholder": "Иванов",
+    "email": "Электронная почта",
+    "emailPlaceholder": "ivan@example.ru",
+    "phone": "Телефон",
+    "phonePlaceholder": "+7 900 123 45 67",
+    "vehicleInfo": "Информация о транспорте",
+    "vehiclePlate": "Номерной знак",
+    "vehicleType": "Тип транспорта",
+    "selectPlaceholder": "Выбрать",
+    "vehicleTypes": {
+      "sedan": "Седан",
+      "suv": "Внедорожник",
+      "minivan": "Минивэн",
+      "van": "Фургон"
+    },
+    "seats": "Количество мест",
+    "vtcLicense": "Номер лицензии VTC",
+    "bankInfo": "Банковские реквизиты",
+    "bankInfoDesc": "Для получения ваших доходов. Необязательно, можно изменить позже.",
+    "password": "Пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "autoValidation": "Ваш аккаунт будет автоматически активирован. Вы сможете получать заявки на поездки немедленно.",
+    "submitBtn": "ЗАРЕГИСТРИРОВАТЬСЯ КАК ВОДИТЕЛЬ",
+    "alreadyRegistered": "Уже зарегистрированы?",
+    "loginLink": "Войти",
+    "passwordMismatch": "Пароли не совпадают",
+    "passwordTooShort": "Пароль должен содержать не менее 6 символов",
+    "successMessage": "Регистрация успешна! Ваш аккаунт активирован. Теперь вы можете войти.",
+    "errorMessage": "Ошибка регистрации"
+  }
 }

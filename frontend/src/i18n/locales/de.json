@@ -232,7 +232,8 @@
       "support": "Prioritäts-Support",
       "noCommitment": "Keine Bindung"
     },
-    "cta": "ABONNIEREN", "popularBadge": "BELIEBT",
+    "cta": "ABONNIEREN",
+    "popularBadge": "BELIEBT",
     "perDay": "/Tag",
     "perWeek": "/Woche",
     "perMonth": "/Monat",
@@ -300,7 +301,8 @@
       "noCommitment": "Keine Bindung",
       "eco": "🌿 Umweltfreundlicher Transport"
     },
-    "cta": "ABONNIEREN", "popularBadge": "BELIEBT"
+    "cta": "ABONNIEREN",
+    "popularBadge": "BELIEBT"
   },
   "howItWorks": {
     "title": "SO FUNKTIONIERT'S",
@@ -407,5 +409,41 @@
     "errorDesc": "Der Link ist ungültig oder abgelaufen.",
     "goLogin": "Anmelden",
     "goHome": "Zurück zur Startseite"
+  },
+  "driverRegister": {
+    "title": "VTC-Fahrer Registrierung",
+    "subtitle": "Treten Sie unserem Partnernetzwerk bei",
+    "firstName": "Vorname",
+    "firstNamePlaceholder": "Max",
+    "lastName": "Nachname",
+    "lastNamePlaceholder": "Mustermann",
+    "email": "E-Mail",
+    "emailPlaceholder": "max@beispiel.de",
+    "phone": "Telefon",
+    "phonePlaceholder": "+49 170 1234567",
+    "vehicleInfo": "Fahrzeuginformationen",
+    "vehiclePlate": "Kennzeichen",
+    "vehicleType": "Fahrzeugtyp",
+    "selectPlaceholder": "Auswählen",
+    "vehicleTypes": {
+      "sedan": "Limousine",
+      "suv": "SUV",
+      "minivan": "Van",
+      "van": "Transporter"
+    },
+    "seats": "Anzahl Sitze",
+    "vtcLicense": "VTC-Lizenznummer",
+    "bankInfo": "Bankdaten",
+    "bankInfoDesc": "Für Ihre Auszahlungen. Optional, später änderbar.",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "autoValidation": "Ihr Konto wird automatisch aktiviert. Sie können sofort Fahrtanfragen erhalten.",
+    "submitBtn": "ALS FAHRER REGISTRIEREN",
+    "alreadyRegistered": "Bereits registriert?",
+    "loginLink": "Anmelden",
+    "passwordMismatch": "Passwörter stimmen nicht überein",
+    "passwordTooShort": "Passwort muss mindestens 6 Zeichen haben",
+    "successMessage": "Registrierung erfolgreich! Ihr Konto ist aktiviert. Sie können sich jetzt anmelden.",
+    "errorMessage": "Registrierung fehlgeschlagen"
   }
 }

@@ -1,32 +1,454 @@
 {
-  "hero": {"title": "MÉTRO-TAXI", "subtitle": "A rede de mobilidade urbana por assinatura", "subtitleHighlight": "POR ASSINATURA", "description": "Junte-se a veículos que vão na sua direção. Viagens ilimitadas com uma simples assinatura.", "cta": "COMEÇAR", "ecoSlogan": "Sistema de transporte inteligente por boleia partilhada", "ecoMessage": "Reduza a sua pegada de carbono partilhando as suas viagens"},
-  "nav": {"login": "Entrar", "register": "Registar", "pricing": "Preços", "howItWorks": "Como funciona", "drivers": "Motoristas", "logout": "Sair", "profile": "Perfil", "dashboard": "Painel"},
-  "auth": {
-    "login": {"title": "Entrar", "subtitle": "Aceda à sua conta Métro-Taxi", "email": "Email", "password": "Palavra-passe", "submit": "ENTRAR", "noAccount": "Não tem conta?", "signUp": "Registe-se", "asUser": "como utilizador", "asDriver": "como motorista", "or": "ou", "error": "Email ou palavra-passe incorretos", "success": "Login bem-sucedido"},
-    "register": {"user": {"title": "Registo de Utilizador", "subtitle": "Crie a sua conta para aceder à rede Métro-Taxi"}, "driver": {"title": "Registo de Motorista VTC", "subtitle": "Junte-se à rede Métro-Taxi"}, "firstName": "Nome", "lastName": "Apelido", "email": "Email", "phone": "Telefone", "password": "Palavra-passe", "confirmPassword": "Confirmar palavra-passe", "vehiclePlate": "Matrícula", "vehicleType": "Tipo de veículo", "seats": "Número de lugares", "vtcLicense": "Número de licença VTC", "submit": "REGISTAR", "haveAccount": "Já tem conta?", "login": "Entre", "success": "Registo bem-sucedido!", "error": "Erro no registo", "passwordMismatch": "As palavras-passe não coincidem", "vehicleTypes": {"sedan": "Sedan", "suv": "SUV", "van": "Van", "luxury": "Luxo"}}
+  "hero": {
+    "title": "MÉTRO-TAXI",
+    "subtitle": "A rede de mobilidade urbana por assinatura",
+    "subtitleHighlight": "POR ASSINATURA",
+    "description": "Junte-se a veículos que vão na sua direção. Viagens ilimitadas com uma simples assinatura.",
+    "cta": "COMEÇAR",
+    "ecoSlogan": "Sistema de transporte inteligente por boleia partilhada",
+    "ecoMessage": "Reduza a sua pegada de carbono partilhando as suas viagens"
   },
-  "dashboard": {
-    "user": {"title": "Painel", "welcome": "Bem-vindo", "availableVehicles": "veículos disponíveis", "seats": "lugares", "activeRides": "viagens ativas", "setDestination": "Definir destino", "cancel": "Cancelar", "clickMap": "Clique no mapa para definir o seu destino", "requestRide": "Solicitar esta viagem", "yourPosition": "A sua posição", "destination": "Destino", "remove": "Remover", "optimalRoute": "Rota ideal", "totalDistance": "km total", "transfers": "transbordos", "minutes": "minutos", "efficiency": "Eficiência da rota", "segments": "Segmentos da rota", "segment": "Segmento", "searchingDriver": "A procurar motorista...", "freeSeats": "lugares livres", "direction": "Direção", "eta": "ETA", "min": "min", "score": "Pontuação", "transferSuggestions": "Sugestões de transbordo", "showTransfers": "Ver transbordos", "hideTransfers": "Ocultar", "transfer": "Transbordo", "emailNotVerified": "Email não verificado", "verifyEmail": "Verificar o meu email", "subscriptionRequired": "Assinatura necessária", "subscribe": "Assinar", "activeRide": "Viagem ativa", "driver": "Motorista", "vehicle": "Veículo", "progress": "Progresso", "pickup": "Recolha", "inProgress": "Em curso", "dropoff": "Chegada"},
-    "driver": {"title": "Painel do Motorista", "goOnline": "Ficar online", "goOffline": "Ficar offline", "online": "Online", "offline": "Offline", "availableSeats": "Lugares disponíveis", "updateSeats": "Atualizar", "pendingRequests": "Pedidos pendentes", "noRequests": "Sem pedidos pendentes", "accept": "Aceitar", "decline": "Recusar", "passenger": "Passageiro", "distance": "Distância", "currentRide": "Viagem atual", "startRide": "Iniciar", "completeRide": "Concluir", "setDestination": "Definir a minha direção", "yourDestination": "O seu destino", "nearbyUsers": "Utilizadores próximos"},
-    "admin": {
-      "title": "Administração",
-      "stats": {"users": "Utilizadores registados", "drivers": "Motoristas", "subscriptions": "Assinaturas ativas", "rides": "Viagens em curso"},
-      "tabs": {"drivers": "Motoristas", "users": "Utilizadores", "subscriptions": "Assinaturas", "cards": "Cartões Virtuais"},
-      "drivers": {"title": "Gestão de motoristas", "subtitle": "Ative ou desative as contas dos motoristas", "driver": "Motorista", "contact": "Contacto", "vehicle": "Veículo", "license": "Licença VTC", "status": "Estado", "actions": "Ações", "validated": "Validado", "pending": "Pendente", "online": "Online", "activate": "Ativar", "deactivate": "Desativar", "noDrivers": "Nenhum motorista registado"},
-      "users": {"title": "Lista de utilizadores", "subtitle": "Consulte as informações dos utilizadores registados", "user": "Utilizador", "contact": "Contacto", "subscription": "Assinatura", "expiration": "Expiração", "registration": "Registo", "active": "Ativo", "inactive": "Inativo", "noUsers": "Nenhum utilizador registado"},
-      "subscriptions": {"title": "Assinaturas", "active": "Assinaturas ativas", "activeDesc": "Lista de assinaturas em vigor", "expired": "Assinaturas expiradas", "expiredDesc": "Estas assinaturas devem ser desativadas", "expiringSoon": "Expiram em 24h", "expiredLabel": "EXPIRADAS", "activeLabel": "ATIVAS", "soonLabel": "EM BREVE", "cleanup": "Desativar expiradas", "refresh": "Atualizar", "status": "Estado", "expiresSoon": "Expira em breve", "noActive": "Nenhuma assinatura ativa"},
-      "cards": {"title": "Cartões Virtuais", "subtitle": "Consulte os cartões virtuais dos utilizadores", "holder": "TITULAR", "cardNumber": "Nº CARTÃO", "phone": "TELEFONE", "subscription": "ASSINATURA", "expires": "EXPIRA EM", "memberSince": "Membro desde", "totalRides": "Total de viagens", "rides": "viagens", "verified": "Verificado", "notVerified": "Não verificado", "noCards": "Nenhum cartão virtual"},
-      "common": {"loadingError": "Erro ao carregar os dados", "registeredOn": "Registado em", "seats": "lugares"}
+  "nav": {
+    "login": "Entrar",
+    "register": "Registar",
+    "pricing": "Preços",
+    "howItWorks": "Como funciona",
+    "drivers": "Motoristas",
+    "logout": "Sair",
+    "profile": "Perfil",
+    "dashboard": "Painel"
+  },
+  "auth": {
+    "login": {
+      "title": "Entrar",
+      "subtitle": "Aceda à sua conta Métro-Taxi",
+      "email": "Email",
+      "password": "Palavra-passe",
+      "submit": "ENTRAR",
+      "noAccount": "Não tem conta?",
+      "signUp": "Registe-se",
+      "asUser": "como utilizador",
+      "asDriver": "como motorista",
+      "or": "ou",
+      "error": "Email ou palavra-passe incorretos",
+      "success": "Login bem-sucedido"
+    },
+    "register": {
+      "user": {
+        "title": "Registo de Utilizador",
+        "subtitle": "Crie a sua conta para aceder à rede Métro-Taxi"
+      },
+      "driver": {
+        "title": "Registo de Motorista VTC",
+        "subtitle": "Junte-se à rede Métro-Taxi"
+      },
+      "firstName": "Nome",
+      "lastName": "Apelido",
+      "email": "Email",
+      "phone": "Telefone",
+      "password": "Palavra-passe",
+      "confirmPassword": "Confirmar palavra-passe",
+      "vehiclePlate": "Matrícula",
+      "vehicleType": "Tipo de veículo",
+      "seats": "Número de lugares",
+      "vtcLicense": "Número de licença VTC",
+      "submit": "REGISTAR",
+      "haveAccount": "Já tem conta?",
+      "login": "Entre",
+      "success": "Registo bem-sucedido!",
+      "error": "Erro no registo",
+      "passwordMismatch": "As palavras-passe não coincidem",
+      "vehicleTypes": {
+        "sedan": "Sedan",
+        "suv": "SUV",
+        "van": "Van",
+        "luxury": "Luxo"
+      }
     }
   },
-  "subscription": {"title": "Escolha a sua assinatura", "subtitle": "Viagens ilimitadas em toda a rede Métro-Taxi", "plans": {"day": {"name": "24 Horas", "price": "6,99 €", "description": "Perfeito para uso ocasional"}, "week": {"name": "1 Semana", "price": "16,99 €", "description": "Ideal para estadias curtas"}, "month": {"name": "1 Mês", "price": "53,99 €", "description": "Melhor custo-benefício", "popular": "POPULAR"}}, "features": {"unlimited": "Viagens ilimitadas", "allVehicles": "Acesso a todos os veículos", "support": "Suporte prioritário", "noCommitment": "Sem compromisso"}, "cta": "ASSINAR", "popularBadge": "POPULAR", "perDay": "/dia", "perWeek": "/semana", "perMonth": "/mês", "processing": "A processar...", "success": {"title": "Pagamento bem-sucedido!", "subtitle": "A sua assinatura está ativa", "details": "Detalhes da sua assinatura", "plan": "Plano", "validUntil": "Válido até", "goDashboard": "Ir para o painel"}},
-  "profile": {"title": "O Meu Perfil", "personalInfo": "Informações pessoais", "firstName": "Nome", "lastName": "Apelido", "email": "Email", "phone": "Telefone", "memberSince": "Membro desde", "subscription": {"title": "A minha assinatura", "plan": "Plano", "status": "Estado", "active": "Ativo", "inactive": "Inativo", "expires": "Expira em", "subscribe": "Assinar", "renew": "Renovar"}, "virtualCard": {"title": "O meu cartão virtual", "cardNumber": "Nº Cartão"}, "logout": "Sair"},
-  "pricing": {"title": "ASSINATURAS", "subtitle": "Escolha o seu plano", "plans": {"day": {"name": "24 Horas", "price": "6,99 €", "priceLocal": "6,99 €", "description": "Perfeito para uso ocasional"}, "week": {"name": "1 Semana", "price": "16,99 €", "priceLocal": "16,99 €", "description": "Ideal para estadias curtas"}, "month": {"name": "1 Mês", "price": "53,99 €", "priceLocal": "53,99 €", "description": "Melhor custo-benefício"}}, "features": {"unlimited": "Viagens ilimitadas", "allVehicles": "Acesso a todos os veículos", "support": "Suporte prioritário", "noCommitment": "Sem compromisso", "eco": "🌿 Transporte ecológico"}, "cta": "ASSINAR", "popularBadge": "POPULAR"},
-  "howItWorks": {"title": "COMO FUNCIONA", "steps": {"step1": {"title": "ASSINE", "description": "Escolha o seu plano: 24h, 1 semana ou 1 mês. Pague uma vez, viaje sem limites."}, "step2": {"title": "LOCALIZE", "description": "Encontre os veículos disponíveis à sua volta em tempo real no mapa."}, "step3": {"title": "VIAJE", "description": "Solicite a sua viagem com um clique. O motorista apanha-o no caminho."}, "step4": {"title": "Viaje", "description": "Aproveite a sua viagem e desça onde quiser"}}},
-  "drivers": {"title": "TORNE-SE MOTORISTA VTC", "subtitle": "Junte-se à rede Métro-Taxi e maximize os seus rendimentos sem custos ocultos", "revenue": {"title": "RENDIMENTO POTENCIAL", "monthly": "por mês", "upTo": "Pode chegar até", "depending": "dependendo da atividade", "rangeMin": "2 250 €", "rangeMax": "3 000 €", "maxRevenue": "7 500 €"}, "benefits": {"title": "BENEFÍCIOS", "noSubscription": "Sem assinatura", "noSubscriptionDesc": "Junte-se grátis", "noCommission": "Sem comissão", "noCommissionDesc": "100% dos seus ganhos", "subscribedPassengers": "Passageiros assinantes", "subscribedPassengersDesc": "Sem procurar clientes", "optimizedRoutes": "Rotas otimizadas", "optimizedRoutesDesc": "Algoritmo inteligente", "morePassengers": "Mais passageiros", "morePassengersDesc": "Maximize o seu tempo"}, "app": {"title": "A APP", "subtitle": "Tudo num ecrã", "requests": "Pedidos", "requestsDesc": "Em tempo real", "routes": "Rotas", "routesDesc": "Otimizadas", "transfers": "Conexões", "transfersDesc": "Sistema inteligente"}, "cta": "JUNTE-SE AGORA", "ctaSubtext": "Grátis • Sem compromisso"},
-  "video": {"title": "Descubra o Métro-Taxi", "loading": "A carregar voz..."},
-  "footer": {"rights": "Todos os direitos reservados", "contact": "Contacto", "legal": "Aviso legal", "privacy": "Privacidade"},
-  "common": {"loading": "A carregar...", "error": "Erro", "retry": "Tentar novamente", "save": "Guardar", "cancel": "Cancelar", "confirm": "Confirmar", "delete": "Eliminar", "edit": "Editar", "back": "Voltar", "next": "Seguinte", "previous": "Anterior", "search": "Pesquisar", "filter": "Filtrar", "all": "Tudo", "none": "Nenhum", "yes": "Sim", "no": "Não", "or": "ou"},
-  "errors": {"required": "Campo obrigatório", "invalidEmail": "Email inválido", "invalidPhone": "Telefone inválido", "passwordTooShort": "Mínimo 6 caracteres", "serverError": "Erro do servidor"},
-  "verifyEmail": {"title": "Verificação de email", "verifying": "A verificar...", "success": "Email verificado!", "successDesc": "A sua conta está ativada.", "error": "Verificação falhou", "errorDesc": "O link é inválido ou expirou.", "goLogin": "Entrar", "goHome": "Voltar ao início"}
+  "dashboard": {
+    "user": {
+      "title": "Painel",
+      "welcome": "Bem-vindo",
+      "availableVehicles": "veículos disponíveis",
+      "seats": "lugares",
+      "activeRides": "viagens ativas",
+      "setDestination": "Definir destino",
+      "cancel": "Cancelar",
+      "clickMap": "Clique no mapa para definir o seu destino",
+      "requestRide": "Solicitar esta viagem",
+      "yourPosition": "A sua posição",
+      "destination": "Destino",
+      "remove": "Remover",
+      "optimalRoute": "Rota ideal",
+      "totalDistance": "km total",
+      "transfers": "transbordos",
+      "minutes": "minutos",
+      "efficiency": "Eficiência da rota",
+      "segments": "Segmentos da rota",
+      "segment": "Segmento",
+      "searchingDriver": "A procurar motorista...",
+      "freeSeats": "lugares livres",
+      "direction": "Direção",
+      "eta": "ETA",
+      "min": "min",
+      "score": "Pontuação",
+      "transferSuggestions": "Sugestões de transbordo",
+      "showTransfers": "Ver transbordos",
+      "hideTransfers": "Ocultar",
+      "transfer": "Transbordo",
+      "emailNotVerified": "Email não verificado",
+      "verifyEmail": "Verificar o meu email",
+      "subscriptionRequired": "Assinatura necessária",
+      "subscribe": "Assinar",
+      "activeRide": "Viagem ativa",
+      "driver": "Motorista",
+      "vehicle": "Veículo",
+      "progress": "Progresso",
+      "pickup": "Recolha",
+      "inProgress": "Em curso",
+      "dropoff": "Chegada"
+    },
+    "driver": {
+      "title": "Painel do Motorista",
+      "goOnline": "Ficar online",
+      "goOffline": "Ficar offline",
+      "online": "Online",
+      "offline": "Offline",
+      "availableSeats": "Lugares disponíveis",
+      "updateSeats": "Atualizar",
+      "pendingRequests": "Pedidos pendentes",
+      "noRequests": "Sem pedidos pendentes",
+      "accept": "Aceitar",
+      "decline": "Recusar",
+      "passenger": "Passageiro",
+      "distance": "Distância",
+      "currentRide": "Viagem atual",
+      "startRide": "Iniciar",
+      "completeRide": "Concluir",
+      "setDestination": "Definir a minha direção",
+      "yourDestination": "O seu destino",
+      "nearbyUsers": "Utilizadores próximos"
+    },
+    "admin": {
+      "title": "Administração",
+      "stats": {
+        "users": "Utilizadores registados",
+        "drivers": "Motoristas",
+        "subscriptions": "Assinaturas ativas",
+        "rides": "Viagens em curso"
+      },
+      "tabs": {
+        "drivers": "Motoristas",
+        "users": "Utilizadores",
+        "subscriptions": "Assinaturas",
+        "cards": "Cartões Virtuais"
+      },
+      "drivers": {
+        "title": "Gestão de motoristas",
+        "subtitle": "Ative ou desative as contas dos motoristas",
+        "driver": "Motorista",
+        "contact": "Contacto",
+        "vehicle": "Veículo",
+        "license": "Licença VTC",
+        "status": "Estado",
+        "actions": "Ações",
+        "validated": "Validado",
+        "pending": "Pendente",
+        "online": "Online",
+        "activate": "Ativar",
+        "deactivate": "Desativar",
+        "noDrivers": "Nenhum motorista registado"
+      },
+      "users": {
+        "title": "Lista de utilizadores",
+        "subtitle": "Consulte as informações dos utilizadores registados",
+        "user": "Utilizador",
+        "contact": "Contacto",
+        "subscription": "Assinatura",
+        "expiration": "Expiração",
+        "registration": "Registo",
+        "active": "Ativo",
+        "inactive": "Inativo",
+        "noUsers": "Nenhum utilizador registado"
+      },
+      "subscriptions": {
+        "title": "Assinaturas",
+        "active": "Assinaturas ativas",
+        "activeDesc": "Lista de assinaturas em vigor",
+        "expired": "Assinaturas expiradas",
+        "expiredDesc": "Estas assinaturas devem ser desativadas",
+        "expiringSoon": "Expiram em 24h",
+        "expiredLabel": "EXPIRADAS",
+        "activeLabel": "ATIVAS",
+        "soonLabel": "EM BREVE",
+        "cleanup": "Desativar expiradas",
+        "refresh": "Atualizar",
+        "status": "Estado",
+        "expiresSoon": "Expira em breve",
+        "noActive": "Nenhuma assinatura ativa"
+      },
+      "cards": {
+        "title": "Cartões Virtuais",
+        "subtitle": "Consulte os cartões virtuais dos utilizadores",
+        "holder": "TITULAR",
+        "cardNumber": "Nº CARTÃO",
+        "phone": "TELEFONE",
+        "subscription": "ASSINATURA",
+        "expires": "EXPIRA EM",
+        "memberSince": "Membro desde",
+        "totalRides": "Total de viagens",
+        "rides": "viagens",
+        "verified": "Verificado",
+        "notVerified": "Não verificado",
+        "noCards": "Nenhum cartão virtual"
+      },
+      "common": {
+        "loadingError": "Erro ao carregar os dados",
+        "registeredOn": "Registado em",
+        "seats": "lugares"
+      }
+    }
+  },
+  "subscription": {
+    "title": "Escolha a sua assinatura",
+    "subtitle": "Viagens ilimitadas em toda a rede Métro-Taxi",
+    "plans": {
+      "day": {
+        "name": "24 Horas",
+        "price": "6,99 €",
+        "description": "Perfeito para uso ocasional"
+      },
+      "week": {
+        "name": "1 Semana",
+        "price": "16,99 €",
+        "description": "Ideal para estadias curtas"
+      },
+      "month": {
+        "name": "1 Mês",
+        "price": "53,99 €",
+        "description": "Melhor custo-benefício",
+        "popular": "POPULAR"
+      }
+    },
+    "features": {
+      "unlimited": "Viagens ilimitadas",
+      "allVehicles": "Acesso a todos os veículos",
+      "support": "Suporte prioritário",
+      "noCommitment": "Sem compromisso"
+    },
+    "cta": "ASSINAR",
+    "popularBadge": "POPULAR",
+    "perDay": "/dia",
+    "perWeek": "/semana",
+    "perMonth": "/mês",
+    "processing": "A processar...",
+    "success": {
+      "title": "Pagamento bem-sucedido!",
+      "subtitle": "A sua assinatura está ativa",
+      "details": "Detalhes da sua assinatura",
+      "plan": "Plano",
+      "validUntil": "Válido até",
+      "goDashboard": "Ir para o painel"
+    }
+  },
+  "profile": {
+    "title": "O Meu Perfil",
+    "personalInfo": "Informações pessoais",
+    "firstName": "Nome",
+    "lastName": "Apelido",
+    "email": "Email",
+    "phone": "Telefone",
+    "memberSince": "Membro desde",
+    "subscription": {
+      "title": "A minha assinatura",
+      "plan": "Plano",
+      "status": "Estado",
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "expires": "Expira em",
+      "subscribe": "Assinar",
+      "renew": "Renovar"
+    },
+    "virtualCard": {
+      "title": "O meu cartão virtual",
+      "cardNumber": "Nº Cartão"
+    },
+    "logout": "Sair"
+  },
+  "pricing": {
+    "title": "ASSINATURAS",
+    "subtitle": "Escolha o seu plano",
+    "plans": {
+      "day": {
+        "name": "24 Horas",
+        "price": "6,99 €",
+        "priceLocal": "6,99 €",
+        "description": "Perfeito para uso ocasional"
+      },
+      "week": {
+        "name": "1 Semana",
+        "price": "16,99 €",
+        "priceLocal": "16,99 €",
+        "description": "Ideal para estadias curtas"
+      },
+      "month": {
+        "name": "1 Mês",
+        "price": "53,99 €",
+        "priceLocal": "53,99 €",
+        "description": "Melhor custo-benefício"
+      }
+    },
+    "features": {
+      "unlimited": "Viagens ilimitadas",
+      "allVehicles": "Acesso a todos os veículos",
+      "support": "Suporte prioritário",
+      "noCommitment": "Sem compromisso",
+      "eco": "🌿 Transporte ecológico"
+    },
+    "cta": "ASSINAR",
+    "popularBadge": "POPULAR"
+  },
+  "howItWorks": {
+    "title": "COMO FUNCIONA",
+    "steps": {
+      "step1": {
+        "title": "ASSINE",
+        "description": "Escolha o seu plano: 24h, 1 semana ou 1 mês. Pague uma vez, viaje sem limites."
+      },
+      "step2": {
+        "title": "LOCALIZE",
+        "description": "Encontre os veículos disponíveis à sua volta em tempo real no mapa."
+      },
+      "step3": {
+        "title": "VIAJE",
+        "description": "Solicite a sua viagem com um clique. O motorista apanha-o no caminho."
+      },
+      "step4": {
+        "title": "Viaje",
+        "description": "Aproveite a sua viagem e desça onde quiser"
+      }
+    }
+  },
+  "drivers": {
+    "title": "TORNE-SE MOTORISTA VTC",
+    "subtitle": "Junte-se à rede Métro-Taxi e maximize os seus rendimentos sem custos ocultos",
+    "revenue": {
+      "title": "RENDIMENTO POTENCIAL",
+      "monthly": "por mês",
+      "upTo": "Pode chegar até",
+      "depending": "dependendo da atividade",
+      "rangeMin": "2 250 €",
+      "rangeMax": "3 000 €",
+      "maxRevenue": "7 500 €"
+    },
+    "benefits": {
+      "title": "BENEFÍCIOS",
+      "noSubscription": "Sem assinatura",
+      "noSubscriptionDesc": "Junte-se grátis",
+      "noCommission": "Sem comissão",
+      "noCommissionDesc": "100% dos seus ganhos",
+      "subscribedPassengers": "Passageiros assinantes",
+      "subscribedPassengersDesc": "Sem procurar clientes",
+      "optimizedRoutes": "Rotas otimizadas",
+      "optimizedRoutesDesc": "Algoritmo inteligente",
+      "morePassengers": "Mais passageiros",
+      "morePassengersDesc": "Maximize o seu tempo"
+    },
+    "app": {
+      "title": "A APP",
+      "subtitle": "Tudo num ecrã",
+      "requests": "Pedidos",
+      "requestsDesc": "Em tempo real",
+      "routes": "Rotas",
+      "routesDesc": "Otimizadas",
+      "transfers": "Conexões",
+      "transfersDesc": "Sistema inteligente"
+    },
+    "cta": "JUNTE-SE AGORA",
+    "ctaSubtext": "Grátis • Sem compromisso"
+  },
+  "video": {
+    "title": "Descubra o Métro-Taxi",
+    "loading": "A carregar voz..."
+  },
+  "footer": {
+    "rights": "Todos os direitos reservados",
+    "contact": "Contacto",
+    "legal": "Aviso legal",
+    "privacy": "Privacidade"
+  },
+  "common": {
+    "loading": "A carregar...",
+    "error": "Erro",
+    "retry": "Tentar novamente",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "back": "Voltar",
+    "next": "Seguinte",
+    "previous": "Anterior",
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "all": "Tudo",
+    "none": "Nenhum",
+    "yes": "Sim",
+    "no": "Não",
+    "or": "ou"
+  },
+  "errors": {
+    "required": "Campo obrigatório",
+    "invalidEmail": "Email inválido",
+    "invalidPhone": "Telefone inválido",
+    "passwordTooShort": "Mínimo 6 caracteres",
+    "serverError": "Erro do servidor"
+  },
+  "verifyEmail": {
+    "title": "Verificação de email",
+    "verifying": "A verificar...",
+    "success": "Email verificado!",
+    "successDesc": "A sua conta está ativada.",
+    "error": "Verificação falhou",
+    "errorDesc": "O link é inválido ou expirou.",
+    "goLogin": "Entrar",
+    "goHome": "Voltar ao início"
+  },
+  "driverRegister": {
+    "title": "Registro de Motorista VTC",
+    "subtitle": "Junte-se à nossa rede de motoristas parceiros",
+    "firstName": "Nome",
+    "firstNamePlaceholder": "João",
+    "lastName": "Sobrenome",
+    "lastNamePlaceholder": "Silva",
+    "email": "Email",
+    "emailPlaceholder": "joao@exemplo.com",
+    "phone": "Telefone",
+    "phonePlaceholder": "+351 912 345 678",
+    "vehicleInfo": "Informações do veículo",
+    "vehiclePlate": "Matrícula",
+    "vehicleType": "Tipo de veículo",
+    "selectPlaceholder": "Selecionar",
+    "vehicleTypes": {
+      "sedan": "Sedan",
+      "suv": "SUV",
+      "minivan": "Monovolume",
+      "van": "Van"
+    },
+    "seats": "Número de lugares",
+    "vtcLicense": "Número da licença VTC",
+    "bankInfo": "Informações bancárias",
+    "bankInfoDesc": "Para receber seus ganhos. Opcional, pode ser alterado depois.",
+    "password": "Senha",
+    "confirmPassword": "Confirmar senha",
+    "autoValidation": "Sua conta será ativada automaticamente. Você poderá receber pedidos de viagem imediatamente.",
+    "submitBtn": "REGISTRAR COMO MOTORISTA",
+    "alreadyRegistered": "Já registrado?",
+    "loginLink": "Entrar",
+    "passwordMismatch": "As senhas não coincidem",
+    "passwordTooShort": "A senha deve ter pelo menos 6 caracteres",
+    "successMessage": "Registro bem-sucedido! Sua conta está ativada. Você já pode entrar.",
+    "errorMessage": "Erro no registro"
+  }
 }

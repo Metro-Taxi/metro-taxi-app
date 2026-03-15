@@ -1,23 +1,390 @@
 {
-  "hero": {"title": "MÉTRO-TAXI", "subtitle": "Det prenumerationsbaserade stadsmobilitetsnätverket", "subtitleHighlight": "MED PRENUMERATION", "description": "Res med fordon som åker i din riktning. Obegränsade resor med ett enkelt abonnemang.", "cta": "KOM IGÅNG", "ecoSlogan": "Intelligent samåkningssystem", "ecoMessage": "Minska ditt koldioxidavtryck genom att dela resor"},
-  "nav": {"login": "Logg inn", "register": "Registrer deg", "pricing": "Priser", "howItWorks": "Slik fungerer det", "drivers": "Sjåfører", "logout": "Logg ut", "profile": "Profil", "dashboard": "Dashboard"},
+  "hero": {
+    "title": "MÉTRO-TAXI",
+    "subtitle": "Det prenumerationsbaserade stadsmobilitetsnätverket",
+    "subtitleHighlight": "MED PRENUMERATION",
+    "description": "Res med fordon som åker i din riktning. Obegränsade resor med ett enkelt abonnemang.",
+    "cta": "KOM IGÅNG",
+    "ecoSlogan": "Intelligent samåkningssystem",
+    "ecoMessage": "Minska ditt koldioxidavtryck genom att dela resor"
+  },
+  "nav": {
+    "login": "Logg inn",
+    "register": "Registrer deg",
+    "pricing": "Priser",
+    "howItWorks": "Slik fungerer det",
+    "drivers": "Sjåfører",
+    "logout": "Logg ut",
+    "profile": "Profil",
+    "dashboard": "Dashboard"
+  },
   "auth": {
-    "login": {"title": "Logg inn", "subtitle": "Få tilgang til din Métro-Taxi-konto", "email": "E-post", "password": "Passord", "submit": "LOGG INN", "noAccount": "Har du ikke konto?", "signUp": "Registrer deg", "asUser": "som bruker", "asDriver": "som sjåfør", "or": "eller", "error": "Feil e-post eller passord", "success": "Innlogging vellykket"},
-    "register": {"user": {"title": "Brukerregistrering", "subtitle": "Opprett kontoen din for å få tilgang til Métro-Taxi-nettverket"}, "driver": {"title": "VTC-sjåførregistrering", "subtitle": "Bli med i Métro-Taxi-nettverket"}, "firstName": "Fornavn", "lastName": "Etternavn", "email": "E-post", "phone": "Telefon", "password": "Passord", "confirmPassword": "Bekreft passord", "vehiclePlate": "Skiltnummer", "vehicleType": "Kjøretøytype", "seats": "Antall seter", "vtcLicense": "VTC-lisensnummer", "submit": "REGISTRER", "haveAccount": "Har du allerede konto?", "login": "Logg inn", "success": "Registrering vellykket!", "error": "Registreringsfeil", "passwordMismatch": "Passordene stemmer ikke", "vehicleTypes": {"sedan": "Sedan", "suv": "SUV", "van": "Van", "luxury": "Luksus"}}
+    "login": {
+      "title": "Logg inn",
+      "subtitle": "Få tilgang til din Métro-Taxi-konto",
+      "email": "E-post",
+      "password": "Passord",
+      "submit": "LOGG INN",
+      "noAccount": "Har du ikke konto?",
+      "signUp": "Registrer deg",
+      "asUser": "som bruker",
+      "asDriver": "som sjåfør",
+      "or": "eller",
+      "error": "Feil e-post eller passord",
+      "success": "Innlogging vellykket"
+    },
+    "register": {
+      "user": {
+        "title": "Brukerregistrering",
+        "subtitle": "Opprett kontoen din for å få tilgang til Métro-Taxi-nettverket"
+      },
+      "driver": {
+        "title": "VTC-sjåførregistrering",
+        "subtitle": "Bli med i Métro-Taxi-nettverket"
+      },
+      "firstName": "Fornavn",
+      "lastName": "Etternavn",
+      "email": "E-post",
+      "phone": "Telefon",
+      "password": "Passord",
+      "confirmPassword": "Bekreft passord",
+      "vehiclePlate": "Skiltnummer",
+      "vehicleType": "Kjøretøytype",
+      "seats": "Antall seter",
+      "vtcLicense": "VTC-lisensnummer",
+      "submit": "REGISTRER",
+      "haveAccount": "Har du allerede konto?",
+      "login": "Logg inn",
+      "success": "Registrering vellykket!",
+      "error": "Registreringsfeil",
+      "passwordMismatch": "Passordene stemmer ikke",
+      "vehicleTypes": {
+        "sedan": "Sedan",
+        "suv": "SUV",
+        "van": "Van",
+        "luxury": "Luksus"
+      }
+    }
   },
   "dashboard": {
-    "user": {"title": "Dashboard", "welcome": "Velkommen", "availableVehicles": "tilgjengelige kjøretøy", "seats": "seter", "activeRides": "aktive turer", "setDestination": "Angi destinasjon", "cancel": "Avbryt", "clickMap": "Klikk på kartet for å angi destinasjonen din", "requestRide": "Be om denne turen", "yourPosition": "Din posisjon", "destination": "Destinasjon", "remove": "Fjern", "optimalRoute": "Optimal rute", "totalDistance": "km totalt", "transfers": "overganger", "minutes": "minutter", "efficiency": "Ruteeffektivitet", "segments": "Rutesegmenter", "segment": "Segment", "searchingDriver": "Søker etter sjåfør...", "freeSeats": "ledige seter", "direction": "Retning", "eta": "ETA", "min": "min", "score": "Poengsum", "transferSuggestions": "Overgangsforslag", "showTransfers": "Vis overganger", "hideTransfers": "Skjul", "transfer": "Overgang", "emailNotVerified": "E-post ikke verifisert", "verifyEmail": "Verifiser e-posten min", "subscriptionRequired": "Abonnement kreves", "subscribe": "Abonner", "activeRide": "Aktiv tur", "driver": "Sjåfør", "vehicle": "Kjøretøy", "progress": "Fremgang", "pickup": "Henting", "inProgress": "Pågår", "dropoff": "Avlevering"},
-    "driver": {"title": "Sjåfør-dashboard", "goOnline": "Gå online", "goOffline": "Gå offline", "online": "Online", "offline": "Offline", "availableSeats": "Tilgjengelige seter", "updateSeats": "Oppdater", "pendingRequests": "Ventende forespørsler", "noRequests": "Ingen ventende forespørsler", "accept": "Godta", "decline": "Avslå", "passenger": "Passasjer", "distance": "Avstand", "currentRide": "Nåværende tur", "startRide": "Start", "completeRide": "Fullfør", "setDestination": "Angi min retning", "yourDestination": "Din destinasjon", "nearbyUsers": "Brukere i nærheten"},
-    "admin": {"title": "Administrasjon", "stats": {"users": "Registrerte brukere", "drivers": "Sjåfører", "subscriptions": "Aktive abonnementer", "rides": "Pågående turer"}, "tabs": {"drivers": "Sjåfører", "users": "Brukere", "subscriptions": "Abonnementer", "cards": "Virtuelle kort"}}
+    "user": {
+      "title": "Dashboard",
+      "welcome": "Velkommen",
+      "availableVehicles": "tilgjengelige kjøretøy",
+      "seats": "seter",
+      "activeRides": "aktive turer",
+      "setDestination": "Angi destinasjon",
+      "cancel": "Avbryt",
+      "clickMap": "Klikk på kartet for å angi destinasjonen din",
+      "requestRide": "Be om denne turen",
+      "yourPosition": "Din posisjon",
+      "destination": "Destinasjon",
+      "remove": "Fjern",
+      "optimalRoute": "Optimal rute",
+      "totalDistance": "km totalt",
+      "transfers": "overganger",
+      "minutes": "minutter",
+      "efficiency": "Ruteeffektivitet",
+      "segments": "Rutesegmenter",
+      "segment": "Segment",
+      "searchingDriver": "Søker etter sjåfør...",
+      "freeSeats": "ledige seter",
+      "direction": "Retning",
+      "eta": "ETA",
+      "min": "min",
+      "score": "Poengsum",
+      "transferSuggestions": "Overgangsforslag",
+      "showTransfers": "Vis overganger",
+      "hideTransfers": "Skjul",
+      "transfer": "Overgang",
+      "emailNotVerified": "E-post ikke verifisert",
+      "verifyEmail": "Verifiser e-posten min",
+      "subscriptionRequired": "Abonnement kreves",
+      "subscribe": "Abonner",
+      "activeRide": "Aktiv tur",
+      "driver": "Sjåfør",
+      "vehicle": "Kjøretøy",
+      "progress": "Fremgang",
+      "pickup": "Henting",
+      "inProgress": "Pågår",
+      "dropoff": "Avlevering"
+    },
+    "driver": {
+      "title": "Sjåfør-dashboard",
+      "goOnline": "Gå online",
+      "goOffline": "Gå offline",
+      "online": "Online",
+      "offline": "Offline",
+      "availableSeats": "Tilgjengelige seter",
+      "updateSeats": "Oppdater",
+      "pendingRequests": "Ventende forespørsler",
+      "noRequests": "Ingen ventende forespørsler",
+      "accept": "Godta",
+      "decline": "Avslå",
+      "passenger": "Passasjer",
+      "distance": "Avstand",
+      "currentRide": "Nåværende tur",
+      "startRide": "Start",
+      "completeRide": "Fullfør",
+      "setDestination": "Angi min retning",
+      "yourDestination": "Din destinasjon",
+      "nearbyUsers": "Brukere i nærheten"
+    },
+    "admin": {
+      "title": "Administrasjon",
+      "stats": {
+        "users": "Registrerte brukere",
+        "drivers": "Sjåfører",
+        "subscriptions": "Aktive abonnementer",
+        "rides": "Pågående turer"
+      },
+      "tabs": {
+        "drivers": "Sjåfører",
+        "users": "Brukere",
+        "subscriptions": "Abonnementer",
+        "cards": "Virtuelle kort"
+      }
+    }
   },
-  "subscription": {"title": "Velg ditt abonnement", "subtitle": "Ubegrensede turer på hele Métro-Taxi-nettverket", "plans": {"day": {"name": "24 timer", "price": "6,99 €", "description": "Perfekt for sporadisk bruk"}, "week": {"name": "1 uke", "price": "16,99 €", "description": "Ideell for korte opphold"}, "month": {"name": "1 måned", "price": "53,99 €", "description": "Best verdi for pengene", "popular": "POPULÆR"}}, "features": {"unlimited": "Ubegrensede turer", "allVehicles": "Tilgang til alle kjøretøy", "support": "Prioritert støtte", "noCommitment": "Ingen binding"}, "cta": "ABONNER", "popularBadge": "POPULÆR", "perDay": "/dag", "perWeek": "/uke", "perMonth": "/måned", "processing": "Behandler...", "success": {"title": "Betaling vellykket!", "subtitle": "Abonnementet ditt er nå aktivt", "details": "Abonnementsdetaljer", "plan": "Plan", "validUntil": "Gyldig til", "goDashboard": "Gå til dashboard"}},
-  "profile": {"title": "Min profil", "personalInfo": "Personlig informasjon", "firstName": "Fornavn", "lastName": "Etternavn", "email": "E-post", "phone": "Telefon", "memberSince": "Medlem siden", "subscription": {"title": "Mitt abonnement", "plan": "Plan", "status": "Status", "active": "Aktiv", "inactive": "Inaktiv", "expires": "Utløper", "subscribe": "Abonner", "renew": "Forny"}, "virtualCard": {"title": "Mitt virtuelle kort", "cardNumber": "Kortnr."}, "logout": "Logg ut"},
-  "pricing": {"title": "ABONNEMANG", "subtitle": "Välj din plan", "plans": {"day": {"name": "24 timmar", "price": "79,99 kr", "priceLocal": "79,99 kr", "description": "Perfekt för tillfällig användning"}, "week": {"name": "1 vecka", "price": "189,99 kr", "priceLocal": "189,99 kr", "description": "Idealisk för korta vistelser"}, "month": {"name": "1 månad", "price": "599,99 kr", "priceLocal": "599,99 kr", "description": "Bäst värde för pengarna"}}, "features": {"unlimited": "Obegränsade resor", "allVehicles": "Tillgång till alla fordon", "support": "Prioriterat stöd", "noCommitment": "Ingen bindning", "eco": "🌿 Miljövänlig transport"}, "cta": "PRENUMERERA", "popularBadge": "POPULÄR"},
-  "howItWorks": {"title": "SÅ FUNGERAR DET", "steps": {"step1": {"title": "PRENUMERERA", "description": "Välj din plan: 24t, 1 vecka eller 1 månad. Betala en gång, res obegränsat."}, "step2": {"title": "HITTA", "description": "Hitta tillgängliga fordon runt dig i realtid på kartan."}, "step3": {"title": "RES", "description": "Begär din resa med ett klick. Föraren hämtar dig på vägen."}, "step4": {"title": "Res", "description": "Njut av din resa och gå av var du vill"}}},
-  "drivers": {"title": "BLI VTC-FÖRARE", "subtitle": "Gå med i Métro-Taxi-nätverket och maximera dina inkomster utan dolda avgifter", "revenue": {"title": "POTENTIELL INKOMST", "monthly": "per månad", "upTo": "Kan nå upp till", "depending": "beroende på aktivitet", "rangeMin": "25 899 kr", "rangeMax": "34 499 kr", "maxRevenue": "86 249 kr"}, "benefits": {"title": "FÖRDELAR", "noSubscription": "Ingen prenumeration", "noSubscriptionDesc": "Gå med gratis", "noCommission": "Ingen provision", "noCommissionDesc": "100% av dina intäkter", "subscribedPassengers": "Prenumererade passagerare", "subscribedPassengersDesc": "Ingen kundsökning", "optimizedRoutes": "Optimerade rutter", "optimizedRoutesDesc": "Smart algoritm", "morePassengers": "Fler passagerare", "morePassengersDesc": "Maximera din tid"}, "app": {"title": "APPEN", "subtitle": "Allt på en skärm", "requests": "Förfrågningar", "requestsDesc": "I realtid", "routes": "Rutter", "routesDesc": "Optimerade", "transfers": "Anslutningar", "transfersDesc": "Smart system"}, "cta": "GÅ MED NU", "ctaSubtext": "Gratis • Ingen bindning"},
-  "video": {"title": "Oppdag Métro-Taxi", "loading": "Laster stemme..."},
-  "footer": {"rights": "Alle rettigheter forbeholdt", "contact": "Kontakt", "legal": "Juridisk", "privacy": "Personvern"},
-  "common": {"loading": "Laster...", "error": "Feil", "retry": "Prøv igjen", "save": "Lagre", "cancel": "Avbryt", "confirm": "Bekreft", "delete": "Slett", "edit": "Rediger", "back": "Tilbake", "next": "Neste", "previous": "Forrige", "search": "Søk", "filter": "Filter", "all": "Alle", "none": "Ingen", "yes": "Ja", "no": "Nei", "or": "eller"},
-  "errors": {"required": "Påkrevd felt", "invalidEmail": "Ugyldig e-post", "invalidPhone": "Ugyldig telefonnummer", "passwordTooShort": "Minimum 6 tegn", "serverError": "Serverfeil"},
-  "verifyEmail": {"title": "E-postverifisering", "verifying": "Verifiserer...", "success": "E-post verifisert!", "successDesc": "Kontoen din er aktivert.", "error": "Verifisering mislyktes", "errorDesc": "Lenken er ugyldig eller utløpt.", "goLogin": "Logg inn", "goHome": "Tilbake til start"}
+  "subscription": {
+    "title": "Velg ditt abonnement",
+    "subtitle": "Ubegrensede turer på hele Métro-Taxi-nettverket",
+    "plans": {
+      "day": {
+        "name": "24 timer",
+        "price": "6,99 €",
+        "description": "Perfekt for sporadisk bruk"
+      },
+      "week": {
+        "name": "1 uke",
+        "price": "16,99 €",
+        "description": "Ideell for korte opphold"
+      },
+      "month": {
+        "name": "1 måned",
+        "price": "53,99 €",
+        "description": "Best verdi for pengene",
+        "popular": "POPULÆR"
+      }
+    },
+    "features": {
+      "unlimited": "Ubegrensede turer",
+      "allVehicles": "Tilgang til alle kjøretøy",
+      "support": "Prioritert støtte",
+      "noCommitment": "Ingen binding"
+    },
+    "cta": "ABONNER",
+    "popularBadge": "POPULÆR",
+    "perDay": "/dag",
+    "perWeek": "/uke",
+    "perMonth": "/måned",
+    "processing": "Behandler...",
+    "success": {
+      "title": "Betaling vellykket!",
+      "subtitle": "Abonnementet ditt er nå aktivt",
+      "details": "Abonnementsdetaljer",
+      "plan": "Plan",
+      "validUntil": "Gyldig til",
+      "goDashboard": "Gå til dashboard"
+    }
+  },
+  "profile": {
+    "title": "Min profil",
+    "personalInfo": "Personlig informasjon",
+    "firstName": "Fornavn",
+    "lastName": "Etternavn",
+    "email": "E-post",
+    "phone": "Telefon",
+    "memberSince": "Medlem siden",
+    "subscription": {
+      "title": "Mitt abonnement",
+      "plan": "Plan",
+      "status": "Status",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "expires": "Utløper",
+      "subscribe": "Abonner",
+      "renew": "Forny"
+    },
+    "virtualCard": {
+      "title": "Mitt virtuelle kort",
+      "cardNumber": "Kortnr."
+    },
+    "logout": "Logg ut"
+  },
+  "pricing": {
+    "title": "ABONNEMANG",
+    "subtitle": "Välj din plan",
+    "plans": {
+      "day": {
+        "name": "24 timmar",
+        "price": "79,99 kr",
+        "priceLocal": "79,99 kr",
+        "description": "Perfekt för tillfällig användning"
+      },
+      "week": {
+        "name": "1 vecka",
+        "price": "189,99 kr",
+        "priceLocal": "189,99 kr",
+        "description": "Idealisk för korta vistelser"
+      },
+      "month": {
+        "name": "1 månad",
+        "price": "599,99 kr",
+        "priceLocal": "599,99 kr",
+        "description": "Bäst värde för pengarna"
+      }
+    },
+    "features": {
+      "unlimited": "Obegränsade resor",
+      "allVehicles": "Tillgång till alla fordon",
+      "support": "Prioriterat stöd",
+      "noCommitment": "Ingen bindning",
+      "eco": "🌿 Miljövänlig transport"
+    },
+    "cta": "PRENUMERERA",
+    "popularBadge": "POPULÄR"
+  },
+  "howItWorks": {
+    "title": "SÅ FUNGERAR DET",
+    "steps": {
+      "step1": {
+        "title": "PRENUMERERA",
+        "description": "Välj din plan: 24t, 1 vecka eller 1 månad. Betala en gång, res obegränsat."
+      },
+      "step2": {
+        "title": "HITTA",
+        "description": "Hitta tillgängliga fordon runt dig i realtid på kartan."
+      },
+      "step3": {
+        "title": "RES",
+        "description": "Begär din resa med ett klick. Föraren hämtar dig på vägen."
+      },
+      "step4": {
+        "title": "Res",
+        "description": "Njut av din resa och gå av var du vill"
+      }
+    }
+  },
+  "drivers": {
+    "title": "BLI VTC-FÖRARE",
+    "subtitle": "Gå med i Métro-Taxi-nätverket och maximera dina inkomster utan dolda avgifter",
+    "revenue": {
+      "title": "POTENTIELL INKOMST",
+      "monthly": "per månad",
+      "upTo": "Kan nå upp till",
+      "depending": "beroende på aktivitet",
+      "rangeMin": "25 899 kr",
+      "rangeMax": "34 499 kr",
+      "maxRevenue": "86 249 kr"
+    },
+    "benefits": {
+      "title": "FÖRDELAR",
+      "noSubscription": "Ingen prenumeration",
+      "noSubscriptionDesc": "Gå med gratis",
+      "noCommission": "Ingen provision",
+      "noCommissionDesc": "100% av dina intäkter",
+      "subscribedPassengers": "Prenumererade passagerare",
+      "subscribedPassengersDesc": "Ingen kundsökning",
+      "optimizedRoutes": "Optimerade rutter",
+      "optimizedRoutesDesc": "Smart algoritm",
+      "morePassengers": "Fler passagerare",
+      "morePassengersDesc": "Maximera din tid"
+    },
+    "app": {
+      "title": "APPEN",
+      "subtitle": "Allt på en skärm",
+      "requests": "Förfrågningar",
+      "requestsDesc": "I realtid",
+      "routes": "Rutter",
+      "routesDesc": "Optimerade",
+      "transfers": "Anslutningar",
+      "transfersDesc": "Smart system"
+    },
+    "cta": "GÅ MED NU",
+    "ctaSubtext": "Gratis • Ingen bindning"
+  },
+  "video": {
+    "title": "Oppdag Métro-Taxi",
+    "loading": "Laster stemme..."
+  },
+  "footer": {
+    "rights": "Alle rettigheter forbeholdt",
+    "contact": "Kontakt",
+    "legal": "Juridisk",
+    "privacy": "Personvern"
+  },
+  "common": {
+    "loading": "Laster...",
+    "error": "Feil",
+    "retry": "Prøv igjen",
+    "save": "Lagre",
+    "cancel": "Avbryt",
+    "confirm": "Bekreft",
+    "delete": "Slett",
+    "edit": "Rediger",
+    "back": "Tilbake",
+    "next": "Neste",
+    "previous": "Forrige",
+    "search": "Søk",
+    "filter": "Filter",
+    "all": "Alle",
+    "none": "Ingen",
+    "yes": "Ja",
+    "no": "Nei",
+    "or": "eller"
+  },
+  "errors": {
+    "required": "Påkrevd felt",
+    "invalidEmail": "Ugyldig e-post",
+    "invalidPhone": "Ugyldig telefonnummer",
+    "passwordTooShort": "Minimum 6 tegn",
+    "serverError": "Serverfeil"
+  },
+  "verifyEmail": {
+    "title": "E-postverifisering",
+    "verifying": "Verifiserer...",
+    "success": "E-post verifisert!",
+    "successDesc": "Kontoen din er aktivert.",
+    "error": "Verifisering mislyktes",
+    "errorDesc": "Lenken er ugyldig eller utløpt.",
+    "goLogin": "Logg inn",
+    "goHome": "Tilbake til start"
+  },
+  "driverRegister": {
+    "title": "VTC Förare Registrering",
+    "subtitle": "Gå med i vårt nätverk av partnerförare",
+    "firstName": "Förnamn",
+    "firstNamePlaceholder": "Erik",
+    "lastName": "Efternamn",
+    "lastNamePlaceholder": "Andersson",
+    "email": "E-post",
+    "emailPlaceholder": "erik@exempel.se",
+    "phone": "Telefon",
+    "phonePlaceholder": "+46 70 123 45 67",
+    "vehicleInfo": "Fordonsinformation",
+    "vehiclePlate": "Registreringsnummer",
+    "vehicleType": "Fordonstyp",
+    "selectPlaceholder": "Välj",
+    "vehicleTypes": {
+      "sedan": "Sedan",
+      "suv": "SUV",
+      "minivan": "MPV",
+      "van": "Skåpbil"
+    },
+    "seats": "Antal säten",
+    "vtcLicense": "VTC Licensnummer",
+    "bankInfo": "Bankinformation",
+    "bankInfoDesc": "För att ta emot dina intäkter. Valfritt, kan ändras senare.",
+    "password": "Lösenord",
+    "confirmPassword": "Bekräfta lösenord",
+    "autoValidation": "Ditt konto aktiveras automatiskt. Du kan ta emot körförfrågningar omedelbart.",
+    "submitBtn": "REGISTRERA SOM FÖRARE",
+    "alreadyRegistered": "Redan registrerad?",
+    "loginLink": "Logga in",
+    "passwordMismatch": "Lösenorden matchar inte",
+    "passwordTooShort": "Lösenordet måste vara minst 6 tecken",
+    "successMessage": "Registrering slutförd! Ditt konto är aktiverat. Du kan nu logga in.",
+    "errorMessage": "Registrering misslyckades"
+  }
 }
