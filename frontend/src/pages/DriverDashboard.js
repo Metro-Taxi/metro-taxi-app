@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, User, LogOut, Menu, X, Power, MapPin, Check, XCircle, Users, Navigation } from 'lucide-react';
+import { Car, User, LogOut, Menu, X, Power, MapPin, Check, XCircle, Users, Navigation, Wallet, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import DriverEarnings from './DriverEarnings';
 import 'leaflet/dist/leaflet.css';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
