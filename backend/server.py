@@ -1812,8 +1812,11 @@ async def create_stripe_connect_account(current_user: dict = Depends(get_current
     if current_user["role"] != "driver":
         raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
     
-    if not STRIPE_API_KEY:
-        raise HTTPException(status_code=500, detail="Stripe non configuré")
+    if not is_stripe_connect_available():
+        raise HTTPException(
+            status_code=503, 
+            detail="Stripe Connect non disponible. Une vraie clé API Stripe est requise (pas sk_test_emergent). Veuillez configurer STRIPE_API_KEY avec votre clé Stripe."
+        )
     
     driver_id = current_user["user_id"]
     driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0})
