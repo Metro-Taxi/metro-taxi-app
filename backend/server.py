@@ -1537,6 +1537,228 @@ async def get_driver_bank_info(current_user: dict = Depends(get_current_user)):
     
     return {"iban": driver.get("iban"), "bic": driver.get("bic")}
 
+# Driver Earnings Routes
+@api_router.get("/drivers/earnings")
+async def get_driver_earnings(current_user: dict = Depends(get_current_user)):
+    """Get driver's earnings summary"""
+    if current_user["role"] != "driver":
+        raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
+    
+    driver_id = current_user["user_id"]
+    now = datetime.now(timezone.utc)
+    current_month = now.strftime("%Y-%m")
+    
+    # Get current month earnings
+    current_earnings = await db.driver_earnings.find_one(
+        {"driver_id": driver_id, "month": current_month},
+        {"_id": 0}
+    )
+    
+    # Get all earnings history
+    earnings_cursor = db.driver_earnings.find(
+        {"driver_id": driver_id},
+        {"_id": 0}
+    ).sort("month", -1).limit(12)
+    
+    earnings_history = await earnings_cursor.to_list(length=12)
+    
+    # Calculate totals
+    total_km = sum(e.get("total_km", 0) for e in earnings_history)
+    total_revenue = sum(e.get("total_revenue", 0) for e in earnings_history)
+    total_rides = sum(e.get("rides_count", 0) for e in earnings_history)
+    
+    # Get pending payouts
+    pending_payouts = await db.driver_earnings.find(
+        {"driver_id": driver_id, "payout_status": "pending"},
+        {"_id": 0}
+    ).to_list(length=12)
+    
+    pending_amount = sum(p.get("total_revenue", 0) for p in pending_payouts)
+    
+    return {
+        "current_month": {
+            "month": current_month,
+            "total_km": current_earnings.get("total_km", 0) if current_earnings else 0,
+            "total_revenue": current_earnings.get("total_revenue", 0) if current_earnings else 0,
+            "rides_count": current_earnings.get("rides_count", 0) if current_earnings else 0,
+            "payout_status": current_earnings.get("payout_status", "pending") if current_earnings else "pending"
+        },
+        "totals": {
+            "total_km": round(total_km, 2),
+            "total_revenue": round(total_revenue, 2),
+            "total_rides": total_rides
+        },
+        "pending_payout": round(pending_amount, 2),
+        "rate_per_km": DRIVER_RATE_PER_KM,
+        "payout_day": PAYOUT_DAY,
+        "history": earnings_history
+    }
+
+@api_router.get("/drivers/earnings/history")
+async def get_driver_earnings_history(current_user: dict = Depends(get_current_user)):
+    """Get detailed earnings history for a driver"""
+    if current_user["role"] != "driver":
+        raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
+    
+    driver_id = current_user["user_id"]
+    
+    # Get all completed rides with earnings
+    rides_cursor = db.ride_requests.find(
+        {"driver_id": driver_id, "status": "completed", "driver_revenue": {"$exists": True}},
+        {"_id": 0, "id": 1, "user_name": 1, "completed_at": 1, "total_km": 1, "driver_revenue": 1, "pickup_km": 1, "ride_km": 1}
+    ).sort("completed_at", -1).limit(50)
+    
+    rides = await rides_cursor.to_list(length=50)
+    
+    return {"rides": rides}
+
+@api_router.get("/drivers/payouts")
+async def get_driver_payouts(current_user: dict = Depends(get_current_user)):
+    """Get payout history for a driver"""
+    if current_user["role"] != "driver":
+        raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
+    
+    driver_id = current_user["user_id"]
+    
+    payouts_cursor = db.driver_payouts.find(
+        {"driver_id": driver_id},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(24)
+    
+    payouts = await payouts_cursor.to_list(length=24)
+    
+    return {"payouts": payouts}
+
+# Admin Routes for Driver Payouts
+@api_router.get("/admin/driver-earnings")
+async def admin_get_all_driver_earnings(current_user: dict = Depends(get_current_user)):
+    """Admin: Get all drivers' earnings summary for current month"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    now = datetime.now(timezone.utc)
+    current_month = now.strftime("%Y-%m")
+    
+    # Get all pending earnings
+    pending_cursor = db.driver_earnings.find(
+        {"payout_status": "pending"},
+        {"_id": 0}
+    )
+    pending_earnings = await pending_cursor.to_list(length=1000)
+    
+    # Enrich with driver info
+    result = []
+    for earning in pending_earnings:
+        driver = await db.drivers.find_one(
+            {"id": earning["driver_id"]},
+            {"_id": 0, "first_name": 1, "last_name": 1, "email": 1, "iban": 1, "bic": 1}
+        )
+        if driver:
+            result.append({
+                **earning,
+                "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
+                "driver_email": driver.get("email"),
+                "has_bank_info": bool(driver.get("iban") and driver.get("bic")),
+                "iban": driver.get("iban"),
+                "bic": driver.get("bic")
+            })
+    
+    total_pending = sum(e.get("total_revenue", 0) for e in result)
+    
+    return {
+        "current_month": current_month,
+        "payout_day": PAYOUT_DAY,
+        "rate_per_km": DRIVER_RATE_PER_KM,
+        "total_pending": round(total_pending, 2),
+        "drivers_count": len(result),
+        "earnings": result
+    }
+
+@api_router.post("/admin/process-payouts")
+async def admin_process_payouts(current_user: dict = Depends(get_current_user)):
+    """Admin: Process all pending payouts (manual trigger)"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    now = datetime.now(timezone.utc)
+    
+    # Get all pending earnings with bank info
+    pending_cursor = db.driver_earnings.find({"payout_status": "pending"}, {"_id": 0})
+    pending_earnings = await pending_cursor.to_list(length=1000)
+    
+    processed = []
+    errors = []
+    
+    for earning in pending_earnings:
+        driver = await db.drivers.find_one(
+            {"id": earning["driver_id"]},
+            {"_id": 0, "first_name": 1, "last_name": 1, "email": 1, "iban": 1, "bic": 1}
+        )
+        
+        if not driver:
+            errors.append({"driver_id": earning["driver_id"], "error": "Driver not found"})
+            continue
+            
+        if not driver.get("iban") or not driver.get("bic"):
+            errors.append({
+                "driver_id": earning["driver_id"],
+                "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
+                "error": "Missing bank information (IBAN/BIC)"
+            })
+            continue
+        
+        # Create payout record
+        payout_id = str(uuid.uuid4())
+        payout_doc = {
+            "id": payout_id,
+            "driver_id": earning["driver_id"],
+            "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
+            "driver_email": driver.get("email"),
+            "iban": driver.get("iban"),
+            "bic": driver.get("bic"),
+            "month": earning["month"],
+            "total_km": earning.get("total_km", 0),
+            "total_revenue": earning.get("total_revenue", 0),
+            "rides_count": earning.get("rides_count", 0),
+            "status": "processed",  # In production, would be "pending_transfer" until bank confirms
+            "created_at": now.isoformat(),
+            "processed_by": current_user["user_id"]
+        }
+        
+        await db.driver_payouts.insert_one(payout_doc)
+        
+        # Update earning status
+        await db.driver_earnings.update_one(
+            {"driver_id": earning["driver_id"], "month": earning["month"]},
+            {"$set": {"payout_status": "paid", "payout_id": payout_id, "paid_at": now.isoformat()}}
+        )
+        
+        processed.append({
+            "driver_id": earning["driver_id"],
+            "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
+            "amount": earning.get("total_revenue", 0),
+            "month": earning["month"]
+        })
+    
+    return {
+        "processed_count": len(processed),
+        "errors_count": len(errors),
+        "total_amount": sum(p["amount"] for p in processed),
+        "processed": processed,
+        "errors": errors
+    }
+
+@api_router.get("/admin/payouts-history")
+async def admin_get_payouts_history(current_user: dict = Depends(get_current_user)):
+    """Admin: Get all payouts history"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    payouts_cursor = db.driver_payouts.find({}, {"_id": 0}).sort("created_at", -1).limit(100)
+    payouts = await payouts_cursor.to_list(length=100)
+    
+    return {"payouts": payouts}
+
 # Ride Request Routes
 @api_router.post("/rides/request")
 async def create_ride_request(data: RideRequestCreate, current_user: dict = Depends(get_current_user)):
