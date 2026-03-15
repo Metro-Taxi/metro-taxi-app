@@ -1808,7 +1808,7 @@ async def get_stripe_connect_config():
 
 @api_router.post("/drivers/stripe-connect/create-account")
 async def create_stripe_connect_account(current_user: dict = Depends(get_current_user)):
-    """Create a Stripe Connect Custom account for a driver"""
+    """Create a Stripe Connect Express account for a driver"""
     if current_user["role"] != "driver":
         raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
     
@@ -1826,35 +1826,46 @@ async def create_stripe_connect_account(current_user: dict = Depends(get_current
     
     # Check if driver already has a Stripe account
     if driver.get("stripe_account_id"):
-        return {
-            "status": "exists",
-            "stripe_account_id": driver["stripe_account_id"],
-            "message": "Compte Stripe déjà créé"
-        }
-    
-    if not driver.get("iban") or not driver.get("bic"):
-        raise HTTPException(status_code=400, detail="Informations bancaires (IBAN/BIC) requises")
+        # Return existing account with onboarding link if not complete
+        try:
+            account = stripe.Account.retrieve(driver["stripe_account_id"])
+            if not account.details_submitted:
+                # Generate new onboarding link
+                account_link = stripe.AccountLink.create(
+                    account=driver["stripe_account_id"],
+                    refresh_url="https://metro-taxi.com/driver/stripe-refresh",
+                    return_url="https://metro-taxi.com/driver/stripe-complete",
+                    type="account_onboarding"
+                )
+                return {
+                    "status": "pending_onboarding",
+                    "stripe_account_id": driver["stripe_account_id"],
+                    "onboarding_url": account_link.url,
+                    "message": "Compte Stripe existant - Veuillez compléter la vérification"
+                }
+            return {
+                "status": "exists",
+                "stripe_account_id": driver["stripe_account_id"],
+                "message": "Compte Stripe déjà configuré"
+            }
+        except stripe.error.StripeError:
+            pass
     
     try:
-        country = get_country_from_iban(driver["iban"])
+        country = get_country_from_iban(driver["iban"]) if driver.get("iban") else "FR"
         
-        # Create Stripe Connect Custom account
+        # Create Stripe Connect Express account (simpler, works with France)
         account = stripe.Account.create(
-            type="custom",
+            type="express",
             country=country,
             email=driver["email"],
             capabilities={
                 "transfers": {"requested": True},
             },
-            tos_acceptance={
-                "date": int(datetime.now(timezone.utc).timestamp()),
-                "ip": "0.0.0.0",  # In production, get real IP from request
-            },
             business_type="individual",
-            individual={
-                "first_name": driver.get("first_name", ""),
-                "last_name": driver.get("last_name", ""),
-                "email": driver["email"],
+            business_profile={
+                "mcc": "4121",  # Taxicabs and Limousines
+                "product_description": "Chauffeur VTC partenaire Métro-Taxi"
             },
             metadata={
                 "driver_id": driver_id,
@@ -1862,16 +1873,12 @@ async def create_stripe_connect_account(current_user: dict = Depends(get_current
             }
         )
         
-        # Add bank account to the connected account
-        external_account = stripe.Account.create_external_account(
-            account.id,
-            external_account={
-                "object": "bank_account",
-                "country": country,
-                "currency": "eur",
-                "account_number": driver["iban"],
-                "account_holder_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
-            }
+        # Create account onboarding link
+        account_link = stripe.AccountLink.create(
+            account=account.id,
+            refresh_url="https://metro-taxi.com/driver/stripe-refresh",
+            return_url="https://metro-taxi.com/driver/stripe-complete",
+            type="account_onboarding"
         )
         
         # Save Stripe account ID to driver record
@@ -1879,17 +1886,19 @@ async def create_stripe_connect_account(current_user: dict = Depends(get_current
             {"id": driver_id},
             {"$set": {
                 "stripe_account_id": account.id,
-                "stripe_external_account_id": external_account.id,
-                "stripe_account_created_at": datetime.now(timezone.utc).isoformat()
+                "stripe_account_type": "express",
+                "stripe_account_created_at": datetime.now(timezone.utc).isoformat(),
+                "stripe_onboarding_complete": False
             }}
         )
         
-        logging.info(f"Stripe Connect account created for driver {driver_id}: {account.id}")
+        logging.info(f"Stripe Connect Express account created for driver {driver_id}: {account.id}")
         
         return {
             "status": "created",
             "stripe_account_id": account.id,
-            "message": "Compte Stripe Connect créé avec succès"
+            "onboarding_url": account_link.url,
+            "message": "Compte Stripe créé ! Cliquez sur le lien pour compléter la vérification."
         }
         
     except stripe.error.StripeError as e:
