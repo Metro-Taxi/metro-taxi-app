@@ -18,6 +18,7 @@ import jwt
 from bson import ObjectId
 import json
 import resend
+import stripe
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 from emergentintegrations.llm.openai import OpenAITextToSpeech
 
@@ -28,6 +29,11 @@ load_dotenv(ROOT_DIR / '.env')
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
+
+# Stripe configuration
+STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY')
+if STRIPE_API_KEY:
+    stripe.api_key = STRIPE_API_KEY
 
 JWT_SECRET = os.environ.get('JWT_SECRET', 'metro-taxi-secret')
 JWT_ALGORITHM = "HS256"
