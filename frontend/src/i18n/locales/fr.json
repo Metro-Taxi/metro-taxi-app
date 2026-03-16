@@ -466,7 +466,7 @@
     "kilometers": "Kilomètres",
     "rides": "Trajets",
     "rateInfo": "Tarif",
-    "rateDescription": "Inclut trajets avec passagers + déplacement vers point de prise en charge",
+    "rateDescription": "Uniquement les km parcourus avec usagers Métro-Taxi à bord",
     "pendingPayout": "Prochain virement",
     "payoutDate": "Virement automatique le",
     "ofMonth": "du mois",

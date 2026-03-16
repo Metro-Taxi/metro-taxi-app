@@ -456,7 +456,7 @@
     "kilometers": "Kilometers",
     "rides": "Rides",
     "rateInfo": "Rate",
-    "rateDescription": "Includes trips with passengers + travel to pickup point",
+    "rateDescription": "Nur km mit Métro-Taxi-Nutzern an Bord",
     "pendingPayout": "Next payout",
     "payoutDate": "Automatic transfer on the",
     "ofMonth": "of each month",
