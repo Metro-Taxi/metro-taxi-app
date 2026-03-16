@@ -3320,6 +3320,22 @@ async def process_automatic_payouts():
                                 }}
                             )
                         
+                        # Send email notification to driver
+                        if driver.get("email"):
+                            driver_name = f"{driver.get('first_name', '')} {driver.get('last_name', '')}"
+                            payout_date = now.strftime("%d/%m/%Y")
+                            asyncio.create_task(send_payout_notification_email(
+                                email=driver["email"],
+                                name=driver_name,
+                                amount=amount,
+                                total_km=sum(e.get("total_km", 0) for e in earnings),
+                                rides_count=sum(e.get("rides_count", 0) for e in earnings),
+                                months=[e["month"] for e in earnings],
+                                payout_date=payout_date,
+                                lang="fr"
+                            ))
+                            logging.info(f"Payout email notification queued for driver {driver_id}")
+                        
                         processed_count += 1
                         total_amount += amount
                     
