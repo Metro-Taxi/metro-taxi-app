@@ -2263,6 +2263,14 @@ async def reject_ride(ride_id: str, current_user: dict = Depends(get_current_use
 
 @api_router.post("/rides/{ride_id}/complete")
 async def complete_ride(ride_id: str, current_user: dict = Depends(get_current_user)):
+    """Complete a ride and calculate driver earnings
+    
+    MÉTRO-TAXI KILOMETER RULES:
+    - ONLY km traveled WITH Métro-Taxi users on board are counted
+    - Counter starts at "in_progress" (user embarked)
+    - Counter stops at "completed" (user dropped off)
+    - Pickup km (driver to user) are NOT counted - only user-on-board km
+    """
     if current_user["role"] != "driver":
         raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
     
@@ -2272,30 +2280,33 @@ async def complete_ride(ride_id: str, current_user: dict = Depends(get_current_u
     if not ride:
         raise HTTPException(status_code=404, detail="Demande non trouvée")
     
-    # Calculate kilometers for this ride
-    # 1. Pickup distance (driver to user pickup point)
-    driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0, "location": 1})
-    pickup_km = 0
-    ride_km = 0
+    # ========================================
+    # MÉTRO-TAXI: Only count km WITH user on board
+    # ========================================
     
-    if driver and driver.get("location"):
-        pickup_km = calculate_distance(
-            driver["location"]["lat"], 
-            driver["location"]["lng"],
-            ride["pickup_lat"],
-            ride["pickup_lng"]
-        )
+    # Check if km_with_user was already calculated by progress update
+    km_with_user = ride.get("km_with_user")
     
-    # 2. Ride distance (pickup to destination)
-    ride_km = calculate_distance(
-        ride["pickup_lat"],
-        ride["pickup_lng"],
-        ride["destination_lat"],
-        ride["destination_lng"]
-    )
+    if km_with_user is None:
+        # Calculate from km_start_location to destination (user was on board)
+        km_start = ride.get("km_start_location")
+        if km_start:
+            km_with_user = calculate_distance(
+                km_start["lat"], km_start["lng"],
+                ride["destination_lat"], ride["destination_lng"]
+            )
+        else:
+            # Fallback: use pickup to destination (but this shouldn't happen normally)
+            km_with_user = calculate_distance(
+                ride["pickup_lat"], ride["pickup_lng"],
+                ride["destination_lat"], ride["destination_lng"]
+            )
     
-    total_km = round(pickup_km + ride_km, 2)
-    revenue = round(total_km * DRIVER_RATE_PER_KM, 2)
+    # Round and calculate revenue
+    km_with_user = round(km_with_user, 2)
+    revenue = round(km_with_user * DRIVER_RATE_PER_KM, 2)
+    
+    logging.info(f"Ride {ride_id} completed: {km_with_user} km with user on board = €{revenue}")
     
     # Update ride with km and revenue
     completed_at = datetime.now(timezone.utc).isoformat()
@@ -2304,9 +2315,8 @@ async def complete_ride(ride_id: str, current_user: dict = Depends(get_current_u
         {"$set": {
             "status": "completed", 
             "completed_at": completed_at,
-            "pickup_km": round(pickup_km, 2),
-            "ride_km": round(ride_km, 2),
-            "total_km": total_km,
+            "km_with_user": km_with_user,
+            "total_km": km_with_user,  # For compatibility
             "driver_revenue": revenue
         }}
     )
@@ -2319,7 +2329,7 @@ async def complete_ride(ride_id: str, current_user: dict = Depends(get_current_u
         {"driver_id": driver_id, "month": month_key},
         {
             "$inc": {
-                "total_km": total_km,
+                "total_km": km_with_user,
                 "total_revenue": revenue,
                 "rides_count": 1
             },
@@ -2341,16 +2351,15 @@ async def complete_ride(ride_id: str, current_user: dict = Depends(get_current_u
     await manager.send_personal_message({
         "type": "ride_completed",
         "ride_id": ride_id,
-        "total_km": total_km,
+        "km_with_user": km_with_user,
         "revenue": revenue
     }, ride["user_id"])
     
     return {
         "status": "completed",
-        "total_km": total_km,
-        "pickup_km": round(pickup_km, 2),
-        "ride_km": round(ride_km, 2),
-        "revenue": revenue
+        "km_with_user": km_with_user,
+        "revenue": revenue,
+        "message": f"Trajet complété: {km_with_user} km avec usager = €{revenue:.2f}"
     }
 
 @api_router.get("/rides/active")
