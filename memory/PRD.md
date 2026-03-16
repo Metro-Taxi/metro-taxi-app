@@ -7,39 +7,39 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 - **Frontend**: React 19, TailwindCSS, Leaflet, i18next (16 langues)
 - **Backend**: FastAPI, MongoDB, JWT Auth
 - **Paiements**: Stripe Checkout + Stripe Connect Express
+- **Emails**: Resend (vérification + notifications paiement)
 - **TTS**: OpenAI (Emergent LLM Key)
-- **Email**: Resend
 
 ## ✅ Fonctionnalités Complètes
 
 ### Système de Revenus Chauffeurs ✅
 - **Tarif** : 1,50€/km
-- **Calcul** : Total km du 1er au dernier jour du mois (tous usagers confondus)
+- **Règle Métro-Taxi** : SEULS les km avec usagers à bord sont comptés
+  - Compteur démarre quand 1er usager embarque (status = "in_progress")
+  - Continue avec plusieurs usagers (trajets partagés)
+  - S'arrête quand dernier usager descend (status = "completed")
+- **Période** : Du 1er au dernier jour du mois
 - **Virement** : Automatique le 10 du mois suivant
 
-### Interface Chauffeur "Mes Revenus" ✅ (NOUVEAU)
+### Email de Notification Paiement ✅ (NOUVEAU)
+- Email automatique envoyé au chauffeur lors du virement
+- Contenu : Montant, km parcourus, nombre de trajets, période, date
+- Templates FR/EN avec design Métro-Taxi
+
+### Interface Chauffeur "Mes Revenus" ✅
 - **Onglet Revenus** : Mois en cours, km, trajets, tarif, cumul total
 - **Onglet Stripe Account** : Statut compte, vérification, infos bancaires
 - **Onglet Historique** : Virements effectués
 
-### APIs Stripe Connect ✅
-| Route | Description |
-|-------|-------------|
-| GET /api/stripe-connect/config | Configuration Stripe |
-| POST /api/drivers/stripe-connect/create-account | Créer compte Express |
-| GET /api/drivers/stripe-connect/status | Statut du compte |
-| GET /api/drivers/earnings | Revenus du chauffeur |
-| GET /api/drivers/payouts | Historique des virements |
+### Tracking Kilométrique ✅
+- `km_start_location` : Position quand usager embarque
+- `km_with_user` : Km calculés avec usager(s) à bord
+- Différenciation claire vs autres plateformes VTC
 
-### Internationalisation ✅
-- 16 langues triées alphabétiquement
-- Inscription chauffeur traduite
-- Interface revenus traduite
+## ⚙️ Configuration
 
-## ⚙️ Configuration Stripe
-
-**Clé configurée** : ✅ `sk_test_51TAPT2BJV...`
-**Compte test créé** : `acct_1TBJzhB1CsXOKYfE` (en attente de vérification)
+**Stripe** : ✅ `sk_test_51TAPT2BJV...`
+**Compte test** : `acct_1TBJzhB1CsXOKYfE` (en attente vérification)
 
 ## 🔑 Credentials
 - Admin: admin@metrotaxi.fr / admin123
@@ -52,11 +52,11 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 ## 🔄 Prochaines Étapes
 
 ### P0 - Immédiat
-- [ ] Chauffeur complète vérification Stripe (lien onboarding)
+- [ ] Chauffeur complète vérification Stripe
 
 ### P1 - Important
-- [ ] Vérifier domaine metro-taxi.com sur Resend
-- [ ] Connecter domaine personnalisé
+- [ ] Vérifier domaine Resend pour emails en production
+- [ ] Connecter domaine metro-taxi.com
 
 ### P2 - Améliorations
 - [ ] Notifications push
@@ -64,4 +64,7 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 - [ ] Système de notation
 
 ## 📅 Dernière Mise à Jour
-**15/03/2026** - Interface revenus chauffeur complète avec 3 onglets
+**16/03/2026**
+- Compteur km automatisé : démarre à l'embarquement, s'arrête à la descente
+- Emails de notification de paiement ajoutés
+- Description tarif mise à jour dans 16 langues
