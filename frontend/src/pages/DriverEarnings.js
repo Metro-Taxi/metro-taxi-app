@@ -201,7 +201,7 @@ const DriverEarnings = ({ onClose }) => {
                 <span className="text-white font-bold">{formatCurrency(earnings.rate_per_km)}/km</span>
               </div>
               <p className="text-zinc-500 text-xs mt-2">
-                {t('driverEarnings.rateDescription', 'Inclut trajets avec passagers + déplacement vers point de prise en charge')}
+                {t('driverEarnings.rateDescription', 'Uniquement les km parcourus avec usagers Métro-Taxi à bord')}
               </p>
             </div>
 
