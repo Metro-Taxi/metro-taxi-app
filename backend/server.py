@@ -2377,7 +2377,14 @@ async def get_active_ride(current_user: dict = Depends(get_current_user)):
 
 @api_router.post("/rides/{ride_id}/progress")
 async def update_ride_progress(ride_id: str, data: RideProgressUpdate, current_user: dict = Depends(get_current_user)):
-    """Update ride progress status with real-time tracking"""
+    """Update ride progress status with real-time tracking
+    
+    IMPORTANT: Kilometer tracking rules for Métro-Taxi:
+    - Counter starts when status changes to "in_progress" (user embarked)
+    - Counter continues with multiple users on board (shared rides)
+    - Counter stops when last user is dropped off (completed)
+    - Only km with Métro-Taxi users on board are counted
+    """
     if current_user["role"] != "driver":
         raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
     
@@ -2391,23 +2398,69 @@ async def update_ride_progress(ride_id: str, data: RideProgressUpdate, current_u
     if data.status not in valid_statuses:
         raise HTTPException(status_code=400, detail="Statut invalide")
     
+    now = datetime.now(timezone.utc)
     update_data = {
         "status": data.status,
-        f"{data.status}_at": datetime.now(timezone.utc).isoformat()
+        f"{data.status}_at": now.isoformat()
     }
     
     if data.current_lat and data.current_lng:
         update_data["current_location"] = {"lat": data.current_lat, "lng": data.current_lng}
     
-    # Calculate progress percentage
-    if data.status == "pickup":
-        update_data["progress_percent"] = 10
-    elif data.status == "in_progress":
+    # ========================================
+    # KILOMETER TRACKING LOGIC FOR MÉTRO-TAXI
+    # ========================================
+    
+    # When user embarks (in_progress): Start the km counter
+    if data.status == "in_progress":
         update_data["progress_percent"] = 50
+        # Record the position where km counting starts (user embarked)
+        if data.current_lat and data.current_lng:
+            update_data["km_start_location"] = {"lat": data.current_lat, "lng": data.current_lng}
+            update_data["km_start_at"] = now.isoformat()
+        else:
+            # Use pickup location as start if no current location
+            update_data["km_start_location"] = {"lat": ride["pickup_lat"], "lng": ride["pickup_lng"]}
+            update_data["km_start_at"] = now.isoformat()
+        
+        logging.info(f"Ride {ride_id}: KM counter started - user embarked at {update_data['km_start_location']}")
+    
+    elif data.status == "pickup":
+        update_data["progress_percent"] = 10
+    
     elif data.status == "near_destination":
         update_data["progress_percent"] = 90
+    
     elif data.status == "completed":
         update_data["progress_percent"] = 100
+        
+        # Calculate km traveled WITH user on board (from km_start to current/destination)
+        km_start = ride.get("km_start_location")
+        if km_start and data.current_lat and data.current_lng:
+            # Use current location as end point
+            km_with_user = calculate_distance(
+                km_start["lat"], km_start["lng"],
+                data.current_lat, data.current_lng
+            )
+        elif km_start:
+            # Use destination as end point
+            km_with_user = calculate_distance(
+                km_start["lat"], km_start["lng"],
+                ride["destination_lat"], ride["destination_lng"]
+            )
+        else:
+            # Fallback: calculate from pickup to destination
+            km_with_user = calculate_distance(
+                ride["pickup_lat"], ride["pickup_lng"],
+                ride["destination_lat"], ride["destination_lng"]
+            )
+        
+        update_data["km_with_user"] = round(km_with_user, 2)
+        update_data["km_end_at"] = now.isoformat()
+        
+        logging.info(f"Ride {ride_id}: KM counter stopped - {km_with_user:.2f} km with user on board")
+        
+        # Restore seat
         await db.drivers.update_one({"id": driver_id}, {"$inc": {"available_seats": 1}})
     
     await db.ride_requests.update_one({"id": ride_id}, {"$set": update_data})
@@ -2432,7 +2485,8 @@ async def update_ride_progress(ride_id: str, data: RideProgressUpdate, current_u
     return {
         "status": data.status,
         "progress_percent": update_data.get("progress_percent", 0),
-        "message": status_messages.get(data.status, "")
+        "message": status_messages.get(data.status, ""),
+        "km_with_user": update_data.get("km_with_user")
     }
 
 @api_router.get("/rides/{ride_id}/tracking")
