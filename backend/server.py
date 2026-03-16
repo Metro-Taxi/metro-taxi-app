@@ -2178,6 +2178,21 @@ async def admin_process_stripe_payout(driver_id: str, current_user: dict = Depen
                 }}
             )
         
+        # Send email notification to driver
+        if driver.get("email"):
+            driver_name = f"{driver.get('first_name', '')} {driver.get('last_name', '')}"
+            payout_date = now.strftime("%d/%m/%Y")
+            asyncio.create_task(send_payout_notification_email(
+                email=driver["email"],
+                name=driver_name,
+                amount=total_amount,
+                total_km=sum(e.get("total_km", 0) for e in pending_earnings),
+                rides_count=sum(e.get("rides_count", 0) for e in pending_earnings),
+                months=[e["month"] for e in pending_earnings],
+                payout_date=payout_date,
+                lang="fr"
+            ))
+        
         logging.info(f"Stripe payout processed for driver {driver_id}: €{total_amount} (transfer: {transfer.id})")
         
         return {
