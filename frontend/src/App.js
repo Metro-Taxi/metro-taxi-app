@@ -142,6 +142,7 @@ function App() {
         <AuthProvider>
           <AppRoutes />
           <Toaster position="top-right" richColors />
+          <InstallPWABanner />
         </AuthProvider>
       </BrowserRouter>
       <div className="noise-overlay"></div>
