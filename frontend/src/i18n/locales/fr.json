@@ -496,5 +496,13 @@
     "fetchError": "Erreur lors du chargement des données",
     "stripeCreated": "Compte Stripe créé ! Redirection...",
     "stripeError": "Erreur lors de la création du compte"
+  },
+  "pwa": {
+    "installTitle": "Installer Métro-Taxi",
+    "installDescription": "Ajoutez l'application sur votre écran d'accueil pour un accès rapide",
+    "installButton": "Installer",
+    "later": "Plus tard",
+    "iosInstructions": "Sur iOS:",
+    "iosSteps": "Appuyez sur Partager → \"Sur l'écran d'accueil\""
   }
 }
