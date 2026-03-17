@@ -14,139 +14,143 @@ Créer une plateforme web + mobile appelée “Métro-Taxi”. Le concept est un
 - **Internationalisation (i18n):** Traduire toute l'application (maintenant 16 langues : FR, EN, EN-GB, ES, PT, DE, NL, SV, NO, DA, ZH, HI, PA, AR, RU, IT).
 - **Voix Off (TTS):** La voix off de la vidéo promotionnelle doit correspondre à la langue sélectionnée.
 - **Image de marque:** Ajouter la phrase emblématique et convertir les prix/revenus en monnaies locales.
-- **Nouvelles fonctionnalités (demandées récemment):**
+- **Nouvelles fonctionnalités (implémentées):**
     - Ajouter un champ compte bancaire pour les chauffeurs.
     - Automatiser l'activation des chauffeurs à l'inscription.
-    - Mettre en place un système de virement automatique des salaires.
+    - Mettre en place un système de virement automatique des revenus (implémenté avec Stripe Connect).
+    - Calculer le kilométrage uniquement avec des passagers Métro-Taxi à bord.
+    - Ajouter des notifications par e-mail pour les virements.
+    - Créer une interface de gestion des revenus pour les chauffeurs.
 
 **User's preferred language**: French
 
 **what currently exists?**
-Une application full-stack (React, FastAPI, MongoDB) est fonctionnelle et largement internationalisée pour supporter 16 langues. Les fonctionnalités clés comme l'inscription, l'authentification, les abonnements Stripe, et les tableaux de bord (admin, utilisateur, chauffeur) sont implémentées et entièrement traduites. Une nouvelle vidéo promotionnelle a été générée avec Sora 2 et est visible sur la page d'accueil. Un système de vérification d'email via Resend a été intégré mais attend la vérification du domaine par l'utilisateur pour être pleinement opérationnel.
+L'application full-stack (React, FastAPI, MongoDB) est fonctionnelle et entièrement internationalisée pour 16 langues. Les fonctionnalités majeures (inscription, authentification, abonnements, dashboards) sont implémentées et traduites.
+Un système de revenus pour les chauffeurs est en place, calculant 1,50 € par kilomètre parcouru uniquement avec des usagers à bord. Les virements automatiques sont gérés via Stripe Connect (comptes Express), avec une interface dédiée dans le tableau de bord du chauffeur pour suivre les revenus, l'historique et gérer le compte Stripe.
+Des notifications par e-mail via Resend sont configurées pour les virements, mais leur fonctionnement en production est en attente de la vérification du domaine DNS de l'utilisateur.
 
 **Last working item**:
-- Last item agent was working: Traitement d'une nouvelle liste de 6 demandes de l'utilisateur. L'agent venait juste de terminer l'ajout de la langue italienne (création de  et mise à jour de ) et s'apprêtait à corriger le problème d'affichage des nouvelles langues (Arabe, Russe) dans le sélecteur, et à enquêter sur les badges de statut non traduits dans le dashboard admin.
+- Last item agent was working: À la demande de l'utilisateur, l'agent effectuait une vérification complète de toutes les traductions (textuelles et vocales) et des conversions de devises pour les 16 langues avant de passer à l'installation du PWA. L'agent a vérifié l'existence des fichiers, la structure des prix et les scripts de voix off.
 - Status: IN PROGRESS
 - Agent Testing Done: N
-- Which testing method agent to use? frontend testing agent. L'agent devra vérifier que les 16 langues apparaissent dans le sélecteur, que la sélection de l'Arabe, du Russe ou de l'Italien fonctionne. Il devra aussi se connecter en tant qu'admin et confirmer que les badges de statut des abonnements (ACTIFS, BIENTÔT, EXPIRÉS) sont bien traduits dans plusieurs langues.
+- Which testing method agent to use? Manual testing by screenshot tool. L'agent doit naviguer sur le site dans plusieurs langues (notamment celles récemment ajoutées ou avec des devises spécifiques comme le chinois, l'hindi, etc.) et prendre des captures d'écran des pages clés (Landing, Tarifs, Inscription, Dashboards) pour valider visuellement que tout est correct.
 - User Testing Done: N
 
 **All Pending/In progress Issue list**:
-- **Issue 1: Les nouvelles langues (Arabe, Russe, Italien) n'apparaissent pas dans le sélecteur de langue (P0)**
-- **Issue 2: Les badges de statut des abonnements (ACTIFS, BIENTÔT, EXPIRÉS) ne seraient pas traduits dans le dashboard admin (P1)**
+- **Issue 1: Vérification du domaine Resend pour l'envoi d'e-mails (P0)**
 
 **Issues Detail:**
-- **Issue 1: Les nouvelles langues n'apparaissent pas dans le sélecteur**
-    - **Attempted fixes:** L'agent a correctement ajouté les langues Arabe, Russe et Italienne dans  et a créé les fichiers , , .
+- **Issue 1: Vérification du domaine Resend pour l'envoi d'e-mails**
+    - **Attempted fixes:** L'agent a guidé l'utilisateur pour ajouter les enregistrements DNS (MX, SPF, DKIM) nécessaires dans le panneau de leur fournisseur (Hostinger). Les commandes  et des vérificateurs en ligne ont été utilisées pour surveiller la propagation.
     - **Next debug checklist:**
-        1.  Forcer un redémarrage complet du service frontend avec frontend: ERROR (not running)
-frontend: ERROR (abnormal termination).
-        2.  Vérifier la console du navigateur pour toute erreur de chargement i18n.
-        3.  Prendre une capture d'écran de la page d'accueil pour confirmer que le sélecteur de langue a bien été mis à jour.
-    - **Why fix this issue and what will be achieved with the fix?** Pour rendre les nouvelles langues accessibles aux utilisateurs, comme demandé.
-    - **Status:** IN PROGRESS
+        1. Utiliser un outil de vérification DNS public (ex: ) pour confirmer que les enregistrements pour  (MX, TXT) et  (TXT) sont bien propagés mondialement.
+        2. Demander à l'utilisateur de vérifier le statut du domaine sur son tableau de bord Resend. Il devrait passer de Pending à Verified.
+        3. Une fois vérifié, modifier la variable  dans  pour utiliser une adresse du domaine vérifié (ex: ).
+        4. Déclencher un e-mail de test (ex: en traitant un virement manuellement) et vérifier les logs de Resend pour confirmer l'envoi.
+    - **Why fix this issue and what will be achieved with the fix?** C'est un bloqueur critique pour la production. Sans cela, aucune notification par e-mail (confirmation d'inscription, notification de virement) ne fonctionnera.
+    - **Status:** BLOCKED
     - **Is recurring issue?** N
-    - **Should Test frontend/backend/both after fix?** Frontend
-    - **Blocked on other issue:** Non
-
-- **Issue 2: Badges de statut non traduits dans le dashboard admin**
-    - **Attempted fixes:** L'agent a précédemment vérifié que les traductions fonctionnaient en forçant la langue dans le . Cependant, l'utilisateur signale que le problème persiste. Les clés de traduction (, , ) sont présentes dans les fichiers JSON.
-    - **Next debug checklist:**
-        1.  Se connecter en tant qu'admin.
-        2.  Utiliser les outils de développement du navigateur pour inspecter les badges et voir quel texte est rendu.
-        3.  Changer la langue sur la page d'accueil, puis naviguer vers le dashboard admin pour voir si la langue est bien conservée.
-        4.  Confirmer que la logique qui détermine la langue à utiliser dans le dashboard est robuste.
-    - **Why fix this issue and what will be achieved with the fix?** Pour assurer une internationalisation complète et cohérente de l'interface d'administration, comme demandé à plusieurs reprises.
-    - **Status:** IN PROGRESS
-    - **Is recurring issue?** Y
-    - **Should Test frontend/backend/both after fix?** Frontend
-    - **Blocked on other issue:** Non
+    - **Should Test frontend/backend/both after fix?** Backend
+    - **Blocked on other issue:** Non. Bloqué par la propagation DNS externe.
 
 **In progress Task List**:
-- **Task 1: Finir de traiter les 6 points de la dernière demande utilisateur (P0)**
-    - **Where to resume:** Après avoir corrigé les deux problèmes d'interface (Issue 1 et 2), il faudra implémenter les nouvelles fonctionnalités demandées.
-    - **What will be achieved with this?** L'application répondra à toutes les exigences actuelles de l'utilisateur.
+- **Task 1: Finir la vérification des traductions et devises (P0)**
+    - **Where to resume:** L'agent a déjà vérifié la structure des fichiers. Il doit maintenant passer à la validation visuelle sur l'interface en changeant de langue et en vérifiant les pages clés (accueil, tarifs, dashboards) pour s'assurer que les textes, devises et symboles sont corrects partout.
+    - **What will be achieved with this?** Assurer une expérience utilisateur cohérente et sans erreur dans les 16 langues avant de passer à la suite.
     - **Status:** IN PROGRESS
-    - **Should Test frontend/backend/both after fix?** Both
+    - **Should Test frontend/backend/both after fix?** Frontend
     - **Blocked on something:** Non
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks:**
-    - **P0: Ajouter le champ compte bancaire pour les chauffeurs:** Modifier le modèle  dans , mettre à jour l'interface d'inscription/profil du chauffeur.
-    - **P0: Automatiser l'activation des chauffeurs:** Changer le statut par défaut des nouveaux chauffeurs de pending à validated dans la route d'inscription de .
-    - **P1: Mettre en place un virement automatique des salaires:** C'est une tâche complexe. Il faudra définir une architecture (ex: job planifié), intégrer une API de paiement (ex: Stripe Connect Payouts) et créer une nouvelle route backend pour déclencher les paiements.
+    - **P0: Installation de la Progressive Web App (PWA):** L'utilisateur a demandé cette fonctionnalité comme prochaine étape. Cela impliquera de créer un , un service worker pour le cache hors ligne, et de mettre à jour .
 - **Future Tasks:**
-    - **P1:** Compléter l'intégration de Resend en guidant l'utilisateur pour la vérification de son domaine.
-    - **P1:** Déployer l'application et connecter le domaine personnalisé .
+    - **P1:** Améliorer l'interface d'onboarding Stripe dans le dashboard chauffeur pour une expérience plus fluide.
     - **P2:** Implémenter le backlog : notifications push, historique des trajets, système de notation.
 
 **Completed work in this session**
-- **Correction de bugs i18n :**
-    - Le concept par abonnement est maintenant correctement mis en évidence dans toutes les langues.
-    - Les prix et devises sont corrects pour le Royaume-Uni (£), l'Espagne (€) et le Portugal (€).
-- **Internationalisation complète :**
-    - Les tableaux de bord Admin, Chauffeur et Usager ont été entièrement traduits.
-    - Ajout du support pour l'Arabe (ar), le Russe (ru) et l'Italien (it), y compris les voix off TTS pour ar/ru.
-    - Le badge POPULAIRE, auparavant non traduisible, est maintenant géré par i18n.
-- **Génération de contenu IA :**
-    - Une nouvelle vidéo promotionnelle de 12 secondes a été générée avec succès via Sora 2 et est intégrée à la page d'accueil.
-- **Fonctionnalité Backend :**
-    - Implémentation de la vérification d'email avec Resend (en attente de la vérification du domaine par l'utilisateur).
-- **Tests :**
-    - L'agent de test a validé l'ensemble de l'application (backend et frontend) avant les dernières demandes.
+- **Correction de bugs i18n:**
+    - Le sélecteur de langue affiche désormais correctement les 16 langues, est scrollable et trié par ordre alphabétique.
+    - Les badges de statut (ACTIFS, BIENTÔT, EXPIRÉS) dans le dashboard admin sont maintenant correctement traduits.
+- **Implémentation du système de revenus chauffeur:**
+    - Ajout des champs IBAN/BIC au profil chauffeur.
+    - Automatisation de la validation des chauffeurs à l'inscription.
+    - Mise en place d'un système de calcul des revenus (1.50€/km) basé uniquement sur les trajets avec usagers à bord.
+    - Intégration de **Stripe Connect** (comptes Express) pour les virements SEPA automatiques.
+    - Ajout des notifications par e-mail (via Resend) lors des virements.
+- **Interface Chauffeur:**
+    - Création d'une interface complète dans le dashboard chauffeur pour consulter les revenus, gérer le compte Stripe Connect et voir l'historique des virements.
+    - Traduction complète de la page d'inscription chauffeur dans les 16 langues.
 
 **Known issue recurrence from previous fork**
-- La traduction des badges de statut dans le dashboard admin a été signalée par l'utilisateur, bien que l'agent ait cru l'avoir résolue. Cela nécessite une investigation plus approfondie.
+- L'erreur de traduction des badges admin, récurrente par le passé, a été définitivement résolue et validée par des tests.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Backend**: FastAPI, WebSockets, Resend (pour les emails)
+- **Backend**: FastAPI, WebSockets
 - **Frontend**: React, i18next, Leaflet.js
 - **Database**: MongoDB
-- **Payments**: Stripe
+- **Payments**: Stripe (Checkout), Stripe Connect (Payouts)
+- **Emails**: Resend
 - **AI Generation**: OpenAI Sora 2, OpenAI TTS
 
 **key DB schema**
-- **drivers**: {name, email, phone, ..., validation_status} -> **Sera modifié pour inclure les informations bancaires.**
+- **drivers**: 
+- **rides**: 
+- **driver_earnings** (nouvelle collection): 
+- **payout_history** (nouvelle collection): 
 
 **All files of reference**
-- : Pour vérifier les traductions des badges.
-- : Pour la configuration des langues.
-- : Tous les fichiers JSON, en particulier , , .
-- : Pour l'implémentation des nouvelles fonctionnalités (compte bancaire, activation automatique).
+- : Contient toute la logique métier, y compris Stripe Connect, le calcul des revenus et Resend.
+- : Intègre la nouvelle vue des revenus.
+- : Nouveau composant pour l'interface des revenus du chauffeur.
+- : Formulaire d'inscription mis à jour et internationalisé.
+- : Contient maintenant la clé API Stripe fournie par l'utilisateur.
+- : Contient les 16 fichiers de traduction, tous mis à jour.
+
+**Areas that need refactoring**:
+- Le fichier  est devenu très volumineux (plus de 3000 lignes). Il serait bénéfique de le décomposer en plusieurs modules (ex: , , , ).
 
 **Critical Info for New Agent**
-Votre priorité est de résoudre les deux problèmes d'interface signalés par l'utilisateur (Issue 1 & 2). La non-apparition des nouvelles langues dans le sélecteur est probablement un simple problème de rechargement du frontend. La question des badges non traduits est récurrente et doit être résolue de manière définitive. Une fois ces points validés, vous devez enchaîner avec les nouvelles fonctionnalités demandées, en commençant par les plus simples : l'activation automatique des chauffeurs, puis l'ajout du champ de compte bancaire. La mise en place des virements automatiques est une tâche majeure à planifier soigneusement.
+Le principal point de blocage externe est la propagation des DNS pour Resend. Ne tentez pas de tester la fonctionnalité d'e-mail tant que la vérification du domaine n'est pas confirmée. La priorité immédiate est de terminer la vérification manuelle des traductions/devises, comme demandé par l'utilisateur. Une fois cela fait et confirmé, la prochaine tâche majeure est de mettre en place la PWA. L'intégration de Stripe Connect a nécessité plusieurs ajustements (passage aux comptes Express) et fonctionne maintenant, mais chaque chauffeur doit compléter son propre processus d'onboarding via le lien fourni dans son dashboard.
+
+**documents and test reports created in this job**
+- 
+- 
+- 
 
 **Last 10 User Messages and any pending HUMAN messages**
-- **User (latest):** Demande 6 nouvelles modifications : 1) Correction de badges non traduits, 2) Correction du sélecteur de langue, 3) Ajout de l'Italien, 4) Ajout d'un champ compte bancaire pour les chauffeurs, 5) Activation automatique des chauffeurs, 6) Maintien de la désactivation manuelle.
-- **Agent:** Confirme la réussite de l'ajout des langues Arabe/Russe et la correction des traductions du dashboard.
-- **User:** Signale des traductions encore manquantes sur les dashboards et demande l'ajout de l'Arabe et du Russe.
-- **Agent:** Confirme que l'application est prête et attend les instructions de l'utilisateur.
-- **User:** Approuve la fin de session et confirme les prochaines étapes.
-- **Agent:** Termine la session après avoir généré la vidéo avec succès.
-- **User:** Confirme que le crédit a été rajouté et demande de continuer avec la génération de la vidéo.
-- **Agent:** Fournit les instructions DNS pour le domaine personnalisé.
-- **User:** Approuve le plan de l'agent et fournit les serveurs DNS.
-- **Agent:** Termine la session après avoir complété les traductions et l'intégration Resend.
+- **User:** Demande une vérification finale de toutes les traductions (texte et voix) et des conversions de devises avant de passer à l'installation du PWA. (IN PROGRESS)
+- **Agent:** Confirme que les DNS de Resend sont créés mais en attente de propagation.
+- **User:** Confirme que les enregistrements DNS ont été créés avec succès.
+- **Agent:** Explique la situation concernant un problème technique chez Hostinger et suggère d'attendre.
+- **User:** Fournit une mise à jour de statut d'Hostinger et demande s'il y aura une application mobile.
+- **Agent:** Conclut que les DNS ne sont pas encore propagés et demande à l'utilisateur de revérifier l'ajout dans Hostinger.
+- **User:** Confirme que tout est correct dans Resend mais signale une erreur réseau dans Hostinger.
+- **Agent:** Suspecte que les enregistrements DNS n'ont pas été ajoutés correctement ou sont en cours de propagation.
+- **User:** Signale des Dossiers manquants requis sur le tableau de bord Resend.
+- **Agent:** Explique que la propagation est en cours et que la vérification peut prendre du temps.
 
 **Project Health Check:**
-- **Functional**: L'application est globalement stable et riche en fonctionnalités.
-- **Partially Implemented**: L'intégration Resend est codée mais pas encore active en production car elle attend la vérification du domaine par l'utilisateur.
-- **Broken**: Le sélecteur de langue n'affiche pas les dernières langues ajoutées. Potentiellement les traductions des badges dans le dashboard admin.
+- **Functional**: L'application principale, les dashboards, le système de revenus et l'intégration Stripe Connect.
+- **Partially Implemented**: L'envoi d'e-mails via Resend est codé mais inopérant en raison de la vérification de domaine en attente.
+- **Broken**: Rien n'est actuellement cassé dans le code, le seul problème est externe (DNS).
 
 **3rd Party Integrations**
-- **Stripe (Paiements)** — utilise une clé de test.
+- **Stripe (Paiements)** — utilise une clé de test (Checkout).
+- **Stripe (Virements)** — utilise une clé API utilisateur (Connect Express).
 - **OpenAI Sora 2 (Génération Vidéo)** — utilise la Clé Emergent LLM.
 - **OpenAI TTS (Texte-à-Voix)** — utilise la Clé Emergent LLM.
 - **OpenStreetMap / Leaflet.js (Cartes)** — aucune clé requise.
-- **Resend (Emails)** — utilise une clé utilisateur, en attente de vérification de domaine.
+- **Resend (Emails)** — utilise une clé API utilisateur, en attente de vérification de domaine.
 
 **Testing status**
-- Testing agent used after significant changes: YES (mais avant la dernière série de demandes utilisateur).
-- Known regressions: Le sélecteur de langue n'a pas été mis à jour après l'ajout de nouvelles langues.
+- Testing agent used after significant changes: YES
+- Troubleshoot agent used after agent stuck in loop: NO
+- Test files created: []
+- Known regressions: None.
 
 **What agent forgot to execute**
-L'agent n'a pas oublié de tâches mais est en plein milieu du traitement d'une nouvelle liste de 6 demandes. Les points 4, 5 et 6 de cette liste (compte bancaire, activation auto, paiement auto) n'ont pas encore été commencés.</analysis>
+L'agent a suivi toutes les instructions de l'utilisateur. Aucune tâche n'a été oubliée.</analysis>
