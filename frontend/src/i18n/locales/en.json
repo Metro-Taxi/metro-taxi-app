@@ -491,5 +491,13 @@
     "fetchError": "Error loading data",
     "stripeCreated": "Stripe account created! Redirecting...",
     "stripeError": "Error creating account"
+  },
+  "pwa": {
+    "installTitle": "Install Métro-Taxi",
+    "installDescription": "Add the app to your home screen for quick access",
+    "installButton": "Install",
+    "later": "Later",
+    "iosInstructions": "On iOS:",
+    "iosSteps": "Tap Share → \"Add to Home Screen\""
   }
 }
