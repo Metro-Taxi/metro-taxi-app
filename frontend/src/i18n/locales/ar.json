@@ -331,20 +331,20 @@
     "plans": {
       "day": {
         "name": "24 ساعة",
-        "price": "6,99 €",
-        "priceLocal": "6,99 €",
+        "price": "28,99 ر.س",
+        "priceLocal": "28,99 ر.س",
         "description": "مثالي للاستخدام العرضي"
       },
       "week": {
         "name": "أسبوع واحد",
-        "price": "16,99 €",
-        "priceLocal": "16,99 €",
+        "price": "68,99 ر.س",
+        "priceLocal": "68,99 ر.س",
         "description": "مثالي للإقامات القصيرة"
       },
       "month": {
         "name": "شهر واحد",
-        "price": "53,99 €",
-        "priceLocal": "53,99 €",
+        "price": "218,99 ر.س",
+        "priceLocal": "218,99 ر.س",
         "description": "أفضل قيمة مقابل السعر"
       }
     },
