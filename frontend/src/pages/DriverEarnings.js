@@ -13,9 +13,29 @@ import { useTranslation } from 'react-i18next';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Currency configuration per language
+const CURRENCY_CONFIG = {
+  'fr': { currency: 'EUR', locale: 'fr-FR', symbol: '€', rate: 1 },
+  'en': { currency: 'USD', locale: 'en-US', symbol: '$', rate: 1.08 },
+  'en-GB': { currency: 'GBP', locale: 'en-GB', symbol: '£', rate: 0.86 },
+  'de': { currency: 'EUR', locale: 'de-DE', symbol: '€', rate: 1 },
+  'nl': { currency: 'EUR', locale: 'nl-NL', symbol: '€', rate: 1 },
+  'es': { currency: 'EUR', locale: 'es-ES', symbol: '€', rate: 1 },
+  'pt': { currency: 'EUR', locale: 'pt-PT', symbol: '€', rate: 1 },
+  'it': { currency: 'EUR', locale: 'it-IT', symbol: '€', rate: 1 },
+  'sv': { currency: 'SEK', locale: 'sv-SE', symbol: 'kr', rate: 11.5 },
+  'no': { currency: 'NOK', locale: 'nb-NO', symbol: 'kr', rate: 11.8 },
+  'da': { currency: 'DKK', locale: 'da-DK', symbol: 'kr', rate: 7.45 },
+  'zh': { currency: 'CNY', locale: 'zh-CN', symbol: '¥', rate: 7.8 },
+  'hi': { currency: 'INR', locale: 'hi-IN', symbol: '₹', rate: 90 },
+  'pa': { currency: 'INR', locale: 'pa-IN', symbol: '₹', rate: 90 },
+  'ar': { currency: 'SAR', locale: 'ar-SA', symbol: 'ر.س', rate: 4.05 },
+  'ru': { currency: 'RUB', locale: 'ru-RU', symbol: '₽', rate: 99 }
+};
+
 const DriverEarnings = ({ onClose }) => {
   const { token, driver } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [earnings, setEarnings] = useState(null);
   const [stripeStatus, setStripeStatus] = useState(null);
   const [payouts, setPayouts] = useState([]);
