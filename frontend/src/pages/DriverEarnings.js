@@ -115,7 +115,9 @@ const DriverEarnings = ({ onClose }) => {
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('fr-FR', {
+    const lang = i18n.language || 'fr';
+    const config = CURRENCY_CONFIG[lang] || CURRENCY_CONFIG['fr'];
+    return new Date(dateStr).toLocaleDateString(config.locale, {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
@@ -126,7 +128,9 @@ const DriverEarnings = ({ onClose }) => {
     if (!monthStr) return '-';
     const [year, month] = monthStr.split('-');
     const date = new Date(year, parseInt(month) - 1, 1);
-    return date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    const lang = i18n.language || 'fr';
+    const config = CURRENCY_CONFIG[lang] || CURRENCY_CONFIG['fr'];
+    return date.toLocaleDateString(config.locale, { month: 'long', year: 'numeric' });
   };
 
   if (loading) {
