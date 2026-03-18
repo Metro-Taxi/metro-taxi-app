@@ -96,10 +96,21 @@ const DriverEarnings = ({ onClose }) => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(amount || 0);
+    const lang = i18n.language || 'fr';
+    const config = CURRENCY_CONFIG[lang] || CURRENCY_CONFIG['fr'];
+    const convertedAmount = (amount || 0) * config.rate;
+    
+    try {
+      return new Intl.NumberFormat(config.locale, {
+        style: 'currency',
+        currency: config.currency,
+        minimumFractionDigits: config.currency === 'RUB' || config.currency === 'INR' ? 0 : 2,
+        maximumFractionDigits: config.currency === 'RUB' || config.currency === 'INR' ? 0 : 2
+      }).format(convertedAmount);
+    } catch (e) {
+      // Fallback for unsupported locales
+      return `${convertedAmount.toFixed(2)} ${config.symbol}`;
+    }
   };
 
   const formatDate = (dateStr) => {
