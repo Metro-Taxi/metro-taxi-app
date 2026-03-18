@@ -3090,7 +3090,15 @@ Métro-Taxi，无限出行，共创绿色未来。""",
 Зарегистрируйтесь и выберите свой план. Найдите автомобили, едущие в вашем направлении.
 Запросите поездку одним кликом. Водитель заберёт вас и довезёт куда захотите.
 Благодаря нашей интеллектуальной системе пересадок, вы можете сменить автомобиль по пути к месту назначения.
-Метро-Такси, ваши поездки без ограничений, ради более зелёного будущего."""
+Метро-Такси, ваши поездки без ограничений, ради более зелёного будущего.""",
+
+    "it": """Métro-Taxi, il sistema di trasporto intelligente in carpooling.
+Benvenuti su Métro-Taxi, la rete di mobilità urbana in abbonamento.
+Scegliendo il carpooling intelligente, contribuisci alla protezione dell'ambiente riducendo la tua impronta di carbonio.
+Registrati e scegli il tuo piano. Trova i veicoli che vanno nella tua direzione.
+Richiedi un passaggio con un clic. L'autista ti viene a prendere e ti lascia dove vuoi.
+Grazie al nostro sistema di trasbordo intelligente, puoi cambiare veicolo lungo il percorso per raggiungere la tua destinazione.
+Métro-Taxi, i tuoi viaggi senza limiti, per un futuro più verde."""
 }
 
 class TTSRequest(BaseModel):
