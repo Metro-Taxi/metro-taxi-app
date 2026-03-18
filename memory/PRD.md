@@ -76,7 +76,7 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 - [ ] Système de notation
 
 ## 📅 Dernière Mise à Jour
-**17/03/2026**
-- ✅ Domaine Resend vérifié (metro-taxi.com)
-- ✅ PWA installé : manifest.json, sw.js, icônes, bannière d'installation
-- ✅ Vérification visuelle des traductions dans 16 langues confirmée
+**18/03/2026**
+- ✅ Devises locales corrigées : Arabe (ر.س SAR), Russe (₽ RUB)
+- ✅ Voix off italienne ajoutée au système TTS
+- ✅ API /tts/languages mise à jour avec les 16 langues
