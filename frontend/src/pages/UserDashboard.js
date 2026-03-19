@@ -874,6 +874,20 @@ const UserDashboard = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Ride History Modal */}
+      <AnimatePresence>
+        {showHistory && (
+          <RideHistory onClose={() => setShowHistory(false)} />
+        )}
+      </AnimatePresence>
+
+      {/* Pending Ratings */}
+      {!activeRide && (
+        <div className="absolute bottom-4 left-4 right-4 z-[500]">
+          <PendingRatings />
+        </div>
+      )}
     </div>
   );
 };
