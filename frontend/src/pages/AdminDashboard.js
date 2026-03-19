@@ -320,27 +320,27 @@ const AdminDashboard = () => {
                             </div>
                           </td>
                           <td>
-                            <div className="flex gap-2">
+                            <div className="flex gap-1">
                               {!driver.is_validated ? (
                                 <Button
                                   size="sm"
                                   onClick={() => validateDriver(driver.id)}
-                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                  className="bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-1 h-auto"
                                   data-testid={`validate-driver-${driver.id}`}
                                 >
-                                  <UserCheck className="w-4 h-4 mr-1" />
-                                  {t('dashboard.admin.drivers.activate')}
+                                  <UserCheck className="w-3 h-3 mr-1" />
+                                  <span className="hidden lg:inline">{t('dashboard.admin.drivers.activate')}</span>
                                 </Button>
                               ) : (
                                 <Button
                                   size="sm"
                                   variant="outline"
                                   onClick={() => deactivateDriver(driver.id)}
-                                  className="border-red-500/50 text-red-400 hover:bg-red-500/10"
+                                  className="border-red-500/50 text-red-400 hover:bg-red-500/10 text-xs px-2 py-1 h-auto"
                                   data-testid={`deactivate-driver-${driver.id}`}
                                 >
-                                  <UserX className="w-4 h-4 mr-1" />
-                                  {t('dashboard.admin.drivers.deactivate')}
+                                  <UserX className="w-3 h-3 mr-1" />
+                                  <span className="hidden lg:inline">{t('dashboard.admin.drivers.deactivate')}</span>
                                 </Button>
                               )}
                             </div>
