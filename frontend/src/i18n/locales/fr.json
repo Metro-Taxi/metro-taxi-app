@@ -1,4 +1,15 @@
 {
+  "common": {
+    "subscribed": "Abonné",
+    "subscribe": "S'abonner",
+    "myProfile": "Mon profil",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "close": "Fermer"
+  },
   "hero": {
     "title": "MÉTRO-TAXI",
     "subtitle": "Le réseau de mobilité urbaine par abonnement",
