@@ -132,18 +132,78 @@
       "myEarnings": "My Earnings"
     },
     "admin": {
-      "title": "Administrasjon",
+      "title": "Administration",
       "stats": {
-        "users": "Registrerte brukere",
-        "drivers": "Sjåfører",
-        "subscriptions": "Aktive abonnementer",
-        "rides": "Pågående turer"
+        "users": "Registrerade användare",
+        "drivers": "Förare",
+        "subscriptions": "Aktiva prenumerationer",
+        "rides": "Pågående resor"
       },
       "tabs": {
-        "drivers": "Sjåfører",
-        "users": "Brukere",
-        "subscriptions": "Abonnementer",
-        "cards": "Virtuelle kort"
+        "drivers": "Förare",
+        "users": "Användare",
+        "subscriptions": "Prenumerationer",
+        "cards": "Virtuella kort"
+      },
+      "drivers": {
+        "title": "Förarhantering",
+        "subtitle": "Validera eller inaktivera förarkonton",
+        "driver": "Förare",
+        "contact": "Kontakt",
+        "vehicle": "Fordon",
+        "license": "VTC-licens",
+        "status": "Status",
+        "actions": "Åtgärder",
+        "validated": "Validerad",
+        "pending": "Väntar",
+        "online": "Online",
+        "activate": "Aktivera",
+        "deactivate": "Inaktivera",
+        "noDrivers": "Inga registrerade förare"
+      },
+      "users": {
+        "title": "Användarlista",
+        "subtitle": "Se registrerade användares information",
+        "user": "Användare",
+        "contact": "Kontakt",
+        "subscription": "Prenumeration",
+        "expiration": "Utgång",
+        "registration": "Registrering",
+        "active": "Aktiv",
+        "inactive": "Inaktiv",
+        "noUsers": "Inga registrerade användare"
+      },
+      "subscriptions": {
+        "title": "Prenumerationer",
+        "active": "Aktiva prenumerationer",
+        "activeDesc": "Lista över giltiga prenumerationer",
+        "expired": "Utgångna prenumerationer",
+        "expiredDesc": "Dessa prenumerationer bör inaktiveras",
+        "expiringSoon": "Går ut inom 24t",
+        "expiredLabel": "UTGÅNGNA",
+        "activeLabel": "AKTIVA",
+        "soonLabel": "SNART",
+        "cleanup": "Inaktivera utgångna",
+        "refresh": "Uppdatera",
+        "status": "Status",
+        "expiresSoon": "Går ut snart",
+        "noActive": "Inga aktiva prenumerationer"
+      },
+      "cards": {
+        "title": "Virtuella kort",
+        "subtitle": "Se användarnas virtuella kort",
+        "user": "Användare",
+        "cardNumber": "Kortnummer",
+        "subscription": "Prenumeration",
+        "validUntil": "Giltig till",
+        "actions": "Åtgärder",
+        "view": "Visa",
+        "noCards": "Inga virtuella kort"
+      },
+      "common": {
+        "registeredOn": "Registrerad",
+        "seats": "Säten",
+        "loadingError": "Fel vid inläsning av data"
       }
     }
   },
