@@ -1,4 +1,15 @@
 {
+  "common": {
+    "subscribed": "Subscribed",
+    "subscribe": "Subscribe",
+    "myProfile": "My Profile",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close"
+  },
   "hero": {
     "title": "MÉTRO-TAXI",
     "subtitle": "The subscription-based urban mobility network",
