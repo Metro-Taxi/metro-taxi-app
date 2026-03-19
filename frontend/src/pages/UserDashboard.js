@@ -323,6 +323,7 @@ const UserDashboard = () => {
                 </span>
               </Link>
             )}
+            <NotificationCenter />
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="text-white p-2 hover:bg-zinc-800 rounded"
