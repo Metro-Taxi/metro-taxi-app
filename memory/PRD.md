@@ -7,76 +7,82 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 - **Frontend**: React 19, TailwindCSS, Leaflet, i18next (16 langues)
 - **Backend**: FastAPI, MongoDB, JWT Auth
 - **Paiements**: Stripe Checkout + Stripe Connect Express
-- **Emails**: Resend (vérification + notifications paiement) ✅ Domaine vérifié
+- **Emails**: Resend (domaine metro-taxi.com vérifié)
 - **TTS**: OpenAI (Emergent LLM Key)
-- **PWA**: Service Worker, Manifest, Cache hors ligne ✅ NOUVEAU
+- **PWA**: Service Worker, Manifest, Cache hors ligne
 
 ## ✅ Fonctionnalités Complètes
 
-### Progressive Web App (PWA) ✅ (17/03/2026)
-- **Manifest.json** : Configuration complète avec nom, icônes, thème
-- **Service Worker** : Cache offline, network-first strategy
-- **Icônes** : 8 tailles (72x72 → 512x512) + apple-touch-icon + favicon
-- **Bannière d'installation** : Détecte mobile, affiche après 5s, traduit FR/EN
-- **Meta tags** : Open Graph, Apple Web App, Microsoft tiles
+### 🔔 Notifications Push ✅ (19/03/2026)
+- Endpoint `/api/notifications/subscribe` pour enregistrer les tokens
+- Endpoint `/api/notifications` pour récupérer les notifications
+- Composant `NotificationCenter` avec icône cloche et compteur non-lus
+- Polling toutes les 30 secondes pour nouvelles notifications
 
-### Système d'Emails Resend ✅ (17/03/2026)
-- **Domaine vérifié** : metro-taxi.com
-- **Expéditeur** : noreply@metro-taxi.com
-- **DNS configurés** : SPF, DKIM, MX (eu-west-1)
-- **Fonctionnel** : Emails de test envoyés avec succès
+### 📜 Historique des trajets ✅ (19/03/2026)
+- Endpoint `/api/rides/history` avec pagination et filtres
+- Endpoint `/api/rides/{ride_id}` pour détails
+- Composant `RideHistory` avec modal complet
+- Filtres par statut (Tous, Terminé, Annulé, En cours)
+- Affichage trajets avec adresses, chauffeur, notes
+
+### ⭐ Système de notation ✅ (19/03/2026)
+- Endpoint `/api/ratings` pour créer une note (1-5 étoiles)
+- Endpoint `/api/ratings/pending` pour trajets non notés
+- Endpoint `/api/ratings/driver/{id}` pour notes d'un chauffeur
+- Composant `RatingModal` avec étoiles interactives
+- Composant `PendingRatings` pour rappeler de noter
+- Mise à jour automatique moyenne chauffeur
+
+### 🚀 Guide de déploiement ✅ (19/03/2026)
+- `/app/DEPLOYMENT_GUIDE.md` - Guide complet étape par étape
+- Configuration Docker Compose
+- Configuration Nginx avec SSL
+- Variables d'environnement production
+
+### Progressive Web App (PWA) ✅
+- Manifest.json, Service Worker, icônes
+- Bannière d'installation (mobile uniquement)
+
+### Système d'Emails Resend ✅
+- Domaine metro-taxi.com vérifié
+- Notifications de virement aux chauffeurs
 
 ### Internationalisation (i18n) ✅
-- **16 langues** : FR, EN, EN-GB, ES, PT, DE, NL, SV, NO, DA, ZH, HI, PA, AR, RU, IT
-- **Devises locales** : € (Europe), ¥ (Chine), ₹ (Inde), £ (UK), etc.
-- **Voix off TTS** : Vidéo promotionnelle dans la langue sélectionnée
+- 16 langues avec devises locales
+- Voix off TTS dans chaque langue
 
 ### Système de Revenus Chauffeurs ✅
-- **Tarif** : 1,50€/km
-- **Règle Métro-Taxi** : SEULS les km avec usagers à bord sont comptés
-- **Période** : Du 1er au dernier jour du mois
-- **Virement** : Automatique le 10 du mois suivant via Stripe Connect
+- 1,50€/km avec passagers à bord
+- Virements Stripe Connect automatiques
 
-### Email de Notification Paiement ✅
-- Email automatique envoyé au chauffeur lors du virement
-- Templates FR/EN avec design Métro-Taxi
-
-### Interface Chauffeur "Mes Revenus" ✅
-- Onglet Revenus : Mois en cours, km, trajets, tarif, cumul total
-- Onglet Stripe Account : Statut compte, vérification, infos bancaires
-- Onglet Historique : Virements effectués
-
-## ⚙️ Configuration
-
-**Stripe** : ✅ `sk_test_51TAPT2BJV...`
-**Resend** : ✅ Domaine metro-taxi.com vérifié
-
-## 🔑 Credentials
+## 🔑 Credentials Test
 - Admin: admin@metrotaxi.fr / admin123
-- Driver: jean.dupont.test@example.com / test123456
+- User: testfeatures@test.com / Test1234!
 
-## 📊 Tests
-- Backend: 100% ✅
-- Frontend: 100% ✅
-- PWA: 100% ✅
-
-## 🔄 Prochaines Étapes
-
-### P0 - Immédiat
-- [x] ~~Vérifier domaine Resend~~ ✅ FAIT
-- [x] ~~Installer PWA~~ ✅ FAIT
-
-### P1 - Important
-- [ ] Chauffeur complète vérification Stripe
-- [ ] Connecter domaine metro-taxi.com en production
-
-### P2 - Améliorations
-- [ ] Notifications push (base service worker en place)
-- [ ] Historique trajets détaillé
-- [ ] Système de notation
+## 📊 Collections MongoDB
+- `users` - Utilisateurs
+- `drivers` - Chauffeurs  
+- `rides` - Trajets
+- `ratings` - Notes (NEW)
+- `notifications` - Notifications (NEW)
+- `push_subscriptions` - Abonnements push (NEW)
+- `driver_earnings` - Revenus chauffeurs
+- `payout_history` - Historique virements
 
 ## 📅 Dernière Mise à Jour
-**18/03/2026**
-- ✅ Devises locales corrigées : Arabe (ر.س SAR), Russe (₽ RUB)
-- ✅ Voix off italienne ajoutée au système TTS
-- ✅ API /tts/languages mise à jour avec les 16 langues
+**19/03/2026**
+- ✅ Notifications push implémentées
+- ✅ Historique des trajets avec filtres
+- ✅ Système de notation 1-5 étoiles
+- ✅ Guide de déploiement complet
+
+## 🔄 Prochaines Étapes
+- [ ] Tests complets des nouvelles fonctionnalités
+- [ ] Déploiement en production sur metro-taxi.com
+- [ ] Configuration clé Stripe LIVE
+
+## 📦 Backlog Futur
+- Notifications push réelles avec VAPID keys
+- Système de chat usager/chauffeur
+- Mode hors ligne avancé pour PWA
