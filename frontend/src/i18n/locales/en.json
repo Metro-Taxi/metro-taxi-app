@@ -499,5 +499,45 @@
     "later": "Later",
     "iosInstructions": "On iOS:",
     "iosSteps": "Tap Share → \"Add to Home Screen\""
+  },
+  "rideHistory": {
+    "title": "Ride History",
+    "subtitle": "View all your past rides",
+    "noRides": "No rides found",
+    "page": "Page",
+    "filterAll": "All",
+    "statusCompleted": "Completed",
+    "statusCancelled": "Cancelled",
+    "statusInProgress": "In Progress",
+    "statusPending": "Pending",
+    "statusAccepted": "Accepted",
+    "fetchError": "Error loading ride history"
+  },
+  "rating": {
+    "title": "Rate your ride",
+    "withDriver": "With",
+    "selectRating": "Please select a rating",
+    "success": "Thank you for your rating!",
+    "error": "Failed to submit rating",
+    "commentLabel": "Add a comment (optional)",
+    "commentPlaceholder": "Tell us about your experience...",
+    "submit": "Submit Rating",
+    "label1": "Poor",
+    "label2": "Fair",
+    "label3": "Good",
+    "label4": "Very Good",
+    "label5": "Excellent",
+    "pendingTitle": "Rate your recent rides",
+    "reviews": "reviews"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications yet",
+    "markAllRead": "Mark all read",
+    "allRead": "All notifications marked as read",
+    "justNow": "Just now",
+    "rideAccepted": "Ride accepted",
+    "driverArrived": "Driver arrived",
+    "subscriptionExpiring": "Subscription expiring soon"
   }
 }
