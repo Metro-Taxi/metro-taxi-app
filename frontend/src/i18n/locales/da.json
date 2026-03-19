@@ -144,6 +144,66 @@
         "users": "Brugere",
         "subscriptions": "Abonnementer",
         "cards": "Virtuelle kort"
+      },
+      "drivers": {
+        "title": "Chaufførstyring",
+        "subtitle": "Godkend eller deaktiver chaufførkonti",
+        "driver": "Chauffør",
+        "contact": "Kontakt",
+        "vehicle": "Køretøj",
+        "license": "VTC-licens",
+        "status": "Status",
+        "actions": "Handlinger",
+        "validated": "Godkendt",
+        "pending": "Afventer",
+        "online": "Online",
+        "activate": "Aktiver",
+        "deactivate": "Deaktiver",
+        "noDrivers": "Ingen registrerede chauffører"
+      },
+      "users": {
+        "title": "Brugerliste",
+        "subtitle": "Se registrerede brugeres oplysninger",
+        "user": "Bruger",
+        "contact": "Kontakt",
+        "subscription": "Abonnement",
+        "expiration": "Udløb",
+        "registration": "Registrering",
+        "active": "Aktiv",
+        "inactive": "Inaktiv",
+        "noUsers": "Ingen registrerede brugere"
+      },
+      "subscriptions": {
+        "title": "Abonnementer",
+        "active": "Aktive abonnementer",
+        "activeDesc": "Liste over gyldige abonnementer",
+        "expired": "Udløbne abonnementer",
+        "expiredDesc": "Disse abonnementer skal deaktiveres",
+        "expiringSoon": "Udløber inden 24t",
+        "expiredLabel": "UDLØBET",
+        "activeLabel": "AKTIVE",
+        "soonLabel": "SNART",
+        "cleanup": "Deaktiver udløbne",
+        "refresh": "Opdater",
+        "status": "Status",
+        "expiresSoon": "Udløber snart",
+        "noActive": "Ingen aktive abonnementer"
+      },
+      "cards": {
+        "title": "Virtuelle kort",
+        "subtitle": "Se brugernes virtuelle kort",
+        "user": "Bruger",
+        "cardNumber": "Kortnummer",
+        "subscription": "Abonnement",
+        "validUntil": "Gyldig til",
+        "actions": "Handlinger",
+        "view": "Se",
+        "noCards": "Ingen virtuelle kort"
+      },
+      "common": {
+        "registeredOn": "Registreret",
+        "seats": "Sæder",
+        "loadingError": "Fejl ved indlæsning af data"
       }
     }
   },
