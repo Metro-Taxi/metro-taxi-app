@@ -144,6 +144,66 @@
         "users": "Brukere",
         "subscriptions": "Abonnementer",
         "cards": "Virtuelle kort"
+      },
+      "drivers": {
+        "title": "Sjåføradministrasjon",
+        "subtitle": "Valider eller deaktiver sjåførkontoer",
+        "driver": "Sjåfør",
+        "contact": "Kontakt",
+        "vehicle": "Kjøretøy",
+        "license": "VTC-lisens",
+        "status": "Status",
+        "actions": "Handlinger",
+        "validated": "Validert",
+        "pending": "Venter",
+        "online": "Pålogget",
+        "activate": "Aktiver",
+        "deactivate": "Deaktiver",
+        "noDrivers": "Ingen registrerte sjåfører"
+      },
+      "users": {
+        "title": "Brukerliste",
+        "subtitle": "Se informasjon om registrerte brukere",
+        "user": "Bruker",
+        "contact": "Kontakt",
+        "subscription": "Abonnement",
+        "expiration": "Utløp",
+        "registration": "Registrering",
+        "active": "Aktiv",
+        "inactive": "Inaktiv",
+        "noUsers": "Ingen registrerte brukere"
+      },
+      "subscriptions": {
+        "title": "Abonnementer",
+        "active": "Aktive abonnementer",
+        "activeDesc": "Liste over gyldige abonnementer",
+        "expired": "Utløpte abonnementer",
+        "expiredDesc": "Disse abonnementene bør deaktiveres",
+        "expiringSoon": "Utløper innen 24t",
+        "expiredLabel": "UTLØPT",
+        "activeLabel": "AKTIVE",
+        "soonLabel": "SNART",
+        "cleanup": "Deaktiver utløpte",
+        "refresh": "Oppdater",
+        "status": "Status",
+        "expiresSoon": "Utløper snart",
+        "noActive": "Ingen aktive abonnementer"
+      },
+      "cards": {
+        "title": "Virtuelle kort",
+        "subtitle": "Se brukernes virtuelle kort",
+        "user": "Bruker",
+        "cardNumber": "Kortnummer",
+        "subscription": "Abonnement",
+        "validUntil": "Gyldig til",
+        "actions": "Handlinger",
+        "view": "Se",
+        "noCards": "Ingen virtuelle kort"
+      },
+      "common": {
+        "registeredOn": "Registrert",
+        "seats": "Seter",
+        "loadingError": "Feil ved lasting av data"
       }
     }
   },
