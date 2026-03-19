@@ -504,5 +504,45 @@
     "later": "Plus tard",
     "iosInstructions": "Sur iOS:",
     "iosSteps": "Appuyez sur Partager → \"Sur l'écran d'accueil\""
+  },
+  "rideHistory": {
+    "title": "Historique des trajets",
+    "subtitle": "Consultez tous vos trajets passés",
+    "noRides": "Aucun trajet trouvé",
+    "page": "Page",
+    "filterAll": "Tous",
+    "statusCompleted": "Terminé",
+    "statusCancelled": "Annulé",
+    "statusInProgress": "En cours",
+    "statusPending": "En attente",
+    "statusAccepted": "Accepté",
+    "fetchError": "Erreur lors du chargement de l'historique"
+  },
+  "rating": {
+    "title": "Notez votre trajet",
+    "withDriver": "Avec",
+    "selectRating": "Veuillez sélectionner une note",
+    "success": "Merci pour votre note !",
+    "error": "Erreur lors de l'envoi de la note",
+    "commentLabel": "Ajouter un commentaire (optionnel)",
+    "commentPlaceholder": "Partagez votre expérience...",
+    "submit": "Envoyer la note",
+    "label1": "Mauvais",
+    "label2": "Moyen",
+    "label3": "Bien",
+    "label4": "Très bien",
+    "label5": "Excellent",
+    "pendingTitle": "Notez vos trajets récents",
+    "reviews": "avis"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "Aucune notification",
+    "markAllRead": "Tout marquer lu",
+    "allRead": "Toutes les notifications ont été marquées comme lues",
+    "justNow": "À l'instant",
+    "rideAccepted": "Trajet accepté",
+    "driverArrived": "Chauffeur arrivé",
+    "subscriptionExpiring": "Abonnement expirant bientôt"
   }
 }
