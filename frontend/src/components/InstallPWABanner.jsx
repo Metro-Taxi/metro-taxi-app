@@ -10,7 +10,13 @@ const InstallPWABanner = () => {
   const [isInstallable, setIsInstallable] = useState(false);
 
   useEffect(() => {
-    // Don't show if already installed or dismissed
+    // Only show on mobile devices
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile) {
+      return; // Never show on desktop
+    }
+
+    // Don't show if already installed
     if (isPWAInstalled()) {
       return;
     }
@@ -42,8 +48,7 @@ const InstallPWABanner = () => {
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
 
     // Show banner after 5 seconds on mobile
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile && !dismissed) {
+    if (!dismissed) {
       const timer = setTimeout(() => {
         setShowBanner(true);
       }, 5000);
