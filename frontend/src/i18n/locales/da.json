@@ -132,16 +132,16 @@
       "myEarnings": "My Earnings"
     },
     "admin": {
-      "title": "Administrasjon",
+      "title": "Administration",
       "stats": {
-        "users": "Registrerte brukere",
-        "drivers": "Sjåfører",
+        "users": "Registrerede brugere",
+        "drivers": "Chauffører",
         "subscriptions": "Aktive abonnementer",
-        "rides": "Pågående turer"
+        "rides": "Igangværende ture"
       },
       "tabs": {
-        "drivers": "Sjåfører",
-        "users": "Brukere",
+        "drivers": "Chauffører",
+        "users": "Brugere",
         "subscriptions": "Abonnementer",
         "cards": "Virtuelle kort"
       }
