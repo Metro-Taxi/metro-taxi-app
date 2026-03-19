@@ -9,12 +9,12 @@
     "ecoMessage": "Reducer dit CO2-aftryk ved at dele ture"
   },
   "nav": {
-    "login": "Logg inn",
-    "register": "Registrer deg",
+    "login": "Log ind",
+    "register": "Opret konto",
     "pricing": "Priser",
-    "howItWorks": "Slik fungerer det",
-    "drivers": "Sjåfører",
-    "logout": "Logg ut",
+    "howItWorks": "Sådan virker det",
+    "drivers": "Chauffører",
+    "logout": "Log ud",
     "profile": "Profil",
     "dashboard": "Dashboard"
   },
