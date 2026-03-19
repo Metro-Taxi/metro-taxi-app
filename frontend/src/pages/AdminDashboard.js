@@ -136,6 +136,7 @@ const AdminDashboard = () => {
           </div>
           
           <div className="flex items-center gap-4">
+            <LanguageSelector />
             <span className="text-zinc-400 text-sm hidden md:block">
               {admin?.email}
             </span>
