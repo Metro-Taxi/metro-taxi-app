@@ -208,10 +208,10 @@
       "renew": "Forny"
     },
     "virtualCard": {
-      "title": "Mitt virtuelle kort",
+      "title": "Mit virtuelle kort",
       "cardNumber": "Kortnr."
     },
-    "logout": "Logg ut"
+    "logout": "Log ud"
   },
   "pricing": {
     "title": "ABONNEMENTER",
