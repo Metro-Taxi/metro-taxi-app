@@ -658,6 +658,51 @@ class RideProgressUpdate(BaseModel):
     current_lat: Optional[float] = None
     current_lng: Optional[float] = None
 
+# ============================================
+# PUSH NOTIFICATIONS MODELS
+# ============================================
+class PushSubscription(BaseModel):
+    endpoint: str
+    keys: Dict[str, str]
+    user_id: Optional[str] = None
+    user_type: str = "user"  # "user" or "driver"
+
+class NotificationPayload(BaseModel):
+    title: str
+    body: str
+    icon: Optional[str] = "/icons/icon-192x192.png"
+    badge: Optional[str] = "/icons/icon-72x72.png"
+    data: Optional[Dict[str, Any]] = None
+    actions: Optional[List[Dict[str, str]]] = None
+
+# ============================================
+# RIDE HISTORY MODELS
+# ============================================
+class RideHistoryFilter(BaseModel):
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    status: Optional[str] = None
+    page: int = 1
+    limit: int = 20
+
+# ============================================
+# RATING SYSTEM MODELS
+# ============================================
+class RatingCreate(BaseModel):
+    ride_id: str
+    driver_id: str
+    rating: int = Field(..., ge=1, le=5)
+    comment: Optional[str] = None
+
+class RatingResponse(BaseModel):
+    id: str
+    ride_id: str
+    user_id: str
+    driver_id: str
+    rating: int
+    comment: Optional[str]
+    created_at: str
+
 # Helper functions
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
