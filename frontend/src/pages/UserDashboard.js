@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Circle, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass } from 'lucide-react';
+import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass, History, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,6 +11,9 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import 'leaflet/dist/leaflet.css';
+import NotificationCenter from '@/components/NotificationCenter';
+import RideHistory from '@/pages/RideHistory';
+import { PendingRatings } from '@/components/RatingSystem';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
