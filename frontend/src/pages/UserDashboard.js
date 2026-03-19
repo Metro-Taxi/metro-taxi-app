@@ -369,6 +369,15 @@ const UserDashboard = () => {
                 </Link>
                 <Button 
                   variant="ghost" 
+                  className="w-full justify-start text-white hover:bg-zinc-800"
+                  onClick={() => { setMenuOpen(false); setShowHistory(true); }}
+                  data-testid="history-link"
+                >
+                  <History className="w-5 h-5 mr-3" />
+                  {t('rideHistory.title', 'Ride History')}
+                </Button>
+                <Button 
+                  variant="ghost" 
                   className="w-full justify-start text-red-400 hover:bg-red-500/10 hover:text-red-400"
                   onClick={handleLogout}
                   data-testid="logout-btn"
