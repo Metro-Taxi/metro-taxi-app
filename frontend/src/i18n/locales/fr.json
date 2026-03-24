@@ -413,7 +413,9 @@
     "rights": "Tous droits réservés",
     "contact": "Contact",
     "legal": "Mentions légales",
-    "privacy": "Confidentialité"
+    "privacy": "Confidentialité",
+    "cgu": "CGU",
+    "cgv": "CGV"
   },
   "errors": {
     "required": "Ce champ est requis",
@@ -581,5 +583,27 @@
     "readAndAccept": "J'ai lu et j'accepte les Conditions Générales d'Utilisation",
     "acceptButton": "J'accepte les CGU",
     "allRightsReserved": "Tous droits réservés."
+  },
+  "cgv": {
+    "title": "Conditions Générales de Vente (CGV)",
+    "subscriptionModel": "Modèle par abonnement",
+    "intro": "Métro-Taxi fonctionne exclusivement par abonnement.",
+    "noPerRide": "Aucun paiement n'est effectué par trajet.",
+    "pricingTitle": "Tarifs",
+    "pricing": {
+      "day": "24 heures",
+      "week": "1 semaine",
+      "month": "1 mois"
+    },
+    "conditionsTitle": "Conditions",
+    "condition1": "L'abonnement doit être actif pour accéder au service",
+    "condition2": "Les abonnements sont non remboursables sauf cas exceptionnel",
+    "condition3": "Le renouvellement est à l'initiative de l'utilisateur",
+    "suspensionTitle": "Suspension du service",
+    "suspensionWarning": "En cas d'expiration de l'abonnement :",
+    "suspension1": "L'accès à l'application est automatiquement désactivé",
+    "suspension2": "Aucun trajet ne peut être effectué",
+    "readAndAccept": "J'ai lu et j'accepte les Conditions Générales de Vente",
+    "acceptButton": "J'accepte les CGV"
   }
 }

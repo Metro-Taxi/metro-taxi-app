@@ -573,6 +573,7 @@ const Landing = () => {
               <Link to="/register/user" className="hover:text-white transition-colors">{t('nav.register')}</Link>
               <Link to="/register/driver" className="hover:text-white transition-colors">{t('nav.drivers')}</Link>
               <Link to="/cgu" className="hover:text-white transition-colors">{t('footer.cgu', 'CGU')}</Link>
+              <Link to="/cgv" className="hover:text-white transition-colors">{t('footer.cgv', 'CGV')}</Link>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-zinc-800 text-center text-zinc-500">

@@ -18,6 +18,7 @@ import SubscriptionSuccess from "@/pages/SubscriptionSuccess";
 import Profile from "@/pages/Profile";
 import VerifyEmail from "@/pages/VerifyEmail";
 import TermsAndConditions from "@/pages/TermsAndConditions";
+import SalesTerms from "@/pages/SalesTerms";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -95,6 +96,7 @@ function AppRoutes() {
       <Route path="/verify-email" element={<VerifyEmail />} />
       <Route path="/terms" element={<TermsAndConditions />} />
       <Route path="/cgu" element={<TermsAndConditions />} />
+      <Route path="/cgv" element={<SalesTerms />} />
       
       {/* User Routes */}
       <Route path="/dashboard" element={

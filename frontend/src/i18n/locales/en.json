@@ -408,7 +408,9 @@
     "rights": "All rights reserved",
     "contact": "Contact",
     "legal": "Legal Notice",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "cgu": "Terms",
+    "cgv": "Sales Terms"
   },
   "errors": {
     "required": "This field is required",
@@ -576,5 +578,27 @@
     "readAndAccept": "I have read and accept the Terms and Conditions",
     "acceptButton": "I accept the Terms",
     "allRightsReserved": "All rights reserved."
+  },
+  "cgv": {
+    "title": "General Terms of Sale",
+    "subscriptionModel": "Subscription Model",
+    "intro": "Métro-Taxi operates exclusively through subscriptions.",
+    "noPerRide": "No per-ride payment is required.",
+    "pricingTitle": "Pricing",
+    "pricing": {
+      "day": "24 hours",
+      "week": "1 week",
+      "month": "1 month"
+    },
+    "conditionsTitle": "Terms",
+    "condition1": "An active subscription is required to access the service",
+    "condition2": "Subscriptions are non-refundable except in exceptional cases",
+    "condition3": "Renewal is at the user's initiative",
+    "suspensionTitle": "Service Suspension",
+    "suspensionWarning": "Upon subscription expiration:",
+    "suspension1": "Access to the application is automatically disabled",
+    "suspension2": "No rides can be taken",
+    "readAndAccept": "I have read and accept the General Terms of Sale",
+    "acceptButton": "I accept the Terms"
   }
 }

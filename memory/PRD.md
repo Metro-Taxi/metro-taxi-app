@@ -13,6 +13,20 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 
 ## ✅ Fonctionnalités Complètes
 
+### 📜 Conditions Générales de Vente (CGV) ✅ (24/03/2026)
+- Page `/cgv` avec tous les détails tarifaires et conditions
+- Modèle par abonnement (aucun paiement par trajet)
+- **Tarifs** : 24h - 6,99€ | 1 semaine - 16,99€ | 1 mois - 53,99€
+- **Conditions** : Abonnement actif requis, non remboursable, renouvellement utilisateur
+- **Suspension** : Accès désactivé si abonnement expiré
+- Bouton "J'accepte les CGV" avec checkbox
+- Lien CGV ajouté au pied de page
+- Traductions complètes (français, anglais)
+
+### 📄 Conditions Générales d'Utilisation (CGU) ✅
+- Page `/cgu` et `/terms` avec règles d'utilisation
+- Traductions multilingues
+
 ### 🔔 Notifications Push ✅ (19/03/2026)
 - Endpoint `/api/notifications/subscribe` pour enregistrer les tokens
 - Endpoint `/api/notifications` pour récupérer les notifications
@@ -64,21 +78,21 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 - `users` - Utilisateurs
 - `drivers` - Chauffeurs  
 - `rides` - Trajets
-- `ratings` - Notes (NEW)
-- `notifications` - Notifications (NEW)
-- `push_subscriptions` - Abonnements push (NEW)
+- `ratings` - Notes
+- `notifications` - Notifications
+- `push_subscriptions` - Abonnements push
 - `driver_earnings` - Revenus chauffeurs
 - `payout_history` - Historique virements
 
 ## 📅 Dernière Mise à Jour
-**19/03/2026**
-- ✅ Notifications push implémentées
-- ✅ Historique des trajets avec filtres
-- ✅ Système de notation 1-5 étoiles
-- ✅ Guide de déploiement complet
+**24/03/2026**
+- ✅ Page CGV créée avec tarifs, conditions et bouton d'acceptation
+- ✅ Lien CGV ajouté au pied de page
+- ✅ Traductions français/anglais ajoutées
 
 ## 🔄 Prochaines Étapes
-- [ ] Tests complets des nouvelles fonctionnalités
+- [ ] Tester les fonctionnalités complètes (notifications, historique, notation)
+- [ ] Résoudre l'incohérence de la base de données de test
 - [ ] Déploiement en production sur metro-taxi.com
 - [ ] Configuration clé Stripe LIVE
 
