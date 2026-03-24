@@ -17,6 +17,7 @@ import Subscription from "@/pages/Subscription";
 import SubscriptionSuccess from "@/pages/SubscriptionSuccess";
 import Profile from "@/pages/Profile";
 import VerifyEmail from "@/pages/VerifyEmail";
+import TermsAndConditions from "@/pages/TermsAndConditions";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
