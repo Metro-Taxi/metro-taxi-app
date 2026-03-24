@@ -20,6 +20,7 @@
     "ecoMessage": "Réduisez votre empreinte carbone en partageant vos trajets"
   },
   "nav": {
+    "home": "Accueil",
     "login": "Connexion",
     "register": "S'inscrire",
     "pricing": "Tarifs",

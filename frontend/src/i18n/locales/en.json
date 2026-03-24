@@ -20,6 +20,7 @@
     "ecoMessage": "Reduce your carbon footprint by sharing your rides"
   },
   "nav": {
+    "home": "Home",
     "login": "Login",
     "register": "Sign Up",
     "pricing": "Pricing",

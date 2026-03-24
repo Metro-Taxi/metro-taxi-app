@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Circle, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass, History, Star } from 'lucide-react';
+import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass, History, Star, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
@@ -306,10 +306,10 @@ const UserDashboard = () => {
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-[1000] glass-panel">
         <div className="flex justify-between items-center px-4 py-3">
-          <div className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="home-link">
             <Car className="w-6 h-6 text-[#FFD60A]" />
             <span className="text-lg font-bold text-white">MÉTRO-TAXI</span>
-          </div>
+          </Link>
           
           <div className="flex items-center gap-2">
             {user?.subscription_active ? (
@@ -357,6 +357,12 @@ const UserDashboard = () => {
               </div>
               
               <nav className="space-y-2">
+                <Link to="/" onClick={() => setMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start text-white hover:bg-zinc-800" data-testid="home-menu-link">
+                    <Home className="w-5 h-5 mr-3" />
+                    {t('nav.home', 'Accueil')}
+                  </Button>
+                </Link>
                 <Link to="/profile" onClick={() => setMenuOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start text-white hover:bg-zinc-800" data-testid="profile-link">
                     <User className="w-5 h-5 mr-3" />
