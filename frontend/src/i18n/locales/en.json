@@ -551,7 +551,11 @@
     "justNow": "Just now",
     "rideAccepted": "Ride accepted",
     "driverArrived": "Driver arrived",
-    "subscriptionExpiring": "Subscription expiring soon"
+    "subscriptionExpiring": "Subscription expiring soon",
+    "renewNow": "Renew now",
+    "subscriptionExpiryTitle": "Subscription expiring soon",
+    "subscriptionExpiryTitleToday": "Subscription expires today",
+    "subscriptionExpiryBody": "Your Métro-Taxi subscription is expiring soon. Renew now to continue using the service without interruption."
   },
   "cgu": {
     "title": "Terms and Conditions",

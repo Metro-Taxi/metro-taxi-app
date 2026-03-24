@@ -13,6 +13,18 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 
 ## ✅ Fonctionnalités Complètes
 
+### 🔔 Notifications Automatiques d'Expiration d'Abonnement ✅ (24/03/2026)
+- **Tâche de fond** : Vérifie toutes les heures les abonnements expirants
+- **Notifications envoyées** :
+  - 48 heures avant expiration
+  - 24 heures avant expiration
+  - Le jour de l'expiration
+- **Message** : "Votre abonnement Métro-Taxi expire bientôt. Renouvelez-le dès maintenant pour continuer à utiliser le service sans interruption."
+- **Bouton "Renouveler maintenant"** : Redirige vers `/subscription`
+- **Endpoint `/api/subscription/status`** : Statut de l'abonnement avec heures restantes
+- **Endpoint `/api/notifications/test-expiry`** : Pour tests
+- Icône ⚠️ et bordure orange pour distinguer les alertes d'expiration
+
 ### 📜 Conditions Générales de Vente (CGV) ✅ (24/03/2026)
 - Page `/cgv` avec tous les détails tarifaires et conditions
 - Modèle par abonnement (aucun paiement par trajet)
@@ -86,17 +98,19 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 
 ## 📅 Dernière Mise à Jour
 **24/03/2026**
+- ✅ Système de notifications automatiques d'expiration d'abonnement
+  - Tâche de fond vérifiant toutes les heures
+  - Notifications à 48h, 24h et jour J
+  - Bouton "Renouveler maintenant" → redirection vers /subscription
 - ✅ Page CGV créée avec tarifs, conditions et bouton d'acceptation
 - ✅ Lien CGV ajouté au pied de page
-- ✅ Traductions français/anglais ajoutées
 
 ## 🔄 Prochaines Étapes
-- [ ] Tester les fonctionnalités complètes (notifications, historique, notation)
-- [ ] Résoudre l'incohérence de la base de données de test
+- [ ] Configurer les VAPID keys pour notifications push de production
 - [ ] Déploiement en production sur metro-taxi.com
 - [ ] Configuration clé Stripe LIVE
 
 ## 📦 Backlog Futur
-- Notifications push réelles avec VAPID keys
-- Système de chat usager/chauffeur
+- Système de chat usager/chauffeur en temps réel
 - Mode hors ligne avancé pour PWA
+- Envoi d'emails de rappel d'expiration (en complément des notifications)

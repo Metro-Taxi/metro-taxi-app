@@ -3309,6 +3309,68 @@ async def mark_all_notifications_read(current_user: dict = Depends(get_current_u
     )
     return {"success": True}
 
+@api_router.get("/subscription/status")
+async def get_subscription_status(current_user: dict = Depends(get_current_user)):
+    """Get current user's subscription status with expiration details"""
+    user_id = current_user.get("user_id") or current_user.get("id")
+    
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    now = datetime.now(timezone.utc)
+    subscription_active = user.get("subscription_active", False)
+    expires_str = user.get("subscription_expires")
+    
+    hours_remaining = None
+    days_remaining = None
+    is_expiring_soon = False
+    
+    if expires_str and subscription_active:
+        try:
+            expires = datetime.fromisoformat(expires_str)
+            delta = expires - now
+            hours_remaining = max(0, round(delta.total_seconds() / 3600))
+            days_remaining = max(0, round(delta.total_seconds() / 86400, 1))
+            is_expiring_soon = hours_remaining <= 48
+        except (ValueError, TypeError):
+            pass
+    
+    return {
+        "active": subscription_active,
+        "plan": user.get("subscription_plan"),
+        "expires_at": expires_str,
+        "hours_remaining": hours_remaining,
+        "days_remaining": days_remaining,
+        "is_expiring_soon": is_expiring_soon
+    }
+
+@api_router.post("/notifications/test-expiry")
+async def create_test_expiry_notification(current_user: dict = Depends(get_current_user)):
+    """Create a test subscription expiry notification for the current user (for testing purposes)"""
+    user_id = current_user.get("user_id") or current_user.get("id")
+    
+    notif_doc = {
+        "id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "user_type": "user",
+        "title": "Abonnement expire bientôt",
+        "body": "Votre abonnement Métro-Taxi expire bientôt. Renouvelez-le dès maintenant pour continuer à utiliser le service sans interruption.",
+        "data": {
+            "type": "subscription_expiry",
+            "notification_key": "test_expiry",
+            "expiry_date": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat(),
+            "hours_remaining": 24,
+            "action": "renew",
+            "action_url": "/subscription"
+        },
+        "read": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.notifications.insert_one(notif_doc)
+    
+    return {"success": True, "notification_id": notif_doc["id"], "message": "Test expiry notification created"}
+
 # ============================================
 # RIDE HISTORY ENDPOINTS
 # ============================================
@@ -3602,6 +3664,84 @@ async def start_subscription_checker():
     """Start the background subscription expiration checker"""
     asyncio.create_task(check_expired_subscriptions())
     logging.info("Subscription expiration checker started (runs every 5 minutes)")
+
+# ============================================
+# AUTOMATIC SUBSCRIPTION EXPIRATION NOTIFICATIONS
+# ============================================
+async def check_and_notify_expiring_subscriptions():
+    """Background task to send notifications for expiring subscriptions at 48h, 24h, and day of expiration"""
+    while True:
+        try:
+            now = datetime.now(timezone.utc)
+            
+            # Find all users with active subscriptions
+            active_users = await db.users.find({
+                "subscription_active": True,
+                "subscription_expires": {"$ne": None}
+            }, {"_id": 0, "id": 1, "subscription_expires": 1, "email": 1, "first_name": 1}).to_list(1000)
+            
+            for user in active_users:
+                expires_str = user.get("subscription_expires")
+                if not expires_str:
+                    continue
+                    
+                try:
+                    expires = datetime.fromisoformat(expires_str)
+                    hours_until_expiry = (expires - now).total_seconds() / 3600
+                    
+                    # Define notification thresholds and their keys
+                    thresholds = [
+                        (48, 47, "subscription_expiry_48h"),  # 48h notification (between 47-48 hours)
+                        (24, 23, "subscription_expiry_24h"),  # 24h notification (between 23-24 hours)
+                        (1, 0, "subscription_expiry_today"),   # Day of expiration (0-1 hours)
+                    ]
+                    
+                    for max_hours, min_hours, notif_key in thresholds:
+                        if min_hours < hours_until_expiry <= max_hours:
+                            # Check if we already sent this notification
+                            existing_notif = await db.notifications.find_one({
+                                "user_id": user["id"],
+                                "data.notification_key": notif_key,
+                                "data.expiry_date": expires_str
+                            })
+                            
+                            if not existing_notif:
+                                # Create the notification
+                                notif_doc = {
+                                    "id": str(uuid.uuid4()),
+                                    "user_id": user["id"],
+                                    "user_type": "user",
+                                    "title": "Abonnement expire bientôt" if hours_until_expiry > 1 else "Abonnement expire aujourd'hui",
+                                    "body": "Votre abonnement Métro-Taxi expire bientôt. Renouvelez-le dès maintenant pour continuer à utiliser le service sans interruption.",
+                                    "data": {
+                                        "type": "subscription_expiry",
+                                        "notification_key": notif_key,
+                                        "expiry_date": expires_str,
+                                        "hours_remaining": round(hours_until_expiry),
+                                        "action": "renew",
+                                        "action_url": "/subscription"
+                                    },
+                                    "read": False,
+                                    "created_at": datetime.now(timezone.utc).isoformat()
+                                }
+                                await db.notifications.insert_one(notif_doc)
+                                logging.info(f"Subscription expiry notification ({notif_key}) sent to user: {user.get('email', user['id'])}")
+                            break  # Only send one notification per check
+                            
+                except (ValueError, TypeError) as e:
+                    logging.error(f"Error parsing expiration date for user {user['id']}: {e}")
+            
+        except Exception as e:
+            logging.error(f"Error checking expiring subscriptions for notifications: {e}")
+        
+        # Check every hour
+        await asyncio.sleep(3600)
+
+@app.on_event("startup")
+async def start_subscription_notification_checker():
+    """Start the background subscription expiration notification checker"""
+    asyncio.create_task(check_and_notify_expiring_subscriptions())
+    logging.info("Subscription expiration notification checker started (runs every hour)")
 
 # ============================================
 # AUTOMATIC DRIVER PAYOUT PROCESSING

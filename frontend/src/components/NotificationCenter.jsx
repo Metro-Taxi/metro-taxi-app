@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, X, Check, CheckCheck, Trash2 } from 'lucide-react';
+import { Bell, X, Check, CheckCheck, Trash2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -67,6 +68,7 @@ export const notificationService = {
 const NotificationCenter = () => {
   const { token } = useAuth();
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -155,8 +157,22 @@ const NotificationCenter = () => {
       case 'driver_arrived': return '📍';
       case 'rating': return '⭐';
       case 'subscription': return '💳';
+      case 'subscription_expiry': return '⚠️';
       case 'payout': return '💰';
       default: return '🔔';
+    }
+  };
+
+  const handleNotificationAction = (notif) => {
+    // Mark as read first
+    if (!notif.read) {
+      markAsRead(notif.id);
+    }
+    
+    // Handle subscription expiry action
+    if (notif.data?.type === 'subscription_expiry' && notif.data?.action === 'renew') {
+      setIsOpen(false);
+      navigate('/subscription');
     }
   };
 
@@ -225,10 +241,9 @@ const NotificationCenter = () => {
                       key={notif.id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className={`px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/50 transition-colors cursor-pointer ${
+                      className={`px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/50 transition-colors ${
                         !notif.read ? 'bg-[#FFD60A]/5' : ''
-                      }`}
-                      onClick={() => !notif.read && markAsRead(notif.id)}
+                      } ${notif.data?.type === 'subscription_expiry' ? 'bg-orange-500/10 border-l-2 border-l-orange-500' : ''}`}
                     >
                       <div className="flex items-start gap-3">
                         <span className="text-xl">
@@ -238,9 +253,22 @@ const NotificationCenter = () => {
                           <p className={`text-sm ${notif.read ? 'text-zinc-400' : 'text-white font-medium'}`}>
                             {notif.title}
                           </p>
-                          <p className="text-zinc-500 text-xs mt-0.5 truncate">
+                          <p className="text-zinc-500 text-xs mt-0.5 line-clamp-2">
                             {notif.body}
                           </p>
+                          
+                          {/* Subscription Expiry Action Button */}
+                          {notif.data?.type === 'subscription_expiry' && notif.data?.action === 'renew' && (
+                            <button
+                              onClick={() => handleNotificationAction(notif)}
+                              className="mt-2 flex items-center gap-1.5 bg-[#FFD60A] text-black text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-[#FFE55C] transition-colors"
+                              data-testid="renew-subscription-btn"
+                            >
+                              <RefreshCw className="w-3 h-3" />
+                              {t('notifications.renewNow', 'Renouveler maintenant')}
+                            </button>
+                          )}
+                          
                           <p className="text-zinc-600 text-xs mt-1">
                             {formatTime(notif.created_at)}
                           </p>

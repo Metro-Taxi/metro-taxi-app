@@ -556,7 +556,11 @@
     "justNow": "À l'instant",
     "rideAccepted": "Trajet accepté",
     "driverArrived": "Chauffeur arrivé",
-    "subscriptionExpiring": "Abonnement expirant bientôt"
+    "subscriptionExpiring": "Abonnement expirant bientôt",
+    "renewNow": "Renouveler maintenant",
+    "subscriptionExpiryTitle": "Abonnement expire bientôt",
+    "subscriptionExpiryTitleToday": "Abonnement expire aujourd'hui",
+    "subscriptionExpiryBody": "Votre abonnement Métro-Taxi expire bientôt. Renouvelez-le dès maintenant pour continuer à utiliser le service sans interruption."
   },
   "cgu": {
     "title": "Conditions Générales d'Utilisation (CGU)",
