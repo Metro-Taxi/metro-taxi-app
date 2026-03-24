@@ -550,5 +550,31 @@
     "rideAccepted": "Ride accepted",
     "driverArrived": "Driver arrived",
     "subscriptionExpiring": "Subscription expiring soon"
+  },
+  "cgu": {
+    "title": "Terms and Conditions",
+    "back": "Back",
+    "lastUpdate": "Last updated",
+    "intro": "Métro-Taxi is a platform connecting subscribed users with VTC drivers.",
+    "serviceTitle": "The service allows",
+    "service1": "Real-time display of available vehicles",
+    "service2": "View their direction",
+    "service3": "Know the number of available seats",
+    "service4": "Access to a dynamic carpooling system",
+    "service5": "Transfer between vehicles",
+    "userRulesTitle": "Rules for users",
+    "userRule1": "Have an active subscription",
+    "userRule2": "Be ready at the pickup point",
+    "userRule3": "Respect drivers and other passengers",
+    "driverRulesTitle": "Rules for drivers",
+    "driverRule1": "Comply with VTC regulations",
+    "driverRule2": "Ensure passenger safety and respect",
+    "driverRule3": "Use the application as a connection tool",
+    "responsibilityTitle": "Responsibility",
+    "responsibility1": "Métro-Taxi acts only as a connection platform.",
+    "responsibility2": "Rides are carried out under the responsibility of drivers.",
+    "readAndAccept": "I have read and accept the Terms and Conditions",
+    "acceptButton": "I accept the Terms",
+    "allRightsReserved": "All rights reserved."
   }
 }
