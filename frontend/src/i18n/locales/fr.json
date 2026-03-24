@@ -555,5 +555,31 @@
     "rideAccepted": "Trajet accepté",
     "driverArrived": "Chauffeur arrivé",
     "subscriptionExpiring": "Abonnement expirant bientôt"
+  },
+  "cgu": {
+    "title": "Conditions Générales d'Utilisation (CGU)",
+    "back": "Retour",
+    "lastUpdate": "Dernière mise à jour",
+    "intro": "Métro-Taxi est une plateforme de mise en relation entre des usagers abonnés et des chauffeurs VTC.",
+    "serviceTitle": "Le service permet",
+    "service1": "D'afficher en temps réel les véhicules disponibles",
+    "service2": "De visualiser leur direction",
+    "service3": "De connaître le nombre de places disponibles",
+    "service4": "D'accéder à un système de covoiturage dynamique",
+    "service5": "D'effectuer des transbordements entre véhicules",
+    "userRulesTitle": "Règles pour les usagers",
+    "userRule1": "Disposer d'un abonnement actif",
+    "userRule2": "Être prêt au point de prise en charge",
+    "userRule3": "Respecter les chauffeurs et les autres passagers",
+    "driverRulesTitle": "Règles pour les chauffeurs",
+    "driverRule1": "Être en conformité avec la réglementation VTC",
+    "driverRule2": "Assurer la sécurité et le respect des passagers",
+    "driverRule3": "Utiliser l'application comme outil de mise en relation",
+    "responsibilityTitle": "Responsabilité",
+    "responsibility1": "Métro-Taxi agit uniquement comme une plateforme de mise en relation.",
+    "responsibility2": "Les trajets sont réalisés sous la responsabilité des chauffeurs.",
+    "readAndAccept": "J'ai lu et j'accepte les Conditions Générales d'Utilisation",
+    "acceptButton": "J'accepte les CGU",
+    "allRightsReserved": "Tous droits réservés."
   }
 }
