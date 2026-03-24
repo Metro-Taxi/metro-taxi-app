@@ -10,6 +10,14 @@
     "save": "Save",
     "close": "Close"
   },
+  "popup": {
+    "importantTitle": "Important",
+    "subscriptionRequired": "Your subscription must be active to use Métro-Taxi.",
+    "notificationReminder": "You will receive reminder notifications before expiration.",
+    "renewRecommendation": "We recommend renewing your subscription as soon as you receive these alerts to avoid any service interruption during your travels.",
+    "expiringSoon": "Your subscription expires in",
+    "understoodButton": "I understand"
+  },
   "hero": {
     "title": "MÉTRO-TAXI",
     "subtitle": "The subscription-based urban mobility network",

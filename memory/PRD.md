@@ -13,6 +13,16 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 
 ## ✅ Fonctionnalités Complètes
 
+### 📢 Pop-up d'Information Important ✅ (24/03/2026)
+- **Affichage** : À l'ouverture de l'application et quand l'abonnement expire bientôt
+- **Message** :
+  - "Votre abonnement doit être actif pour utiliser Métro-Taxi."
+  - "Vous recevrez des notifications de rappel avant expiration."
+  - "Nous vous recommandons de renouveler votre abonnement dès réception de ces alertes afin d'éviter toute interruption du service pendant vos déplacements."
+- **Alerte d'expiration** : Affiche les heures restantes si expiration proche (<48h)
+- **Bouton "J'ai compris"** : Ferme la pop-up et sauvegarde l'état
+- Ne réapparaît pas avant 24h (sauf si abonnement expire bientôt)
+
 ### 🚫 Contrôle d'Accès - Abonnement Expiré ✅ (24/03/2026)
 - **Overlay de blocage** : Si abonnement expiré, affiche un écran de blocage
 - **Message** : "Votre abonnement a expiré. Veuillez le renouveler pour continuer à utiliser Métro-Taxi."
@@ -109,6 +119,7 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 
 ## 📅 Dernière Mise à Jour
 **24/03/2026**
+- ✅ **Pop-up d'Information Important** : Message d'alerte à l'ouverture + alerte expiration
 - ✅ **Contrôle d'accès abonnement expiré** : Overlay bloquant avec message et bouton de renouvellement
 - ✅ Système de notifications automatiques d'expiration d'abonnement
   - Tâche de fond vérifiant toutes les heures

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Circle, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass, History, Star, Home, AlertTriangle } from 'lucide-react';
+import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass, History, Star, Home, AlertTriangle, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
@@ -107,6 +107,8 @@ const UserDashboard = () => {
   const [networkStatus, setNetworkStatus] = useState(null);
   const [showDestinationPicker, setShowDestinationPicker] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showImportantPopup, setShowImportantPopup] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState(null);
 
   // Paris center as default
   const defaultCenter = [48.8566, 2.3522];
@@ -140,6 +142,46 @@ const UserDashboard = () => {
     } catch (error) {
       console.error('Location update error:', error);
     }
+  };
+
+  // Check subscription status and show popup if needed
+  useEffect(() => {
+    const checkSubscriptionAndShowPopup = async () => {
+      try {
+        const response = await axios.get(`${API}/subscription/status`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setSubscriptionStatus(response.data);
+        
+        // Check if we should show the important popup
+        const lastPopupShown = localStorage.getItem('metro-taxi-important-popup-shown');
+        const lastPopupDate = lastPopupShown ? new Date(lastPopupShown) : null;
+        const now = new Date();
+        
+        // Show popup if:
+        // 1. Never shown before, OR
+        // 2. Last shown more than 24 hours ago AND subscription is expiring soon
+        const shouldShowOnFirstVisit = !lastPopupShown;
+        const isExpiringSoon = response.data.is_expiring_soon;
+        const lastShownMoreThan24hAgo = lastPopupDate && (now - lastPopupDate) > 24 * 60 * 60 * 1000;
+        
+        if (shouldShowOnFirstVisit || (isExpiringSoon && lastShownMoreThan24hAgo)) {
+          // Small delay to let the page render first
+          setTimeout(() => setShowImportantPopup(true), 1000);
+        }
+      } catch (error) {
+        console.error('Subscription status check error:', error);
+      }
+    };
+    
+    if (token && user?.subscription_active) {
+      checkSubscriptionAndShowPopup();
+    }
+  }, [token, user]);
+
+  const handleCloseImportantPopup = () => {
+    setShowImportantPopup(false);
+    localStorage.setItem('metro-taxi-important-popup-shown', new Date().toISOString());
   };
 
   // Fetch available drivers
@@ -369,6 +411,72 @@ const UserDashboard = () => {
           </motion.div>
         </div>
       )}
+
+      {/* Important Information Popup */}
+      <AnimatePresence>
+        {showImportantPopup && !isSubscriptionExpired && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[1500] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+            data-testid="important-popup-overlay"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-zinc-900 border border-[#FFD60A]/30 rounded-2xl p-6 md:p-8 max-w-md w-full"
+            >
+              {/* Header with icon */}
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 bg-[#FFD60A]/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Bell className="w-6 h-6 text-[#FFD60A]" />
+                </div>
+                <h2 className="text-xl font-bold text-[#FFD60A]">
+                  {t('popup.importantTitle', 'Important')}
+                </h2>
+              </div>
+              
+              {/* Message content */}
+              <div className="space-y-4 mb-8">
+                <p className="text-white font-medium">
+                  {t('popup.subscriptionRequired', 'Votre abonnement doit être actif pour utiliser Métro-Taxi.')}
+                </p>
+                
+                <p className="text-zinc-400">
+                  {t('popup.notificationReminder', 'Vous recevrez des notifications de rappel avant expiration.')}
+                </p>
+                
+                <p className="text-zinc-400">
+                  {t('popup.renewRecommendation', 'Nous vous recommandons de renouveler votre abonnement dès réception de ces alertes afin d\'éviter toute interruption du service pendant vos déplacements.')}
+                </p>
+              </div>
+              
+              {/* Expiration warning if expiring soon */}
+              {subscriptionStatus?.is_expiring_soon && (
+                <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4 mb-6">
+                  <div className="flex items-center gap-2 text-orange-400">
+                    <AlertTriangle className="w-5 h-5" />
+                    <span className="font-medium">
+                      {t('popup.expiringSoon', 'Votre abonnement expire dans')} {subscriptionStatus.hours_remaining}h
+                    </span>
+                  </div>
+                </div>
+              )}
+              
+              {/* Understand button */}
+              <Button 
+                onClick={handleCloseImportantPopup}
+                className="w-full bg-[#FFD60A] hover:bg-[#FFE55C] text-black font-bold py-3"
+                data-testid="understood-btn"
+              >
+                {t('popup.understoodButton', 'J\'ai compris')}
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-[1000] glass-panel">

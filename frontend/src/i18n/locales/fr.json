@@ -10,6 +10,14 @@
     "save": "Enregistrer",
     "close": "Fermer"
   },
+  "popup": {
+    "importantTitle": "Important",
+    "subscriptionRequired": "Votre abonnement doit être actif pour utiliser Métro-Taxi.",
+    "notificationReminder": "Vous recevrez des notifications de rappel avant expiration.",
+    "renewRecommendation": "Nous vous recommandons de renouveler votre abonnement dès réception de ces alertes afin d'éviter toute interruption du service pendant vos déplacements.",
+    "expiringSoon": "Votre abonnement expire dans",
+    "understoodButton": "J'ai compris"
+  },
   "hero": {
     "title": "MÉTRO-TAXI",
     "subtitle": "Le réseau de mobilité urbaine par abonnement",
