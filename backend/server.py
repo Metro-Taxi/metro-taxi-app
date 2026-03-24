@@ -2005,7 +2005,7 @@ async def get_stripe_connect_config():
     }
 
 @api_router.post("/drivers/stripe-connect/create-account")
-async def create_stripe_connect_account(current_user: dict = Depends(get_current_user)):
+async def create_stripe_connect_account(request: Request, current_user: dict = Depends(get_current_user)):
     """Create a Stripe Connect Express account for a driver"""
     if current_user["role"] != "driver":
         raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
@@ -2028,11 +2028,12 @@ async def create_stripe_connect_account(current_user: dict = Depends(get_current
         try:
             account = stripe.Account.retrieve(driver["stripe_account_id"])
             if not account.details_submitted:
-                # Generate new onboarding link
+                # Generate new onboarding link with dynamic origin
+                origin = request.headers.get('origin', 'https://metro-taxi.com')
                 account_link = stripe.AccountLink.create(
                     account=driver["stripe_account_id"],
-                    refresh_url="https://metro-taxi.com/driver/stripe-refresh",
-                    return_url="https://metro-taxi.com/driver/stripe-complete",
+                    refresh_url=f"{origin}/driver/stripe-refresh",
+                    return_url=f"{origin}/driver/stripe-complete",
                     type="account_onboarding"
                 )
                 return {
@@ -2071,11 +2072,12 @@ async def create_stripe_connect_account(current_user: dict = Depends(get_current
             }
         )
         
-        # Create account onboarding link
+        # Create account onboarding link with dynamic origin
+        origin = request.headers.get('origin', 'https://metro-taxi.com')
         account_link = stripe.AccountLink.create(
             account=account.id,
-            refresh_url="https://metro-taxi.com/driver/stripe-refresh",
-            return_url="https://metro-taxi.com/driver/stripe-complete",
+            refresh_url=f"{origin}/driver/stripe-refresh",
+            return_url=f"{origin}/driver/stripe-complete",
             type="account_onboarding"
         )
         
