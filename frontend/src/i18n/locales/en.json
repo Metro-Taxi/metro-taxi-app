@@ -246,6 +246,15 @@
   "subscription": {
     "title": "Choose your subscription",
     "subtitle": "Unlimited rides on the entire Métro-Taxi network",
+    "expiredTitle": "Subscription expired",
+    "expiredMessage": "Your subscription has expired. Please renew it to continue using Métro-Taxi.",
+    "blockedFeatures": "Blocked features:",
+    "blocked": {
+      "rides": "Ride booking",
+      "vehicles": "Vehicle connection",
+      "map": "Driver visualization"
+    },
+    "renewButton": "Renew my subscription",
     "plans": {
       "day": {
         "name": "24 Hours",

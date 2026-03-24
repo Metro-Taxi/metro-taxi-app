@@ -252,6 +252,15 @@
   "subscription": {
     "title": "Choisissez votre abonnement",
     "subtitle": "Trajets illimités sur tout le réseau Métro-Taxi",
+    "expiredTitle": "Abonnement expiré",
+    "expiredMessage": "Votre abonnement a expiré. Veuillez le renouveler pour continuer à utiliser Métro-Taxi.",
+    "blockedFeatures": "Fonctionnalités bloquées :",
+    "blocked": {
+      "rides": "Réservation de trajets",
+      "vehicles": "Connexion aux véhicules",
+      "map": "Visualisation des chauffeurs"
+    },
+    "renewButton": "Renouveler mon abonnement",
     "plans": {
       "day": {
         "name": "24 Heures",

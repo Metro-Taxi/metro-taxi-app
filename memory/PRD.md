@@ -13,6 +13,17 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 
 ## ✅ Fonctionnalités Complètes
 
+### 🚫 Contrôle d'Accès - Abonnement Expiré ✅ (24/03/2026)
+- **Overlay de blocage** : Si abonnement expiré, affiche un écran de blocage
+- **Message** : "Votre abonnement a expiré. Veuillez le renouveler pour continuer à utiliser Métro-Taxi."
+- **Fonctionnalités bloquées** :
+  - ❌ Réservation de trajets
+  - ❌ Connexion aux véhicules
+  - ❌ Visualisation des chauffeurs
+- **Bouton "Renouveler mon abonnement"** : Redirige vers `/subscription`
+- **Option "Se déconnecter"** : Pour quitter l'application
+- Icône d'avertissement rouge et fond flou
+
 ### 🔔 Notifications Automatiques d'Expiration d'Abonnement ✅ (24/03/2026)
 - **Tâche de fond** : Vérifie toutes les heures les abonnements expirants
 - **Notifications envoyées** :
@@ -98,12 +109,13 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 
 ## 📅 Dernière Mise à Jour
 **24/03/2026**
+- ✅ **Contrôle d'accès abonnement expiré** : Overlay bloquant avec message et bouton de renouvellement
 - ✅ Système de notifications automatiques d'expiration d'abonnement
   - Tâche de fond vérifiant toutes les heures
   - Notifications à 48h, 24h et jour J
   - Bouton "Renouveler maintenant" → redirection vers /subscription
 - ✅ Page CGV créée avec tarifs, conditions et bouton d'acceptation
-- ✅ Lien CGV ajouté au pied de page
+- ✅ Navigation améliorée : Logo cliquable + bouton "Accueil" dans le menu
 
 ## 🔄 Prochaines Étapes
 - [ ] Configurer les VAPID keys pour notifications push de production

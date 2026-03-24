@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Circle, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass, History, Star, Home } from 'lucide-react';
+import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass, History, Star, Home, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
@@ -301,8 +301,75 @@ const UserDashboard = () => {
     navigate('/');
   };
 
+  // Check if subscription is expired
+  const isSubscriptionExpired = !user?.subscription_active;
+
   return (
     <div className="h-screen w-full bg-[#09090B] relative overflow-hidden">
+      {/* Subscription Expired Overlay */}
+      {isSubscriptionExpired && (
+        <div className="absolute inset-0 z-[2000] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 max-w-md w-full text-center"
+          >
+            {/* Warning Icon */}
+            <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <AlertTriangle className="w-10 h-10 text-red-500" />
+            </div>
+            
+            {/* Title */}
+            <h2 className="text-2xl font-bold text-white mb-4">
+              {t('subscription.expiredTitle', 'Abonnement expiré')}
+            </h2>
+            
+            {/* Message */}
+            <p className="text-zinc-400 mb-8 leading-relaxed">
+              {t('subscription.expiredMessage', 'Votre abonnement a expiré. Veuillez le renouveler pour continuer à utiliser Métro-Taxi.')}
+            </p>
+            
+            {/* Blocked Features */}
+            <div className="bg-zinc-800/50 rounded-xl p-4 mb-8">
+              <p className="text-sm text-zinc-500 mb-3">{t('subscription.blockedFeatures', 'Fonctionnalités bloquées :')}</p>
+              <ul className="space-y-2 text-left">
+                <li className="flex items-center gap-2 text-zinc-400 text-sm">
+                  <X className="w-4 h-4 text-red-500" />
+                  {t('subscription.blocked.rides', 'Réservation de trajets')}
+                </li>
+                <li className="flex items-center gap-2 text-zinc-400 text-sm">
+                  <X className="w-4 h-4 text-red-500" />
+                  {t('subscription.blocked.vehicles', 'Connexion aux véhicules')}
+                </li>
+                <li className="flex items-center gap-2 text-zinc-400 text-sm">
+                  <X className="w-4 h-4 text-red-500" />
+                  {t('subscription.blocked.map', 'Visualisation des chauffeurs')}
+                </li>
+              </ul>
+            </div>
+            
+            {/* Renew Button */}
+            <Link to="/subscription" className="block">
+              <Button 
+                className="w-full bg-[#FFD60A] hover:bg-[#FFE55C] text-black font-bold py-4 text-lg"
+                data-testid="renew-subscription-overlay-btn"
+              >
+                <RefreshCw className="w-5 h-5 mr-2" />
+                {t('subscription.renewButton', 'Renouveler mon abonnement')}
+              </Button>
+            </Link>
+            
+            {/* Logout option */}
+            <button
+              onClick={handleLogout}
+              className="mt-4 text-zinc-500 hover:text-white text-sm transition-colors"
+            >
+              {t('nav.logout', 'Se déconnecter')}
+            </button>
+          </motion.div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-[1000] glass-panel">
         <div className="flex justify-between items-center px-4 py-3">
