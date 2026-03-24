@@ -16,7 +16,8 @@
     "drivers": "Sjåfører",
     "logout": "Logg ut",
     "profile": "Profil",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "home": "Hjem"
   },
   "auth": {
     "login": {
@@ -247,7 +248,16 @@
       "plan": "Plan",
       "validUntil": "Gyldig til",
       "goDashboard": "Gå til dashboard"
-    }
+    },
+    "expiredTitle": "Abonnement utløpt",
+    "expiredMessage": "Abonnementet ditt har utløpt. Forny det for å fortsette å bruke Métro-Taxi.",
+    "blockedFeatures": "Blokkerte funksjoner:",
+    "blocked": {
+      "rides": "Turbestilling",
+      "vehicles": "Kjøretøytilkobling",
+      "map": "Sjåførvisning"
+    },
+    "renewButton": "Forny abonnementet mitt"
   },
   "profile": {
     "title": "Min profil",
@@ -373,7 +383,9 @@
     "rights": "Alle rettigheter forbeholdt",
     "contact": "Kontakt",
     "legal": "Juridisk",
-    "privacy": "Personvern"
+    "privacy": "Personvern",
+    "cgu": "Vilkår",
+    "cgv": "Salgsbetingelser"
   },
   "common": {
     "loading": "Laster...",
@@ -393,7 +405,8 @@
     "none": "Ingen",
     "yes": "Ja",
     "no": "Nei",
-    "or": "eller"
+    "or": "eller",
+    "home": "Hjem"
   },
   "errors": {
     "required": "Påkrevd felt",
@@ -487,5 +500,40 @@
     "fetchError": "Error loading data",
     "stripeCreated": "Stripe account created! Redirecting...",
     "stripeError": "Error creating account"
+  },
+  "popup": {
+    "importantTitle": "Viktig",
+    "subscriptionRequired": "Abonnementet ditt må være aktivt for å bruke Métro-Taxi.",
+    "notificationReminder": "Du vil motta påminnelser før utløp.",
+    "renewRecommendation": "Vi anbefaler å fornye abonnementet ditt så snart du mottar disse varslene for å unngå avbrudd i tjenesten under reisene dine.",
+    "expiringSoon": "Abonnementet ditt utløper om",
+    "understoodButton": "Jeg forstår"
+  },
+  "cgv": {
+    "title": "Generelle Salgsbetingelser",
+    "subscriptionModel": "Abonnementsmodell",
+    "intro": "Métro-Taxi fungerer utelukkende gjennom abonnement.",
+    "noPerRide": "Ingen betaling per tur kreves.",
+    "pricingTitle": "Priser",
+    "pricing": {
+      "day": "24 timer",
+      "week": "1 uke",
+      "month": "1 måned"
+    },
+    "conditionsTitle": "Betingelser",
+    "condition1": "Et aktivt abonnement kreves for å få tilgang til tjenesten",
+    "condition2": "Abonnementer refunderes ikke unntatt i unntakstilfeller",
+    "condition3": "Fornyelse er på brukerens initiativ",
+    "suspensionTitle": "Tjenestesuspensjon",
+    "suspensionWarning": "Ved utløp av abonnementet:",
+    "suspension1": "Tilgang til applikasjonen deaktiveres automatisk",
+    "suspension2": "Ingen turer kan gjennomføres",
+    "readAndAccept": "Jeg har lest og aksepterer de Generelle Salgsbetingelsene",
+    "acceptButton": "Jeg aksepterer"
+  },
+  "notifications": {
+    "renewNow": "Forny nå",
+    "subscriptionExpiryTitle": "Abonnement utløper snart",
+    "subscriptionExpiryBody": "Métro-Taxi-abonnementet ditt utløper snart. Forny nå for å fortsette å bruke tjenesten uten avbrudd."
   }
 }

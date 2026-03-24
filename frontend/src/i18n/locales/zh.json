@@ -16,7 +16,8 @@
     "drivers": "司机",
     "logout": "退出",
     "profile": "个人资料",
-    "dashboard": "仪表板"
+    "dashboard": "仪表板",
+    "home": "首页"
   },
   "auth": {
     "login": {
@@ -251,7 +252,16 @@
       "plan": "计划",
       "validUntil": "有效期至",
       "goDashboard": "前往仪表板"
-    }
+    },
+    "expiredTitle": "订阅已过期",
+    "expiredMessage": "您的订阅已过期。请续订以继续使用 Métro-Taxi。",
+    "blockedFeatures": "已禁用的功能：",
+    "blocked": {
+      "rides": "行程预订",
+      "vehicles": "车辆连接",
+      "map": "司机显示"
+    },
+    "renewButton": "续订我的订阅"
   },
   "profile": {
     "title": "我的资料",
@@ -377,7 +387,9 @@
     "rights": "版权所有",
     "contact": "联系我们",
     "legal": "法律声明",
-    "privacy": "隐私政策"
+    "privacy": "隐私政策",
+    "cgu": "条款",
+    "cgv": "销售条款"
   },
   "common": {
     "loading": "加载中...",
@@ -397,7 +409,8 @@
     "none": "无",
     "yes": "是",
     "no": "否",
-    "or": "或"
+    "or": "或",
+    "home": "首页"
   },
   "errors": {
     "required": "必填字段",
@@ -491,5 +504,40 @@
     "fetchError": "Error loading data",
     "stripeCreated": "Stripe account created! Redirecting...",
     "stripeError": "Error creating account"
+  },
+  "popup": {
+    "importantTitle": "重要",
+    "subscriptionRequired": "您必须有有效订阅才能使用 Métro-Taxi。",
+    "notificationReminder": "您将在到期前收到提醒通知。",
+    "renewRecommendation": "我们建议您在收到这些提醒后立即续订，以避免在出行期间服务中断。",
+    "expiringSoon": "您的订阅将在以下时间到期",
+    "understoodButton": "我明白了"
+  },
+  "cgv": {
+    "title": "一般销售条款",
+    "subscriptionModel": "订阅模式",
+    "intro": "Métro-Taxi 完全通过订阅运营。",
+    "noPerRide": "无需按次付费。",
+    "pricingTitle": "价格",
+    "pricing": {
+      "day": "24小时",
+      "week": "1周",
+      "month": "1个月"
+    },
+    "conditionsTitle": "条款",
+    "condition1": "需要有效订阅才能使用服务",
+    "condition2": "订阅不可退款，特殊情况除外",
+    "condition3": "续订由用户主动进行",
+    "suspensionTitle": "服务暂停",
+    "suspensionWarning": "订阅到期时：",
+    "suspension1": "应用程序访问将自动禁用",
+    "suspension2": "无法进行任何行程",
+    "readAndAccept": "我已阅读并接受一般销售条款",
+    "acceptButton": "我接受"
+  },
+  "notifications": {
+    "renewNow": "立即续订",
+    "subscriptionExpiryTitle": "订阅即将到期",
+    "subscriptionExpiryBody": "您的 Métro-Taxi 订阅即将到期。立即续订以继续无中断使用服务。"
   }
 }

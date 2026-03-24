@@ -16,7 +16,8 @@
     "drivers": "Drivers",
     "logout": "Logout",
     "profile": "Profile",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "home": "Home"
   },
   "auth": {
     "login": {
@@ -246,7 +247,16 @@
       "plan": "Plan",
       "validUntil": "Valid until",
       "goDashboard": "Go to dashboard"
-    }
+    },
+    "expiredTitle": "Subscription expired",
+    "expiredMessage": "Your subscription has expired. Please renew it to continue using Métro-Taxi.",
+    "blockedFeatures": "Blocked features:",
+    "blocked": {
+      "rides": "Ride booking",
+      "vehicles": "Vehicle connection",
+      "map": "Driver visualisation"
+    },
+    "renewButton": "Renew my subscription"
   },
   "profile": {
     "title": "My Profile",
@@ -372,7 +382,9 @@
     "rights": "All rights reserved",
     "contact": "Contact",
     "legal": "Legal",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "cgu": "Terms",
+    "cgv": "Sales Terms"
   },
   "common": {
     "loading": "Loading...",
@@ -392,7 +404,8 @@
     "none": "None",
     "yes": "Yes",
     "no": "No",
-    "or": "or"
+    "or": "or",
+    "home": "Home"
   },
   "errors": {
     "required": "This field is required",
@@ -486,5 +499,40 @@
     "fetchError": "Error loading data",
     "stripeCreated": "Stripe account created! Redirecting...",
     "stripeError": "Error creating account"
+  },
+  "popup": {
+    "importantTitle": "Important",
+    "subscriptionRequired": "Your subscription must be active to use Métro-Taxi.",
+    "notificationReminder": "You will receive reminder notifications before expiry.",
+    "renewRecommendation": "We recommend renewing your subscription as soon as you receive these alerts to avoid any service interruption during your travels.",
+    "expiringSoon": "Your subscription expires in",
+    "understoodButton": "I understand"
+  },
+  "cgv": {
+    "title": "General Terms of Sale",
+    "subscriptionModel": "Subscription Model",
+    "intro": "Métro-Taxi operates exclusively through subscriptions.",
+    "noPerRide": "No per-ride payment is required.",
+    "pricingTitle": "Pricing",
+    "pricing": {
+      "day": "24 hours",
+      "week": "1 week",
+      "month": "1 month"
+    },
+    "conditionsTitle": "Terms",
+    "condition1": "An active subscription is required to access the service",
+    "condition2": "Subscriptions are non-refundable except in exceptional cases",
+    "condition3": "Renewal is at the user's initiative",
+    "suspensionTitle": "Service Suspension",
+    "suspensionWarning": "Upon subscription expiry:",
+    "suspension1": "Access to the application is automatically disabled",
+    "suspension2": "No rides can be taken",
+    "readAndAccept": "I have read and accept the General Terms of Sale",
+    "acceptButton": "I accept the Terms"
+  },
+  "notifications": {
+    "renewNow": "Renew now",
+    "subscriptionExpiryTitle": "Subscription expiring soon",
+    "subscriptionExpiryBody": "Your Métro-Taxi subscription is expiring soon. Renew now to continue using the service without interruption."
   }
 }

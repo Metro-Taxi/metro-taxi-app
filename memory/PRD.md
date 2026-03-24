@@ -119,19 +119,19 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 
 ## 📅 Dernière Mise à Jour
 **24/03/2026**
+- ✅ **Correction prix Stripe** : 16,99€ affiche maintenant correctement (utilisation des centimes)
+- ✅ **Traductions complètes (16 langues)** : Toutes les nouvelles fonctionnalités traduites
+  - FR, EN, EN-GB, DE, ES, PT, IT, NL, SV, NO, DA, ZH, HI, PA, AR, RU
 - ✅ **Pop-up d'Information Important** : Message d'alerte à l'ouverture + alerte expiration
 - ✅ **Contrôle d'accès abonnement expiré** : Overlay bloquant avec message et bouton de renouvellement
 - ✅ Système de notifications automatiques d'expiration d'abonnement
-  - Tâche de fond vérifiant toutes les heures
-  - Notifications à 48h, 24h et jour J
-  - Bouton "Renouveler maintenant" → redirection vers /subscription
 - ✅ Page CGV créée avec tarifs, conditions et bouton d'acceptation
 - ✅ Navigation améliorée : Logo cliquable + bouton "Accueil" dans le menu
 
 ## 🔄 Prochaines Étapes
-- [ ] Configurer les VAPID keys pour notifications push de production
 - [ ] Déploiement en production sur metro-taxi.com
 - [ ] Configuration clé Stripe LIVE
+- [ ] Configurer les VAPID keys pour notifications push de production
 
 ## 📦 Backlog Futur
 - Système de chat usager/chauffeur en temps réel

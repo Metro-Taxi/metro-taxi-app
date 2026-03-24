@@ -45,11 +45,11 @@ SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
 
-# Subscription Plans
+# Subscription Plans (prices in cents to avoid floating point issues)
 SUBSCRIPTION_PLANS = {
-    "24h": {"name": "24 heures", "price": 6.99, "duration_hours": 24},
-    "1week": {"name": "1 semaine", "price": 16.99, "duration_hours": 168},
-    "1month": {"name": "1 mois", "price": 53.99, "duration_hours": 720}
+    "24h": {"name": "24 heures", "price": 6.99, "price_cents": 699, "duration_hours": 24},
+    "1week": {"name": "1 semaine", "price": 16.99, "price_cents": 1699, "duration_hours": 168},
+    "1month": {"name": "1 mois", "price": 53.99, "price_cents": 5399, "duration_hours": 720}
 }
 
 # Driver Revenue Configuration
@@ -1381,7 +1381,7 @@ async def create_checkout(data: CheckoutRequest, request: Request, current_user:
     cancel_url = f"{data.origin_url}/subscription"
     
     checkout_request = CheckoutSessionRequest(
-        amount=float(plan["price"]),
+        amount=plan["price_cents"] / 100,  # Convert cents to euros for the API
         currency="eur",
         success_url=success_url,
         cancel_url=cancel_url,

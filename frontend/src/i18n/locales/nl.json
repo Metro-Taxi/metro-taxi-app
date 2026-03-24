@@ -16,7 +16,8 @@
     "drivers": "Chauffeurs",
     "logout": "Uitloggen",
     "profile": "Profiel",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "home": "Home"
   },
   "auth": {
     "login": {
@@ -246,7 +247,16 @@
       "plan": "Plan",
       "validUntil": "Geldig tot",
       "goDashboard": "Naar dashboard"
-    }
+    },
+    "expiredTitle": "Abonnement verlopen",
+    "expiredMessage": "Uw abonnement is verlopen. Verleng het om Métro-Taxi te blijven gebruiken.",
+    "blockedFeatures": "Geblokkeerde functies:",
+    "blocked": {
+      "rides": "Ritreservering",
+      "vehicles": "Voertuigverbinding",
+      "map": "Chauffeurweergave"
+    },
+    "renewButton": "Mijn abonnement verlengen"
   },
   "profile": {
     "title": "Mijn Profiel",
@@ -372,7 +382,9 @@
     "rights": "Alle rechten voorbehouden",
     "contact": "Contact",
     "legal": "Juridisch",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "cgu": "Voorwaarden",
+    "cgv": "Verkoopvoorwaarden"
   },
   "common": {
     "loading": "Laden...",
@@ -392,7 +404,8 @@
     "none": "Geen",
     "yes": "Ja",
     "no": "Nee",
-    "or": "of"
+    "or": "of",
+    "home": "Home"
   },
   "errors": {
     "required": "Dit veld is verplicht",
@@ -486,5 +499,40 @@
     "fetchError": "Error loading data",
     "stripeCreated": "Stripe account created! Redirecting...",
     "stripeError": "Error creating account"
+  },
+  "popup": {
+    "importantTitle": "Belangrijk",
+    "subscriptionRequired": "Uw abonnement moet actief zijn om Métro-Taxi te gebruiken.",
+    "notificationReminder": "U ontvangt herinneringsmeldingen vóór de vervaldatum.",
+    "renewRecommendation": "Wij raden u aan uw abonnement te verlengen zodra u deze waarschuwingen ontvangt om onderbrekingen van de service tijdens uw reizen te voorkomen.",
+    "expiringSoon": "Uw abonnement verloopt over",
+    "understoodButton": "Begrepen"
+  },
+  "cgv": {
+    "title": "Algemene Verkoopvoorwaarden",
+    "subscriptionModel": "Abonnementsmodel",
+    "intro": "Métro-Taxi werkt uitsluitend op abonnementsbasis.",
+    "noPerRide": "Geen betaling per rit vereist.",
+    "pricingTitle": "Prijzen",
+    "pricing": {
+      "day": "24 uur",
+      "week": "1 week",
+      "month": "1 maand"
+    },
+    "conditionsTitle": "Voorwaarden",
+    "condition1": "Een actief abonnement is vereist om de service te gebruiken",
+    "condition2": "Abonnementen zijn niet restitueerbaar behalve in uitzonderlijke gevallen",
+    "condition3": "Verlenging is op initiatief van de gebruiker",
+    "suspensionTitle": "Opschorting van de Service",
+    "suspensionWarning": "Bij het verlopen van het abonnement:",
+    "suspension1": "De toegang tot de applicatie wordt automatisch uitgeschakeld",
+    "suspension2": "Er kunnen geen ritten worden gemaakt",
+    "readAndAccept": "Ik heb de Algemene Verkoopvoorwaarden gelezen en accepteer deze",
+    "acceptButton": "Ik accepteer"
+  },
+  "notifications": {
+    "renewNow": "Nu verlengen",
+    "subscriptionExpiryTitle": "Abonnement verloopt binnenkort",
+    "subscriptionExpiryBody": "Uw Métro-Taxi-abonnement verloopt binnenkort. Verleng nu om de service zonder onderbreking te blijven gebruiken."
   }
 }

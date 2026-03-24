@@ -16,7 +16,8 @@
     "drivers": "Fahrer",
     "logout": "Abmelden",
     "profile": "Profil",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "home": "Startseite"
   },
   "auth": {
     "login": {
@@ -246,7 +247,16 @@
       "plan": "Tarif",
       "validUntil": "Gültig bis",
       "goDashboard": "Zum Dashboard"
-    }
+    },
+    "expiredTitle": "Abonnement abgelaufen",
+    "expiredMessage": "Ihr Abonnement ist abgelaufen. Bitte erneuern Sie es, um Métro-Taxi weiter zu nutzen.",
+    "blockedFeatures": "Gesperrte Funktionen:",
+    "blocked": {
+      "rides": "Fahrtbuchung",
+      "vehicles": "Fahrzeugverbindung",
+      "map": "Fahreranzeige"
+    },
+    "renewButton": "Abonnement erneuern"
   },
   "profile": {
     "title": "Mein Profil",
@@ -372,7 +382,9 @@
     "rights": "Alle Rechte vorbehalten",
     "contact": "Kontakt",
     "legal": "Rechtliches",
-    "privacy": "Datenschutz"
+    "privacy": "Datenschutz",
+    "cgu": "AGB",
+    "cgv": "Verkaufsbedingungen"
   },
   "common": {
     "loading": "Laden...",
@@ -392,7 +404,8 @@
     "none": "Keine",
     "yes": "Ja",
     "no": "Nein",
-    "or": "oder"
+    "or": "oder",
+    "home": "Startseite"
   },
   "errors": {
     "required": "Dieses Feld ist erforderlich",
@@ -486,5 +499,40 @@
     "fetchError": "Error loading data",
     "stripeCreated": "Stripe account created! Redirecting...",
     "stripeError": "Error creating account"
+  },
+  "popup": {
+    "importantTitle": "Wichtig",
+    "subscriptionRequired": "Ihr Abonnement muss aktiv sein, um Métro-Taxi zu nutzen.",
+    "notificationReminder": "Sie erhalten Erinnerungsbenachrichtigungen vor Ablauf.",
+    "renewRecommendation": "Wir empfehlen, Ihr Abonnement zu erneuern, sobald Sie diese Benachrichtigungen erhalten, um Serviceunterbrechungen während Ihrer Fahrten zu vermeiden.",
+    "expiringSoon": "Ihr Abonnement läuft ab in",
+    "understoodButton": "Verstanden"
+  },
+  "cgv": {
+    "title": "Allgemeine Verkaufsbedingungen",
+    "subscriptionModel": "Abonnement-Modell",
+    "intro": "Métro-Taxi funktioniert ausschließlich über Abonnements.",
+    "noPerRide": "Keine Zahlung pro Fahrt erforderlich.",
+    "pricingTitle": "Preise",
+    "pricing": {
+      "day": "24 Stunden",
+      "week": "1 Woche",
+      "month": "1 Monat"
+    },
+    "conditionsTitle": "Bedingungen",
+    "condition1": "Ein aktives Abonnement ist erforderlich",
+    "condition2": "Abonnements sind nicht erstattungsfähig, außer in Ausnahmefällen",
+    "condition3": "Die Verlängerung erfolgt auf Initiative des Nutzers",
+    "suspensionTitle": "Dienstaussetzung",
+    "suspensionWarning": "Bei Ablauf des Abonnements:",
+    "suspension1": "Der Zugang zur Anwendung wird automatisch deaktiviert",
+    "suspension2": "Keine Fahrten möglich",
+    "readAndAccept": "Ich habe die Verkaufsbedingungen gelesen und akzeptiere sie",
+    "acceptButton": "Ich akzeptiere"
+  },
+  "notifications": {
+    "renewNow": "Jetzt erneuern",
+    "subscriptionExpiryTitle": "Abonnement läuft bald ab",
+    "subscriptionExpiryBody": "Ihr Métro-Taxi-Abonnement läuft bald ab. Erneuern Sie jetzt, um den Service ohne Unterbrechung zu nutzen."
   }
 }

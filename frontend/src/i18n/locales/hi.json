@@ -16,7 +16,8 @@
     "drivers": "ड्राइवर",
     "logout": "लॉगआउट",
     "profile": "प्रोफाइल",
-    "dashboard": "डैशबोर्ड"
+    "dashboard": "डैशबोर्ड",
+    "home": "होम"
   },
   "auth": {
     "login": {
@@ -246,7 +247,16 @@
       "plan": "प्लान",
       "validUntil": "वैध तक",
       "goDashboard": "डैशबोर्ड पर जाएं"
-    }
+    },
+    "expiredTitle": "सदस्यता समाप्त",
+    "expiredMessage": "आपकी सदस्यता समाप्त हो गई है। कृपया Métro-Taxi का उपयोग जारी रखने के लिए इसे नवीनीकृत करें।",
+    "blockedFeatures": "अवरुद्ध सुविधाएं:",
+    "blocked": {
+      "rides": "राइड बुकिंग",
+      "vehicles": "वाहन कनेक्शन",
+      "map": "ड्राइवर दृश्य"
+    },
+    "renewButton": "मेरी सदस्यता नवीनीकृत करें"
   },
   "profile": {
     "title": "मेरी प्रोफाइल",
@@ -372,7 +382,9 @@
     "rights": "सर्वाधिकार सुरक्षित",
     "contact": "संपर्क",
     "legal": "कानूनी",
-    "privacy": "गोपनीयता"
+    "privacy": "गोपनीयता",
+    "cgu": "नियम",
+    "cgv": "बिक्री शर्तें"
   },
   "common": {
     "loading": "लोड हो रहा...",
@@ -392,7 +404,8 @@
     "none": "कोई नहीं",
     "yes": "हां",
     "no": "नहीं",
-    "or": "या"
+    "or": "या",
+    "home": "होम"
   },
   "errors": {
     "required": "यह फील्ड आवश्यक है",
@@ -486,5 +499,40 @@
     "fetchError": "Error loading data",
     "stripeCreated": "Stripe account created! Redirecting...",
     "stripeError": "Error creating account"
+  },
+  "popup": {
+    "importantTitle": "महत्वपूर्ण",
+    "subscriptionRequired": "Métro-Taxi का उपयोग करने के लिए आपकी सदस्यता सक्रिय होनी चाहिए।",
+    "notificationReminder": "समाप्ति से पहले आपको रिमाइंडर सूचनाएं मिलेंगी।",
+    "renewRecommendation": "हम अनुशंसा करते हैं कि जैसे ही आपको ये अलर्ट मिलें, अपनी सदस्यता का नवीनीकरण करें ताकि आपकी यात्राओं के दौरान सेवा में कोई रुकावट न आए।",
+    "expiringSoon": "आपकी सदस्यता समाप्त हो रही है",
+    "understoodButton": "मैं समझ गया"
+  },
+  "cgv": {
+    "title": "सामान्य बिक्री शर्तें",
+    "subscriptionModel": "सदस्यता मॉडल",
+    "intro": "Métro-Taxi विशेष रूप से सदस्यता के माध्यम से संचालित होता है।",
+    "noPerRide": "प्रति राइड कोई भुगतान आवश्यक नहीं।",
+    "pricingTitle": "मूल्य",
+    "pricing": {
+      "day": "24 घंटे",
+      "week": "1 सप्ताह",
+      "month": "1 महीना"
+    },
+    "conditionsTitle": "शर्तें",
+    "condition1": "सेवा तक पहुंचने के लिए सक्रिय सदस्यता आवश्यक है",
+    "condition2": "असाधारण मामलों को छोड़कर सदस्यता वापसी योग्य नहीं है",
+    "condition3": "नवीनीकरण उपयोगकर्ता की पहल पर है",
+    "suspensionTitle": "सेवा निलंबन",
+    "suspensionWarning": "सदस्यता समाप्ति पर:",
+    "suspension1": "एप्लिकेशन तक पहुंच स्वचालित रूप से अक्षम हो जाती है",
+    "suspension2": "कोई राइड नहीं ली जा सकती",
+    "readAndAccept": "मैंने सामान्य बिक्री शर्तें पढ़ ली हैं और स्वीकार करता हूं",
+    "acceptButton": "मैं स्वीकार करता हूं"
+  },
+  "notifications": {
+    "renewNow": "अभी नवीनीकृत करें",
+    "subscriptionExpiryTitle": "सदस्यता जल्द समाप्त हो रही है",
+    "subscriptionExpiryBody": "आपकी Métro-Taxi सदस्यता जल्द समाप्त हो रही है। बिना किसी रुकावट के सेवा का उपयोग जारी रखने के लिए अभी नवीनीकृत करें।"
   }
 }

@@ -16,7 +16,8 @@
     "drivers": "Motoristas",
     "logout": "Sair",
     "profile": "Perfil",
-    "dashboard": "Painel"
+    "dashboard": "Painel",
+    "home": "Início"
   },
   "auth": {
     "login": {
@@ -251,7 +252,16 @@
       "plan": "Plano",
       "validUntil": "Válido até",
       "goDashboard": "Ir para o painel"
-    }
+    },
+    "expiredTitle": "Assinatura expirada",
+    "expiredMessage": "Sua assinatura expirou. Por favor, renove-a para continuar usando o Métro-Taxi.",
+    "blockedFeatures": "Funcionalidades bloqueadas:",
+    "blocked": {
+      "rides": "Reserva de viagens",
+      "vehicles": "Conexão de veículos",
+      "map": "Visualização de motoristas"
+    },
+    "renewButton": "Renovar minha assinatura"
   },
   "profile": {
     "title": "O Meu Perfil",
@@ -377,7 +387,9 @@
     "rights": "Todos os direitos reservados",
     "contact": "Contacto",
     "legal": "Aviso legal",
-    "privacy": "Privacidade"
+    "privacy": "Privacidade",
+    "cgu": "Termos",
+    "cgv": "Condições de Venda"
   },
   "common": {
     "loading": "A carregar...",
@@ -397,7 +409,8 @@
     "none": "Nenhum",
     "yes": "Sim",
     "no": "Não",
-    "or": "ou"
+    "or": "ou",
+    "home": "Início"
   },
   "errors": {
     "required": "Campo obrigatório",
@@ -491,5 +504,40 @@
     "fetchError": "Error loading data",
     "stripeCreated": "Stripe account created! Redirecting...",
     "stripeError": "Error creating account"
+  },
+  "popup": {
+    "importantTitle": "Importante",
+    "subscriptionRequired": "Sua assinatura deve estar ativa para usar o Métro-Taxi.",
+    "notificationReminder": "Você receberá notificações de lembrete antes do vencimento.",
+    "renewRecommendation": "Recomendamos renovar sua assinatura assim que receber esses alertas para evitar qualquer interrupção do serviço durante suas viagens.",
+    "expiringSoon": "Sua assinatura expira em",
+    "understoodButton": "Entendi"
+  },
+  "cgv": {
+    "title": "Condições Gerais de Venda",
+    "subscriptionModel": "Modelo de Assinatura",
+    "intro": "O Métro-Taxi funciona exclusivamente por assinatura.",
+    "noPerRide": "Não é necessário pagamento por viagem.",
+    "pricingTitle": "Preços",
+    "pricing": {
+      "day": "24 horas",
+      "week": "1 semana",
+      "month": "1 mês"
+    },
+    "conditionsTitle": "Condições",
+    "condition1": "É necessária uma assinatura ativa para acessar o serviço",
+    "condition2": "Assinaturas não são reembolsáveis, exceto em casos excepcionais",
+    "condition3": "A renovação é por iniciativa do usuário",
+    "suspensionTitle": "Suspensão do Serviço",
+    "suspensionWarning": "Ao expirar a assinatura:",
+    "suspension1": "O acesso ao aplicativo é automaticamente desativado",
+    "suspension2": "Nenhuma viagem pode ser realizada",
+    "readAndAccept": "Li e aceito as Condições Gerais de Venda",
+    "acceptButton": "Aceito"
+  },
+  "notifications": {
+    "renewNow": "Renovar agora",
+    "subscriptionExpiryTitle": "Assinatura expirando",
+    "subscriptionExpiryBody": "Sua assinatura do Métro-Taxi está expirando. Renove agora para continuar usando o serviço sem interrupção."
   }
 }

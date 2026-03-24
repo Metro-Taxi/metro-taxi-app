@@ -1,14 +1,24 @@
 {
   "common": {
-    "subscribed": "Subscribed",
-    "subscribe": "Subscribe",
-    "myProfile": "My Profile",
     "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
-    "cancel": "Cancel",
+    "error": "An error occurred",
+    "retry": "Retry",
     "save": "Save",
-    "close": "Close"
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "or": "or",
+    "home": "Home"
   },
   "popup": {
     "importantTitle": "Important",
@@ -230,26 +240,6 @@
         "seats": "seats"
       }
     }
-  },
-  "common": {
-    "loading": "Loading...",
-    "error": "An error occurred",
-    "retry": "Retry",
-    "save": "Save",
-    "cancel": "Cancel",
-    "confirm": "Confirm",
-    "delete": "Delete",
-    "edit": "Edit",
-    "back": "Back",
-    "next": "Next",
-    "previous": "Previous",
-    "search": "Search",
-    "filter": "Filter",
-    "all": "All",
-    "none": "None",
-    "yes": "Yes",
-    "no": "No",
-    "or": "or"
   },
   "subscription": {
     "title": "Choose your subscription",

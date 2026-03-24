@@ -16,7 +16,8 @@
     "drivers": "ਡਰਾਈਵਰ",
     "logout": "ਲਾਗਆਊਟ",
     "profile": "ਪ੍ਰੋਫਾਈਲ",
-    "dashboard": "ਡੈਸ਼ਬੋਰਡ"
+    "dashboard": "ਡੈਸ਼ਬੋਰਡ",
+    "home": "ਹੋਮ"
   },
   "auth": {
     "login": {
@@ -246,7 +247,16 @@
       "plan": "ਪਲਾਨ",
       "validUntil": "ਵੈਧ ਤੱਕ",
       "goDashboard": "ਡੈਸ਼ਬੋਰਡ 'ਤੇ ਜਾਓ"
-    }
+    },
+    "expiredTitle": "ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ",
+    "expiredMessage": "ਤੁਹਾਡੀ ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ ਹੈ। Métro-Taxi ਵਰਤਣਾ ਜਾਰੀ ਰੱਖਣ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਇਸਨੂੰ ਨਵਿਆਓ।",
+    "blockedFeatures": "ਬਲੌਕ ਕੀਤੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ:",
+    "blocked": {
+      "rides": "ਰਾਈਡ ਬੁਕਿੰਗ",
+      "vehicles": "ਵਾਹਨ ਕਨੈਕਸ਼ਨ",
+      "map": "ਡਰਾਈਵਰ ਦ੍ਰਿਸ਼"
+    },
+    "renewButton": "ਮੇਰੀ ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਨਵੀਨੀਕਰਨ ਕਰੋ"
   },
   "profile": {
     "title": "ਮੇਰੀ ਪ੍ਰੋਫਾਈਲ",
@@ -372,7 +382,9 @@
     "rights": "ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ",
     "contact": "ਸੰਪਰਕ",
     "legal": "ਕਾਨੂੰਨੀ",
-    "privacy": "ਗੋਪਨੀਯਤਾ"
+    "privacy": "ਗੋਪਨੀਯਤਾ",
+    "cgu": "ਸ਼ਰਤਾਂ",
+    "cgv": "ਵਿਕਰੀ ਸ਼ਰਤਾਂ"
   },
   "common": {
     "loading": "ਲੋਡ ਹੋ ਰਿਹਾ...",
@@ -392,7 +404,8 @@
     "none": "ਕੋਈ ਨਹੀਂ",
     "yes": "ਹਾਂ",
     "no": "ਨਹੀਂ",
-    "or": "ਜਾਂ"
+    "or": "ਜਾਂ",
+    "home": "ਹੋਮ"
   },
   "errors": {
     "required": "ਇਹ ਖੇਤਰ ਲੋੜੀਂਦਾ ਹੈ",
@@ -486,5 +499,40 @@
     "fetchError": "Error loading data",
     "stripeCreated": "Stripe account created! Redirecting...",
     "stripeError": "Error creating account"
+  },
+  "popup": {
+    "importantTitle": "ਮਹੱਤਵਪੂਰਨ",
+    "subscriptionRequired": "Métro-Taxi ਵਰਤਣ ਲਈ ਤੁਹਾਡੀ ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਐਕਟਿਵ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।",
+    "notificationReminder": "ਮਿਆਦ ਪੁੱਗਣ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਨੂੰ ਯਾਦ-ਦਹਾਨੀ ਸੂਚਨਾਵਾਂ ਮਿਲਣਗੀਆਂ।",
+    "renewRecommendation": "ਅਸੀਂ ਸਿਫਾਰਸ਼ ਕਰਦੇ ਹਾਂ ਕਿ ਜਿਵੇਂ ਹੀ ਤੁਹਾਨੂੰ ਇਹ ਅਲਰਟ ਮਿਲੇ, ਆਪਣੀ ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਨਵੀਨੀਕਰਨ ਕਰੋ ਤਾਂ ਜੋ ਤੁਹਾਡੀ ਯਾਤਰਾ ਦੌਰਾਨ ਸੇਵਾ ਵਿੱਚ ਕੋਈ ਰੁਕਾਵਟ ਨਾ ਆਵੇ।",
+    "expiringSoon": "ਤੁਹਾਡੀ ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਦੀ ਮਿਆਦ ਪੁੱਗ ਰਹੀ ਹੈ",
+    "understoodButton": "ਮੈਂ ਸਮਝ ਗਿਆ"
+  },
+  "cgv": {
+    "title": "ਆਮ ਵਿਕਰੀ ਸ਼ਰਤਾਂ",
+    "subscriptionModel": "ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਮਾਡਲ",
+    "intro": "Métro-Taxi ਸਿਰਫ਼ ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਰਾਹੀਂ ਕੰਮ ਕਰਦਾ ਹੈ।",
+    "noPerRide": "ਪ੍ਰਤੀ ਰਾਈਡ ਕੋਈ ਭੁਗਤਾਨ ਲੋੜੀਂਦਾ ਨਹੀਂ।",
+    "pricingTitle": "ਕੀਮਤਾਂ",
+    "pricing": {
+      "day": "24 ਘੰਟੇ",
+      "week": "1 ਹਫ਼ਤਾ",
+      "month": "1 ਮਹੀਨਾ"
+    },
+    "conditionsTitle": "ਸ਼ਰਤਾਂ",
+    "condition1": "ਸੇਵਾ ਤੱਕ ਪਹੁੰਚ ਲਈ ਐਕਟਿਵ ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਲੋੜੀਂਦੀ ਹੈ",
+    "condition2": "ਅਸਾਧਾਰਨ ਮਾਮਲਿਆਂ ਨੂੰ ਛੱਡ ਕੇ ਸਬਸਕ੍ਰਿਪਸ਼ਨਾਂ ਵਾਪਸੀਯੋਗ ਨਹੀਂ ਹਨ",
+    "condition3": "ਨਵੀਨੀਕਰਨ ਉਪਭੋਗਤਾ ਦੀ ਪਹਿਲ 'ਤੇ ਹੈ",
+    "suspensionTitle": "ਸੇਵਾ ਮੁਅੱਤਲੀ",
+    "suspensionWarning": "ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਦੀ ਮਿਆਦ ਪੁੱਗਣ 'ਤੇ:",
+    "suspension1": "ਐਪਲੀਕੇਸ਼ਨ ਤੱਕ ਪਹੁੰਚ ਆਪਣੇ ਆਪ ਅਯੋਗ ਹੋ ਜਾਂਦੀ ਹੈ",
+    "suspension2": "ਕੋਈ ਰਾਈਡ ਨਹੀਂ ਲਈ ਜਾ ਸਕਦੀ",
+    "readAndAccept": "ਮੈਂ ਆਮ ਵਿਕਰੀ ਸ਼ਰਤਾਂ ਪੜ੍ਹੀਆਂ ਹਨ ਅਤੇ ਸਵੀਕਾਰ ਕਰਦਾ ਹਾਂ",
+    "acceptButton": "ਮੈਂ ਸਵੀਕਾਰ ਕਰਦਾ ਹਾਂ"
+  },
+  "notifications": {
+    "renewNow": "ਹੁਣੇ ਨਵੀਨੀਕਰਨ ਕਰੋ",
+    "subscriptionExpiryTitle": "ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਜਲਦੀ ਮਿਆਦ ਪੁੱਗ ਰਹੀ ਹੈ",
+    "subscriptionExpiryBody": "ਤੁਹਾਡੀ Métro-Taxi ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਜਲਦੀ ਮਿਆਦ ਪੁੱਗ ਰਹੀ ਹੈ। ਬਿਨਾਂ ਰੁਕਾਵਟ ਸੇਵਾ ਵਰਤਣਾ ਜਾਰੀ ਰੱਖਣ ਲਈ ਹੁਣੇ ਨਵੀਨੀਕਰਨ ਕਰੋ।"
   }
 }

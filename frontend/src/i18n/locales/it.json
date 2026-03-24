@@ -16,7 +16,8 @@
     "drivers": "Autisti",
     "logout": "Esci",
     "profile": "Profilo",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "home": "Home"
   },
   "auth": {
     "login": {
@@ -258,7 +259,8 @@
     "driverDeactivated": "Autista disattivato",
     "deactivateError": "Errore nella disattivazione",
     "cardLoadError": "Errore nel caricamento della carta",
-    "cleanupError": "Errore nella pulizia"
+    "cleanupError": "Errore nella pulizia",
+    "home": "Home"
   },
   "subscription": {
     "title": "Scegli il tuo abbonamento",
@@ -299,7 +301,16 @@
       "plan": "Piano",
       "validUntil": "Valido fino al",
       "goDashboard": "Vai alla dashboard"
-    }
+    },
+    "expiredTitle": "Abbonamento scaduto",
+    "expiredMessage": "Il tuo abbonamento è scaduto. Rinnovalo per continuare a utilizzare Métro-Taxi.",
+    "blockedFeatures": "Funzionalità bloccate:",
+    "blocked": {
+      "rides": "Prenotazione corse",
+      "vehicles": "Connessione veicoli",
+      "map": "Visualizzazione autisti"
+    },
+    "renewButton": "Rinnova il mio abbonamento"
   },
   "profile": {
     "title": "Il mio profilo",
@@ -425,7 +436,9 @@
     "rights": "Tutti i diritti riservati",
     "contact": "Contatti",
     "legal": "Note legali",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "cgu": "Termini",
+    "cgv": "Condizioni di Vendita"
   },
   "errors": {
     "required": "Questo campo è obbligatorio",
@@ -519,5 +532,40 @@
     "fetchError": "Error loading data",
     "stripeCreated": "Stripe account created! Redirecting...",
     "stripeError": "Error creating account"
+  },
+  "popup": {
+    "importantTitle": "Importante",
+    "subscriptionRequired": "Il tuo abbonamento deve essere attivo per utilizzare Métro-Taxi.",
+    "notificationReminder": "Riceverai notifiche di promemoria prima della scadenza.",
+    "renewRecommendation": "Ti consigliamo di rinnovare l'abbonamento non appena ricevi questi avvisi per evitare interruzioni del servizio durante i tuoi viaggi.",
+    "expiringSoon": "Il tuo abbonamento scade tra",
+    "understoodButton": "Ho capito"
+  },
+  "cgv": {
+    "title": "Condizioni Generali di Vendita",
+    "subscriptionModel": "Modello di Abbonamento",
+    "intro": "Métro-Taxi funziona esclusivamente in abbonamento.",
+    "noPerRide": "Nessun pagamento per corsa richiesto.",
+    "pricingTitle": "Prezzi",
+    "pricing": {
+      "day": "24 ore",
+      "week": "1 settimana",
+      "month": "1 mese"
+    },
+    "conditionsTitle": "Condizioni",
+    "condition1": "È richiesto un abbonamento attivo per accedere al servizio",
+    "condition2": "Gli abbonamenti non sono rimborsabili salvo casi eccezionali",
+    "condition3": "Il rinnovo è a iniziativa dell'utente",
+    "suspensionTitle": "Sospensione del Servizio",
+    "suspensionWarning": "Alla scadenza dell'abbonamento:",
+    "suspension1": "L'accesso all'applicazione viene automaticamente disattivato",
+    "suspension2": "Non è possibile effettuare corse",
+    "readAndAccept": "Ho letto e accetto le Condizioni Generali di Vendita",
+    "acceptButton": "Accetto"
+  },
+  "notifications": {
+    "renewNow": "Rinnova ora",
+    "subscriptionExpiryTitle": "Abbonamento in scadenza",
+    "subscriptionExpiryBody": "Il tuo abbonamento Métro-Taxi sta per scadere. Rinnova ora per continuare a utilizzare il servizio senza interruzioni."
   }
 }
