@@ -93,6 +93,8 @@ function AppRoutes() {
       <Route path="/register/user" element={<PublicRoute><RegisterUser /></PublicRoute>} />
       <Route path="/register/driver" element={<PublicRoute><RegisterDriver /></PublicRoute>} />
       <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/terms" element={<TermsAndConditions />} />
+      <Route path="/cgu" element={<TermsAndConditions />} />
       
       {/* User Routes */}
       <Route path="/dashboard" element={
