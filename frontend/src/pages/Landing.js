@@ -572,10 +572,11 @@ const Landing = () => {
               <Link to="/login" className="hover:text-white transition-colors">{t('nav.login')}</Link>
               <Link to="/register/user" className="hover:text-white transition-colors">{t('nav.register')}</Link>
               <Link to="/register/driver" className="hover:text-white transition-colors">{t('nav.drivers')}</Link>
+              <Link to="/cgu" className="hover:text-white transition-colors">{t('footer.cgu', 'CGU')}</Link>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-zinc-800 text-center text-zinc-500">
-            <p>© 2024 Métro-Taxi. {t('footer.rights')}.</p>
+            <p>© {new Date().getFullYear()} Métro-Taxi. {t('footer.rights')}.</p>
           </div>
         </div>
       </footer>
