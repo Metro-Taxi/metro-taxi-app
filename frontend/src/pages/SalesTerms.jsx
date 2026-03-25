@@ -108,18 +108,18 @@ const SalesTerms = () => {
               {[
                 { 
                   duration: t('cgv.pricing.day', '24 heures'), 
-                  price: '6,99 €',
+                  price: t('subscription.plans.day.price', '6,99 €'),
                   icon: Clock
                 },
                 { 
                   duration: t('cgv.pricing.week', '1 semaine'), 
-                  price: '16,99 €',
+                  price: t('subscription.plans.week.price', '16,99 €'),
                   icon: Calendar,
                   popular: true
                 },
                 { 
                   duration: t('cgv.pricing.month', '1 mois'), 
-                  price: '53,99 €',
+                  price: t('subscription.plans.month.price', '53,99 €'),
                   icon: Calendar
                 }
               ].map((plan, index) => (
