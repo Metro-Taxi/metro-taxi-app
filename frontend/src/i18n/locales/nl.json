@@ -209,23 +209,38 @@
   },
   "subscription": {
     "title": "Kies uw abonnement",
-    "subtitle": "Onbeperkte ritten op het hele Métro-Taxi netwerk",
+    "subtitle": "Eenvoudig abonnement. Onbeperkte ritten. Betaal eenmaal, reis zonder tellen.",
     "plans": {
       "day": {
-        "name": "24 Uur",
-        "price": "6,99 €",
-        "description": "Perfect voor incidenteel gebruik"
+        "name": "24 UUR",
+        "price": "€6,99",
+        "description": "Perfect voor incidenteel gebruik",
+        "period": "dag",
+        "feature1": "Onbeperkte ritten voor 24u",
+        "feature2": "Toegang tot alle voertuigen",
+        "feature3": "Geoptimaliseerde transfers"
       },
       "week": {
-        "name": "1 Week",
-        "price": "16,99 €",
-        "description": "Ideaal voor korte verblijven"
+        "name": "1 WEEK",
+        "price": "€16,99",
+        "description": "Ideaal voor korte verblijven",
+        "period": "week",
+        "feature1": "Onbeperkte ritten voor 7 dagen",
+        "feature2": "Prioriteitstoegang",
+        "feature3": "Geoptimaliseerde transfers",
+        "feature4": "Prioriteitsondersteuning"
       },
       "month": {
-        "name": "1 Maand",
-        "price": "53,99 €",
+        "name": "1 MAAND",
+        "price": "€53,99",
         "description": "Beste prijs-kwaliteit",
-        "popular": "POPULAIR"
+        "popular": "POPULAIR",
+        "period": "maand",
+        "feature1": "Onbeperkte ritten voor 30 dagen",
+        "feature2": "Prioriteitstoegang",
+        "feature3": "Geoptimaliseerde transfers",
+        "feature4": "Prioriteitsondersteuning",
+        "feature5": "Maximale besparing"
       }
     },
     "features": {
@@ -256,7 +271,11 @@
       "vehicles": "Voertuigverbinding",
       "map": "Chauffeurweergave"
     },
-    "renewButton": "Mijn abonnement verlengen"
+    "renewButton": "Mijn abonnement verlengen",
+    "chooseTitle": "KIES UW",
+    "planWord": "PLAN",
+    "subscribeBtn": "ABONNEREN",
+    "error": "Fout bij het maken van betaling"
   },
   "profile": {
     "title": "Mijn Profiel",
@@ -534,5 +553,36 @@
     "renewNow": "Nu verlengen",
     "subscriptionExpiryTitle": "Abonnement verloopt binnenkort",
     "subscriptionExpiryBody": "Uw Métro-Taxi-abonnement verloopt binnenkort. Verleng nu om de service zonder onderbreking te blijven gebruiken."
+  },
+  "cgu": {
+    "title": "Algemene Gebruiksvoorwaarden",
+    "back": "Terug",
+    "lastUpdate": "Laatst bijgewerkt",
+    "intro": "Métro-Taxi is een platform dat geabonneerde gebruikers verbindt met VTC-chauffeurs.",
+    "serviceTitle": "De dienst maakt het mogelijk om",
+    "service1": "Beschikbare voertuigen in realtime te bekijken",
+    "service2": "Hun reisrichting te zien",
+    "service3": "Het aantal beschikbare plaatsen te kennen",
+    "service4": "Toegang te krijgen tot een dynamisch ritdeelsysteem",
+    "service5": "Over te stappen tussen voertuigen",
+    "userRulesTitle": "Regels voor gebruikers",
+    "userRule1": "Een actief abonnement hebben",
+    "userRule2": "Klaar zijn op het ophaalPunt",
+    "userRule3": "Chauffeurs en andere passagiers respecteren",
+    "driverRulesTitle": "Regels voor chauffeurs",
+    "driverRule1": "VTC-regelgeving naleven",
+    "driverRule2": "De veiligheid en het respect van passagiers waarborgen",
+    "driverRule3": "De applicatie als verbindingsmiddel gebruiken",
+    "responsibilityTitle": "Aansprakelijkheid",
+    "responsibility1": "Métro-Taxi fungeert uitsluitend als verbindingsplatform.",
+    "responsibility2": "Ritten worden uitgevoerd onder verantwoordelijkheid van de chauffeurs.",
+    "readAndAccept": "Ik heb de Algemene Gebruiksvoorwaarden gelezen en accepteer deze",
+    "acceptButton": "Ik accepteer de voorwaarden",
+    "allRightsReserved": "Alle rechten voorbehouden."
+  },
+  "currency": {
+    "code": "EUR",
+    "symbol": "€",
+    "position": "after"
   }
 }

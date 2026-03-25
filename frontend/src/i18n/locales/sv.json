@@ -210,23 +210,38 @@
   },
   "subscription": {
     "title": "Velg ditt abonnement",
-    "subtitle": "Ubegrensede turer på hele Métro-Taxi-nettverket",
+    "subtitle": "Enkelt abonnemang. Obegränsade resor. Betala en gång, res utan att räkna.",
     "plans": {
       "day": {
-        "name": "24 timer",
-        "price": "6,99 €",
-        "description": "Perfekt for sporadisk bruk"
+        "name": "24 TIMMAR",
+        "price": "79 kr",
+        "description": "Perfekt for sporadisk bruk",
+        "period": "dag",
+        "feature1": "Obegränsade resor i 24h",
+        "feature2": "Tillgång till alla fordon",
+        "feature3": "Optimerade byten"
       },
       "week": {
-        "name": "1 uke",
-        "price": "16,99 €",
-        "description": "Ideell for korte opphold"
+        "name": "1 VECKA",
+        "price": "189 kr",
+        "description": "Ideell for korte opphold",
+        "period": "vecka",
+        "feature1": "Obegränsade resor i 7 dagar",
+        "feature2": "Prioriterad åtkomst",
+        "feature3": "Optimerade byten",
+        "feature4": "Prioriterad support"
       },
       "month": {
-        "name": "1 måned",
-        "price": "53,99 €",
+        "name": "1 MÅNAD",
+        "price": "599 kr",
         "description": "Best verdi for pengene",
-        "popular": "POPULÆR"
+        "popular": "POPULÆR",
+        "period": "månad",
+        "feature1": "Obegränsade resor i 30 dagar",
+        "feature2": "Prioriterad åtkomst",
+        "feature3": "Optimerade byten",
+        "feature4": "Prioriterad support",
+        "feature5": "Maximal besparing"
       }
     },
     "features": {
@@ -257,7 +272,11 @@
       "vehicles": "Fordonsanslutning",
       "map": "Förarvisning"
     },
-    "renewButton": "Förnya mitt abonnemang"
+    "renewButton": "Förnya mitt abonnemang",
+    "chooseTitle": "VÄLJ DIN",
+    "planWord": "PLAN",
+    "subscribeBtn": "PRENUMERERA",
+    "error": "Fel vid betalningsskapande"
   },
   "profile": {
     "title": "Min profil",
@@ -535,5 +554,36 @@
     "renewNow": "Förnya nu",
     "subscriptionExpiryTitle": "Abonnemang går snart ut",
     "subscriptionExpiryBody": "Ditt Métro-Taxi-abonnemang går snart ut. Förnya nu för att fortsätta använda tjänsten utan avbrott."
+  },
+  "cgu": {
+    "title": "Allmänna Användarvillkor",
+    "back": "Tillbaka",
+    "lastUpdate": "Senast uppdaterad",
+    "intro": "Métro-Taxi är en plattform som förbinder prenumererade användare med VTC-förare.",
+    "serviceTitle": "Tjänsten möjliggör",
+    "service1": "Visa tillgängliga fordon i realtid",
+    "service2": "Se deras resriktning",
+    "service3": "Veta antalet tillgängliga platser",
+    "service4": "Få tillgång till ett dynamiskt samåkningssystem",
+    "service5": "Byta mellan fordon",
+    "userRulesTitle": "Regler för användare",
+    "userRule1": "Ha en aktiv prenumeration",
+    "userRule2": "Vara redo vid upphämtningspunkten",
+    "userRule3": "Respektera förare och andra passagerare",
+    "driverRulesTitle": "Regler för förare",
+    "driverRule1": "Följa VTC-regler",
+    "driverRule2": "Säkerställa passagerarnas säkerhet och respekt",
+    "driverRule3": "Använda applikationen som ett anslutningsverktyg",
+    "responsibilityTitle": "Ansvar",
+    "responsibility1": "Métro-Taxi fungerar endast som en anslutningsplattform.",
+    "responsibility2": "Resor utförs under förarnas ansvar.",
+    "readAndAccept": "Jag har läst och accepterar de Allmänna Användarvillkoren",
+    "acceptButton": "Jag accepterar villkoren",
+    "allRightsReserved": "Alla rättigheter förbehållna."
+  },
+  "currency": {
+    "code": "SEK",
+    "symbol": "kr",
+    "position": "after"
   }
 }

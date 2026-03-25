@@ -6,12 +6,15 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+import LanguageSelector from '@/components/LanguageSelector';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const Subscription = () => {
   const { user, token, refreshUser } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [plans, setPlans] = useState({});
   const [loading, setLoading] = useState(null);
 
@@ -42,7 +45,7 @@ const Subscription = () => {
       // Redirect to Stripe checkout
       window.location.href = response.data.url;
     } catch (error) {
-      const message = error.response?.data?.detail || 'Erreur lors de la création du paiement';
+      const message = error.response?.data?.detail || t('subscription.error', 'Erreur lors de la création du paiement');
       toast.error(message);
       setLoading(null);
     }
@@ -51,25 +54,40 @@ const Subscription = () => {
   const planData = [
     { 
       id: '24h', 
-      name: '24 HEURES', 
-      price: '6,99', 
-      period: 'jour',
-      features: ['Trajets illimités pendant 24h', 'Accès à tous les véhicules', 'Transbordements optimisés']
+      name: t('subscription.plans.day.name', '24 HEURES'), 
+      price: t('subscription.plans.day.price', '6,99 €'), 
+      period: t('subscription.plans.day.period', 'jour'),
+      features: [
+        t('subscription.plans.day.feature1', 'Trajets illimités pendant 24h'), 
+        t('subscription.plans.day.feature2', 'Accès à tous les véhicules'), 
+        t('subscription.plans.day.feature3', 'Transbordements optimisés')
+      ]
     },
     { 
       id: '1week', 
-      name: '1 SEMAINE', 
-      price: '16,99', 
-      period: 'semaine',
+      name: t('subscription.plans.week.name', '1 SEMAINE'), 
+      price: t('subscription.plans.week.price', '16,99 €'), 
+      period: t('subscription.plans.week.period', 'semaine'),
       popular: true,
-      features: ['Trajets illimités pendant 7 jours', 'Accès prioritaire', 'Transbordements optimisés', 'Support prioritaire']
+      features: [
+        t('subscription.plans.week.feature1', 'Trajets illimités pendant 7 jours'), 
+        t('subscription.plans.week.feature2', 'Accès prioritaire'), 
+        t('subscription.plans.week.feature3', 'Transbordements optimisés'), 
+        t('subscription.plans.week.feature4', 'Support prioritaire')
+      ]
     },
     { 
       id: '1month', 
-      name: '1 MOIS', 
-      price: '53,99', 
-      period: 'mois',
-      features: ['Trajets illimités pendant 30 jours', 'Accès prioritaire', 'Transbordements optimisés', 'Support prioritaire', 'Économie maximale']
+      name: t('subscription.plans.month.name', '1 MOIS'), 
+      price: t('subscription.plans.month.price', '53,99 €'), 
+      period: t('subscription.plans.month.period', 'mois'),
+      features: [
+        t('subscription.plans.month.feature1', 'Trajets illimités pendant 30 jours'), 
+        t('subscription.plans.month.feature2', 'Accès prioritaire'), 
+        t('subscription.plans.month.feature3', 'Transbordements optimisés'), 
+        t('subscription.plans.month.feature4', 'Support prioritaire'), 
+        t('subscription.plans.month.feature5', 'Économie maximale')
+      ]
     }
   ];
 
@@ -80,11 +98,14 @@ const Subscription = () => {
         <div className="flex items-center justify-between mb-12">
           <Link to="/dashboard" className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
             <ArrowLeft className="w-5 h-5" />
-            Retour
+            {t('cgu.back', 'Retour')}
           </Link>
-          <div className="flex items-center gap-2">
-            <Car className="w-8 h-8 text-[#FFD60A]" />
-            <span className="text-2xl font-black text-white">MÉTRO-TAXI</span>
+          <div className="flex items-center gap-4">
+            <LanguageSelector />
+            <div className="flex items-center gap-2">
+              <Car className="w-8 h-8 text-[#FFD60A]" />
+              <span className="text-2xl font-black text-white">MÉTRO-TAXI</span>
+            </div>
           </div>
         </div>
 
@@ -116,10 +137,10 @@ const Subscription = () => {
           className="text-center mb-12"
         >
           <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
-            CHOISISSEZ VOTRE <span className="text-[#FFD60A]">FORFAIT</span>
+            {t('subscription.chooseTitle', 'CHOISISSEZ VOTRE')} <span className="text-[#FFD60A]">{t('subscription.planWord', 'FORFAIT')}</span>
           </h1>
           <p className="text-zinc-400 text-lg max-w-xl mx-auto">
-            Un abonnement simple. Des trajets illimités. Payez une fois, voyagez sans compter.
+            {t('subscription.subtitle', 'Un abonnement simple. Des trajets illimités. Payez une fois, voyagez sans compter.')}
           </p>
         </motion.div>
 
@@ -136,8 +157,7 @@ const Subscription = () => {
               <h3 className="text-lg font-bold text-zinc-400 mb-4">{plan.name}</h3>
               
               <div className="mb-6">
-                <span className="text-6xl font-black text-[#FFD60A]">{plan.price}</span>
-                <span className="text-2xl text-zinc-400">€</span>
+                <span className="text-5xl font-black text-[#FFD60A]">{plan.price}</span>
               </div>
               
               <p className="text-zinc-500 mb-6">/ {plan.period}</p>
@@ -166,7 +186,7 @@ const Subscription = () => {
                 ) : (
                   <>
                     <CreditCard className="w-4 h-4 mr-2" />
-                    S'ABONNER
+                    {t('subscription.subscribeBtn', "S'ABONNER")}
                   </>
                 )}
               </Button>

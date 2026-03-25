@@ -209,23 +209,38 @@
   },
   "subscription": {
     "title": "Wählen Sie Ihr Abonnement",
-    "subtitle": "Unbegrenzte Fahrten im gesamten Métro-Taxi-Netzwerk",
+    "subtitle": "Einfaches Abonnement. Unbegrenzte Fahrten. Einmal zahlen, ohne zu zählen fahren.",
     "plans": {
       "day": {
-        "name": "24 Stunden",
-        "price": "7,99 €",
-        "description": "Perfekt für gelegentliche Nutzung"
+        "name": "24 STUNDEN",
+        "price": "6,99 €",
+        "description": "Perfekt für gelegentliche Nutzung",
+        "period": "Tag",
+        "feature1": "Unbegrenzte Fahrten für 24h",
+        "feature2": "Zugang zu allen Fahrzeugen",
+        "feature3": "Optimierte Transfers"
       },
       "week": {
-        "name": "1 Woche",
-        "price": "18,99 €",
-        "description": "Ideal für Kurzaufenthalte"
+        "name": "1 WOCHE",
+        "price": "16,99 €",
+        "description": "Ideal für Kurzaufenthalte",
+        "period": "Woche",
+        "feature1": "Unbegrenzte Fahrten für 7 Tage",
+        "feature2": "Prioritätszugang",
+        "feature3": "Optimierte Transfers",
+        "feature4": "Prioritäts-Support"
       },
       "month": {
-        "name": "1 Monat",
-        "price": "59,99 €",
+        "name": "1 MONAT",
+        "price": "53,99 €",
         "description": "Bestes Preis-Leistungs-Verhältnis",
-        "popular": "BELIEBT"
+        "popular": "BELIEBT",
+        "period": "Monat",
+        "feature1": "Unbegrenzte Fahrten für 30 Tage",
+        "feature2": "Prioritätszugang",
+        "feature3": "Optimierte Transfers",
+        "feature4": "Prioritäts-Support",
+        "feature5": "Maximale Ersparnis"
       }
     },
     "features": {
@@ -256,7 +271,11 @@
       "vehicles": "Fahrzeugverbindung",
       "map": "Fahreranzeige"
     },
-    "renewButton": "Abonnement erneuern"
+    "renewButton": "Abonnement erneuern",
+    "chooseTitle": "WÄHLEN SIE IHREN",
+    "planWord": "TARIF",
+    "subscribeBtn": "ABONNIEREN",
+    "error": "Fehler bei der Zahlungserstellung"
   },
   "profile": {
     "title": "Mein Profil",
@@ -534,5 +553,36 @@
     "renewNow": "Jetzt erneuern",
     "subscriptionExpiryTitle": "Abonnement läuft bald ab",
     "subscriptionExpiryBody": "Ihr Métro-Taxi-Abonnement läuft bald ab. Erneuern Sie jetzt, um den Service ohne Unterbrechung zu nutzen."
+  },
+  "cgu": {
+    "title": "Allgemeine Nutzungsbedingungen (AGB)",
+    "back": "Zurück",
+    "lastUpdate": "Letzte Aktualisierung",
+    "intro": "Métro-Taxi ist eine Plattform, die abonnierte Nutzer mit VTC-Fahrern verbindet.",
+    "serviceTitle": "Der Service ermöglicht",
+    "service1": "Verfügbare Fahrzeuge in Echtzeit anzuzeigen",
+    "service2": "Ihre Fahrtrichtung zu sehen",
+    "service3": "Die Anzahl der verfügbaren Plätze zu erfahren",
+    "service4": "Zugang zu einem dynamischen Mitfahrsystem",
+    "service5": "Zwischen Fahrzeugen zu wechseln",
+    "userRulesTitle": "Regeln für Nutzer",
+    "userRule1": "Ein aktives Abonnement haben",
+    "userRule2": "Am Abholpunkt bereit sein",
+    "userRule3": "Fahrer und andere Passagiere respektieren",
+    "driverRulesTitle": "Regeln für Fahrer",
+    "driverRule1": "VTC-Vorschriften einhalten",
+    "driverRule2": "Sicherheit und Respekt der Passagiere gewährleisten",
+    "driverRule3": "Die Anwendung als Vermittlungswerkzeug nutzen",
+    "responsibilityTitle": "Haftung",
+    "responsibility1": "Métro-Taxi fungiert ausschließlich als Vermittlungsplattform.",
+    "responsibility2": "Fahrten werden unter der Verantwortung der Fahrer durchgeführt.",
+    "readAndAccept": "Ich habe die AGB gelesen und akzeptiere sie",
+    "acceptButton": "Ich akzeptiere die AGB",
+    "allRightsReserved": "Alle Rechte vorbehalten."
+  },
+  "currency": {
+    "code": "EUR",
+    "symbol": "€",
+    "position": "after"
   }
 }

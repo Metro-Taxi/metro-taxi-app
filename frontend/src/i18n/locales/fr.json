@@ -1,14 +1,23 @@
 {
   "common": {
-    "subscribed": "Abonné",
-    "subscribe": "S'abonner",
-    "myProfile": "Mon profil",
     "loading": "Chargement...",
-    "error": "Erreur",
-    "success": "Succès",
-    "cancel": "Annuler",
+    "error": "Une erreur est survenue",
+    "retry": "Réessayer",
     "save": "Enregistrer",
-    "close": "Fermer"
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "all": "Tout",
+    "none": "Aucun",
+    "yes": "Oui",
+    "no": "Non",
+    "or": "ou"
   },
   "popup": {
     "importantTitle": "Important",
@@ -237,29 +246,9 @@
       }
     }
   },
-  "common": {
-    "loading": "Chargement...",
-    "error": "Une erreur est survenue",
-    "retry": "Réessayer",
-    "save": "Enregistrer",
-    "cancel": "Annuler",
-    "confirm": "Confirmer",
-    "delete": "Supprimer",
-    "edit": "Modifier",
-    "back": "Retour",
-    "next": "Suivant",
-    "previous": "Précédent",
-    "search": "Rechercher",
-    "filter": "Filtrer",
-    "all": "Tout",
-    "none": "Aucun",
-    "yes": "Oui",
-    "no": "Non",
-    "or": "ou"
-  },
   "subscription": {
     "title": "Choisissez votre abonnement",
-    "subtitle": "Trajets illimités sur tout le réseau Métro-Taxi",
+    "subtitle": "Un abonnement simple. Des trajets illimités. Payez une fois, voyagez sans compter.",
     "expiredTitle": "Abonnement expiré",
     "expiredMessage": "Votre abonnement a expiré. Veuillez le renouveler pour continuer à utiliser Métro-Taxi.",
     "blockedFeatures": "Fonctionnalités bloquées :",
@@ -271,20 +260,35 @@
     "renewButton": "Renouveler mon abonnement",
     "plans": {
       "day": {
-        "name": "24 Heures",
+        "name": "24 HEURES",
         "price": "6,99 €",
-        "description": "Parfait pour un usage ponctuel"
+        "description": "Parfait pour un usage ponctuel",
+        "period": "jour",
+        "feature1": "Trajets illimités pendant 24h",
+        "feature2": "Accès à tous les véhicules",
+        "feature3": "Transbordements optimisés"
       },
       "week": {
-        "name": "1 Semaine",
+        "name": "1 SEMAINE",
         "price": "16,99 €",
-        "description": "Idéal pour les courts séjours"
+        "description": "Idéal pour les courts séjours",
+        "period": "semaine",
+        "feature1": "Trajets illimités pendant 7 jours",
+        "feature2": "Accès prioritaire",
+        "feature3": "Transbordements optimisés",
+        "feature4": "Support prioritaire"
       },
       "month": {
-        "name": "1 Mois",
+        "name": "1 MOIS",
         "price": "53,99 €",
         "description": "Le meilleur rapport qualité-prix",
-        "popular": "POPULAIRE"
+        "popular": "POPULAIRE",
+        "period": "mois",
+        "feature1": "Trajets illimités pendant 30 jours",
+        "feature2": "Accès prioritaire",
+        "feature3": "Transbordements optimisés",
+        "feature4": "Support prioritaire",
+        "feature5": "Économie maximale"
       }
     },
     "features": {
@@ -305,7 +309,11 @@
       "plan": "Forfait",
       "validUntil": "Valide jusqu'au",
       "goDashboard": "Accéder au tableau de bord"
-    }
+    },
+    "chooseTitle": "CHOISISSEZ VOTRE",
+    "planWord": "FORFAIT",
+    "subscribeBtn": "S'ABONNER",
+    "error": "Erreur lors de la création du paiement"
   },
   "profile": {
     "title": "Mon Profil",

@@ -214,26 +214,41 @@
   },
   "subscription": {
     "title": "Elige tu suscripción",
-    "subtitle": "Viajes ilimitados en toda la red Métro-Taxi",
+    "subtitle": "Suscripción simple. Viajes ilimitados. Paga una vez, viaja sin contar.",
     "plans": {
       "day": {
-        "name": "24 Horas",
+        "name": "24 HORAS",
         "price": "6,99 €",
         "priceLocal": "6,99 €",
-        "description": "Perfecto para uso ocasional"
+        "description": "Perfecto para uso ocasional",
+        "period": "día",
+        "feature1": "Viajes ilimitados por 24h",
+        "feature2": "Acceso a todos los vehículos",
+        "feature3": "Transbordos optimizados"
       },
       "week": {
-        "name": "1 Semana",
+        "name": "1 SEMANA",
         "price": "16,99 €",
         "priceLocal": "16,99 €",
-        "description": "Ideal para estancias cortas"
+        "description": "Ideal para estancias cortas",
+        "period": "semana",
+        "feature1": "Viajes ilimitados por 7 días",
+        "feature2": "Acceso prioritario",
+        "feature3": "Transbordos optimizados",
+        "feature4": "Soporte prioritario"
       },
       "month": {
-        "name": "1 Mes",
+        "name": "1 MES",
         "price": "53,99 €",
         "priceLocal": "53,99 €",
         "description": "La mejor relación calidad-precio",
-        "popular": "POPULAR"
+        "popular": "POPULAR",
+        "period": "mes",
+        "feature1": "Viajes ilimitados por 30 días",
+        "feature2": "Acceso prioritario",
+        "feature3": "Transbordos optimizados",
+        "feature4": "Soporte prioritario",
+        "feature5": "Máximo ahorro"
       }
     },
     "features": {
@@ -265,7 +280,11 @@
       "vehicles": "Conexión de vehículos",
       "map": "Visualización de conductores"
     },
-    "renewButton": "Renovar mi suscripción"
+    "renewButton": "Renovar mi suscripción",
+    "chooseTitle": "ELIGE TU",
+    "planWord": "PLAN",
+    "subscribeBtn": "SUSCRIBIRSE",
+    "error": "Error al crear el pago"
   },
   "profile": {
     "title": "Mi Perfil",
@@ -543,5 +562,36 @@
     "renewNow": "Renovar ahora",
     "subscriptionExpiryTitle": "Suscripción por expirar",
     "subscriptionExpiryBody": "Su suscripción de Métro-Taxi está por expirar. Renueve ahora para continuar usando el servicio sin interrupción."
+  },
+  "cgu": {
+    "title": "Condiciones Generales de Uso (CGU)",
+    "back": "Volver",
+    "lastUpdate": "Última actualización",
+    "intro": "Métro-Taxi es una plataforma que conecta usuarios suscritos con conductores VTC.",
+    "serviceTitle": "El servicio permite",
+    "service1": "Ver vehículos disponibles en tiempo real",
+    "service2": "Visualizar su dirección de viaje",
+    "service3": "Conocer el número de asientos disponibles",
+    "service4": "Acceder a un sistema de viajes compartidos dinámico",
+    "service5": "Realizar transbordos entre vehículos",
+    "userRulesTitle": "Reglas para usuarios",
+    "userRule1": "Tener una suscripción activa",
+    "userRule2": "Estar listo en el punto de recogida",
+    "userRule3": "Respetar a los conductores y otros pasajeros",
+    "driverRulesTitle": "Reglas para conductores",
+    "driverRule1": "Cumplir con la normativa VTC",
+    "driverRule2": "Garantizar la seguridad y respeto de los pasajeros",
+    "driverRule3": "Usar la aplicación como herramienta de conexión",
+    "responsibilityTitle": "Responsabilidad",
+    "responsibility1": "Métro-Taxi actúa únicamente como plataforma de conexión.",
+    "responsibility2": "Los viajes se realizan bajo la responsabilidad de los conductores.",
+    "readAndAccept": "He leído y acepto las Condiciones Generales de Uso",
+    "acceptButton": "Acepto las CGU",
+    "allRightsReserved": "Todos los derechos reservados."
+  },
+  "currency": {
+    "code": "EUR",
+    "symbol": "€",
+    "position": "after"
   }
 }

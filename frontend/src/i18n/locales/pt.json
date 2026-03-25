@@ -214,23 +214,38 @@
   },
   "subscription": {
     "title": "Escolha a sua assinatura",
-    "subtitle": "Viagens ilimitadas em toda a rede Métro-Taxi",
+    "subtitle": "Assinatura simples. Viagens ilimitadas. Pague uma vez, viaje sem contar.",
     "plans": {
       "day": {
-        "name": "24 Horas",
+        "name": "24 HORAS",
         "price": "6,99 €",
-        "description": "Perfeito para uso ocasional"
+        "description": "Perfeito para uso ocasional",
+        "period": "dia",
+        "feature1": "Viagens ilimitadas por 24h",
+        "feature2": "Acesso a todos os veículos",
+        "feature3": "Transferências otimizadas"
       },
       "week": {
-        "name": "1 Semana",
+        "name": "1 SEMANA",
         "price": "16,99 €",
-        "description": "Ideal para estadias curtas"
+        "description": "Ideal para estadias curtas",
+        "period": "semana",
+        "feature1": "Viagens ilimitadas por 7 dias",
+        "feature2": "Acesso prioritário",
+        "feature3": "Transferências otimizadas",
+        "feature4": "Suporte prioritário"
       },
       "month": {
-        "name": "1 Mês",
+        "name": "1 MÊS",
         "price": "53,99 €",
         "description": "Melhor custo-benefício",
-        "popular": "POPULAR"
+        "popular": "POPULAR",
+        "period": "mês",
+        "feature1": "Viagens ilimitadas por 30 dias",
+        "feature2": "Acesso prioritário",
+        "feature3": "Transferências otimizadas",
+        "feature4": "Suporte prioritário",
+        "feature5": "Economia máxima"
       }
     },
     "features": {
@@ -261,7 +276,11 @@
       "vehicles": "Conexão de veículos",
       "map": "Visualização de motoristas"
     },
-    "renewButton": "Renovar minha assinatura"
+    "renewButton": "Renovar minha assinatura",
+    "chooseTitle": "ESCOLHA SEU",
+    "planWord": "PLANO",
+    "subscribeBtn": "ASSINAR",
+    "error": "Erro ao criar pagamento"
   },
   "profile": {
     "title": "O Meu Perfil",
@@ -539,5 +558,36 @@
     "renewNow": "Renovar agora",
     "subscriptionExpiryTitle": "Assinatura expirando",
     "subscriptionExpiryBody": "Sua assinatura do Métro-Taxi está expirando. Renove agora para continuar usando o serviço sem interrupção."
+  },
+  "cgu": {
+    "title": "Condições Gerais de Uso (CGU)",
+    "back": "Voltar",
+    "lastUpdate": "Última atualização",
+    "intro": "Métro-Taxi é uma plataforma que conecta usuários assinantes com motoristas VTC.",
+    "serviceTitle": "O serviço permite",
+    "service1": "Visualizar veículos disponíveis em tempo real",
+    "service2": "Ver a direção de viagem",
+    "service3": "Saber o número de lugares disponíveis",
+    "service4": "Acessar um sistema de caronas dinâmico",
+    "service5": "Fazer transferências entre veículos",
+    "userRulesTitle": "Regras para usuários",
+    "userRule1": "Ter uma assinatura ativa",
+    "userRule2": "Estar pronto no ponto de embarque",
+    "userRule3": "Respeitar motoristas e outros passageiros",
+    "driverRulesTitle": "Regras para motoristas",
+    "driverRule1": "Cumprir a regulamentação VTC",
+    "driverRule2": "Garantir a segurança e respeito dos passageiros",
+    "driverRule3": "Usar o aplicativo como ferramenta de conexão",
+    "responsibilityTitle": "Responsabilidade",
+    "responsibility1": "Métro-Taxi atua apenas como plataforma de conexão.",
+    "responsibility2": "As viagens são realizadas sob responsabilidade dos motoristas.",
+    "readAndAccept": "Li e aceito as Condições Gerais de Uso",
+    "acceptButton": "Aceito as CGU",
+    "allRightsReserved": "Todos os direitos reservados."
+  },
+  "currency": {
+    "code": "EUR",
+    "symbol": "€",
+    "position": "after"
   }
 }

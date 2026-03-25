@@ -210,23 +210,38 @@
   },
   "subscription": {
     "title": "Velg ditt abonnement",
-    "subtitle": "Ubegrensede turer på hele Métro-Taxi-nettverket",
+    "subtitle": "Simpelt abonnement. Ubegrænsede ture. Betal én gang, rejs uden at tælle.",
     "plans": {
       "day": {
-        "name": "24 timer",
-        "price": "6,99 €",
-        "description": "Perfekt for sporadisk bruk"
+        "name": "24 TIMER",
+        "price": "52 kr",
+        "description": "Perfekt for sporadisk bruk",
+        "period": "dag",
+        "feature1": "Ubegrænsede ture i 24t",
+        "feature2": "Adgang til alle køretøjer",
+        "feature3": "Optimerede skift"
       },
       "week": {
-        "name": "1 uke",
-        "price": "16,99 €",
-        "description": "Ideell for korte opphold"
+        "name": "1 UGE",
+        "price": "129 kr",
+        "description": "Ideell for korte opphold",
+        "period": "uge",
+        "feature1": "Ubegrænsede ture i 7 dage",
+        "feature2": "Prioriteret adgang",
+        "feature3": "Optimerede skift",
+        "feature4": "Prioriteret support"
       },
       "month": {
-        "name": "1 måned",
-        "price": "53,99 €",
+        "name": "1 MÅNED",
+        "price": "409 kr",
         "description": "Best verdi for pengene",
-        "popular": "POPULÆR"
+        "popular": "POPULÆR",
+        "period": "måned",
+        "feature1": "Ubegrænsede ture i 30 dage",
+        "feature2": "Prioriteret adgang",
+        "feature3": "Optimerede skift",
+        "feature4": "Prioriteret support",
+        "feature5": "Maksimal besparelse"
       }
     },
     "features": {
@@ -257,7 +272,11 @@
       "vehicles": "Køretøjsforbindelse",
       "map": "Chaufførvisning"
     },
-    "renewButton": "Forny mit abonnement"
+    "renewButton": "Forny mit abonnement",
+    "chooseTitle": "VÆLG DIN",
+    "planWord": "PLAN",
+    "subscribeBtn": "ABONNER",
+    "error": "Fejl ved oprettelse af betaling"
   },
   "profile": {
     "title": "Min profil",
@@ -535,5 +554,36 @@
     "renewNow": "Forny nu",
     "subscriptionExpiryTitle": "Abonnement udløber snart",
     "subscriptionExpiryBody": "Dit Métro-Taxi-abonnement udløber snart. Forny nu for at fortsætte med at bruge tjenesten uden afbrydelse."
+  },
+  "cgu": {
+    "title": "Generelle Brugsbetingelser",
+    "back": "Tilbage",
+    "lastUpdate": "Sidst opdateret",
+    "intro": "Métro-Taxi er en platform, der forbinder abonnerede brugere med VTC-chauffører.",
+    "serviceTitle": "Tjenesten gør det muligt at",
+    "service1": "Se tilgængelige køretøjer i realtid",
+    "service2": "Se deres kørselsretning",
+    "service3": "Kende antallet af ledige pladser",
+    "service4": "Få adgang til et dynamisk samkørselssystem",
+    "service5": "Skifte mellem køretøjer",
+    "userRulesTitle": "Regler for brugere",
+    "userRule1": "Have et aktivt abonnement",
+    "userRule2": "Være klar ved afhentningsstedet",
+    "userRule3": "Respektere chauffører og andre passagerer",
+    "driverRulesTitle": "Regler for chauffører",
+    "driverRule1": "Overholde VTC-regler",
+    "driverRule2": "Sikre passagerernes sikkerhed og respekt",
+    "driverRule3": "Bruge applikationen som et forbindelsesværktøj",
+    "responsibilityTitle": "Ansvar",
+    "responsibility1": "Métro-Taxi fungerer udelukkende som en forbindelsesplatform.",
+    "responsibility2": "Ture udføres under chaufførernes ansvar.",
+    "readAndAccept": "Jeg har læst og accepterer de Generelle Brugsbetingelser",
+    "acceptButton": "Jeg accepterer betingelserne",
+    "allRightsReserved": "Alle rettigheder forbeholdes."
+  },
+  "currency": {
+    "code": "DKK",
+    "symbol": "kr",
+    "position": "after"
   }
 }

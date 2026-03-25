@@ -210,26 +210,41 @@
   },
   "subscription": {
     "title": "选择您的订阅",
-    "subtitle": "在整个Métro-Taxi网络无限出行",
+    "subtitle": "简单订阅。无限行程。一次付款，尽情出行。",
     "plans": {
       "day": {
         "name": "24小时",
-        "price": "¥54.99",
+        "price": "¥52",
         "priceLocal": "¥54.99",
-        "description": "适合偶尔使用"
+        "description": "适合偶尔使用",
+        "period": "天",
+        "feature1": "24小时无限行程",
+        "feature2": "使用所有车辆",
+        "feature3": "优化换乘"
       },
       "week": {
         "name": "1周",
-        "price": "¥129.99",
+        "price": "¥129",
         "priceLocal": "¥129.99",
-        "description": "适合短期停留"
+        "description": "适合短期停留",
+        "period": "周",
+        "feature1": "7天无限行程",
+        "feature2": "优先使用",
+        "feature3": "优化换乘",
+        "feature4": "优先支持"
       },
       "month": {
         "name": "1个月",
-        "price": "¥419.99",
+        "price": "¥409",
         "priceLocal": "¥419.99",
         "description": "最佳性价比",
-        "popular": "热门"
+        "popular": "热门",
+        "period": "月",
+        "feature1": "30天无限行程",
+        "feature2": "优先使用",
+        "feature3": "优化换乘",
+        "feature4": "优先支持",
+        "feature5": "最大节省"
       }
     },
     "features": {
@@ -261,7 +276,11 @@
       "vehicles": "车辆连接",
       "map": "司机显示"
     },
-    "renewButton": "续订我的订阅"
+    "renewButton": "续订我的订阅",
+    "chooseTitle": "选择您的",
+    "planWord": "套餐",
+    "subscribeBtn": "订阅",
+    "error": "创建付款时出错"
   },
   "profile": {
     "title": "我的资料",
@@ -539,5 +558,36 @@
     "renewNow": "立即续订",
     "subscriptionExpiryTitle": "订阅即将到期",
     "subscriptionExpiryBody": "您的 Métro-Taxi 订阅即将到期。立即续订以继续无中断使用服务。"
+  },
+  "cgu": {
+    "title": "使用条款和条件",
+    "back": "返回",
+    "lastUpdate": "最后更新",
+    "intro": "Métro-Taxi 是一个连接订阅用户与 VTC 司机的平台。",
+    "serviceTitle": "服务功能",
+    "service1": "实时查看可用车辆",
+    "service2": "查看行驶方向",
+    "service3": "了解可用座位数量",
+    "service4": "访问动态拼车系统",
+    "service5": "在车辆之间换乘",
+    "userRulesTitle": "用户规则",
+    "userRule1": "拥有有效订阅",
+    "userRule2": "在上车点准备好",
+    "userRule3": "尊重司机和其他乘客",
+    "driverRulesTitle": "司机规则",
+    "driverRule1": "遵守 VTC 法规",
+    "driverRule2": "确保乘客的安全和尊重",
+    "driverRule3": "将应用程序用作连接工具",
+    "responsibilityTitle": "责任",
+    "responsibility1": "Métro-Taxi 仅作为连接平台。",
+    "responsibility2": "行程由司机负责。",
+    "readAndAccept": "我已阅读并接受使用条款和条件",
+    "acceptButton": "我接受条款",
+    "allRightsReserved": "版权所有。"
+  },
+  "currency": {
+    "code": "CNY",
+    "symbol": "¥",
+    "position": "before"
   }
 }

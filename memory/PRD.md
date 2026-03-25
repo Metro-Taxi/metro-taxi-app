@@ -118,10 +118,20 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 - `payout_history` - Historique virements
 
 ## 📅 Dernière Mise à Jour
-**24/03/2026**
+**25/03/2026**
 - ✅ **Correction prix Stripe** : 16,99€ affiche maintenant correctement (utilisation des centimes)
-- ✅ **Traductions complètes (16 langues)** : Toutes les nouvelles fonctionnalités traduites
-  - FR, EN, EN-GB, DE, ES, PT, IT, NL, SV, NO, DA, ZH, HI, PA, AR, RU
+- ✅ **Traductions CGU complètes (16 langues)** : Page CGU traduite dans toutes les langues
+- ✅ **Devises locales** : Prix affichés dans les devises locales par pays :
+  - 🇬🇧 Royaume-Uni : £5.99 / £14.99 / £46.99 (GBP)
+  - 🇸🇪 Suède : 79 kr / 189 kr / 599 kr (SEK)
+  - 🇳🇴 Norvège : 79 kr / 189 kr / 599 kr (NOK)
+  - 🇩🇰 Danemark : 52 kr / 129 kr / 409 kr (DKK)
+  - 🇨🇳 Chine : ¥52 / ¥129 / ¥409 (CNY)
+  - 🇮🇳 Inde : ₹649 / ₹1,549 / ₹4,899 (INR)
+  - 🇸🇦 Arabie Saoudite : 29 ر.س / 69 ر.س / 219 ر.س (SAR)
+  - 🇷🇺 Russie : 699 ₽ / 1 699 ₽ / 5 399 ₽ (RUB)
+  - 🇪🇺 Zone Euro (FR, DE, ES, PT, IT, NL) : €6,99 / €16,99 / €53,99 (EUR)
+- ✅ Page d'abonnement avec sélecteur de langue
 - ✅ **Pop-up d'Information Important** : Message d'alerte à l'ouverture + alerte expiration
 - ✅ **Contrôle d'accès abonnement expiré** : Overlay bloquant avec message et bouton de renouvellement
 - ✅ Système de notifications automatiques d'expiration d'abonnement

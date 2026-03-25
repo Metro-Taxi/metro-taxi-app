@@ -209,23 +209,38 @@
   },
   "subscription": {
     "title": "Choose your subscription",
-    "subtitle": "Unlimited rides across the entire Métro-Taxi network",
+    "subtitle": "Simple subscription. Unlimited rides. Pay once, travel without counting.",
     "plans": {
       "day": {
-        "name": "24 Hours",
+        "name": "24 HOURS",
         "price": "£5.99",
-        "description": "Perfect for occasional use"
+        "description": "Perfect for occasional use",
+        "period": "day",
+        "feature1": "Unlimited rides for 24h",
+        "feature2": "Access to all vehicles",
+        "feature3": "Optimised transfers"
       },
       "week": {
-        "name": "1 Week",
+        "name": "1 WEEK",
         "price": "£14.99",
-        "description": "Ideal for short stays"
+        "description": "Ideal for short stays",
+        "period": "week",
+        "feature1": "Unlimited rides for 7 days",
+        "feature2": "Priority access",
+        "feature3": "Optimised transfers",
+        "feature4": "Priority support"
       },
       "month": {
-        "name": "1 Month",
-        "price": "£45.99",
+        "name": "1 MONTH",
+        "price": "£46.99",
         "description": "Best value for money",
-        "popular": "POPULAR"
+        "popular": "POPULAR",
+        "period": "month",
+        "feature1": "Unlimited rides for 30 days",
+        "feature2": "Priority access",
+        "feature3": "Optimised transfers",
+        "feature4": "Priority support",
+        "feature5": "Maximum savings"
       }
     },
     "features": {
@@ -256,7 +271,11 @@
       "vehicles": "Vehicle connection",
       "map": "Driver visualisation"
     },
-    "renewButton": "Renew my subscription"
+    "renewButton": "Renew my subscription",
+    "chooseTitle": "CHOOSE YOUR",
+    "planWord": "PLAN",
+    "subscribeBtn": "SUBSCRIBE",
+    "error": "Payment creation error"
   },
   "profile": {
     "title": "My Profile",
@@ -534,5 +553,36 @@
     "renewNow": "Renew now",
     "subscriptionExpiryTitle": "Subscription expiring soon",
     "subscriptionExpiryBody": "Your Métro-Taxi subscription is expiring soon. Renew now to continue using the service without interruption."
+  },
+  "cgu": {
+    "title": "Terms and Conditions of Use",
+    "back": "Back",
+    "lastUpdate": "Last updated",
+    "intro": "Métro-Taxi is a platform connecting subscribed users with VTC drivers.",
+    "serviceTitle": "The service allows you to",
+    "service1": "View available vehicles in real-time",
+    "service2": "See their direction of travel",
+    "service3": "Know the number of available seats",
+    "service4": "Access a dynamic ridesharing system",
+    "service5": "Transfer between vehicles",
+    "userRulesTitle": "Rules for users",
+    "userRule1": "Have an active subscription",
+    "userRule2": "Be ready at the pickup point",
+    "userRule3": "Respect drivers and other passengers",
+    "driverRulesTitle": "Rules for drivers",
+    "driverRule1": "Comply with VTC regulations",
+    "driverRule2": "Ensure the safety and respect of passengers",
+    "driverRule3": "Use the application as a connection tool",
+    "responsibilityTitle": "Liability",
+    "responsibility1": "Métro-Taxi acts solely as a connection platform.",
+    "responsibility2": "Trips are carried out under the responsibility of drivers.",
+    "readAndAccept": "I have read and accept the Terms and Conditions",
+    "acceptButton": "I accept the Terms",
+    "allRightsReserved": "All rights reserved."
+  },
+  "currency": {
+    "code": "GBP",
+    "symbol": "£",
+    "position": "before"
   }
 }

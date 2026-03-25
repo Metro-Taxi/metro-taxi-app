@@ -243,7 +243,7 @@
   },
   "subscription": {
     "title": "Choose your subscription",
-    "subtitle": "Unlimited rides on the entire Métro-Taxi network",
+    "subtitle": "Simple subscription. Unlimited rides. Pay once, travel without counting.",
     "expiredTitle": "Subscription expired",
     "expiredMessage": "Your subscription has expired. Please renew it to continue using Métro-Taxi.",
     "blockedFeatures": "Blocked features:",
@@ -255,20 +255,35 @@
     "renewButton": "Renew my subscription",
     "plans": {
       "day": {
-        "name": "24 Hours",
+        "name": "24 HOURS",
         "price": "€6.99",
-        "description": "Perfect for occasional use"
+        "description": "Perfect for occasional use",
+        "period": "day",
+        "feature1": "Unlimited rides for 24h",
+        "feature2": "Access to all vehicles",
+        "feature3": "Optimized transfers"
       },
       "week": {
-        "name": "1 Week",
+        "name": "1 WEEK",
         "price": "€16.99",
-        "description": "Ideal for short stays"
+        "description": "Ideal for short stays",
+        "period": "week",
+        "feature1": "Unlimited rides for 7 days",
+        "feature2": "Priority access",
+        "feature3": "Optimized transfers",
+        "feature4": "Priority support"
       },
       "month": {
-        "name": "1 Month",
+        "name": "1 MONTH",
         "price": "€53.99",
         "description": "Best value for money",
-        "popular": "POPULAR"
+        "popular": "POPULAR",
+        "period": "month",
+        "feature1": "Unlimited rides for 30 days",
+        "feature2": "Priority access",
+        "feature3": "Optimized transfers",
+        "feature4": "Priority support",
+        "feature5": "Maximum savings"
       }
     },
     "features": {
@@ -290,7 +305,11 @@
       "plan": "Plan",
       "validUntil": "Valid until",
       "goDashboard": "Go to dashboard"
-    }
+    },
+    "chooseTitle": "CHOOSE YOUR",
+    "planWord": "PLAN",
+    "subscribeBtn": "SUBSCRIBE",
+    "error": "Payment creation error"
   },
   "profile": {
     "title": "My Profile",
@@ -566,15 +585,15 @@
     "subscriptionExpiryBody": "Your Métro-Taxi subscription is expiring soon. Renew now to continue using the service without interruption."
   },
   "cgu": {
-    "title": "Terms and Conditions",
+    "title": "Terms and Conditions of Use",
     "back": "Back",
     "lastUpdate": "Last updated",
     "intro": "Métro-Taxi is a platform connecting subscribed users with VTC drivers.",
-    "serviceTitle": "The service allows",
-    "service1": "Real-time display of available vehicles",
-    "service2": "View their direction",
+    "serviceTitle": "The service allows you to",
+    "service1": "View available vehicles in real-time",
+    "service2": "See their direction of travel",
     "service3": "Know the number of available seats",
-    "service4": "Access to a dynamic carpooling system",
+    "service4": "Access a dynamic ridesharing system",
     "service5": "Transfer between vehicles",
     "userRulesTitle": "Rules for users",
     "userRule1": "Have an active subscription",
@@ -582,11 +601,11 @@
     "userRule3": "Respect drivers and other passengers",
     "driverRulesTitle": "Rules for drivers",
     "driverRule1": "Comply with VTC regulations",
-    "driverRule2": "Ensure passenger safety and respect",
+    "driverRule2": "Ensure the safety and respect of passengers",
     "driverRule3": "Use the application as a connection tool",
-    "responsibilityTitle": "Responsibility",
-    "responsibility1": "Métro-Taxi acts only as a connection platform.",
-    "responsibility2": "Rides are carried out under the responsibility of drivers.",
+    "responsibilityTitle": "Liability",
+    "responsibility1": "Métro-Taxi acts solely as a connection platform.",
+    "responsibility2": "Trips are carried out under the responsibility of drivers.",
     "readAndAccept": "I have read and accept the Terms and Conditions",
     "acceptButton": "I accept the Terms",
     "allRightsReserved": "All rights reserved."
@@ -612,5 +631,10 @@
     "suspension2": "No rides can be taken",
     "readAndAccept": "I have read and accept the General Terms of Sale",
     "acceptButton": "I accept the Terms"
+  },
+  "currency": {
+    "code": "EUR",
+    "symbol": "€",
+    "position": "after"
   }
 }
