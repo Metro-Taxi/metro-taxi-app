@@ -21,6 +21,7 @@ import resend
 import stripe
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 from emergentintegrations.llm.openai import OpenAITextToSpeech
+from pywebpush import webpush, WebPushException
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -3240,6 +3241,14 @@ async def get_available_languages():
 # PUSH NOTIFICATIONS ENDPOINTS
 # ============================================
 
+@api_router.get("/notifications/vapid-public-key")
+async def get_vapid_public_key():
+    """Get VAPID public key for push notification subscription"""
+    vapid_public_key = os.environ.get("VAPID_PUBLIC_KEY", "")
+    if not vapid_public_key:
+        raise HTTPException(status_code=500, detail="VAPID keys not configured")
+    return {"publicKey": vapid_public_key}
+
 @api_router.post("/notifications/subscribe")
 async def subscribe_push_notifications(subscription: PushSubscription, current_user: dict = Depends(get_current_user)):
     """Subscribe to push notifications"""
@@ -3277,21 +3286,59 @@ async def send_push_notification(user_id: str, notification: NotificationPayload
         {"user_id": user_id, "user_type": user_type}
     ).to_list(10)
     
-    for sub in subscriptions:
-        # Store notification for later retrieval
-        notif_doc = {
-            "id": str(uuid.uuid4()),
-            "user_id": user_id,
-            "user_type": user_type,
-            "title": notification.title,
-            "body": notification.body,
-            "data": notification.data,
-            "read": False,
-            "created_at": datetime.now(timezone.utc).isoformat()
-        }
-        await db.notifications.insert_one(notif_doc)
+    # Store notification for later retrieval (in-app notifications)
+    notif_doc = {
+        "id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "user_type": user_type,
+        "title": notification.title,
+        "body": notification.body,
+        "data": notification.data,
+        "read": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.notifications.insert_one(notif_doc)
     
-    return len(subscriptions)
+    # Send real push notifications via WebPush
+    vapid_private_key = os.environ.get("VAPID_PRIVATE_KEY")
+    vapid_contact = os.environ.get("VAPID_CONTACT", "mailto:contact@metro-taxi.com")
+    
+    sent_count = 0
+    for sub in subscriptions:
+        try:
+            # Build subscription info for webpush
+            subscription_info = {
+                "endpoint": sub.get("endpoint"),
+                "keys": sub.get("keys", {})
+            }
+            
+            # Only send if we have valid VAPID keys and subscription
+            if vapid_private_key and subscription_info.get("endpoint") and subscription_info.get("keys", {}).get("p256dh"):
+                payload = json.dumps({
+                    "title": notification.title,
+                    "body": notification.body,
+                    "icon": "/icons/icon-192x192.png",
+                    "badge": "/icons/icon-72x72.png",
+                    "data": notification.data or {}
+                })
+                
+                webpush(
+                    subscription_info=subscription_info,
+                    data=payload,
+                    vapid_private_key=vapid_private_key,
+                    vapid_claims={"sub": vapid_contact}
+                )
+                sent_count += 1
+                logging.info(f"Push notification sent to user {user_id}")
+        except WebPushException as e:
+            logging.error(f"WebPush failed for user {user_id}: {e}")
+            # If subscription is gone (410 Gone), remove it
+            if e.response and e.response.status_code == 410:
+                await db.push_subscriptions.delete_one({"endpoint": sub.get("endpoint")})
+        except Exception as e:
+            logging.error(f"Failed to send push notification: {e}")
+    
+    return sent_count
 
 @api_router.get("/notifications")
 async def get_notifications(current_user: dict = Depends(get_current_user), limit: int = 20):

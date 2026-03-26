@@ -118,30 +118,28 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 - `payout_history` - Historique virements
 
 ## 📅 Dernière Mise à Jour
-**25/03/2026**
-- ✅ **Correction prix Stripe** : 16,99€ affiche maintenant correctement (utilisation des centimes)
-- ✅ **Traductions CGU complètes (16 langues)** : Page CGU traduite dans toutes les langues
-- ✅ **Devises locales** : Prix affichés dans les devises locales par pays :
-  - 🇬🇧 Royaume-Uni : £5.99 / £14.99 / £46.99 (GBP)
-  - 🇸🇪 Suède : 79 kr / 189 kr / 599 kr (SEK)
-  - 🇳🇴 Norvège : 79 kr / 189 kr / 599 kr (NOK)
-  - 🇩🇰 Danemark : 52 kr / 129 kr / 409 kr (DKK)
-  - 🇨🇳 Chine : ¥52 / ¥129 / ¥409 (CNY)
-  - 🇮🇳 Inde : ₹649 / ₹1,549 / ₹4,899 (INR)
-  - 🇸🇦 Arabie Saoudite : 29 ر.س / 69 ر.س / 219 ر.س (SAR)
-  - 🇷🇺 Russie : 699 ₽ / 1 699 ₽ / 5 399 ₽ (RUB)
-  - 🇪🇺 Zone Euro (FR, DE, ES, PT, IT, NL) : €6,99 / €16,99 / €53,99 (EUR)
-- ✅ Page d'abonnement avec sélecteur de langue
-- ✅ **Pop-up d'Information Important** : Message d'alerte à l'ouverture + alerte expiration
-- ✅ **Contrôle d'accès abonnement expiré** : Overlay bloquant avec message et bouton de renouvellement
-- ✅ Système de notifications automatiques d'expiration d'abonnement
-- ✅ Page CGV créée avec tarifs, conditions et bouton d'acceptation
-- ✅ Navigation améliorée : Logo cliquable + bouton "Accueil" dans le menu
+**26/03/2026**
+- ✅ **Correction lien de vérification email** : URL complète générée via variable FRONTEND_URL
+- ✅ **Message "Compte déjà vérifié"** : Message rassurant au lieu de "Token invalide" pour les comptes déjà vérifiés
+- ✅ **Bug envoi email "resend"** : Fonction resend-verification envoie maintenant réellement l'email
+- ✅ **Clés VAPID générées** : Notifications push réelles configurées avec pywebpush
+- ✅ **Service Worker push** : Gestion JSON des notifications push
+- ✅ **Endpoint VAPID** : `/api/notifications/vapid-public-key` pour récupérer la clé publique
+
+## 🔧 Configuration Production
+Variables d'environnement à configurer sur Emergent pour la production :
+```
+FRONTEND_URL=https://metro-taxi-demo.emergent.host
+VAPID_PUBLIC_KEY=BB87ARCh1dnirM0zNPAaYoDXAv9AMErgqZ210CX7mWr1e2DMBJ5aShocfx2wZpvXaBT8Y5FpDmn7V87yfscujEs
+VAPID_PRIVATE_KEY=eoxM6m3lnv0X0h1n2cR8dYK9mu9zLiDUbnrZieGoHxg
+VAPID_CONTACT=mailto:contact@metro-taxi.com
+SENDER_EMAIL=contact@metro-taxi.com
+```
 
 ## 🔄 Prochaines Étapes
 - [ ] Déploiement en production sur metro-taxi.com
 - [ ] Configuration clé Stripe LIVE
-- [ ] Configurer les VAPID keys pour notifications push de production
+- [ ] Test des notifications push en production
 
 ## 📦 Backlog Futur
 - Système de chat usager/chauffeur en temps réel

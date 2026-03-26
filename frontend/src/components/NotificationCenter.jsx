@@ -10,6 +10,20 @@ import { useNavigate } from 'react-router-dom';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Helper function to convert base64 URL-safe string to Uint8Array
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
 // Service for managing push notifications
 export const notificationService = {
   async requestPermission() {
@@ -29,24 +43,31 @@ export const notificationService = {
     }
 
     try {
+      // Get VAPID public key from backend
+      const vapidResponse = await axios.get(`${API}/notifications/vapid-public-key`);
+      const vapidPublicKey = vapidResponse.data.publicKey;
+      
+      if (!vapidPublicKey) {
+        console.log('VAPID public key not available');
+        return false;
+      }
+
       const registration = await navigator.serviceWorker.ready;
       
-      // For demo purposes, we'll use a simple subscription
-      // In production, you'd use VAPID keys
-      const subscription = {
-        endpoint: `${window.location.origin}/push/${Date.now()}`,
-        keys: {
-          p256dh: 'demo-key',
-          auth: 'demo-auth'
-        }
-      };
+      // Subscribe with real VAPID key
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+      });
 
+      // Send subscription to backend
       await axios.post(
         `${API}/notifications/subscribe`,
-        subscription,
+        subscription.toJSON(),
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      console.log('Push notification subscription successful');
       return true;
     } catch (error) {
       console.error('Failed to subscribe to push:', error);

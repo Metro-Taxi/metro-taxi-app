@@ -120,25 +120,50 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Handle push notifications (for future use)
+// Handle push notifications
 self.addEventListener('push', (event) => {
-  const options = {
-    body: event.data ? event.data.text() : 'Nouvelle notification Métro-Taxi',
+  console.log('[Service Worker] Push received');
+  
+  let notificationData = {
+    title: 'Métro-Taxi',
+    body: 'Nouvelle notification',
     icon: '/icons/icon-192x192.png',
     badge: '/icons/icon-72x72.png',
+    data: {}
+  };
+  
+  if (event.data) {
+    try {
+      const payload = event.data.json();
+      notificationData = {
+        title: payload.title || 'Métro-Taxi',
+        body: payload.body || 'Nouvelle notification',
+        icon: payload.icon || '/icons/icon-192x192.png',
+        badge: payload.badge || '/icons/icon-72x72.png',
+        data: payload.data || {}
+      };
+    } catch (e) {
+      // If not JSON, use text
+      notificationData.body = event.data.text();
+    }
+  }
+
+  const options = {
+    body: notificationData.body,
+    icon: notificationData.icon,
+    badge: notificationData.badge,
     vibrate: [100, 50, 100],
-    data: {
-      dateOfArrival: Date.now(),
-      primaryKey: 1
-    },
+    data: notificationData.data,
+    tag: 'metro-taxi-notification',
+    renotify: true,
     actions: [
-      { action: 'explore', title: 'Voir', icon: '/icons/icon-72x72.png' },
+      { action: 'open', title: 'Ouvrir', icon: '/icons/icon-72x72.png' },
       { action: 'close', title: 'Fermer', icon: '/icons/icon-72x72.png' }
     ]
   };
 
   event.waitUntil(
-    self.registration.showNotification('Métro-Taxi', options)
+    self.registration.showNotification(notificationData.title, options)
   );
 });
 
@@ -146,9 +171,32 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  if (event.action === 'explore') {
+  const data = event.notification.data || {};
+  let targetUrl = '/dashboard';
+  
+  // Navigate based on notification type
+  if (data.type === 'subscription_expiry') {
+    targetUrl = '/subscription';
+  } else if (data.type === 'ride_accepted' || data.type === 'driver_arrived') {
+    targetUrl = '/dashboard';
+  }
+
+  if (event.action === 'open' || event.action === '' || !event.action) {
     event.waitUntil(
-      clients.openWindow('/')
+      clients.matchAll({ type: 'window', includeUncontrolled: true })
+        .then((clientList) => {
+          // If a window is already open, focus it
+          for (const client of clientList) {
+            if (client.url.includes(self.location.origin) && 'focus' in client) {
+              client.navigate(targetUrl);
+              return client.focus();
+            }
+          }
+          // Otherwise open a new window
+          if (clients.openWindow) {
+            return clients.openWindow(targetUrl);
+          }
+        })
     );
   }
 });
