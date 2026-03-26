@@ -1129,11 +1129,8 @@ async def register_user(data: UserRegister, request: Request):
         "expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
     })
     
-    # Generate verification URL
-    host_url = str(request.headers.get("origin", "")) or str(request.headers.get("referer", "")).rstrip("/") or "https://metro-taxi-demo.emergent.host"
-    # Clean up host_url - remove trailing slashes and ensure it's a valid URL
-    if not host_url.startswith("http"):
-        host_url = "https://metro-taxi-demo.emergent.host"
+    # Generate verification URL - use FRONTEND_URL env var as the source of truth
+    host_url = os.environ.get("FRONTEND_URL", "https://metro-taxi-demo.emergent.host")
     verification_url = f"{host_url}/verify-email?token={verification_token}"
     
     # Get language from Accept-Language header
@@ -1204,9 +1201,8 @@ async def register_driver(data: DriverRegister, request: Request):
         "expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
     })
     
-    host_url = str(request.headers.get("origin", "")) or str(request.headers.get("referer", "")).rstrip("/") or "https://metro-taxi-demo.emergent.host"
-    if not host_url.startswith("http"):
-        host_url = "https://metro-taxi-demo.emergent.host"
+    # Generate verification URL - use FRONTEND_URL env var as the source of truth
+    host_url = os.environ.get("FRONTEND_URL", "https://metro-taxi-demo.emergent.host")
     verification_url = f"{host_url}/verify-email?token={verification_token}"
     
     # Get language from Accept-Language header
@@ -1314,7 +1310,8 @@ async def resend_verification(current_user: dict = Depends(get_current_user), re
         "expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
     })
     
-    host_url = str(request.headers.get("origin", "")) if request else ""
+    # Generate verification URL - use FRONTEND_URL env var as the source of truth
+    host_url = os.environ.get("FRONTEND_URL", "https://metro-taxi-demo.emergent.host")
     verification_url = f"{host_url}/verify-email?token={verification_token}"
     
     return {"message": "Email de vérification renvoyé", "verification_url": verification_url}
