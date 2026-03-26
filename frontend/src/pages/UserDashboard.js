@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Circle, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass, History, Star, Home, AlertTriangle, Bell } from 'lucide-react';
+import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass, History, Star, Home, AlertTriangle, Bell, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,6 +14,7 @@ import 'leaflet/dist/leaflet.css';
 import NotificationCenter from '@/components/NotificationCenter';
 import RideHistory from '@/pages/RideHistory';
 import { PendingRatings } from '@/components/RatingSystem';
+import ChatWindow from '@/components/ChatWindow';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -109,6 +110,8 @@ const UserDashboard = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [showImportantPopup, setShowImportantPopup] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+  const [showChat, setShowChat] = useState(false);
+  const [chatDriverName, setChatDriverName] = useState('');
 
   // Paris center as default
   const defaultCenter = [48.8566, 2.3522];
@@ -793,6 +796,23 @@ const UserDashboard = () => {
                   </div>
                 </div>
               </div>
+              
+              {/* Chat Button */}
+              {activeRide.driver_id && (
+                <div className="mt-4 pt-4 border-t border-zinc-800">
+                  <Button
+                    onClick={() => {
+                      setChatDriverName(activeRide.driver_name || 'Chauffeur');
+                      setShowChat(true);
+                    }}
+                    className="w-full bg-zinc-800 hover:bg-zinc-700 text-white flex items-center justify-center gap-2"
+                    data-testid="open-chat-btn"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    {t('chat.openChat', 'Contacter le chauffeur')}
+                  </Button>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
@@ -1069,6 +1089,19 @@ const UserDashboard = () => {
           <PendingRatings />
         </div>
       )}
+
+      {/* Chat Window */}
+      <AnimatePresence>
+        {showChat && activeRide && (
+          <ChatWindow
+            rideId={activeRide.id}
+            driverName={chatDriverName}
+            userName={user?.first_name}
+            isDriver={false}
+            onClose={() => setShowChat(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

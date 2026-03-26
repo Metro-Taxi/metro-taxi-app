@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#F7C600">
+    <title>Métro-Taxi - Hors ligne</title>
+    <link rel="icon" type="image/x-icon" href="/icons/favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #09090B;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 400px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+        .logo svg {
+            width: 48px;
+            height: 48px;
+        }
+        .logo-text {
+            font-size: 28px;
+            font-weight: 900;
+            color: white;
+        }
+        .offline-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #27272a 0%, #18181b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            border: 3px solid #3f3f46;
+        }
+        .offline-icon svg {
+            width: 60px;
+            height: 60px;
+            color: #FFD60A;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: white;
+        }
+        p {
+            color: #a1a1aa;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .features {
+            background: #18181b;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        .features h3 {
+            color: #FFD60A;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #27272a;
+        }
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+        .feature-icon {
+            width: 32px;
+            height: 32px;
+            background: #27272a;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .feature-icon svg {
+            width: 16px;
+            height: 16px;
+            color: #FFD60A;
+        }
+        .feature-text {
+            font-size: 14px;
+            color: #d4d4d8;
+        }
+        .retry-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #FFD60A;
+            color: black;
+            font-weight: 700;
+            padding: 14px 32px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .retry-btn:hover {
+            background: #E6C209;
+            transform: translateY(-2px);
+        }
+        .retry-btn:active {
+            transform: translateY(0);
+        }
+        .status {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #27272a;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #71717a;
+        }
+        .status.online {
+            background: #14532d;
+            color: #4ade80;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFD60A" stroke-width="2">
+                <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-2-4H8L6 10l-2.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2"/>
+                <circle cx="7" cy="17" r="2"/>
+                <path d="M9 17h6"/>
+                <circle cx="17" cy="17" r="2"/>
+            </svg>
+            <span class="logo-text">MÉTRO-TAXI</span>
+        </div>
+
+        <!-- Offline Icon -->
+        <div class="offline-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="2" y1="2" x2="22" y2="22"/>
+                <path d="M8.5 16.5a5 5 0 0 1 7 0"/>
+                <path d="M2 8.82a15 15 0 0 1 4.17-2.65"/>
+                <path d="M10.66 5c4.01-.36 8.14.9 11.34 3.76"/>
+                <path d="M16.85 11.25a10 10 0 0 1 2.22 1.68"/>
+                <path d="M5 13a10 10 0 0 1 5.24-2.76"/>
+                <line x1="12" y1="20" x2="12.01" y2="20"/>
+            </svg>
+        </div>
+
+        <h1>Vous êtes hors ligne</h1>
+        <p>Pas de connexion Internet détectée. Vérifiez votre connexion et réessayez.</p>
+
+        <!-- Available Features -->
+        <div class="features">
+            <h3>Fonctionnalités disponibles hors ligne</h3>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                </div>
+                <span class="feature-text">Voir votre position sur la carte (si déjà chargée)</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                </div>
+                <span class="feature-text">Consulter l'historique des trajets (en cache)</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                </div>
+                <span class="feature-text">Lire les informations de votre compte</span>
+            </div>
+        </div>
+
+        <button class="retry-btn" onclick="retryConnection()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 2v6h-6"/>
+                <path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
+                <path d="M3 22v-6h6"/>
+                <path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
+            </svg>
+            Réessayer
+        </button>
+
+        <div class="status" id="status">
+            <span class="pulse">En attente de connexion...</span>
+        </div>
+    </div>
+
+    <script>
+        function retryConnection() {
+            const status = document.getElementById('status');
+            status.innerHTML = '<span class="pulse">Tentative de reconnexion...</span>';
+            
+            fetch('/', { method: 'HEAD', cache: 'no-store' })
+                .then(() => {
+                    status.className = 'status online';
+                    status.innerHTML = '✓ Connexion rétablie ! Redirection...';
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                })
+                .catch(() => {
+                    status.className = 'status';
+                    status.innerHTML = '✗ Toujours hors ligne. Réessayez plus tard.';
+                });
+        }
+
+        // Auto-retry every 10 seconds
+        setInterval(() => {
+            if (navigator.onLine) {
+                retryConnection();
+            }
+        }, 10000);
+
+        // Listen for online event
+        window.addEventListener('online', () => {
+            retryConnection();
+        });
+    </script>
+</body>
+</html>

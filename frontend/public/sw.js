@@ -1,14 +1,26 @@
-const CACHE_NAME = 'metro-taxi-v1';
-const STATIC_CACHE = 'metro-taxi-static-v1';
-const DYNAMIC_CACHE = 'metro-taxi-dynamic-v1';
+const CACHE_NAME = 'metro-taxi-v2';
+const STATIC_CACHE = 'metro-taxi-static-v2';
+const DYNAMIC_CACHE = 'metro-taxi-dynamic-v2';
+const API_CACHE = 'metro-taxi-api-v1';
 
 // Resources to cache immediately
 const STATIC_ASSETS = [
   '/',
   '/index.html',
+  '/offline.html',
   '/manifest.json',
+  '/icons/icon-72x72.png',
   '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  '/icons/icon-512x512.png',
+  '/icons/favicon.ico'
+];
+
+// API endpoints to cache for offline use
+const CACHEABLE_API_ROUTES = [
+  '/api/auth/me',
+  '/api/subscriptions/plans',
+  '/api/rides/history',
+  '/api/notifications'
 ];
 
 // Install event - cache static assets
@@ -41,6 +53,7 @@ self.addEventListener('activate', (event) => {
             .filter((cacheName) => {
               return cacheName !== STATIC_CACHE && 
                      cacheName !== DYNAMIC_CACHE &&
+                     cacheName !== API_CACHE &&
                      cacheName.startsWith('metro-taxi-');
             })
             .map((cacheName) => {
@@ -66,11 +79,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Skip API calls - always fetch from network
-  if (url.pathname.startsWith('/api')) {
-    return;
-  }
-
   // Skip WebSocket connections
   if (url.protocol === 'ws:' || url.protocol === 'wss:') {
     return;
@@ -81,8 +89,41 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Handle API requests with stale-while-revalidate for cacheable routes
+  if (url.pathname.startsWith('/api')) {
+    const isCacheable = CACHEABLE_API_ROUTES.some(route => url.pathname.includes(route));
+    
+    if (isCacheable) {
+      event.respondWith(
+        caches.open(API_CACHE).then((cache) => {
+          return fetch(request)
+            .then((networkResponse) => {
+              // Cache the fresh response
+              cache.put(request, networkResponse.clone());
+              return networkResponse;
+            })
+            .catch(() => {
+              // Return cached response if network fails
+              return cache.match(request).then((cachedResponse) => {
+                if (cachedResponse) {
+                  return cachedResponse;
+                }
+                return new Response(JSON.stringify({ error: 'Offline', cached: false }), {
+                  status: 503,
+                  headers: { 'Content-Type': 'application/json' }
+                });
+              });
+            });
+        })
+      );
+      return;
+    }
+    // Non-cacheable API calls - network only
+    return;
+  }
+
   event.respondWith(
-    // Network first strategy
+    // Network first strategy for pages
     fetch(request)
       .then((response) => {
         // Clone the response before caching
@@ -108,7 +149,7 @@ self.addEventListener('fetch', (event) => {
             
             // Return offline page for navigation requests
             if (request.mode === 'navigate') {
-              return caches.match('/');
+              return caches.match('/offline.html');
             }
             
             return new Response('Offline', {

@@ -635,5 +635,15 @@
     "suspension2": "Aucun trajet ne peut être effectué",
     "readAndAccept": "J'ai lu et j'accepte les Conditions Générales de Vente",
     "acceptButton": "J'accepte les CGV"
+  },
+  "chat": {
+    "partner": "Contact",
+    "typing": "En train d'écrire...",
+    "active": "En ligne",
+    "noMessages": "Aucun message",
+    "startConversation": "Commencez la conversation",
+    "placeholder": "Votre message...",
+    "title": "Chat",
+    "openChat": "Ouvrir le chat"
   }
 }

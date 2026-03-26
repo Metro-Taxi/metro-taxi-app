@@ -636,5 +636,15 @@
     "code": "EUR",
     "symbol": "€",
     "position": "after"
+  },
+  "chat": {
+    "partner": "Contact",
+    "typing": "Typing...",
+    "active": "Online",
+    "noMessages": "No messages",
+    "startConversation": "Start the conversation",
+    "placeholder": "Your message...",
+    "title": "Chat",
+    "openChat": "Open chat"
   }
 }

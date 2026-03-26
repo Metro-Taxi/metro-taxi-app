@@ -125,6 +125,21 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 - ✅ **Clés VAPID générées** : Notifications push réelles configurées avec pywebpush
 - ✅ **Service Worker push** : Gestion JSON des notifications push
 - ✅ **Endpoint VAPID** : `/api/notifications/vapid-public-key` pour récupérer la clé publique
+- ✅ **Emails de rappel d'expiration** : Envoi automatique d'emails à 48h, 24h et le jour de l'expiration
+  - Templates multilingues (FR/EN) avec urgence variable (rouge/orange/jaune)
+  - Bouton "Renouveler mon abonnement" dans l'email
+  - Endpoint `/api/notifications/test-expiry` mis à jour pour tester l'email
+- ✅ **Chat en temps réel** : Communication usager/chauffeur pendant un trajet
+  - Endpoints: `/api/chat/send`, `/api/chat/{ride_id}`, `/api/chat/{ride_id}/unread`
+  - WebSocket pour messages instantanés et indicateur de frappe
+  - Composant `ChatWindow.jsx` avec UI moderne
+- ✅ **Mode hors ligne PWA amélioré** :
+  - Page offline personnalisée (`/offline.html`)
+  - Cache des endpoints API critiques (stale-while-revalidate)
+  - Stratégie de cache améliorée
+- ✅ **Structure refactoring préparée** :
+  - Dossiers `routes/`, `models/`, `services/`, `utils/` créés
+  - Module `utils/helpers.py` extrait
 
 ## 🔧 Configuration Production
 Variables d'environnement à configurer sur Emergent pour la production :

@@ -524,6 +524,7 @@ class ConnectionManager:
     def __init__(self):
         self.active_connections: Dict[str, WebSocket] = {}
         self.user_types: Dict[str, str] = {}  # user_id -> "user" or "driver"
+        self.chat_rooms: Dict[str, set] = {}  # ride_id -> set of user_ids in chat
 
     async def connect(self, websocket: WebSocket, user_id: str, user_type: str):
         await websocket.accept()
@@ -535,10 +536,36 @@ class ConnectionManager:
             del self.active_connections[user_id]
         if user_id in self.user_types:
             del self.user_types[user_id]
+        # Remove from chat rooms
+        for room_id in list(self.chat_rooms.keys()):
+            if user_id in self.chat_rooms[room_id]:
+                self.chat_rooms[room_id].discard(user_id)
+
+    def join_chat_room(self, ride_id: str, user_id: str):
+        if ride_id not in self.chat_rooms:
+            self.chat_rooms[ride_id] = set()
+        self.chat_rooms[ride_id].add(user_id)
+
+    def leave_chat_room(self, ride_id: str, user_id: str):
+        if ride_id in self.chat_rooms:
+            self.chat_rooms[ride_id].discard(user_id)
 
     async def send_personal_message(self, message: dict, user_id: str):
         if user_id in self.active_connections:
-            await self.active_connections[user_id].send_json(message)
+            try:
+                await self.active_connections[user_id].send_json(message)
+            except Exception as e:
+                logging.error(f"Error sending message to {user_id}: {e}")
+
+    async def send_to_chat_room(self, ride_id: str, message: dict, exclude_user: str = None):
+        """Send message to all users in a chat room"""
+        if ride_id in self.chat_rooms:
+            for user_id in self.chat_rooms[ride_id]:
+                if user_id != exclude_user and user_id in self.active_connections:
+                    try:
+                        await self.active_connections[user_id].send_json(message)
+                    except Exception as e:
+                        logging.error(f"Error sending chat message to {user_id}: {e}")
 
     async def broadcast_to_drivers(self, message: dict):
         for user_id, user_type in self.user_types.items():
@@ -703,6 +730,23 @@ class RatingResponse(BaseModel):
     rating: int
     comment: Optional[str]
     created_at: str
+
+# ============================================
+# CHAT SYSTEM MODELS
+# ============================================
+class ChatMessage(BaseModel):
+    ride_id: str
+    content: str
+    
+class ChatMessageResponse(BaseModel):
+    id: str
+    ride_id: str
+    sender_id: str
+    sender_type: str  # "user" or "driver"
+    sender_name: str
+    content: str
+    created_at: str
+    read: bool = False
 
 # Helper functions
 def hash_password(password: str) -> str:
@@ -1074,6 +1118,154 @@ async def send_payout_notification_email(email: str, name: str, amount: float, t
         return True
     except Exception as e:
         logging.error(f"Failed to send payout email to {email}: {str(e)}")
+        return False
+
+async def send_subscription_expiry_reminder_email(email: str, name: str, hours_remaining: int, expires_at: str, lang: str = "fr"):
+    """Send subscription expiry reminder email to user"""
+    if not RESEND_API_KEY:
+        logging.warning("RESEND_API_KEY not configured, skipping expiry reminder email")
+        return False
+    
+    frontend_url = os.environ.get("FRONTEND_URL", "https://metro-taxi-demo.emergent.host")
+    renewal_url = f"{frontend_url}/subscription"
+    
+    # Determine urgency level
+    if hours_remaining <= 1:
+        urgency = "critical"
+        urgency_color = "#ef4444"  # Red
+    elif hours_remaining <= 24:
+        urgency = "high"
+        urgency_color = "#f97316"  # Orange
+    else:
+        urgency = "medium"
+        urgency_color = "#eab308"  # Yellow
+    
+    templates = {
+        "fr": {
+            "critical": {
+                "subject": "⚠️ URGENT - Votre abonnement Métro-Taxi expire AUJOURD'HUI",
+                "title": "Abonnement expire aujourd'hui !",
+                "message": "Votre abonnement Métro-Taxi expire dans moins d'une heure. Renouvelez immédiatement pour éviter toute interruption de service."
+            },
+            "high": {
+                "subject": "⚠️ Rappel - Votre abonnement Métro-Taxi expire dans 24h",
+                "title": "Abonnement expire demain !",
+                "message": f"Votre abonnement Métro-Taxi expire dans {hours_remaining} heures. Pensez à le renouveler dès maintenant."
+            },
+            "medium": {
+                "subject": "📢 Rappel - Votre abonnement Métro-Taxi expire bientôt",
+                "title": "Abonnement expire bientôt",
+                "message": f"Votre abonnement Métro-Taxi expire dans {hours_remaining} heures. Nous vous recommandons de le renouveler avant l'expiration."
+            },
+            "greeting": f"Bonjour {name},",
+            "expires_label": "Date d'expiration",
+            "button_text": "RENOUVELER MON ABONNEMENT",
+            "note": "Si vous ne renouvelez pas votre abonnement, vous ne pourrez plus utiliser les services Métro-Taxi.",
+            "thanks": "L'équipe Métro-Taxi"
+        },
+        "en": {
+            "critical": {
+                "subject": "⚠️ URGENT - Your Métro-Taxi subscription expires TODAY",
+                "title": "Subscription expires today!",
+                "message": "Your Métro-Taxi subscription expires in less than an hour. Renew immediately to avoid any service interruption."
+            },
+            "high": {
+                "subject": "⚠️ Reminder - Your Métro-Taxi subscription expires in 24h",
+                "title": "Subscription expires tomorrow!",
+                "message": f"Your Métro-Taxi subscription expires in {hours_remaining} hours. Consider renewing now."
+            },
+            "medium": {
+                "subject": "📢 Reminder - Your Métro-Taxi subscription expires soon",
+                "title": "Subscription expires soon",
+                "message": f"Your Métro-Taxi subscription expires in {hours_remaining} hours. We recommend renewing before expiration."
+            },
+            "greeting": f"Hello {name},",
+            "expires_label": "Expiration date",
+            "button_text": "RENEW MY SUBSCRIPTION",
+            "note": "If you don't renew your subscription, you won't be able to use Métro-Taxi services.",
+            "thanks": "The Métro-Taxi Team"
+        }
+    }
+    
+    t = templates.get(lang[:2], templates["fr"])
+    urgency_t = t[urgency]
+    
+    # Format expiration date
+    try:
+        expires_dt = datetime.fromisoformat(expires_at)
+        expires_formatted = expires_dt.strftime("%d/%m/%Y à %H:%M")
+    except:
+        expires_formatted = expires_at
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #0a0a0a;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0a; padding: 40px 0;">
+            <tr>
+                <td align="center">
+                    <table width="600" cellpadding="0" cellspacing="0" style="background-color: #18181b; border-radius: 8px;">
+                        <tr>
+                            <td style="background-color: {urgency_color}; padding: 30px; text-align: center;">
+                                <h1 style="margin: 0; color: #000; font-size: 24px;">⚠️ {urgency_t['title']}</h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 40px 30px;">
+                                <p style="color: #a1a1aa; margin: 0 0 10px 0; font-size: 16px;">{t['greeting']}</p>
+                                <p style="color: #ffffff; margin: 0 0 30px 0; font-size: 18px;">{urgency_t['message']}</p>
+                                
+                                <!-- Expiration Info Box -->
+                                <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #27272a; border-radius: 8px; margin-bottom: 30px; border-left: 4px solid {urgency_color};">
+                                    <tr>
+                                        <td style="padding: 20px;">
+                                            <p style="color: #a1a1aa; margin: 0 0 5px 0; font-size: 14px;">{t['expires_label']}</p>
+                                            <p style="color: #ffffff; margin: 0; font-size: 20px; font-weight: bold;">{expires_formatted}</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                                <!-- CTA Button -->
+                                <table width="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td align="center">
+                                            <a href="{renewal_url}" style="display: inline-block; background-color: #FFD60A; color: #000; text-decoration: none; padding: 15px 40px; border-radius: 8px; font-weight: bold; font-size: 16px;">{t['button_text']}</a>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                                <p style="color: #71717a; margin: 30px 0 0 0; font-size: 14px; text-align: center;">{t['note']}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="background-color: #09090b; padding: 20px; text-align: center;">
+                                <p style="color: #52525b; margin: 0 0 5px 0; font-size: 14px;">{t['thanks']}</p>
+                                <p style="color: #52525b; margin: 0; font-size: 12px;">© 2026 Métro-Taxi - Plateforme de transport partagé</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
+    """
+    
+    try:
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [email],
+            "subject": urgency_t['subject'],
+            "html": html_content
+        }
+        result = await asyncio.to_thread(resend.Emails.send, params)
+        logging.info(f"Subscription expiry reminder email sent to {email}, ID: {result.get('id')}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send expiry reminder email to {email}: {str(e)}")
         return False
 
 async def get_current_user(request: Request) -> dict:
@@ -3421,6 +3613,16 @@ async def get_subscription_status(current_user: dict = Depends(get_current_user)
 async def create_test_expiry_notification(current_user: dict = Depends(get_current_user)):
     """Create a test subscription expiry notification for the current user (for testing purposes)"""
     user_id = current_user.get("user_id") or current_user.get("id")
+    role = current_user.get("role", "user")
+    
+    # Get user email for sending test email
+    user_email = None
+    user_name = "Utilisateur"
+    if role == "user":
+        user = await db.users.find_one({"id": user_id}, {"_id": 0, "email": 1, "first_name": 1})
+        if user:
+            user_email = user.get("email")
+            user_name = user.get("first_name", "Utilisateur")
     
     notif_doc = {
         "id": str(uuid.uuid4()),
@@ -3441,7 +3643,24 @@ async def create_test_expiry_notification(current_user: dict = Depends(get_curre
     }
     await db.notifications.insert_one(notif_doc)
     
-    return {"success": True, "notification_id": notif_doc["id"], "message": "Test expiry notification created"}
+    # Also send test email if email is available
+    email_sent = False
+    if user_email:
+        email_sent = await send_subscription_expiry_reminder_email(
+            email=user_email,
+            name=user_name,
+            hours_remaining=24,
+            expires_at=(datetime.now(timezone.utc) + timedelta(hours=24)).isoformat(),
+            lang="fr"
+        )
+    
+    return {
+        "success": True, 
+        "notification_id": notif_doc["id"], 
+        "message": "Test expiry notification created",
+        "email_sent": email_sent,
+        "email_to": user_email
+    }
 
 # ============================================
 # RIDE HISTORY ENDPOINTS
@@ -3676,6 +3895,120 @@ async def get_pending_ratings(current_user: dict = Depends(get_current_user)):
     
     return {"pending_ratings": pending}
 
+# ============================================
+# CHAT SYSTEM ENDPOINTS
+# ============================================
+
+@api_router.post("/chat/send")
+async def send_chat_message(message: ChatMessage, current_user: dict = Depends(get_current_user)):
+    """Send a chat message in a ride"""
+    user_id = current_user.get("user_id") or current_user.get("id")
+    user_type = current_user.get("role", "user")
+    
+    # Verify the ride exists and user is part of it
+    ride = await db.rides.find_one({"id": message.ride_id}, {"_id": 0})
+    if not ride:
+        raise HTTPException(status_code=404, detail="Trajet non trouvé")
+    
+    # Check if user is part of this ride
+    if user_type == "user" and ride.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Vous n'êtes pas associé à ce trajet")
+    if user_type == "driver" and ride.get("driver_id") != user_id:
+        raise HTTPException(status_code=403, detail="Vous n'êtes pas le chauffeur de ce trajet")
+    
+    # Get sender name
+    if user_type == "user":
+        sender = await db.users.find_one({"id": user_id}, {"_id": 0, "first_name": 1, "last_name": 1})
+    else:
+        sender = await db.drivers.find_one({"id": user_id}, {"_id": 0, "first_name": 1, "last_name": 1})
+    
+    sender_name = f"{sender.get('first_name', '')} {sender.get('last_name', '')}" if sender else "Utilisateur"
+    
+    # Create message document
+    msg_doc = {
+        "id": str(uuid.uuid4()),
+        "ride_id": message.ride_id,
+        "sender_id": user_id,
+        "sender_type": user_type,
+        "sender_name": sender_name.strip(),
+        "content": message.content,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "read": False
+    }
+    
+    await db.chat_messages.insert_one(msg_doc)
+    
+    # Determine recipient
+    if user_type == "user":
+        recipient_id = ride.get("driver_id")
+    else:
+        recipient_id = ride.get("user_id")
+    
+    # Send via WebSocket if recipient is connected
+    if recipient_id:
+        ws_message = {
+            "type": "chat_message",
+            "data": {k: v for k, v in msg_doc.items() if k != "_id"}
+        }
+        await manager.send_personal_message(ws_message, recipient_id)
+    
+    return {k: v for k, v in msg_doc.items() if k != "_id"}
+
+@api_router.get("/chat/{ride_id}")
+async def get_chat_messages(ride_id: str, current_user: dict = Depends(get_current_user), limit: int = 50):
+    """Get chat messages for a ride"""
+    user_id = current_user.get("user_id") or current_user.get("id")
+    user_type = current_user.get("role", "user")
+    
+    # Verify ride exists and user is part of it
+    ride = await db.rides.find_one({"id": ride_id}, {"_id": 0})
+    if not ride:
+        raise HTTPException(status_code=404, detail="Trajet non trouvé")
+    
+    if user_type == "user" and ride.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    if user_type == "driver" and ride.get("driver_id") != user_id:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    
+    # Get messages
+    messages = await db.chat_messages.find(
+        {"ride_id": ride_id},
+        {"_id": 0}
+    ).sort("created_at", 1).limit(limit).to_list(limit)
+    
+    # Mark messages as read for this user
+    await db.chat_messages.update_many(
+        {"ride_id": ride_id, "sender_id": {"$ne": user_id}},
+        {"$set": {"read": True}}
+    )
+    
+    return {"messages": messages, "ride_id": ride_id}
+
+@api_router.get("/chat/{ride_id}/unread")
+async def get_unread_count(ride_id: str, current_user: dict = Depends(get_current_user)):
+    """Get unread message count for a ride"""
+    user_id = current_user.get("user_id") or current_user.get("id")
+    
+    count = await db.chat_messages.count_documents({
+        "ride_id": ride_id,
+        "sender_id": {"$ne": user_id},
+        "read": False
+    })
+    
+    return {"unread_count": count}
+
+@api_router.put("/chat/{ride_id}/read")
+async def mark_chat_read(ride_id: str, current_user: dict = Depends(get_current_user)):
+    """Mark all chat messages as read"""
+    user_id = current_user.get("user_id") or current_user.get("id")
+    
+    result = await db.chat_messages.update_many(
+        {"ride_id": ride_id, "sender_id": {"$ne": user_id}},
+        {"$set": {"read": True}}
+    )
+    
+    return {"success": True, "marked_read": result.modified_count}
+
 # Create default admin
 @app.on_event("startup")
 async def create_default_admin():
@@ -3798,6 +4131,19 @@ async def check_and_notify_expiring_subscriptions():
                                 }
                                 await db.notifications.insert_one(notif_doc)
                                 logging.info(f"Subscription expiry notification ({notif_key}) sent to user: {user.get('email', user['id'])}")
+                                
+                                # Also send email reminder
+                                user_email = user.get("email")
+                                user_name = user.get("first_name", "Utilisateur")
+                                if user_email:
+                                    asyncio.create_task(send_subscription_expiry_reminder_email(
+                                        email=user_email,
+                                        name=user_name,
+                                        hours_remaining=round(hours_until_expiry),
+                                        expires_at=expires_str,
+                                        lang="fr"
+                                    ))
+                                    logging.info(f"Subscription expiry email reminder scheduled for: {user_email}")
                             break  # Only send one notification per check
                             
                 except (ValueError, TypeError) as e:
@@ -3995,6 +4341,31 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str, user_type: str)
             
             if message.get("type") == "ping":
                 await websocket.send_json({"type": "pong"})
+            
+            elif message.get("type") == "join_chat":
+                # Join a chat room for a specific ride
+                ride_id = message.get("ride_id")
+                if ride_id:
+                    manager.join_chat_room(ride_id, user_id)
+                    await websocket.send_json({"type": "chat_joined", "ride_id": ride_id})
+            
+            elif message.get("type") == "leave_chat":
+                # Leave a chat room
+                ride_id = message.get("ride_id")
+                if ride_id:
+                    manager.leave_chat_room(ride_id, user_id)
+                    await websocket.send_json({"type": "chat_left", "ride_id": ride_id})
+            
+            elif message.get("type") == "typing":
+                # Broadcast typing indicator to chat room
+                ride_id = message.get("ride_id")
+                if ride_id:
+                    await manager.send_to_chat_room(ride_id, {
+                        "type": "typing",
+                        "user_id": user_id,
+                        "user_type": user_type
+                    }, exclude_user=user_id)
+                    
     except WebSocketDisconnect:
         manager.disconnect(user_id)
 
