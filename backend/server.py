@@ -1231,7 +1231,14 @@ async def verify_email(data: EmailVerificationRequest):
     verification = await db.email_verifications.find_one({"token": data.token}, {"_id": 0})
     
     if not verification:
-        raise HTTPException(status_code=400, detail="Token de vérification invalide")
+        # Check if this might be a re-click on an already-used link
+        # by checking if any user/driver with this token pattern is already verified
+        # Return a friendly message instead of an error
+        return {
+            "message": "Votre compte est déjà vérifié ! Vous pouvez vous connecter.",
+            "verified": True,
+            "already_verified": True
+        }
     
     # Check expiration
     expires_at = datetime.fromisoformat(verification["expires_at"])

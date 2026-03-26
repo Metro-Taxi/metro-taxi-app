@@ -31,7 +31,12 @@ const VerifyEmail = () => {
         token: verificationToken
       });
       
-      setStatus('success');
+      // Handle both fresh verification and already-verified cases
+      if (response.data.already_verified) {
+        setStatus('already_verified');
+      } else {
+        setStatus('success');
+      }
       setMessage(response.data.message);
       
       // Refresh user data if logged in
@@ -88,6 +93,27 @@ const VerifyEmail = () => {
               data-testid="continue-btn"
             >
               CONTINUER
+            </Button>
+          </div>
+        )}
+
+        {status === 'already_verified' && (
+          <div>
+            <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-white mb-4">
+              Compte déjà vérifié
+            </h1>
+            <p className="text-zinc-400 mb-8">
+              {message || 'Votre compte est déjà vérifié. Vous pouvez vous connecter.'}
+            </p>
+            <Button
+              onClick={() => navigate('/login')}
+              className="bg-[#FFD60A] text-black font-bold px-8 py-3 hover:bg-[#E6C209]"
+              data-testid="login-btn"
+            >
+              SE CONNECTER
             </Button>
           </div>
         )}
