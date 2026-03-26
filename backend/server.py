@@ -1314,6 +1314,20 @@ async def resend_verification(current_user: dict = Depends(get_current_user), re
     host_url = os.environ.get("FRONTEND_URL", "https://metro-taxi-demo.emergent.host")
     verification_url = f"{host_url}/verify-email?token={verification_token}"
     
+    # Get user name for email
+    if role == "user":
+        name = user.get("first_name", "Utilisateur")
+    else:
+        name = driver.get("first_name", "Chauffeur")
+    
+    # Send verification email (async, non-blocking)
+    asyncio.create_task(send_verification_email(
+        email=email,
+        name=name,
+        verification_url=verification_url,
+        lang="fr"
+    ))
+    
     return {"message": "Email de vérification renvoyé", "verification_url": verification_url}
 
 @api_router.post("/auth/login")
