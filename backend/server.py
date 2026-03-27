@@ -1574,6 +1574,11 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         if driver:
             return {"driver": driver}
     elif role == "admin":
+        # Check users collection first (admin accounts stored there)
+        admin = await db.users.find_one({"id": user_id, "role": "admin"}, {"_id": 0, "password": 0})
+        if admin:
+            return {"admin": admin}
+        # Fallback to admins collection (legacy)
         admin = await db.admins.find_one({"id": user_id}, {"_id": 0, "password": 0})
         if admin:
             return {"admin": admin}
