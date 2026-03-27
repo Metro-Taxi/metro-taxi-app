@@ -346,8 +346,9 @@ const UserDashboard = () => {
     navigate('/');
   };
 
-  // Check if subscription is expired
-  const isSubscriptionExpired = !user?.subscription_active;
+  // Check if subscription is expired (admins are exempt)
+  const isAdmin = user?.role === 'admin';
+  const isSubscriptionExpired = !isAdmin && !user?.subscription_active;
 
   return (
     <div className="h-screen w-full bg-[#09090B] relative overflow-hidden">

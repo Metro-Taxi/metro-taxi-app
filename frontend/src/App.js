@@ -98,9 +98,9 @@ function AppRoutes() {
       <Route path="/cgu" element={<TermsAndConditions />} />
       <Route path="/cgv" element={<SalesTerms />} />
       
-      {/* User Routes */}
+      {/* User Routes - Also allow admin for testing */}
       <Route path="/dashboard" element={
-        <ProtectedRoute allowedRoles={['user']}>
+        <ProtectedRoute allowedRoles={['user', 'admin']}>
           <UserDashboard />
         </ProtectedRoute>
       } />
