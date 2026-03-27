@@ -1535,8 +1535,14 @@ async def login(data: LoginRequest):
     # Check users first
     user = await db.users.find_one({"email": data.email}, {"_id": 0})
     if user and verify_password(data.password, user["password"]):
-        token = create_token(user["id"], "user")
-        return {"token": token, "user": {k: v for k, v in user.items() if k != "password"}}
+        user_data = {k: v for k, v in user.items() if k != "password"}
+        # Check if user is admin
+        if user.get("role") == "admin":
+            token = create_token(user["id"], "admin")
+            return {"token": token, "admin": user_data}
+        else:
+            token = create_token(user["id"], "user")
+            return {"token": token, "user": user_data}
     
     # Check drivers
     driver = await db.drivers.find_one({"email": data.email}, {"_id": 0})
@@ -1546,7 +1552,7 @@ async def login(data: LoginRequest):
         token = create_token(driver["id"], "driver")
         return {"token": token, "driver": {k: v for k, v in driver.items() if k != "password"}}
     
-    # Check admin
+    # Check admin collection (legacy)
     admin = await db.admins.find_one({"email": data.email}, {"_id": 0})
     if admin and verify_password(data.password, admin["password"]):
         token = create_token(admin["id"], "admin")
