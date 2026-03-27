@@ -429,7 +429,13 @@
     "yes": "Yes",
     "no": "No",
     "or": "or",
-    "home": "Home"
+    "home": "Home",
+    "cardLoadError": "Error loading cards",
+    "driverActivated": "Driver activated successfully",
+    "activateError": "Error during activation",
+    "driverDeactivated": "Driver deactivated successfully",
+    "deactivateError": "Error during deactivation",
+    "cleanupError": "Error during cleanup"
   },
   "errors": {
     "required": "This field is required",

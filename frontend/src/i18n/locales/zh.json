@@ -429,7 +429,13 @@
     "yes": "是",
     "no": "否",
     "or": "或",
-    "home": "首页"
+    "home": "首页",
+    "cardLoadError": "加载卡片时出错",
+    "driverActivated": "司机已激活",
+    "activateError": "激活时出错",
+    "driverDeactivated": "司机已停用",
+    "deactivateError": "停用时出错",
+    "cleanupError": "清理时出错"
   },
   "errors": {
     "required": "必填字段",

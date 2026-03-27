@@ -17,7 +17,13 @@
     "none": "Aucun",
     "yes": "Oui",
     "no": "Non",
-    "or": "ou"
+    "or": "ou",
+    "cardLoadError": "Erreur lors du chargement des cartes",
+    "driverActivated": "Chauffeur activé avec succès",
+    "activateError": "Erreur lors de l'activation",
+    "driverDeactivated": "Chauffeur désactivé avec succès",
+    "deactivateError": "Erreur lors de la désactivation",
+    "cleanupError": "Erreur lors du nettoyage"
   },
   "popup": {
     "importantTitle": "Important",

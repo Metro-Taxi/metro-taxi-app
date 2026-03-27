@@ -254,12 +254,12 @@
     "declineError": "Errore nel rifiuto",
     "rideCompleted": "Viaggio completato!",
     "completeError": "Errore nel completamento",
-    "driverActivated": "Autista attivato",
-    "activateError": "Errore nell'attivazione",
-    "driverDeactivated": "Autista disattivato",
-    "deactivateError": "Errore nella disattivazione",
-    "cardLoadError": "Errore nel caricamento della carta",
-    "cleanupError": "Errore nella pulizia",
+    "driverActivated": "Autista attivato con successo",
+    "activateError": "Errore durante l'attivazione",
+    "driverDeactivated": "Autista disattivato con successo",
+    "deactivateError": "Errore durante la disattivazione",
+    "cardLoadError": "Errore nel caricamento delle carte",
+    "cleanupError": "Errore durante la pulizia",
     "home": "Home"
   },
   "subscription": {

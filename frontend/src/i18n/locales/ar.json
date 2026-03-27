@@ -254,12 +254,12 @@
     "declineError": "خطأ في الرفض",
     "rideCompleted": "اكتملت الرحلة!",
     "completeError": "خطأ في الإكمال",
-    "driverActivated": "تم تفعيل السائق",
-    "activateError": "خطأ في التفعيل",
-    "driverDeactivated": "تم تعطيل السائق",
-    "deactivateError": "خطأ في التعطيل",
-    "cardLoadError": "خطأ في تحميل البطاقة",
-    "cleanupError": "خطأ في التنظيف",
+    "driverActivated": "تم تفعيل السائق بنجاح",
+    "activateError": "خطأ أثناء التفعيل",
+    "driverDeactivated": "تم تعطيل السائق بنجاح",
+    "deactivateError": "خطأ أثناء التعطيل",
+    "cardLoadError": "خطأ في تحميل البطاقات",
+    "cleanupError": "خطأ أثناء التنظيف",
     "home": "الرئيسية"
   },
   "subscription": {

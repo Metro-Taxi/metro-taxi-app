@@ -425,7 +425,13 @@
     "yes": "Ja",
     "no": "Nei",
     "or": "eller",
-    "home": "Hjem"
+    "home": "Hjem",
+    "cardLoadError": "Feil ved lasting av kort",
+    "driverActivated": "Sjåfør aktivert",
+    "activateError": "Feil ved aktivering",
+    "driverDeactivated": "Sjåfør deaktivert",
+    "deactivateError": "Feil ved deaktivering",
+    "cleanupError": "Feil ved opprydding"
   },
   "errors": {
     "required": "Påkrevd felt",

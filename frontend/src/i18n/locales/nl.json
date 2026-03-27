@@ -429,7 +429,13 @@
     "yes": "Ja",
     "no": "Nee",
     "or": "of",
-    "home": "Home"
+    "home": "Home",
+    "cardLoadError": "Fout bij laden van kaarten",
+    "driverActivated": "Chauffeur succesvol geactiveerd",
+    "activateError": "Fout bij activeren",
+    "driverDeactivated": "Chauffeur succesvol gedeactiveerd",
+    "deactivateError": "Fout bij deactiveren",
+    "cleanupError": "Fout bij opruimen"
   },
   "errors": {
     "required": "Dit veld is verplicht",

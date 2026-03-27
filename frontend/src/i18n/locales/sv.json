@@ -425,7 +425,13 @@
     "yes": "Ja",
     "no": "Nei",
     "or": "eller",
-    "home": "Hem"
+    "home": "Hem",
+    "cardLoadError": "Fel vid laddning av kort",
+    "driverActivated": "Förare aktiverad",
+    "activateError": "Fel vid aktivering",
+    "driverDeactivated": "Förare inaktiverad",
+    "deactivateError": "Fel vid inaktivering",
+    "cleanupError": "Fel vid rensning"
   },
   "errors": {
     "required": "Påkrevd felt",

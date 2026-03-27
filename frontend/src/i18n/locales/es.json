@@ -433,7 +433,13 @@
     "yes": "Sí",
     "no": "No",
     "or": "o",
-    "home": "Inicio"
+    "home": "Inicio",
+    "cardLoadError": "Error al cargar tarjetas",
+    "driverActivated": "Conductor activado con éxito",
+    "activateError": "Error durante la activación",
+    "driverDeactivated": "Conductor desactivado con éxito",
+    "deactivateError": "Error durante la desactivación",
+    "cleanupError": "Error durante la limpieza"
   },
   "errors": {
     "required": "Campo requerido",

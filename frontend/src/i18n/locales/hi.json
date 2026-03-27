@@ -429,7 +429,13 @@
     "yes": "हां",
     "no": "नहीं",
     "or": "या",
-    "home": "होम"
+    "home": "होम",
+    "cardLoadError": "कार्ड लोड करने में त्रुटि",
+    "driverActivated": "ड्राइवर सक्रिय किया गया",
+    "activateError": "सक्रिय करने में त्रुटि",
+    "driverDeactivated": "ड्राइवर निष्क्रिय किया गया",
+    "deactivateError": "निष्क्रिय करने में त्रुटि",
+    "cleanupError": "सफाई में त्रुटि"
   },
   "errors": {
     "required": "यह फील्ड आवश्यक है",

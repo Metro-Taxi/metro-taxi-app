@@ -429,7 +429,13 @@
     "yes": "ਹਾਂ",
     "no": "ਨਹੀਂ",
     "or": "ਜਾਂ",
-    "home": "ਹੋਮ"
+    "home": "ਹੋਮ",
+    "cardLoadError": "ਕਾਰਡ ਲੋਡ ਕਰਨ ਵਿੱਚ ਗਲਤੀ",
+    "driverActivated": "ਡਰਾਈਵਰ ਸਰਗਰਮ ਕੀਤਾ ਗਿਆ",
+    "activateError": "ਸਰਗਰਮ ਕਰਨ ਵਿੱਚ ਗਲਤੀ",
+    "driverDeactivated": "ਡਰਾਈਵਰ ਅਯੋਗ ਕੀਤਾ ਗਿਆ",
+    "deactivateError": "ਅਯੋਗ ਕਰਨ ਵਿੱਚ ਗਲਤੀ",
+    "cleanupError": "ਸਫਾਈ ਵਿੱਚ ਗਲਤੀ"
   },
   "errors": {
     "required": "ਇਹ ਖੇਤਰ ਲੋੜੀਂਦਾ ਹੈ",

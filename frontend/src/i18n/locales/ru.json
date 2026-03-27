@@ -255,11 +255,11 @@
     "rideCompleted": "Поездка завершена!",
     "completeError": "Ошибка завершения",
     "driverActivated": "Водитель активирован",
-    "activateError": "Ошибка активации",
+    "activateError": "Ошибка при активации",
     "driverDeactivated": "Водитель деактивирован",
-    "deactivateError": "Ошибка деактивации",
-    "cardLoadError": "Ошибка загрузки карты",
-    "cleanupError": "Ошибка очистки",
+    "deactivateError": "Ошибка при деактивации",
+    "cardLoadError": "Ошибка загрузки карт",
+    "cleanupError": "Ошибка при очистке",
     "home": "Главная"
   },
   "subscription": {

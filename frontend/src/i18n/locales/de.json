@@ -429,7 +429,13 @@
     "yes": "Ja",
     "no": "Nein",
     "or": "oder",
-    "home": "Startseite"
+    "home": "Startseite",
+    "cardLoadError": "Fehler beim Laden der Karten",
+    "driverActivated": "Fahrer erfolgreich aktiviert",
+    "activateError": "Fehler bei der Aktivierung",
+    "driverDeactivated": "Fahrer erfolgreich deaktiviert",
+    "deactivateError": "Fehler bei der Deaktivierung",
+    "cleanupError": "Fehler beim Aufräumen"
   },
   "errors": {
     "required": "Dieses Feld ist erforderlich",

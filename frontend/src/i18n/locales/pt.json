@@ -429,7 +429,13 @@
     "yes": "Sim",
     "no": "Não",
     "or": "ou",
-    "home": "Início"
+    "home": "Início",
+    "cardLoadError": "Erro ao carregar cartões",
+    "driverActivated": "Motorista ativado com sucesso",
+    "activateError": "Erro durante a ativação",
+    "driverDeactivated": "Motorista desativado com sucesso",
+    "deactivateError": "Erro durante a desativação",
+    "cleanupError": "Erro durante a limpeza"
   },
   "errors": {
     "required": "Campo obrigatório",
