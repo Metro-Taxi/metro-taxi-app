@@ -204,6 +204,11 @@
         "verified": "Geverifieerd",
         "notVerified": "Niet geverifieerd",
         "noCards": "Geen virtuele kaarten"
+      },
+      "common": {
+        "loadingError": "Fout bij laden van gegevens",
+        "registeredOn": "Geregistreerd op",
+        "seats": "plaatsen"
       }
     }
   },

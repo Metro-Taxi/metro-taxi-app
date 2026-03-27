@@ -204,6 +204,11 @@
         "verified": "ਤਸਦੀਕ",
         "notVerified": "ਤਸਦੀਕ ਨਹੀਂ",
         "noCards": "ਕੋਈ ਕਾਰਡ ਨਹੀਂ"
+      },
+      "common": {
+        "loadingError": "ਡੇਟਾ ਲੋਡ ਕਰਨ ਵਿੱਚ ਗਲਤੀ",
+        "registeredOn": "ਰਜਿਸਟਰਡ",
+        "seats": "ਸੀਟਾਂ"
       }
     }
   },

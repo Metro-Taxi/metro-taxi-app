@@ -206,8 +206,8 @@
         "noCards": "Nenhum cartão virtual"
       },
       "common": {
-        "loadingError": "Erro ao carregar os dados",
-        "registeredOn": "Registado em",
+        "loadingError": "Erro ao carregar dados",
+        "registeredOn": "Registrado em",
         "seats": "lugares"
       }
     }

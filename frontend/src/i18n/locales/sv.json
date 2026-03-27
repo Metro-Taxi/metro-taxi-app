@@ -203,8 +203,8 @@
       },
       "common": {
         "registeredOn": "Registrerad",
-        "seats": "Säten",
-        "loadingError": "Fel vid inläsning av data"
+        "seats": "platser",
+        "loadingError": "Fel vid laddning av data"
       }
     }
   },

@@ -206,9 +206,9 @@
         "noCards": "No hay tarjetas virtuales"
       },
       "common": {
-        "loadingError": "Error al cargar los datos",
+        "loadingError": "Error al cargar datos",
         "registeredOn": "Registrado el",
-        "seats": "asientos"
+        "seats": "plazas"
       }
     }
   },

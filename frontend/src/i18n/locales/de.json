@@ -204,6 +204,11 @@
         "verified": "Verifiziert",
         "notVerified": "Nicht verifiziert",
         "noCards": "Keine virtuellen Karten"
+      },
+      "common": {
+        "loadingError": "Fehler beim Laden der Daten",
+        "registeredOn": "Registriert am",
+        "seats": "Plätze"
       }
     }
   },

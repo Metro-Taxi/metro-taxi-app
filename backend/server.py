@@ -28,7 +28,7 @@ load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
+client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=5000, connectTimeoutMS=5000)
 db = client[os.environ['DB_NAME']]
 
 # Stripe configuration
@@ -4329,6 +4329,27 @@ async def start_payout_processor():
     """Start the background automatic payout processor"""
     asyncio.create_task(process_automatic_payouts())
     logging.info(f"Automatic payout processor started (processes on the {PAYOUT_DAY}th of each month)")
+
+@app.on_event("startup")
+async def verify_database_connection():
+    """Verify MongoDB connection at startup with retry logic"""
+    max_retries = 5
+    retry_delay = 2  # seconds
+    
+    for attempt in range(max_retries):
+        try:
+            # Ping the database to verify connection
+            await client.admin.command('ping')
+            logging.info("✅ MongoDB connection verified successfully")
+            return
+        except Exception as e:
+            if attempt < max_retries - 1:
+                logging.warning(f"MongoDB connection attempt {attempt + 1}/{max_retries} failed: {e}. Retrying in {retry_delay}s...")
+                await asyncio.sleep(retry_delay)
+            else:
+                logging.error(f"❌ Failed to connect to MongoDB after {max_retries} attempts: {e}")
+                # Don't raise - let the app start and handle errors per-request
+                # This allows the app to recover if DB becomes available later
 
 # WebSocket endpoint
 @app.websocket("/ws/{user_id}/{user_type}")

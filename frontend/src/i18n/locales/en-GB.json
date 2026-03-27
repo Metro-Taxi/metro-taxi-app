@@ -204,6 +204,11 @@
         "verified": "Verified",
         "notVerified": "Not verified",
         "noCards": "No virtual cards"
+      },
+      "common": {
+        "loadingError": "Error loading data",
+        "registeredOn": "Registered on",
+        "seats": "seats"
       }
     }
   },

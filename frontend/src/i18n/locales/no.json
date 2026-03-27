@@ -203,7 +203,7 @@
       },
       "common": {
         "registeredOn": "Registrert",
-        "seats": "Seter",
+        "seats": "plasser",
         "loadingError": "Feil ved lasting av data"
       }
     }

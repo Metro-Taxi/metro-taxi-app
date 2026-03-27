@@ -203,7 +203,7 @@
       },
       "common": {
         "registeredOn": "Registreret",
-        "seats": "Sæder",
+        "seats": "pladser",
         "loadingError": "Fejl ved indlæsning af data"
       }
     }

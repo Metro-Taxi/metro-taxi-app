@@ -204,6 +204,11 @@
         "verified": "सत्यापित",
         "notVerified": "सत्यापित नहीं",
         "noCards": "कोई कार्ड नहीं"
+      },
+      "common": {
+        "loadingError": "डेटा लोड करने में त्रुटि",
+        "registeredOn": "पंजीकृत",
+        "seats": "सीटें"
       }
     }
   },
