@@ -118,28 +118,21 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets 
 - `payout_history` - Historique virements
 
 ## 📅 Dernière Mise à Jour
+**28/03/2026**
+- ✅ **Traductions Dashboard Admin vérifiées** : Toutes les langues (EN, ES, etc.) correctement traduites
+  - "Drivers" → "Conductores" (ES) - Corrigé
+  - Section `driverEarnings` complètement traduite en espagnol
+- ✅ **Stripe en mode LIVE** : Paiements réels activés (clé `sk_live_...`)
+- ✅ **Sélecteur de langue Admin** : Composant `LanguageSelector.jsx` fonctionnel avec data-testid
+- ✅ **Document confidentiel PI** : `/app/CONFIDENTIEL_ALGORITHME_METROTAXI.md` créé
+
 **26/03/2026**
 - ✅ **Correction lien de vérification email** : URL complète générée via variable FRONTEND_URL
-- ✅ **Message "Compte déjà vérifié"** : Message rassurant au lieu de "Token invalide" pour les comptes déjà vérifiés
-- ✅ **Bug envoi email "resend"** : Fonction resend-verification envoie maintenant réellement l'email
 - ✅ **Clés VAPID générées** : Notifications push réelles configurées avec pywebpush
-- ✅ **Service Worker push** : Gestion JSON des notifications push
-- ✅ **Endpoint VAPID** : `/api/notifications/vapid-public-key` pour récupérer la clé publique
-- ✅ **Emails de rappel d'expiration** : Envoi automatique d'emails à 48h, 24h et le jour de l'expiration
-  - Templates multilingues (FR/EN) avec urgence variable (rouge/orange/jaune)
-  - Bouton "Renouveler mon abonnement" dans l'email
-  - Endpoint `/api/notifications/test-expiry` mis à jour pour tester l'email
-- ✅ **Chat en temps réel** : Communication usager/chauffeur pendant un trajet
-  - Endpoints: `/api/chat/send`, `/api/chat/{ride_id}`, `/api/chat/{ride_id}/unread`
-  - WebSocket pour messages instantanés et indicateur de frappe
-  - Composant `ChatWindow.jsx` avec UI moderne
-- ✅ **Mode hors ligne PWA amélioré** :
-  - Page offline personnalisée (`/offline.html`)
-  - Cache des endpoints API critiques (stale-while-revalidate)
-  - Stratégie de cache améliorée
-- ✅ **Structure refactoring préparée** :
-  - Dossiers `routes/`, `models/`, `services/`, `utils/` créés
-  - Module `utils/helpers.py` extrait
+- ✅ **Emails de rappel d'expiration** : Envoi automatique à 48h, 24h et le jour de l'expiration
+- ✅ **Chat en temps réel** : WebSocket usager/chauffeur pendant un trajet
+- ✅ **Mode hors ligne PWA amélioré** : Page offline personnalisée + cache API
+- ✅ **Structure refactoring préparée** : Dossiers `routes/`, `models/`, `services/`, `utils/` créés
 
 ## 🔧 Configuration Production
 Variables d'environnement à configurer sur Emergent pour la production :
@@ -149,14 +142,18 @@ VAPID_PUBLIC_KEY=BB87ARCh1dnirM0zNPAaYoDXAv9AMErgqZ210CX7mWr1e2DMBJ5aShocfx2wZpv
 VAPID_PRIVATE_KEY=eoxM6m3lnv0X0h1n2cR8dYK9mu9zLiDUbnrZieGoHxg
 VAPID_CONTACT=mailto:contact@metro-taxi.com
 SENDER_EMAIL=contact@metro-taxi.com
+STRIPE_API_KEY=sk_live_... (déjà configuré)
 ```
 
+## ⚠️ Note Importante sur les Traductions
+Les noms propres stockés dans la base de données (ex: "Test Driver", "Boniface Tegang") ne changent **PAS** quand on change la langue de l'interface. Ce sont des **données** entrées par les utilisateurs, pas des clés de traduction. L'internationalisation (i18n) ne traduit que les labels et menus de l'interface.
+
 ## 🔄 Prochaines Étapes
+- [ ] Refactoring de `server.py` (4400+ lignes → modules séparés)
 - [ ] Déploiement en production sur metro-taxi.com
-- [ ] Configuration clé Stripe LIVE
-- [ ] Test des notifications push en production
+- [ ] Test des notifications push en production avec vraies VAPID keys
+- [ ] Découpage de `UserDashboard.js` (1000+ lignes)
 
 ## 📦 Backlog Futur
-- Système de chat usager/chauffeur en temps réel
-- Mode hors ligne avancé pour PWA
-- Envoi d'emails de rappel d'expiration (en complément des notifications)
+- Amélioration mode hors ligne avancé pour PWA
+- Tests automatisés (pytest backend, Jest frontend)
