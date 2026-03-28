@@ -748,6 +748,72 @@ class ChatMessageResponse(BaseModel):
     created_at: str
     read: bool = False
 
+# ============================================
+# REGION SYSTEM MODELS
+# ============================================
+class RegionBounds(BaseModel):
+    north: float  # Max latitude
+    south: float  # Min latitude
+    east: float   # Max longitude
+    west: float   # Min longitude
+
+class RegionCreate(BaseModel):
+    id: str  # e.g., "paris", "lyon", "london"
+    name: str  # Display name e.g., "Île-de-France"
+    country: str  # ISO country code e.g., "FR", "GB"
+    currency: str  # e.g., "EUR", "GBP"
+    language: str  # Default language e.g., "fr", "en"
+    timezone: str = "Europe/Paris"
+    bounds: RegionBounds
+    is_active: bool = False
+
+class RegionResponse(BaseModel):
+    id: str
+    name: str
+    country: str
+    currency: str
+    language: str
+    timezone: str
+    bounds: dict
+    is_active: bool
+    launch_date: Optional[str] = None
+    created_at: str
+    driver_count: int = 0
+    user_count: int = 0
+
+class RegionSubscription(BaseModel):
+    region_id: str
+    plan_id: str  # "24h", "1week", "1month"
+    expires_at: str
+    is_active: bool = True
+
+class UserRegisterWithRegion(BaseModel):
+    first_name: str
+    last_name: str
+    email: EmailStr
+    phone: str
+    password: str
+    region_id: Optional[str] = None  # Optional, can be detected by geolocation
+
+class DriverRegisterWithRegion(BaseModel):
+    first_name: str
+    last_name: str
+    email: EmailStr
+    phone: str
+    password: str
+    vehicle_plate: str
+    vehicle_type: str
+    seats: int
+    vtc_license: str
+    region_id: str  # Required for drivers
+    iban: Optional[str] = None
+    bic: Optional[str] = None
+
+class CheckoutRequestWithRegion(BaseModel):
+    plan_id: str
+    region_id: str
+    origin_url: str
+
 # Helper functions
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
@@ -765,6 +831,56 @@ def create_token(user_id: str, role: str) -> str:
 
 def generate_verification_token() -> str:
     return secrets.token_urlsafe(32)
+
+# ============================================
+# REGION HELPER FUNCTIONS
+# ============================================
+def is_point_in_region(lat: float, lng: float, bounds: dict) -> bool:
+    """Check if a geographic point is within region bounds"""
+    return (bounds['south'] <= lat <= bounds['north'] and
+            bounds['west'] <= lng <= bounds['east'])
+
+async def detect_region_by_location(lat: float, lng: float) -> Optional[dict]:
+    """Detect which region a point belongs to based on coordinates"""
+    regions = await db.regions.find({"is_active": True}, {"_id": 0}).to_list(100)
+    for region in regions:
+        if is_point_in_region(lat, lng, region['bounds']):
+            return region
+    return None
+
+async def get_region_or_default(region_id: Optional[str] = None) -> Optional[dict]:
+    """Get region by ID or return first active region"""
+    if region_id:
+        region = await db.regions.find_one({"id": region_id}, {"_id": 0})
+        return region
+    # Return first active region as default
+    return await db.regions.find_one({"is_active": True}, {"_id": 0})
+
+def extract_region_from_host(host: str) -> Optional[str]:
+    """Extract region ID from subdomain (e.g., paris.metro-taxi.com -> paris)"""
+    if not host:
+        return None
+    parts = host.split('.')
+    if len(parts) >= 3:
+        subdomain = parts[0].lower()
+        # Ignore www and other common subdomains
+        if subdomain not in ['www', 'api', 'admin', 'app']:
+            return subdomain
+    return None
+
+async def get_user_active_subscription_for_region(user_id: str, region_id: str) -> Optional[dict]:
+    """Check if user has active subscription for specific region"""
+    user = await db.users.find_one({"id": user_id}, {"_id": 0, "subscriptions": 1})
+    if not user or "subscriptions" not in user:
+        return None
+    
+    now = datetime.now(timezone.utc)
+    for sub in user.get("subscriptions", []):
+        if sub.get("region_id") == region_id and sub.get("is_active", False):
+            expires_at = datetime.fromisoformat(sub["expires_at"].replace('Z', '+00:00'))
+            if expires_at > now:
+                return sub
+    return None
 
 async def send_verification_email(email: str, name: str, verification_url: str, lang: str = "fr"):
     """Send verification email using Resend"""
@@ -1347,10 +1463,16 @@ async def register_user(data: UserRegister, request: Request):
     }
 
 @api_router.post("/auth/register/driver")
-async def register_driver(data: DriverRegister, request: Request):
+async def register_driver(data: DriverRegisterWithRegion, request: Request):
     existing = await db.drivers.find_one({"email": data.email}, {"_id": 0})
     if existing:
         raise HTTPException(status_code=400, detail="Email déjà utilisé")
+    
+    # Validate region exists and is active
+    if data.region_id:
+        region = await db.regions.find_one({"id": data.region_id, "is_active": True})
+        if not region:
+            raise HTTPException(status_code=400, detail="Région non disponible ou inactive")
     
     driver_id = str(uuid.uuid4())
     verification_token = generate_verification_token()
@@ -1368,6 +1490,7 @@ async def register_driver(data: DriverRegister, request: Request):
         "vtc_license": data.vtc_license,
         "iban": data.iban,
         "bic": data.bic,
+        "region_id": data.region_id,  # Associate driver with region
         "is_active": False,
         "is_validated": True,  # Auto-validated at registration
         "email_verified": False,
@@ -1633,6 +1756,66 @@ async def create_checkout(data: CheckoutRequest, request: Request, current_user:
     
     return {"url": session.url, "session_id": session.session_id}
 
+# NEW: Multi-region subscription checkout
+@api_router.post("/payments/checkout/region")
+async def create_checkout_with_region(data: CheckoutRequestWithRegion, request: Request, current_user: dict = Depends(get_current_user)):
+    """Create checkout session for a specific region"""
+    if data.plan_id not in SUBSCRIPTION_PLANS:
+        raise HTTPException(status_code=400, detail="Plan invalide")
+    
+    # Verify region exists and is active
+    region = await db.regions.find_one({"id": data.region_id, "is_active": True})
+    if not region:
+        raise HTTPException(status_code=400, detail="Région non disponible")
+    
+    plan = SUBSCRIPTION_PLANS[data.plan_id]
+    user_id = current_user["user_id"]
+    
+    # Get currency from region (default EUR)
+    currency = region.get("currency", "EUR").lower()
+    
+    host_url = str(request.base_url).rstrip('/')
+    webhook_url = f"{host_url}/api/webhook/stripe"
+    stripe_key = os.environ.get('STRIPE_API_KEY')
+    
+    stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_url=webhook_url)
+    
+    success_url = f"{data.origin_url}/subscription/success?session_id={{CHECKOUT_SESSION_ID}}&region={data.region_id}"
+    cancel_url = f"{data.origin_url}/subscription?region={data.region_id}"
+    
+    checkout_request = CheckoutSessionRequest(
+        amount=plan["price_cents"] / 100,
+        currency=currency,
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata={
+            "user_id": user_id, 
+            "plan_id": data.plan_id,
+            "region_id": data.region_id
+        }
+    )
+    
+    session = await stripe_checkout.create_checkout_session(checkout_request)
+    
+    # Create payment transaction record with region
+    transaction = {
+        "id": str(uuid.uuid4()),
+        "session_id": session.session_id,
+        "user_id": user_id,
+        "plan_id": data.plan_id,
+        "region_id": data.region_id,
+        "amount": plan["price"],
+        "currency": currency,
+        "status": "pending",
+        "payment_status": "initiated",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.payment_transactions.insert_one(transaction)
+    
+    return {"url": session.url, "session_id": session.session_id, "region": region}
+    
+    return {"url": session.url, "session_id": session.session_id}
+
 @api_router.get("/payments/status/{session_id}")
 async def get_payment_status(session_id: str, request: Request, current_user: dict = Depends(get_current_user)):
     host_url = str(request.base_url).rstrip('/')
@@ -1698,14 +1881,53 @@ async def stripe_webhook(request: Request):
                 plan = SUBSCRIPTION_PLANS.get(transaction["plan_id"])
                 if plan:
                     expires_at = datetime.now(timezone.utc) + timedelta(hours=plan["duration_hours"])
-                    await db.users.update_one(
-                        {"id": transaction["user_id"]},
-                        {"$set": {
-                            "subscription_active": True,
-                            "subscription_expires": expires_at.isoformat(),
-                            "subscription_plan": transaction["plan_id"]
-                        }}
-                    )
+                    region_id = transaction.get("region_id")
+                    
+                    if region_id:
+                        # Multi-region subscription: add to subscriptions array
+                        new_subscription = {
+                            "region_id": region_id,
+                            "plan_id": transaction["plan_id"],
+                            "expires_at": expires_at.isoformat(),
+                            "is_active": True,
+                            "created_at": datetime.now(timezone.utc).isoformat()
+                        }
+                        
+                        # Check if user already has a subscription for this region
+                        user = await db.users.find_one({"id": transaction["user_id"]})
+                        existing_subs = user.get("subscriptions", []) if user else []
+                        
+                        # Update existing or add new
+                        updated = False
+                        for i, sub in enumerate(existing_subs):
+                            if sub.get("region_id") == region_id:
+                                existing_subs[i] = new_subscription
+                                updated = True
+                                break
+                        
+                        if not updated:
+                            existing_subs.append(new_subscription)
+                        
+                        await db.users.update_one(
+                            {"id": transaction["user_id"]},
+                            {"$set": {
+                                "subscriptions": existing_subs,
+                                # Keep legacy fields for backward compatibility
+                                "subscription_active": True,
+                                "subscription_expires": expires_at.isoformat(),
+                                "subscription_plan": transaction["plan_id"]
+                            }}
+                        )
+                    else:
+                        # Legacy single-region subscription
+                        await db.users.update_one(
+                            {"id": transaction["user_id"]},
+                            {"$set": {
+                                "subscription_active": True,
+                                "subscription_expires": expires_at.isoformat(),
+                                "subscription_plan": transaction["plan_id"]
+                            }}
+                        )
         
         return {"status": "ok"}
     except Exception as e:
@@ -1743,11 +1965,15 @@ async def update_driver_location(data: LocationUpdate, current_user: dict = Depe
     return {"status": "ok"}
 
 @api_router.get("/drivers/available")
-async def get_available_drivers(current_user: dict = Depends(get_current_user)):
-    drivers = await db.drivers.find(
-        {"is_active": True, "is_validated": True, "location": {"$ne": None}},
-        {"_id": 0, "password": 0}
-    ).to_list(100)
+async def get_available_drivers(region_id: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+    """Get available drivers, optionally filtered by region"""
+    query = {"is_active": True, "is_validated": True, "location": {"$ne": None}}
+    
+    # Filter by region if specified
+    if region_id:
+        query["region_id"] = region_id
+    
+    drivers = await db.drivers.find(query, {"_id": 0, "password": 0}).to_list(100)
     return {"drivers": drivers}
 
 # ============================================
@@ -1755,12 +1981,15 @@ async def get_available_drivers(current_user: dict = Depends(get_current_user)):
 # ============================================
 
 @api_router.post("/matching/find-drivers")
-async def find_matching_drivers(data: MatchingRequest, current_user: dict = Depends(get_current_user)):
+async def find_matching_drivers(data: MatchingRequest, region_id: Optional[str] = None, current_user: dict = Depends(get_current_user)):
     """Find best matching drivers based on distance, direction, and availability"""
-    drivers = await db.drivers.find(
-        {"is_active": True, "is_validated": True, "location": {"$ne": None}, "available_seats": {"$gt": 0}},
-        {"_id": 0, "password": 0}
-    ).to_list(100)
+    query = {"is_active": True, "is_validated": True, "location": {"$ne": None}, "available_seats": {"$gt": 0}}
+    
+    # Filter by region if specified
+    if region_id:
+        query["region_id"] = region_id
+    
+    drivers = await db.drivers.find(query, {"_id": 0, "password": 0}).to_list(100)
     
     matched_drivers = []
     for driver in drivers:
@@ -3002,6 +3231,188 @@ async def update_user_location(data: LocationUpdate, current_user: dict = Depend
     
     return {"status": "ok"}
 
+# ============================================
+# REGION MANAGEMENT ENDPOINTS
+# ============================================
+
+@api_router.get("/regions")
+async def get_all_regions():
+    """Get all regions (public endpoint for region selection)"""
+    regions = await db.regions.find({}, {"_id": 0}).to_list(100)
+    
+    # Add driver and user counts
+    for region in regions:
+        region['driver_count'] = await db.drivers.count_documents({"region_id": region['id']})
+        region['user_count'] = await db.users.count_documents({"subscriptions.region_id": region['id']})
+    
+    return regions
+
+@api_router.get("/regions/active")
+async def get_active_regions():
+    """Get only active regions (for public use)"""
+    regions = await db.regions.find({"is_active": True}, {"_id": 0}).to_list(100)
+    return regions
+
+@api_router.get("/regions/detect")
+async def detect_region(lat: float, lng: float):
+    """Detect region based on coordinates"""
+    region = await detect_region_by_location(lat, lng)
+    if region:
+        return {"detected": True, "region": region}
+    return {"detected": False, "region": None, "message": "No active region found for this location"}
+
+@api_router.get("/regions/{region_id}")
+async def get_region(region_id: str):
+    """Get a specific region by ID"""
+    region = await db.regions.find_one({"id": region_id}, {"_id": 0})
+    if not region:
+        raise HTTPException(status_code=404, detail="Region not found")
+    
+    region['driver_count'] = await db.drivers.count_documents({"region_id": region_id})
+    region['user_count'] = await db.users.count_documents({"subscriptions.region_id": region_id})
+    return region
+
+@api_router.post("/admin/regions")
+async def create_region(region: RegionCreate, current_user: dict = Depends(get_current_user)):
+    """Create a new region (admin only)"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Check if region already exists
+    existing = await db.regions.find_one({"id": region.id})
+    if existing:
+        raise HTTPException(status_code=400, detail="Region with this ID already exists")
+    
+    region_data = {
+        "id": region.id.lower(),
+        "name": region.name,
+        "country": region.country.upper(),
+        "currency": region.currency.upper(),
+        "language": region.language.lower(),
+        "timezone": region.timezone,
+        "bounds": region.bounds.model_dump(),
+        "is_active": region.is_active,
+        "launch_date": None,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.regions.insert_one(region_data)
+    return {"status": "created", "region": {k: v for k, v in region_data.items() if k != "_id"}}
+
+@api_router.put("/admin/regions/{region_id}")
+async def update_region(region_id: str, region: RegionCreate, current_user: dict = Depends(get_current_user)):
+    """Update a region (admin only)"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    existing = await db.regions.find_one({"id": region_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Region not found")
+    
+    update_data = {
+        "name": region.name,
+        "country": region.country.upper(),
+        "currency": region.currency.upper(),
+        "language": region.language.lower(),
+        "timezone": region.timezone,
+        "bounds": region.bounds.model_dump(),
+        "is_active": region.is_active
+    }
+    
+    await db.regions.update_one({"id": region_id}, {"$set": update_data})
+    return {"status": "updated"}
+
+@api_router.post("/admin/regions/{region_id}/activate")
+async def activate_region(region_id: str, current_user: dict = Depends(get_current_user)):
+    """Activate a region (admin only)"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    result = await db.regions.update_one(
+        {"id": region_id},
+        {"$set": {"is_active": True, "launch_date": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Region not found")
+    
+    return {"status": "activated", "launch_date": datetime.now(timezone.utc).isoformat()}
+
+@api_router.post("/admin/regions/{region_id}/deactivate")
+async def deactivate_region(region_id: str, current_user: dict = Depends(get_current_user)):
+    """Deactivate a region (admin only)"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    result = await db.regions.update_one(
+        {"id": region_id},
+        {"$set": {"is_active": False}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Region not found")
+    
+    return {"status": "deactivated"}
+
+@api_router.delete("/admin/regions/{region_id}")
+async def delete_region(region_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a region (admin only) - only if no drivers/users"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Check if region has drivers
+    driver_count = await db.drivers.count_documents({"region_id": region_id})
+    if driver_count > 0:
+        raise HTTPException(status_code=400, detail=f"Cannot delete region with {driver_count} drivers")
+    
+    result = await db.regions.delete_one({"id": region_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Region not found")
+    
+    return {"status": "deleted"}
+
+@api_router.get("/admin/regions/stats")
+async def get_regions_stats(current_user: dict = Depends(get_current_user)):
+    """Get statistics for all regions (admin only)"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    regions = await db.regions.find({}, {"_id": 0}).to_list(100)
+    stats = []
+    
+    for region in regions:
+        region_id = region['id']
+        driver_count = await db.drivers.count_documents({"region_id": region_id})
+        validated_drivers = await db.drivers.count_documents({"region_id": region_id, "is_validated": True})
+        active_drivers = await db.drivers.count_documents({"region_id": region_id, "is_active": True})
+        
+        # Count users with active subscription in this region
+        pipeline = [
+            {"$match": {"subscriptions": {"$elemMatch": {"region_id": region_id, "is_active": True}}}},
+            {"$count": "count"}
+        ]
+        result = await db.users.aggregate(pipeline).to_list(1)
+        active_subscribers = result[0]['count'] if result else 0
+        
+        # Count active rides in this region
+        active_rides = await db.ride_requests.count_documents({
+            "status": "accepted",
+            "region_id": region_id
+        })
+        
+        stats.append({
+            "region": region,
+            "stats": {
+                "total_drivers": driver_count,
+                "validated_drivers": validated_drivers,
+                "active_drivers": active_drivers,
+                "active_subscribers": active_subscribers,
+                "active_rides": active_rides
+            }
+        })
+    
+    return stats
+
 # Admin Routes
 @api_router.get("/admin/stats")
 async def get_admin_stats(current_user: dict = Depends(get_current_user)):
@@ -3619,6 +4030,75 @@ async def get_subscription_status(current_user: dict = Depends(get_current_user)
         "days_remaining": days_remaining,
         "is_expiring_soon": is_expiring_soon
     }
+
+# ============================================
+# MULTI-REGION SUBSCRIPTION ENDPOINTS
+# ============================================
+
+@api_router.get("/subscription/regions")
+async def get_user_region_subscriptions(current_user: dict = Depends(get_current_user)):
+    """Get all region subscriptions for the current user"""
+    user_id = current_user.get("user_id") or current_user.get("id")
+    
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    now = datetime.now(timezone.utc)
+    subscriptions = user.get("subscriptions", [])
+    
+    result = []
+    for sub in subscriptions:
+        region_id = sub.get("region_id")
+        region = await db.regions.find_one({"id": region_id}, {"_id": 0})
+        
+        expires_str = sub.get("expires_at")
+        is_active = False
+        hours_remaining = 0
+        
+        if expires_str:
+            try:
+                expires = datetime.fromisoformat(expires_str.replace('Z', '+00:00'))
+                delta = expires - now
+                hours_remaining = max(0, round(delta.total_seconds() / 3600))
+                is_active = hours_remaining > 0
+            except (ValueError, TypeError):
+                pass
+        
+        result.append({
+            "region_id": region_id,
+            "region": region,
+            "plan_id": sub.get("plan_id"),
+            "expires_at": expires_str,
+            "is_active": is_active,
+            "hours_remaining": hours_remaining,
+            "created_at": sub.get("created_at")
+        })
+    
+    return {"subscriptions": result}
+
+@api_router.get("/subscription/region/{region_id}")
+async def get_subscription_for_region(region_id: str, current_user: dict = Depends(get_current_user)):
+    """Check if user has active subscription for a specific region"""
+    user_id = current_user.get("user_id") or current_user.get("id")
+    
+    subscription = await get_user_active_subscription_for_region(user_id, region_id)
+    
+    if subscription:
+        now = datetime.now(timezone.utc)
+        expires = datetime.fromisoformat(subscription["expires_at"].replace('Z', '+00:00'))
+        hours_remaining = max(0, round((expires - now).total_seconds() / 3600))
+        
+        return {
+            "has_subscription": True,
+            "subscription": {
+                **subscription,
+                "hours_remaining": hours_remaining,
+                "is_expiring_soon": hours_remaining <= 48
+            }
+        }
+    
+    return {"has_subscription": False, "subscription": None}
 
 @api_router.post("/notifications/test-expiry")
 async def create_test_expiry_notification(current_user: dict = Depends(get_current_user)):
@@ -4361,6 +4841,71 @@ async def verify_database_connection():
                 logging.error(f"❌ Failed to connect to MongoDB after {max_retries} attempts: {e}")
                 # Don't raise - let the app start and handle errors per-request
                 # This allows the app to recover if DB becomes available later
+
+@app.on_event("startup")
+async def initialize_default_regions():
+    """Create default regions if they don't exist"""
+    default_regions = [
+        {
+            "id": "paris",
+            "name": "Île-de-France",
+            "country": "FR",
+            "currency": "EUR",
+            "language": "fr",
+            "timezone": "Europe/Paris",
+            "bounds": {
+                "north": 49.2415,  # North of Île-de-France
+                "south": 48.1200,  # South of Île-de-France
+                "east": 3.5590,    # East
+                "west": 1.4465     # West
+            },
+            "is_active": True,  # Paris is active by default
+            "launch_date": datetime.now(timezone.utc).isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "lyon",
+            "name": "Rhône-Alpes",
+            "country": "FR",
+            "currency": "EUR",
+            "language": "fr",
+            "timezone": "Europe/Paris",
+            "bounds": {
+                "north": 46.3000,
+                "south": 45.5000,
+                "east": 5.2000,
+                "west": 4.5000
+            },
+            "is_active": False,  # Lyon inactive for now
+            "launch_date": None,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "london",
+            "name": "Greater London",
+            "country": "GB",
+            "currency": "GBP",
+            "language": "en",
+            "timezone": "Europe/London",
+            "bounds": {
+                "north": 51.6919,
+                "south": 51.2868,
+                "east": 0.3340,
+                "west": -0.5103
+            },
+            "is_active": False,  # London inactive for now
+            "launch_date": None,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+    
+    for region in default_regions:
+        existing = await db.regions.find_one({"id": region["id"]})
+        if not existing:
+            await db.regions.insert_one(region)
+            logging.info(f"✅ Created default region: {region['name']} ({region['id']})")
+        else:
+            logging.info(f"ℹ️ Region already exists: {region['name']} ({region['id']})")
 
 # WebSocket endpoint
 @app.websocket("/ws/{user_id}/{user_type}")

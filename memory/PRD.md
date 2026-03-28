@@ -1,15 +1,54 @@
 # Métro-Taxi - Product Requirements Document
 
 ## 📋 Résumé
-Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements. Trajets gratuits couverts par l'abonnement.
+Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements multi-régions. Trajets gratuits couverts par l'abonnement.
 
 ## 🏗️ Stack Technique
 - **Frontend**: React 19, TailwindCSS, Leaflet, i18next (16 langues)
 - **Backend**: FastAPI, MongoDB, JWT Auth
-- **Paiements**: Stripe Checkout + Stripe Connect Express
+- **Paiements**: Stripe Checkout + Stripe Connect Express (LIVE)
 - **Emails**: Resend (domaine metro-taxi.com vérifié)
 - **TTS**: OpenAI (Emergent LLM Key)
 - **PWA**: Service Worker, Manifest, Cache hors ligne
+- **Notifications Push**: WebPush (VAPID)
+
+## 🌍 Système Multi-Régions ✅ (28/03/2026)
+
+### Architecture
+- **Un chauffeur = Une région** (obligatoire à l'inscription)
+- **Abonnements par région** (un utilisateur peut avoir Paris + Lyon actifs simultanément)
+- **Prix identiques partout** (même tarification EUR)
+- **Base de données centralisée** (collection `regions`)
+
+### Régions configurées
+| ID | Nom | Pays | Devise | Statut |
+|----|-----|------|--------|--------|
+| `paris` | Île-de-France | FR | EUR | ✅ Actif |
+| `lyon` | Rhône-Alpes | FR | EUR | ⏳ Inactif |
+| `london` | Greater London | GB | GBP | ⏳ Inactif |
+
+### Endpoints API
+- `GET /api/regions` - Toutes les régions
+- `GET /api/regions/active` - Régions actives uniquement
+- `GET /api/regions/detect?lat=...&lng=...` - Détection auto par géolocalisation
+- `GET /api/regions/{id}` - Détails d'une région
+- `POST /api/admin/regions` - Créer une région (admin)
+- `POST /api/admin/regions/{id}/activate` - Activer une région
+- `POST /api/payments/checkout/region` - Paiement pour une région spécifique
+- `GET /api/subscription/regions` - Abonnements actifs par région
+- `GET /api/subscription/region/{id}` - Statut abonnement pour une région
+
+### Composants Frontend
+- `RegionSelector.jsx` - Sélecteur de région (dropdown ou cartes)
+- `RegionContext.jsx` - Contexte React pour la région courante
+
+### Configuration DNS (Hostinger)
+Pour activer les sous-domaines :
+```
+paris.metro-taxi.com  → CNAME → votre-app.emergent.host
+lyon.metro-taxi.com   → CNAME → votre-app.emergent.host
+london.metro-taxi.com → CNAME → votre-app.emergent.host
+```
 
 ## ✅ Fonctionnalités Complètes
 

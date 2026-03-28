@@ -1,4 +1,14 @@
 {
+  "regions": {
+    "selectRegion": "Selecciona tu región",
+    "availableRegions": "Regiones disponibles",
+    "comingSoon": "Próximamente",
+    "detectLocation": "Detectar mi ubicación",
+    "regionRequired": "Por favor selecciona una región",
+    "subscriptionForRegion": "Suscripción para",
+    "activeInRegions": "Activo en regiones",
+    "noActiveSubscription": "Sin suscripción activa para esta región"
+  },
   "hero": {
     "title": "MÉTRO-TAXI",
     "subtitle": "La red de movilidad urbana por suscripción",

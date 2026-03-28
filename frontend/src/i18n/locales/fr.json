@@ -25,6 +25,16 @@
     "deactivateError": "Erreur lors de la désactivation",
     "cleanupError": "Erreur lors du nettoyage"
   },
+  "regions": {
+    "selectRegion": "Sélectionnez votre région",
+    "availableRegions": "Régions disponibles",
+    "comingSoon": "Bientôt disponible",
+    "detectLocation": "Détecter ma position",
+    "regionRequired": "Veuillez sélectionner une région",
+    "subscriptionForRegion": "Abonnement pour",
+    "activeInRegions": "Actif dans les régions",
+    "noActiveSubscription": "Pas d'abonnement actif pour cette région"
+  },
   "popup": {
     "importantTitle": "Important",
     "subscriptionRequired": "Votre abonnement doit être actif pour utiliser Métro-Taxi.",
