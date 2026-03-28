@@ -1,7 +1,7 @@
-const CACHE_NAME = 'metro-taxi-v2';
-const STATIC_CACHE = 'metro-taxi-static-v2';
-const DYNAMIC_CACHE = 'metro-taxi-dynamic-v2';
-const API_CACHE = 'metro-taxi-api-v1';
+const CACHE_NAME = 'metro-taxi-v3';
+const STATIC_CACHE = 'metro-taxi-static-v3';
+const DYNAMIC_CACHE = 'metro-taxi-dynamic-v3';
+const API_CACHE = 'metro-taxi-api-v2';
 
 // Resources to cache immediately
 const STATIC_ASSETS = [
