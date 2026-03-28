@@ -87,6 +87,8 @@ const Subscription = () => {
     return userSubscriptions.find(s => s.region_id === regionId && s.is_active);
   };
 
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
   const handleSubscribe = async (planId) => {
     if (!selectedRegion) {
       toast.error(t('regions.regionRequired', 'Please select a region first'));
@@ -104,14 +106,31 @@ const Subscription = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      // Redirect to Stripe checkout
-      window.location.href = response.data.url;
+      // Set redirecting flag to prevent React updates during redirect
+      setIsRedirecting(true);
+      
+      // Small delay to ensure state update completes before redirect
+      setTimeout(() => {
+        window.location.href = response.data.url;
+      }, 100);
     } catch (error) {
       const message = error.response?.data?.detail || t('subscription.error', 'Erreur lors de la création du paiement');
       toast.error(message);
       setLoading(null);
     }
   };
+
+  // Don't render anything during redirect to prevent DOM conflicts
+  if (isRedirecting) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-[#FFD60A] mx-auto mb-4" />
+          <p className="text-white text-lg">{t('subscription.redirecting', 'Redirection vers le paiement...')}</p>
+        </div>
+      </div>
+    );
+  }
 
   const planData = [
     { 

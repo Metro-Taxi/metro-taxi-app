@@ -1812,9 +1812,10 @@ async def create_checkout_with_region(data: CheckoutRequestWithRegion, request: 
     }
     await db.payment_transactions.insert_one(transaction)
     
-    return {"url": session.url, "session_id": session.session_id, "region": region}
+    # Remove _id from region before returning
+    region_response = {k: v for k, v in region.items() if k != "_id"}
     
-    return {"url": session.url, "session_id": session.session_id}
+    return {"url": session.url, "session_id": session.session_id, "region": region_response}
 
 @api_router.get("/payments/status/{session_id}")
 async def get_payment_status(session_id: str, request: Request, current_user: dict = Depends(get_current_user)):
