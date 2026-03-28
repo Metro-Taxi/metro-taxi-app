@@ -512,7 +512,8 @@
     "passwordMismatch": "Les mots de passe ne correspondent pas",
     "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
     "successMessage": "Inscription réussie ! Votre compte est activé. Vous pouvez vous connecter.",
-    "errorMessage": "Erreur lors de l'inscription"
+    "errorMessage": "Erreur lors de l'inscription",
+    "regionNote": "En tant que chauffeur, vous ne pouvez opérer que dans une seule région."
   },
   "driverEarnings": {
     "title": "Mes Revenus",

@@ -3,6 +3,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { RegionProvider } from "@/contexts/RegionContext";
 import InstallPWABanner from "@/components/InstallPWABanner";
 
 // Pages
@@ -145,9 +146,11 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <AuthProvider>
-          <AppRoutes />
-          <Toaster position="top-right" richColors />
-          <InstallPWABanner />
+          <RegionProvider>
+            <AppRoutes />
+            <Toaster position="top-right" richColors />
+            <InstallPWABanner />
+          </RegionProvider>
         </AuthProvider>
       </BrowserRouter>
       <div className="noise-overlay"></div>

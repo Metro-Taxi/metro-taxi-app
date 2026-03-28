@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Car, Mail, Lock, User, Phone, Eye, EyeOff, CreditCard, FileText, Users, Building2 } from 'lucide-react';
+import { Car, Mail, Lock, User, Phone, Eye, EyeOff, CreditCard, FileText, Users, Building2, MapPin, Globe, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,6 +9,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
+
+const API = process.env.REACT_APP_BACKEND_URL;
+
+// Country flag mapping
+const countryFlags = {
+  FR: '🇫🇷',
+  GB: '🇬🇧',
+  ES: '🇪🇸',
+  DE: '🇩🇪',
+  IT: '🇮🇹',
+  PT: '🇵🇹',
+};
 
 const RegisterDriver = () => {
   const { t } = useTranslation();
@@ -24,12 +37,70 @@ const RegisterDriver = () => {
     seats: 4,
     vtc_license: '',
     iban: '',
-    bic: ''
+    bic: '',
+    region_id: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [regions, setRegions] = useState([]);
+  const [regionsLoading, setRegionsLoading] = useState(true);
+  const [detectingLocation, setDetectingLocation] = useState(false);
   const { registerDriver } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchRegions();
+  }, []);
+
+  const fetchRegions = async () => {
+    try {
+      const response = await axios.get(`${API}/api/regions/active`);
+      setRegions(response.data);
+      // Auto-select if only one region
+      if (response.data.length === 1) {
+        setFormData(prev => ({ ...prev, region_id: response.data[0].id }));
+      }
+    } catch (error) {
+      console.error('Error fetching regions:', error);
+    } finally {
+      setRegionsLoading(false);
+    }
+  };
+
+  const detectRegion = async () => {
+    if (!navigator.geolocation) {
+      toast.error(t('regions.geolocationNotSupported', 'Geolocation not supported'));
+      return;
+    }
+
+    setDetectingLocation(true);
+    try {
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        });
+      });
+
+      const { latitude, longitude } = position.coords;
+      const response = await axios.get(`${API}/api/regions/detect`, {
+        params: { lat: latitude, lng: longitude }
+      });
+
+      if (response.data.detected && response.data.region) {
+        setFormData(prev => ({ ...prev, region_id: response.data.region.id }));
+        toast.success(t('regions.detected', 'Region detected: ') + response.data.region.name);
+      } else {
+        toast.info(t('regions.notDetected', 'No active region found for your location'));
+      }
+    } catch (error) {
+      console.error('Error detecting region:', error);
+      toast.error(t('regions.detectionError', 'Error detecting your location'));
+    } finally {
+      setDetectingLocation(false);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -49,6 +120,11 @@ const RegisterDriver = () => {
 
     if (formData.password.length < 6) {
       toast.error(t('driverRegister.passwordTooShort'));
+      return;
+    }
+
+    if (!formData.region_id) {
+      toast.error(t('regions.regionRequired', 'Please select a region'));
       return;
     }
 
@@ -155,6 +231,82 @@ const RegisterDriver = () => {
                   data-testid="driver-phone-input"
                 />
               </div>
+            </div>
+
+            {/* Region Selection */}
+            <div className="pt-4 border-t border-zinc-800">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <Globe className="w-5 h-5 text-[#FFD60A]" />
+                  {t('regions.selectRegion', 'Select your region')}
+                </h3>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={detectRegion}
+                  disabled={detectingLocation}
+                  className="text-xs"
+                >
+                  {detectingLocation ? (
+                    <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                  ) : (
+                    <MapPin className="w-3 h-3 mr-1" />
+                  )}
+                  {t('regions.detectLocation', 'Detect')}
+                </Button>
+              </div>
+              
+              {regionsLoading ? (
+                <div className="flex items-center justify-center py-4">
+                  <Loader2 className="w-6 h-6 animate-spin text-[#FFD60A]" />
+                </div>
+              ) : regions.length === 0 ? (
+                <p className="text-zinc-400 text-center py-4">
+                  {t('regions.noRegions', 'No regions available')}
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 gap-3">
+                  {regions.map((region) => (
+                    <button
+                      key={region.id}
+                      type="button"
+                      onClick={() => handleSelectChange('region_id', region.id)}
+                      className={`
+                        relative p-4 rounded-lg border-2 transition-all text-left
+                        ${formData.region_id === region.id
+                          ? 'border-[#FFD60A] bg-[#FFD60A]/10'
+                          : 'border-zinc-700 hover:border-zinc-500 bg-zinc-900/50'
+                        }
+                      `}
+                      data-testid={`region-option-${region.id}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{countryFlags[region.country] || '🌍'}</span>
+                        <div>
+                          <h4 className="font-semibold text-white">{region.name}</h4>
+                          <p className="text-sm text-zinc-400">
+                            {region.currency} • {region.language.toUpperCase()}
+                          </p>
+                        </div>
+                        {formData.region_id === region.id && (
+                          <div className="ml-auto">
+                            <div className="w-5 h-5 rounded-full bg-[#FFD60A] flex items-center justify-center">
+                              <svg className="w-3 h-3 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+              
+              <p className="text-xs text-zinc-500 mt-3">
+                {t('driverRegister.regionNote', 'As a driver, you can only operate in one region.')}
+              </p>
             </div>
 
             {/* Vehicle Info */}

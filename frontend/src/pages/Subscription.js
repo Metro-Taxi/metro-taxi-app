@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Car, ArrowLeft, Check, CreditCard, Shield, Clock, Users } from 'lucide-react';
+import { Car, ArrowLeft, Check, CreditCard, Shield, Clock, Users, Globe, MapPin, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -11,16 +11,42 @@ import LanguageSelector from '@/components/LanguageSelector';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Country flag mapping
+const countryFlags = {
+  FR: '🇫🇷',
+  GB: '🇬🇧',
+  ES: '🇪🇸',
+  DE: '🇩🇪',
+};
+
 const Subscription = () => {
   const { user, token, refreshUser } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const [plans, setPlans] = useState({});
   const [loading, setLoading] = useState(null);
+  const [regions, setRegions] = useState([]);
+  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [regionsLoading, setRegionsLoading] = useState(true);
+  const [userSubscriptions, setUserSubscriptions] = useState([]);
 
   useEffect(() => {
     fetchPlans();
+    fetchRegions();
+    fetchUserSubscriptions();
   }, []);
+
+  // Check URL for region parameter
+  useEffect(() => {
+    const regionParam = searchParams.get('region');
+    if (regionParam && regions.length > 0) {
+      const region = regions.find(r => r.id === regionParam);
+      if (region) {
+        setSelectedRegion(region);
+      }
+    }
+  }, [searchParams, regions]);
 
   const fetchPlans = async () => {
     try {
@@ -31,12 +57,48 @@ const Subscription = () => {
     }
   };
 
+  const fetchRegions = async () => {
+    try {
+      const response = await axios.get(`${API}/regions/active`);
+      setRegions(response.data);
+      // Auto-select first region if only one
+      if (response.data.length === 1) {
+        setSelectedRegion(response.data[0]);
+      }
+    } catch (error) {
+      console.error('Error fetching regions:', error);
+    } finally {
+      setRegionsLoading(false);
+    }
+  };
+
+  const fetchUserSubscriptions = async () => {
+    try {
+      const response = await axios.get(`${API}/subscription/regions`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUserSubscriptions(response.data.subscriptions || []);
+    } catch (error) {
+      console.error('Error fetching user subscriptions:', error);
+    }
+  };
+
+  const getSubscriptionForRegion = (regionId) => {
+    return userSubscriptions.find(s => s.region_id === regionId && s.is_active);
+  };
+
   const handleSubscribe = async (planId) => {
+    if (!selectedRegion) {
+      toast.error(t('regions.regionRequired', 'Please select a region first'));
+      return;
+    }
+
     setLoading(planId);
     try {
       const originUrl = window.location.origin;
-      const response = await axios.post(`${API}/payments/checkout`, {
+      const response = await axios.post(`${API}/payments/checkout/region`, {
         plan_id: planId,
+        region_id: selectedRegion.id,
         origin_url: originUrl
       }, {
         headers: { Authorization: `Bearer ${token}` }
@@ -110,25 +172,97 @@ const Subscription = () => {
         </div>
 
         {/* Current subscription status */}
-        {user?.subscription_active && (
+        {userSubscriptions.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-8 p-6 bg-green-500/10 border border-green-500/30 rounded"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                <Check className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-green-400 font-bold">Abonnement actif</p>
-                <p className="text-zinc-400 text-sm">
-                  Expire le: {new Date(user.subscription_expires).toLocaleDateString('fr-FR')}
-                </p>
-              </div>
+            <h3 className="text-green-400 font-bold mb-3 flex items-center gap-2">
+              <Check className="w-5 h-5" />
+              {t('regions.activeInRegions', 'Active subscriptions')}
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              {userSubscriptions.filter(s => s.is_active).map(sub => (
+                <div key={sub.region_id} className="flex items-center gap-2 bg-green-500/20 px-3 py-2 rounded">
+                  <span>{countryFlags[sub.region?.country] || '🌍'}</span>
+                  <span className="text-white font-medium">{sub.region?.name}</span>
+                  <span className="text-green-400 text-sm">
+                    ({sub.hours_remaining}h)
+                  </span>
+                </div>
+              ))}
             </div>
           </motion.div>
         )}
+
+        {/* Region Selection */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Globe className="w-6 h-6 text-[#FFD60A]" />
+            <h2 className="text-xl font-bold text-white">
+              {t('regions.selectRegion', 'Select your region')}
+            </h2>
+          </div>
+          
+          {regionsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-8 h-8 animate-spin text-[#FFD60A]" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {regions.map((region) => {
+                const existingSub = getSubscriptionForRegion(region.id);
+                return (
+                  <button
+                    key={region.id}
+                    onClick={() => setSelectedRegion(region)}
+                    className={`
+                      relative p-4 rounded-xl border-2 transition-all text-left
+                      ${selectedRegion?.id === region.id
+                        ? 'border-[#FFD60A] bg-[#FFD60A]/10'
+                        : 'border-zinc-700 hover:border-zinc-500 bg-zinc-800/50'
+                      }
+                    `}
+                    data-testid={`subscription-region-${region.id}`}
+                  >
+                    {existingSub && (
+                      <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded">
+                        {t('subscription.active', 'Actif')}
+                      </div>
+                    )}
+                    
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl">{countryFlags[region.country] || '🌍'}</span>
+                      <div>
+                        <h4 className="font-semibold text-white">{region.name}</h4>
+                        <p className="text-sm text-zinc-400">
+                          {region.currency}
+                        </p>
+                        {existingSub && (
+                          <p className="text-xs text-green-400 mt-1">
+                            {existingSub.hours_remaining}h {t('subscription.remaining', 'restantes')}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          
+          {selectedRegion && (
+            <p className="text-sm text-zinc-400 mt-3 flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-[#FFD60A]" />
+              {t('regions.subscriptionForRegion', 'Subscription for')}: <span className="text-white font-medium">{selectedRegion.name}</span>
+            </p>
+          )}
+        </motion.div>
 
         {/* Title */}
         <motion.div

@@ -38,9 +38,11 @@ Plateforme de mise en relation usagers/chauffeurs VTC avec abonnements multi-ré
 - `GET /api/subscription/regions` - Abonnements actifs par région
 - `GET /api/subscription/region/{id}` - Statut abonnement pour une région
 
-### Composants Frontend
+### Composants Frontend ✅ Intégrés
 - `RegionSelector.jsx` - Sélecteur de région (dropdown ou cartes)
 - `RegionContext.jsx` - Contexte React pour la région courante
+- **Page d'inscription chauffeur** - Sélection obligatoire de la région
+- **Page d'abonnement** - Sélection de la région avant paiement, affichage des abonnements actifs par région
 
 ### Configuration DNS (Hostinger)
 Pour activer les sous-domaines :
