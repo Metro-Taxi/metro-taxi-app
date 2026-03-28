@@ -135,75 +135,77 @@
     "admin": {
       "title": "Administração",
       "stats": {
-        "users": "Utilizadores registados",
+        "users": "Usuários registrados",
         "drivers": "Motoristas",
         "subscriptions": "Assinaturas ativas",
-        "rides": "Viagens em curso"
+        "rides": "Viagens em andamento"
       },
       "tabs": {
         "drivers": "Motoristas",
-        "users": "Utilizadores",
+        "users": "Usuários",
         "subscriptions": "Assinaturas",
-        "cards": "Cartões Virtuais"
+        "cards": "Cartões virtuais"
       },
       "drivers": {
         "title": "Gestão de motoristas",
-        "subtitle": "Ative ou desative as contas dos motoristas",
+        "subtitle": "Validar ou desativar contas de motoristas",
         "driver": "Motorista",
-        "contact": "Contacto",
+        "contact": "Contato",
         "vehicle": "Veículo",
         "license": "Licença VTC",
-        "status": "Estado",
+        "status": "Status",
         "actions": "Ações",
         "validated": "Validado",
         "pending": "Pendente",
         "online": "Online",
         "activate": "Ativar",
         "deactivate": "Desativar",
-        "noDrivers": "Nenhum motorista registado"
+        "noDrivers": "Nenhum motorista registrado"
       },
       "users": {
-        "title": "Lista de utilizadores",
-        "subtitle": "Consulte as informações dos utilizadores registados",
-        "user": "Utilizador",
-        "contact": "Contacto",
+        "title": "Lista de usuários",
+        "subtitle": "Ver informações dos usuários registrados",
+        "user": "Usuário",
+        "contact": "Contato",
         "subscription": "Assinatura",
         "expiration": "Expiração",
-        "registration": "Registo",
+        "registration": "Registro",
         "active": "Ativo",
         "inactive": "Inativo",
-        "noUsers": "Nenhum utilizador registado"
+        "noUsers": "Nenhum usuário registrado"
       },
       "subscriptions": {
         "title": "Assinaturas",
         "active": "Assinaturas ativas",
-        "activeDesc": "Lista de assinaturas em vigor",
+        "activeDesc": "Lista de assinaturas válidas",
         "expired": "Assinaturas expiradas",
         "expiredDesc": "Estas assinaturas devem ser desativadas",
-        "expiringSoon": "Expiram em 24h",
-        "expiredLabel": "EXPIRADAS",
+        "expiringSoon": "Expira em 24h",
+        "expiredLabel": "EXPIRADO",
         "activeLabel": "ATIVAS",
         "soonLabel": "EM BREVE",
         "cleanup": "Desativar expiradas",
         "refresh": "Atualizar",
-        "status": "Estado",
+        "status": "Status",
         "expiresSoon": "Expira em breve",
         "noActive": "Nenhuma assinatura ativa"
       },
       "cards": {
-        "title": "Cartões Virtuais",
-        "subtitle": "Consulte os cartões virtuais dos utilizadores",
+        "title": "Cartões virtuais",
+        "subtitle": "Ver cartões virtuais dos usuários",
         "holder": "TITULAR",
         "cardNumber": "Nº CARTÃO",
         "phone": "TELEFONE",
         "subscription": "ASSINATURA",
         "expires": "EXPIRA EM",
         "memberSince": "Membro desde",
-        "totalRides": "Total de viagens",
+        "totalRides": "Total viagens",
         "rides": "viagens",
         "verified": "Verificado",
         "notVerified": "Não verificado",
-        "noCards": "Nenhum cartão virtual"
+        "noCards": "Nenhum cartão virtual",
+        "active": "ATIVO",
+        "inactive": "INATIVO"
       },
       "common": {
         "loadingError": "Erro ao carregar dados",

@@ -147,15 +147,15 @@
         "cards": "Virtuelle kort"
       },
       "drivers": {
-        "title": "Chaufførstyring",
-        "subtitle": "Godkend eller deaktiver chaufførkonti",
+        "title": "Chaufførhåndtering",
+        "subtitle": "Valider eller deaktiver chauffør-konti",
         "driver": "Chauffør",
         "contact": "Kontakt",
         "vehicle": "Køretøj",
         "license": "VTC-licens",
         "status": "Status",
         "actions": "Handlinger",
-        "validated": "Godkendt",
+        "validated": "Valideret",
         "pending": "Afventer",
         "online": "Online",
         "activate": "Aktiver",
@@ -164,7 +164,7 @@
       },
       "users": {
         "title": "Brugerliste",
-        "subtitle": "Se registrerede brugeres oplysninger",
+        "subtitle": "Se registrerede brugeres information",
         "user": "Bruger",
         "contact": "Kontakt",
         "subscription": "Abonnement",
@@ -180,7 +180,7 @@
         "activeDesc": "Liste over gyldige abonnementer",
         "expired": "Udløbne abonnementer",
         "expiredDesc": "Disse abonnementer skal deaktiveres",
-        "expiringSoon": "Udløber inden 24t",
+        "expiringSoon": "Udløber om 24t",
         "expiredLabel": "UDLØBET",
         "activeLabel": "AKTIVE",
         "soonLabel": "SNART",
@@ -193,18 +193,24 @@
       "cards": {
         "title": "Virtuelle kort",
         "subtitle": "Se brugernes virtuelle kort",
-        "user": "Bruger",
-        "cardNumber": "Kortnummer",
-        "subscription": "Abonnement",
-        "validUntil": "Gyldig til",
-        "actions": "Handlinger",
-        "view": "Se",
-        "noCards": "Ingen virtuelle kort"
+        "holder": "INDEHAVER",
+        "cardNumber": "KORTNR.",
+        "phone": "TELEFON",
+        "subscription": "ABONNEMENT",
+        "expires": "UDLØBER",
+        "memberSince": "Medlem siden",
+        "totalRides": "Samlede ture",
+        "rides": "ture",
+        "verified": "Verificeret",
+        "notVerified": "Ikke verificeret",
+        "noCards": "Ingen virtuelle kort",
+        "active": "AKTIV",
+        "inactive": "INAKTIV"
       },
       "common": {
+        "loadingError": "Fejl ved indlæsning af data",
         "registeredOn": "Registreret",
-        "seats": "pladser",
-        "loadingError": "Fejl ved indlæsning af data"
+        "seats": "pladser"
       }
     }
   },

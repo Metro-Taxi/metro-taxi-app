@@ -144,11 +144,11 @@
         "drivers": "Conductores",
         "users": "Usuarios",
         "subscriptions": "Suscripciones",
-        "cards": "Tarjetas Virtuales"
+        "cards": "Tarjetas virtuales"
       },
       "drivers": {
         "title": "Gestión de conductores",
-        "subtitle": "Activa o desactiva las cuentas de los conductores",
+        "subtitle": "Validar o desactivar cuentas de conductores",
         "driver": "Conductor",
         "contact": "Contacto",
         "vehicle": "Vehículo",
@@ -160,50 +160,52 @@
         "online": "En línea",
         "activate": "Activar",
         "deactivate": "Desactivar",
-        "noDrivers": "No hay conductores registrados"
+        "noDrivers": "Ningún conductor registrado"
       },
       "users": {
         "title": "Lista de usuarios",
-        "subtitle": "Consulta la información de los usuarios registrados",
+        "subtitle": "Ver información de usuarios registrados",
         "user": "Usuario",
         "contact": "Contacto",
         "subscription": "Suscripción",
-        "expiration": "Caducidad",
+        "expiration": "Vencimiento",
         "registration": "Registro",
         "active": "Activo",
         "inactive": "Inactivo",
-        "noUsers": "No hay usuarios registrados"
+        "noUsers": "Ningún usuario registrado"
       },
       "subscriptions": {
         "title": "Suscripciones",
         "active": "Suscripciones activas",
-        "activeDesc": "Lista de suscripciones vigentes",
-        "expired": "Suscripciones caducadas",
-        "expiredDesc": "Estas suscripciones deben ser desactivadas",
-        "expiringSoon": "Caducan en 24h",
-        "expiredLabel": "CADUCADAS",
+        "activeDesc": "Lista de suscripciones válidas actualmente",
+        "expired": "Suscripciones expiradas",
+        "expiredDesc": "Estas suscripciones deben desactivarse",
+        "expiringSoon": "Expira en 24h",
+        "expiredLabel": "EXPIRADO",
         "activeLabel": "ACTIVAS",
         "soonLabel": "PRONTO",
-        "cleanup": "Desactivar caducadas",
+        "cleanup": "Desactivar expiradas",
         "refresh": "Actualizar",
         "status": "Estado",
-        "expiresSoon": "Caduca pronto",
+        "expiresSoon": "Expira pronto",
         "noActive": "No hay suscripciones activas"
       },
       "cards": {
-        "title": "Tarjetas Virtuales",
-        "subtitle": "Consulta las tarjetas virtuales de los usuarios",
+        "title": "Tarjetas virtuales",
+        "subtitle": "Ver tarjetas virtuales de usuarios",
         "holder": "TITULAR",
-        "cardNumber": "Nº TARJETA",
+        "cardNumber": "N° TARJETA",
         "phone": "TELÉFONO",
         "subscription": "SUSCRIPCIÓN",
-        "expires": "CADUCA EL",
+        "expires": "EXPIRA EL",
         "memberSince": "Miembro desde",
-        "totalRides": "Total de viajes",
+        "totalRides": "Total viajes",
         "rides": "viajes",
         "verified": "Verificado",
         "notVerified": "No verificado",
-        "noCards": "No hay tarjetas virtuales"
+        "noCards": "Sin tarjetas virtuales",
+        "active": "ACTIVO",
+        "inactive": "INACTIVO"
       },
       "common": {
         "loadingError": "Error al cargar datos",

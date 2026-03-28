@@ -133,22 +133,22 @@
       "myEarnings": "My Earnings"
     },
     "admin": {
-      "title": "Administration",
+      "title": "Verwaltung",
       "stats": {
-        "users": "Registrierte Nutzer",
+        "users": "Registrierte Benutzer",
         "drivers": "Fahrer",
         "subscriptions": "Aktive Abonnements",
         "rides": "Laufende Fahrten"
       },
       "tabs": {
         "drivers": "Fahrer",
-        "users": "Nutzer",
+        "users": "Benutzer",
         "subscriptions": "Abonnements",
         "cards": "Virtuelle Karten"
       },
       "drivers": {
         "title": "Fahrerverwaltung",
-        "subtitle": "Validieren oder deaktivieren Sie Fahrerkonten",
+        "subtitle": "Fahrerkonten validieren oder deaktivieren",
         "driver": "Fahrer",
         "contact": "Kontakt",
         "vehicle": "Fahrzeug",
@@ -160,19 +160,19 @@
         "online": "Online",
         "activate": "Aktivieren",
         "deactivate": "Deaktivieren",
-        "noDrivers": "Keine Fahrer registriert"
+        "noDrivers": "Keine registrierten Fahrer"
       },
       "users": {
-        "title": "Nutzerliste",
-        "subtitle": "Informationen zu registrierten Nutzern einsehen",
-        "user": "Nutzer",
+        "title": "Benutzerliste",
+        "subtitle": "Informationen der registrierten Benutzer anzeigen",
+        "user": "Benutzer",
         "contact": "Kontakt",
         "subscription": "Abonnement",
         "expiration": "Ablauf",
         "registration": "Registrierung",
         "active": "Aktiv",
         "inactive": "Inaktiv",
-        "noUsers": "Keine Nutzer registriert"
+        "noUsers": "Keine registrierten Benutzer"
       },
       "subscriptions": {
         "title": "Abonnements",
@@ -192,18 +192,20 @@
       },
       "cards": {
         "title": "Virtuelle Karten",
-        "subtitle": "Virtuelle Karten der Nutzer einsehen",
+        "subtitle": "Virtuelle Benutzerkarten anzeigen",
         "holder": "INHABER",
         "cardNumber": "KARTENNR.",
         "phone": "TELEFON",
         "subscription": "ABONNEMENT",
         "expires": "LÄUFT AB AM",
         "memberSince": "Mitglied seit",
-        "totalRides": "Getätigte Fahrten",
+        "totalRides": "Gesamtfahrten",
         "rides": "Fahrten",
         "verified": "Verifiziert",
         "notVerified": "Nicht verifiziert",
-        "noCards": "Keine virtuellen Karten"
+        "noCards": "Keine virtuellen Karten",
+        "active": "AKTIV",
+        "inactive": "INAKTIV"
       },
       "common": {
         "loadingError": "Fehler beim Laden der Daten",

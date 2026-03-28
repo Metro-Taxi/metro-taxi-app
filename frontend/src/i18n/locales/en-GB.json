@@ -138,7 +138,7 @@
         "users": "Registered users",
         "drivers": "Drivers",
         "subscriptions": "Active subscriptions",
-        "rides": "Ongoing rides"
+        "rides": "Rides in progress"
       },
       "tabs": {
         "drivers": "Drivers",
@@ -147,7 +147,7 @@
         "cards": "Virtual Cards"
       },
       "drivers": {
-        "title": "Driver Management",
+        "title": "Driver management",
         "subtitle": "Validate or deactivate driver accounts",
         "driver": "Driver",
         "contact": "Contact",
@@ -160,34 +160,34 @@
         "online": "Online",
         "activate": "Activate",
         "deactivate": "Deactivate",
-        "noDrivers": "No drivers registered"
+        "noDrivers": "No registered drivers"
       },
       "users": {
-        "title": "User List",
+        "title": "User list",
         "subtitle": "View registered user information",
         "user": "User",
         "contact": "Contact",
         "subscription": "Subscription",
-        "expiration": "Expiry",
+        "expiration": "Expiration",
         "registration": "Registration",
         "active": "Active",
         "inactive": "Inactive",
-        "noUsers": "No users registered"
+        "noUsers": "No registered users"
       },
       "subscriptions": {
         "title": "Subscriptions",
         "active": "Active subscriptions",
-        "activeDesc": "List of valid subscriptions",
+        "activeDesc": "List of currently valid subscriptions",
         "expired": "Expired subscriptions",
         "expiredDesc": "These subscriptions need to be deactivated",
-        "expiringSoon": "Expires in 24h",
+        "expiringSoon": "Expiring in 24h",
         "expiredLabel": "EXPIRED",
         "activeLabel": "ACTIVE",
         "soonLabel": "SOON",
         "cleanup": "Deactivate expired",
         "refresh": "Refresh",
         "status": "Status",
-        "expiresSoon": "Expires soon",
+        "expiresSoon": "Expiring soon",
         "noActive": "No active subscriptions"
       },
       "cards": {
@@ -203,7 +203,9 @@
         "rides": "rides",
         "verified": "Verified",
         "notVerified": "Not verified",
-        "noCards": "No virtual cards"
+        "noCards": "No virtual cards",
+        "active": "ACTIVE",
+        "inactive": "INACTIVE"
       },
       "common": {
         "loadingError": "Error loading data",

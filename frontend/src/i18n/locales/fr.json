@@ -175,20 +175,20 @@
     "admin": {
       "title": "Administration",
       "stats": {
-        "users": "Usagers inscrits",
+        "users": "Utilisateurs inscrits",
         "drivers": "Chauffeurs",
         "subscriptions": "Abonnements actifs",
         "rides": "Trajets en cours"
       },
       "tabs": {
         "drivers": "Chauffeurs",
-        "users": "Usagers",
+        "users": "Utilisateurs",
         "subscriptions": "Abonnements",
-        "cards": "Cartes Virtuelles"
+        "cards": "Cartes virtuelles"
       },
       "drivers": {
         "title": "Gestion des chauffeurs",
-        "subtitle": "Validez ou désactivez les comptes chauffeurs",
+        "subtitle": "Valider ou désactiver les comptes chauffeurs",
         "driver": "Chauffeur",
         "contact": "Contact",
         "vehicle": "Véhicule",
@@ -203,47 +203,49 @@
         "noDrivers": "Aucun chauffeur inscrit"
       },
       "users": {
-        "title": "Liste des usagers",
-        "subtitle": "Consultez les informations des usagers inscrits",
-        "user": "Usager",
+        "title": "Liste des utilisateurs",
+        "subtitle": "Voir les informations des utilisateurs inscrits",
+        "user": "Utilisateur",
         "contact": "Contact",
         "subscription": "Abonnement",
         "expiration": "Expiration",
         "registration": "Inscription",
         "active": "Actif",
         "inactive": "Inactif",
-        "noUsers": "Aucun usager inscrit"
+        "noUsers": "Aucun utilisateur inscrit"
       },
       "subscriptions": {
         "title": "Abonnements",
         "active": "Abonnements actifs",
-        "activeDesc": "Liste des abonnements en cours de validité",
+        "activeDesc": "Liste des abonnements actuellement valides",
         "expired": "Abonnements expirés",
         "expiredDesc": "Ces abonnements doivent être désactivés",
-        "expiringSoon": "Expirent dans 24h",
-        "expiredLabel": "EXPIRÉS",
+        "expiringSoon": "Expiration dans 24h",
+        "expiredLabel": "EXPIRÉ",
         "activeLabel": "ACTIFS",
         "soonLabel": "BIENTÔT",
-        "cleanup": "Désactiver les expirés",
+        "cleanup": "Désactiver expirés",
         "refresh": "Actualiser",
         "status": "Statut",
         "expiresSoon": "Expire bientôt",
         "noActive": "Aucun abonnement actif"
       },
       "cards": {
-        "title": "Cartes Virtuelles",
-        "subtitle": "Consultez les cartes virtuelles des usagers",
+        "title": "Cartes virtuelles",
+        "subtitle": "Voir les cartes virtuelles utilisateur",
         "holder": "TITULAIRE",
         "cardNumber": "N° CARTE",
         "phone": "TÉLÉPHONE",
         "subscription": "ABONNEMENT",
         "expires": "EXPIRE LE",
         "memberSince": "Membre depuis",
-        "totalRides": "Trajets effectués",
+        "totalRides": "Total trajets",
         "rides": "trajets",
         "verified": "Vérifié",
         "notVerified": "Non vérifié",
-        "noCards": "Aucune carte virtuelle"
+        "noCards": "Aucune carte virtuelle",
+        "active": "ACTIF",
+        "inactive": "INACTIF"
       },
       "common": {
         "loadingError": "Erreur lors du chargement des données",

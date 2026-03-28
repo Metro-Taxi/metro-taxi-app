@@ -138,17 +138,17 @@
         "users": "Utenti registrati",
         "drivers": "Autisti",
         "subscriptions": "Abbonamenti attivi",
-        "rides": "Viaggi in corso"
+        "rides": "Corse in corso"
       },
       "tabs": {
         "drivers": "Autisti",
         "users": "Utenti",
         "subscriptions": "Abbonamenti",
-        "cards": "Carte Virtuali"
+        "cards": "Carte virtuali"
       },
       "drivers": {
         "title": "Gestione autisti",
-        "subtitle": "Attiva o disattiva gli account degli autisti",
+        "subtitle": "Validare o disattivare account autisti",
         "driver": "Autista",
         "contact": "Contatto",
         "vehicle": "Veicolo",
@@ -158,13 +158,13 @@
         "validated": "Validato",
         "pending": "In attesa",
         "online": "Online",
-        "activate": "Attiva",
-        "deactivate": "Disattiva",
+        "activate": "Attivare",
+        "deactivate": "Disattivare",
         "noDrivers": "Nessun autista registrato"
       },
       "users": {
         "title": "Lista utenti",
-        "subtitle": "Consulta le informazioni degli utenti registrati",
+        "subtitle": "Visualizza informazioni degli utenti registrati",
         "user": "Utente",
         "contact": "Contatto",
         "subscription": "Abbonamento",
@@ -177,11 +177,11 @@
       "subscriptions": {
         "title": "Abbonamenti",
         "active": "Abbonamenti attivi",
-        "activeDesc": "Lista degli abbonamenti in corso di validità",
+        "activeDesc": "Lista degli abbonamenti validi",
         "expired": "Abbonamenti scaduti",
         "expiredDesc": "Questi abbonamenti devono essere disattivati",
-        "expiringSoon": "Scadono tra 24h",
-        "expiredLabel": "SCADUTI",
+        "expiringSoon": "Scade tra 24h",
+        "expiredLabel": "SCADUTO",
         "activeLabel": "ATTIVI",
         "soonLabel": "PRESTO",
         "cleanup": "Disattiva scaduti",
@@ -191,19 +191,21 @@
         "noActive": "Nessun abbonamento attivo"
       },
       "cards": {
-        "title": "Carte Virtuali",
-        "subtitle": "Consulta le carte virtuali degli utenti",
+        "title": "Carte virtuali",
+        "subtitle": "Visualizza carte virtuali utenti",
         "holder": "TITOLARE",
         "cardNumber": "N° CARTA",
         "phone": "TELEFONO",
         "subscription": "ABBONAMENTO",
         "expires": "SCADE IL",
         "memberSince": "Membro dal",
-        "totalRides": "Viaggi totali",
-        "rides": "viaggi",
+        "totalRides": "Corse totali",
+        "rides": "corse",
         "verified": "Verificato",
         "notVerified": "Non verificato",
-        "noCards": "Nessuna carta virtuale"
+        "noCards": "Nessuna carta virtuale",
+        "active": "ATTIVO",
+        "inactive": "INATTIVO"
       },
       "common": {
         "loadingError": "Errore nel caricamento dei dati",

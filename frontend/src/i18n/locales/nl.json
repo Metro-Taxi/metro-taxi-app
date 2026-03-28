@@ -144,11 +144,11 @@
         "drivers": "Chauffeurs",
         "users": "Gebruikers",
         "subscriptions": "Abonnementen",
-        "cards": "Virtuele Kaarten"
+        "cards": "Virtuele kaarten"
       },
       "drivers": {
-        "title": "Chauffeursbeheer",
-        "subtitle": "Valideer of deactiveer chauffeuraccounts",
+        "title": "Chauffeurbeheer",
+        "subtitle": "Chauffeuraccounts valideren of deactiveren",
         "driver": "Chauffeur",
         "contact": "Contact",
         "vehicle": "Voertuig",
@@ -160,7 +160,7 @@
         "online": "Online",
         "activate": "Activeren",
         "deactivate": "Deactiveren",
-        "noDrivers": "Geen chauffeurs geregistreerd"
+        "noDrivers": "Geen geregistreerde chauffeurs"
       },
       "users": {
         "title": "Gebruikerslijst",
@@ -172,7 +172,7 @@
         "registration": "Registratie",
         "active": "Actief",
         "inactive": "Inactief",
-        "noUsers": "Geen gebruikers geregistreerd"
+        "noUsers": "Geen geregistreerde gebruikers"
       },
       "subscriptions": {
         "title": "Abonnementen",
@@ -180,7 +180,7 @@
         "activeDesc": "Lijst van geldige abonnementen",
         "expired": "Verlopen abonnementen",
         "expiredDesc": "Deze abonnementen moeten worden gedeactiveerd",
-        "expiringSoon": "Verloopt binnen 24u",
+        "expiringSoon": "Verloopt over 24u",
         "expiredLabel": "VERLOPEN",
         "activeLabel": "ACTIEF",
         "soonLabel": "BINNENKORT",
@@ -191,19 +191,21 @@
         "noActive": "Geen actieve abonnementen"
       },
       "cards": {
-        "title": "Virtuele Kaarten",
-        "subtitle": "Bekijk virtuele kaarten van gebruikers",
+        "title": "Virtuele kaarten",
+        "subtitle": "Bekijk virtuele gebruikerskaarten",
         "holder": "HOUDER",
         "cardNumber": "KAARTNR.",
         "phone": "TELEFOON",
         "subscription": "ABONNEMENT",
         "expires": "VERLOOPT OP",
         "memberSince": "Lid sinds",
-        "totalRides": "Gemaakte ritten",
+        "totalRides": "Totaal ritten",
         "rides": "ritten",
         "verified": "Geverifieerd",
         "notVerified": "Niet geverifieerd",
-        "noCards": "Geen virtuele kaarten"
+        "noCards": "Geen virtuele kaarten",
+        "active": "ACTIEF",
+        "inactive": "INACTIEF"
       },
       "common": {
         "loadingError": "Fout bij laden van gegevens",

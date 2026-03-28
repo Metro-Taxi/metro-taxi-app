@@ -147,7 +147,7 @@
         "cards": "Virtuelle kort"
       },
       "drivers": {
-        "title": "Sjåføradministrasjon",
+        "title": "Sjåførhåndtering",
         "subtitle": "Valider eller deaktiver sjåførkontoer",
         "driver": "Sjåfør",
         "contact": "Kontakt",
@@ -156,7 +156,7 @@
         "status": "Status",
         "actions": "Handlinger",
         "validated": "Validert",
-        "pending": "Venter",
+        "pending": "Ventende",
         "online": "Pålogget",
         "activate": "Aktiver",
         "deactivate": "Deaktiver",
@@ -164,7 +164,7 @@
       },
       "users": {
         "title": "Brukerliste",
-        "subtitle": "Se informasjon om registrerte brukere",
+        "subtitle": "Se registrerte brukeres informasjon",
         "user": "Bruker",
         "contact": "Kontakt",
         "subscription": "Abonnement",
@@ -179,8 +179,8 @@
         "active": "Aktive abonnementer",
         "activeDesc": "Liste over gyldige abonnementer",
         "expired": "Utløpte abonnementer",
-        "expiredDesc": "Disse abonnementene bør deaktiveres",
-        "expiringSoon": "Utløper innen 24t",
+        "expiredDesc": "Disse abonnementene må deaktiveres",
+        "expiringSoon": "Utløper om 24t",
         "expiredLabel": "UTLØPT",
         "activeLabel": "AKTIVE",
         "soonLabel": "SNART",
@@ -193,18 +193,24 @@
       "cards": {
         "title": "Virtuelle kort",
         "subtitle": "Se brukernes virtuelle kort",
-        "user": "Bruker",
-        "cardNumber": "Kortnummer",
-        "subscription": "Abonnement",
-        "validUntil": "Gyldig til",
-        "actions": "Handlinger",
-        "view": "Se",
-        "noCards": "Ingen virtuelle kort"
+        "holder": "INNEHAVER",
+        "cardNumber": "KORTNR.",
+        "phone": "TELEFON",
+        "subscription": "ABONNEMENT",
+        "expires": "UTLØPER",
+        "memberSince": "Medlem siden",
+        "totalRides": "Totale turer",
+        "rides": "turer",
+        "verified": "Verifisert",
+        "notVerified": "Ikke verifisert",
+        "noCards": "Ingen virtuelle kort",
+        "active": "AKTIV",
+        "inactive": "INAKTIV"
       },
       "common": {
+        "loadingError": "Feil ved lasting av data",
         "registeredOn": "Registrert",
-        "seats": "plasser",
-        "loadingError": "Feil ved lasting av data"
+        "seats": "plasser"
       }
     }
   },

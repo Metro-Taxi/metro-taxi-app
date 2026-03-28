@@ -152,7 +152,7 @@
         "driver": "司机",
         "contact": "联系方式",
         "vehicle": "车辆",
-        "license": "VTC许可证",
+        "license": "VTC执照",
         "status": "状态",
         "actions": "操作",
         "validated": "已验证",
@@ -160,7 +160,7 @@
         "online": "在线",
         "activate": "激活",
         "deactivate": "停用",
-        "noDrivers": "暂无注册司机"
+        "noDrivers": "无注册司机"
       },
       "users": {
         "title": "用户列表",
@@ -168,16 +168,16 @@
         "user": "用户",
         "contact": "联系方式",
         "subscription": "订阅",
-        "expiration": "到期日",
-        "registration": "注册日期",
+        "expiration": "到期",
+        "registration": "注册",
         "active": "活跃",
         "inactive": "未激活",
-        "noUsers": "暂无注册用户"
+        "noUsers": "无注册用户"
       },
       "subscriptions": {
         "title": "订阅",
         "active": "活跃订阅",
-        "activeDesc": "当前有效的订阅列表",
+        "activeDesc": "有效订阅列表",
         "expired": "已过期订阅",
         "expiredDesc": "这些订阅需要停用",
         "expiringSoon": "24小时内到期",
@@ -188,23 +188,29 @@
         "refresh": "刷新",
         "status": "状态",
         "expiresSoon": "即将到期",
-        "noActive": "暂无活跃订阅"
+        "noActive": "无活跃订阅"
       },
       "cards": {
         "title": "虚拟卡",
         "subtitle": "查看用户虚拟卡",
-        "user": "用户",
+        "holder": "持卡人",
         "cardNumber": "卡号",
+        "phone": "电话",
         "subscription": "订阅",
-        "validUntil": "有效期至",
-        "actions": "操作",
-        "view": "查看",
-        "noCards": "暂无虚拟卡"
+        "expires": "到期日",
+        "memberSince": "会员自",
+        "totalRides": "总行程",
+        "rides": "行程",
+        "verified": "已验证",
+        "notVerified": "未验证",
+        "noCards": "无虚拟卡",
+        "active": "活跃",
+        "inactive": "未激活"
       },
       "common": {
+        "loadingError": "加载数据时出错",
         "registeredOn": "注册于",
-        "seats": "座位",
-        "loadingError": "加载数据时出错"
+        "seats": "座位"
       }
     }
   },

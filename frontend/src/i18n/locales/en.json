@@ -238,7 +238,9 @@
         "rides": "rides",
         "verified": "Verified",
         "notVerified": "Not verified",
-        "noCards": "No virtual cards"
+        "noCards": "No virtual cards",
+        "active": "ACTIVE",
+        "inactive": "INACTIVE"
       },
       "common": {
         "loadingError": "Error loading data",
