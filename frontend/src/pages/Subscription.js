@@ -106,27 +106,32 @@ const Subscription = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      // Set redirecting flag to prevent React updates during redirect
-      setIsRedirecting(true);
-      
-      // Small delay to ensure state update completes before redirect
-      setTimeout(() => {
+      if (response.data.url) {
+        // Set redirecting flag to prevent React updates during redirect
+        setIsRedirecting(true);
+        
+        // Redirect to Stripe
         window.location.href = response.data.url;
-      }, 100);
+      } else {
+        toast.error(t('subscription.error', 'Error creating payment session'));
+        setLoading(null);
+      }
     } catch (error) {
+      console.error('Checkout error:', error);
       const message = error.response?.data?.detail || t('subscription.error', 'Erreur lors de la création du paiement');
       toast.error(message);
       setLoading(null);
     }
   };
 
-  // Don't render anything during redirect to prevent DOM conflicts
+  // Show loading screen during redirect
   if (isRedirecting) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-[#FFD60A] mx-auto mb-4" />
-          <p className="text-white text-lg">{t('subscription.redirecting', 'Redirection vers le paiement...')}</p>
+          <div className="w-16 h-16 border-4 border-[#FFD60A] border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <p className="text-white text-xl font-semibold mb-2">{t('subscription.redirecting', 'Redirection vers le paiement...')}</p>
+          <p className="text-zinc-400 text-sm">{t('subscription.pleaseWait', 'Veuillez patienter...')}</p>
         </div>
       </div>
     );
