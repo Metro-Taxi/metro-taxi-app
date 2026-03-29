@@ -30,8 +30,11 @@ const Subscription = () => {
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [regionsLoading, setRegionsLoading] = useState(true);
   const [userSubscriptions, setUserSubscriptions] = useState([]);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
+    // Reset redirecting state on mount
+    setIsRedirecting(false);
     fetchPlans();
     fetchRegions();
     fetchUserSubscriptions();
@@ -86,8 +89,6 @@ const Subscription = () => {
   const getSubscriptionForRegion = (regionId) => {
     return userSubscriptions.find(s => s.region_id === regionId && s.is_active);
   };
-
-  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const handleSubscribe = async (planId) => {
     if (!selectedRegion) {
