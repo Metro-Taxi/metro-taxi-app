@@ -1922,6 +1922,21 @@ async def stripe_webhook(request: Request):
                             }}
                         )
                         logging.info(f"✅ Subscription activated for user {transaction['user_id']} in region {region_id}")
+                        
+                        # Send confirmation email
+                        if user:
+                            region = await db.regions.find_one({"id": region_id}, {"_id": 0})
+                            region_name = region.get("name", region_id) if region else region_id
+                            plan_display = f"{plan['name']} - {region_name}"
+                            expires_str = expires_at.strftime("%d/%m/%Y à %H:%M")
+                            user_lang = region.get("language", "fr") if region else "fr"
+                            await send_subscription_confirmation_email(
+                                user.get("email"),
+                                user.get("first_name", ""),
+                                plan_display,
+                                expires_str,
+                                user_lang
+                            )
                     else:
                         # Legacy single-region subscription
                         await db.users.update_one(
@@ -1932,6 +1947,18 @@ async def stripe_webhook(request: Request):
                                 "subscription_plan": transaction["plan_id"]
                             }}
                         )
+                        
+                        # Send confirmation email for legacy subscription
+                        user = await db.users.find_one({"id": transaction["user_id"]})
+                        if user:
+                            expires_str = expires_at.strftime("%d/%m/%Y à %H:%M")
+                            await send_subscription_confirmation_email(
+                                user.get("email"),
+                                user.get("first_name", ""),
+                                plan["name"],
+                                expires_str,
+                                "fr"
+                            )
         
         return {"status": "ok"}
     except Exception as e:
