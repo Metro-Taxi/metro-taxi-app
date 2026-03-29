@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Car, ArrowLeft, Check, CreditCard, Shield, Clock, Users, Globe, MapPin, Loader2 } from 'lucide-react';
+import { Car, ArrowLeft, Check, CreditCard, Shield, Clock, Users, Globe, MapPin, Loader2, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import axios from 'axios';
@@ -31,6 +34,16 @@ const Subscription = () => {
   const [regionsLoading, setRegionsLoading] = useState(true);
   const [userSubscriptions, setUserSubscriptions] = useState([]);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  
+  // SEPA payment states
+  const [sepaDialogOpen, setSepaDialogOpen] = useState(false);
+  const [selectedPlanForSepa, setSelectedPlanForSepa] = useState(null);
+  const [sepaForm, setSepaForm] = useState({
+    iban: '',
+    account_holder_name: '',
+    email: user?.email || ''
+  });
+  const [sepaLoading, setSepaLoading] = useState(false);
 
   useEffect(() => {
     // Reset redirecting state on mount
@@ -39,6 +52,12 @@ const Subscription = () => {
     fetchRegions();
     fetchUserSubscriptions();
   }, []);
+  
+  useEffect(() => {
+    if (user?.email) {
+      setSepaForm(prev => ({ ...prev, email: user.email }));
+    }
+  }, [user]);
 
   // Check URL for region parameter
   useEffect(() => {
@@ -122,6 +141,68 @@ const Subscription = () => {
       const message = error.response?.data?.detail || t('subscription.error', 'Erreur lors de la création du paiement');
       toast.error(message);
       setLoading(null);
+    }
+  };
+
+  // SEPA Payment functions
+  const openSepaDialog = (planId) => {
+    if (!selectedRegion) {
+      toast.error(t('regions.regionRequired', 'Please select a region first'));
+      return;
+    }
+    setSelectedPlanForSepa(planId);
+    setSepaDialogOpen(true);
+  };
+
+  const handleSepaPayment = async () => {
+    if (!sepaForm.iban || !sepaForm.account_holder_name || !sepaForm.email) {
+      toast.error(t('sepa.fillAllFields', 'Please fill all fields'));
+      return;
+    }
+
+    // Basic IBAN validation (format check)
+    const ibanClean = sepaForm.iban.replace(/\s/g, '').toUpperCase();
+    if (ibanClean.length < 15 || ibanClean.length > 34) {
+      toast.error(t('sepa.invalidIban', 'Invalid IBAN format'));
+      return;
+    }
+
+    setSepaLoading(true);
+    try {
+      const originUrl = window.location.origin;
+      const response = await axios.post(`${API}/payments/checkout/sepa`, {
+        plan_id: selectedPlanForSepa,
+        region_id: selectedRegion.id,
+        iban: ibanClean,
+        account_holder_name: sepaForm.account_holder_name,
+        email: sepaForm.email,
+        origin_url: originUrl
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.data.status === 'processing') {
+        toast.success(t('sepa.processing', 'SEPA payment initiated! You will receive a confirmation email within 5-14 business days.'));
+        setSepaDialogOpen(false);
+        // Refresh subscriptions after a short delay
+        setTimeout(() => {
+          fetchUserSubscriptions();
+        }, 2000);
+      } else if (response.data.status === 'succeeded') {
+        toast.success(t('sepa.success', 'SEPA payment successful!'));
+        setSepaDialogOpen(false);
+        fetchUserSubscriptions();
+      } else if (response.data.status === 'requires_action') {
+        toast.info(t('sepa.requiresAction', 'Additional action required'));
+      } else {
+        toast.info(response.data.message || 'Payment status: ' + response.data.status);
+      }
+    } catch (error) {
+      console.error('SEPA error:', error);
+      const message = error.response?.data?.detail || t('sepa.error', 'SEPA payment error');
+      toast.error(message);
+    } finally {
+      setSepaLoading(false);
     }
   };
 
@@ -349,6 +430,20 @@ const Subscription = () => {
                   </>
                 )}
               </Button>
+              
+              {/* SEPA Button - Only for EUR regions */}
+              {selectedRegion?.currency === 'EUR' && (
+                <Button
+                  variant="outline"
+                  onClick={() => openSepaDialog(plan.id)}
+                  className="w-full h-10 mt-2 text-sm border-zinc-700 hover:bg-zinc-800"
+                  data-testid={`sepa-${plan.id}-btn`}
+                >
+                  <Building2 className="w-4 h-4 mr-2" />
+                  {t('sepa.payWithSepa', 'Payer par prélèvement SEPA')}
+                  <span className="ml-2 text-xs text-green-400">(-4%)</span>
+                </Button>
+              )}
             </motion.div>
           ))}
         </div>
@@ -360,8 +455,8 @@ const Subscription = () => {
           transition={{ delay: 0.5 }}
           className="mt-12 text-center"
         >
-          <p className="text-zinc-500 mb-4">Paiements sécurisés acceptés</p>
-          <div className="flex justify-center gap-4">
+          <p className="text-zinc-500 mb-4">{t('subscription.securePayments', 'Paiements sécurisés acceptés')}</p>
+          <div className="flex justify-center flex-wrap gap-4">
             <div className="bg-zinc-800 px-4 py-2 rounded flex items-center gap-2">
               <span className="text-white text-sm font-medium">Visa</span>
             </div>
@@ -370,6 +465,11 @@ const Subscription = () => {
             </div>
             <div className="bg-zinc-800 px-4 py-2 rounded flex items-center gap-2">
               <span className="text-white text-sm font-medium">American Express</span>
+            </div>
+            <div className="bg-green-800/50 border border-green-600/50 px-4 py-2 rounded flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-green-400" />
+              <span className="text-green-400 text-sm font-medium">SEPA</span>
+              <span className="text-green-300 text-xs">(-4%)</span>
             </div>
           </div>
         </motion.div>
@@ -404,6 +504,106 @@ const Subscription = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* SEPA Payment Dialog */}
+      <Dialog open={sepaDialogOpen} onOpenChange={setSepaDialogOpen}>
+        <DialogContent className="bg-[#18181B] border-zinc-800 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Building2 className="w-5 h-5 text-green-400" />
+              {t('sepa.title', 'Prélèvement SEPA')}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {/* SEPA Benefits */}
+            <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
+              <p className="text-green-400 text-sm font-medium mb-1">
+                {t('sepa.saveMoney', 'Économisez ~4% sur les frais !')}
+              </p>
+              <p className="text-zinc-400 text-xs">
+                {t('sepa.sepaInfo', 'Le prélèvement SEPA est traité sous 5-14 jours ouvrés.')}
+              </p>
+            </div>
+
+            {/* Plan info */}
+            {selectedPlanForSepa && plans[selectedPlanForSepa] && (
+              <div className="bg-zinc-800/50 rounded-lg p-3 text-center">
+                <p className="text-zinc-400 text-sm">{t('sepa.selectedPlan', 'Plan sélectionné')}</p>
+                <p className="text-white font-bold text-lg">{plans[selectedPlanForSepa].name}</p>
+                <p className="text-[#FFD60A] font-bold text-2xl">{plans[selectedPlanForSepa].price}€</p>
+              </div>
+            )}
+            
+            {/* IBAN Input */}
+            <div className="space-y-2">
+              <Label className="text-zinc-300">IBAN *</Label>
+              <Input
+                value={sepaForm.iban}
+                onChange={(e) => setSepaForm(prev => ({ ...prev, iban: e.target.value.toUpperCase() }))}
+                placeholder="FR76 1234 5678 9012 3456 7890 123"
+                className="bg-zinc-900 border-zinc-700 text-white font-mono"
+                data-testid="sepa-iban-input"
+              />
+              <p className="text-xs text-zinc-500">{t('sepa.ibanHelp', 'Votre IBAN bancaire (ex: FR76...)')}</p>
+            </div>
+            
+            {/* Account Holder Name */}
+            <div className="space-y-2">
+              <Label className="text-zinc-300">{t('sepa.accountHolder', 'Titulaire du compte')} *</Label>
+              <Input
+                value={sepaForm.account_holder_name}
+                onChange={(e) => setSepaForm(prev => ({ ...prev, account_holder_name: e.target.value }))}
+                placeholder="Jean Dupont"
+                className="bg-zinc-900 border-zinc-700 text-white"
+                data-testid="sepa-name-input"
+              />
+            </div>
+            
+            {/* Email */}
+            <div className="space-y-2">
+              <Label className="text-zinc-300">Email *</Label>
+              <Input
+                type="email"
+                value={sepaForm.email}
+                onChange={(e) => setSepaForm(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="email@exemple.com"
+                className="bg-zinc-900 border-zinc-700 text-white"
+                data-testid="sepa-email-input"
+              />
+            </div>
+            
+            {/* Mandate info */}
+            <p className="text-xs text-zinc-500">
+              {t('sepa.mandateInfo', 'En confirmant, vous autorisez Metro-Taxi à débiter votre compte via SEPA Direct Debit. Un mandat sera créé automatiquement.')}
+            </p>
+            
+            {/* Actions */}
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setSepaDialogOpen(false)}
+                className="flex-1"
+              >
+                {t('common.cancel', 'Annuler')}
+              </Button>
+              <Button
+                onClick={handleSepaPayment}
+                disabled={sepaLoading}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                data-testid="confirm-sepa-btn"
+              >
+                {sepaLoading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Check className="w-4 h-4 mr-2" />
+                )}
+                {t('sepa.confirm', 'Confirmer le prélèvement')}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

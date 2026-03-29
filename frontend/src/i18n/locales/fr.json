@@ -67,6 +67,23 @@
       "launchDate": "Date de lancement"
     }
   },
+  "sepa": {
+    "payWithSepa": "Payer par prélèvement SEPA",
+    "title": "Prélèvement SEPA",
+    "saveMoney": "Économisez ~4% sur les frais !",
+    "sepaInfo": "Le prélèvement SEPA est traité sous 5-14 jours ouvrés.",
+    "selectedPlan": "Plan sélectionné",
+    "accountHolder": "Titulaire du compte",
+    "ibanHelp": "Votre IBAN bancaire (ex: FR76...)",
+    "mandateInfo": "En confirmant, vous autorisez Metro-Taxi à débiter votre compte via SEPA Direct Debit. Un mandat sera créé automatiquement.",
+    "confirm": "Confirmer le prélèvement",
+    "fillAllFields": "Veuillez remplir tous les champs",
+    "invalidIban": "Format IBAN invalide",
+    "processing": "Paiement SEPA initié ! Vous recevrez une confirmation par email sous 5-14 jours ouvrés.",
+    "success": "Paiement SEPA réussi !",
+    "requiresAction": "Action supplémentaire requise",
+    "error": "Erreur lors du paiement SEPA"
+  },
   "popup": {
     "importantTitle": "Important",
     "subscriptionRequired": "Votre abonnement doit être actif pour utiliser Métro-Taxi.",

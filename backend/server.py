@@ -1817,6 +1817,121 @@ async def create_checkout_with_region(data: CheckoutRequestWithRegion, request: 
     
     return {"url": session.url, "session_id": session.session_id, "region": region_response}
 
+# SEPA Direct Debit Payment Model
+class SepaCheckoutRequest(BaseModel):
+    plan_id: str
+    region_id: str
+    iban: str
+    account_holder_name: str
+    email: str
+    origin_url: str
+
+@api_router.post("/payments/checkout/sepa")
+async def create_sepa_checkout(data: SepaCheckoutRequest, request: Request, current_user: dict = Depends(get_current_user)):
+    """Create SEPA Direct Debit payment for subscription - Lower fees (0.35€ flat)"""
+    if data.plan_id not in SUBSCRIPTION_PLANS:
+        raise HTTPException(status_code=400, detail="Plan invalide")
+    
+    # Verify region exists and is active
+    region = await db.regions.find_one({"id": data.region_id, "is_active": True})
+    if not region:
+        raise HTTPException(status_code=400, detail="Région non disponible")
+    
+    plan = SUBSCRIPTION_PLANS[data.plan_id]
+    user_id = current_user["user_id"]
+    
+    stripe_key = os.environ.get('STRIPE_API_KEY')
+    stripe.api_key = stripe_key
+    
+    try:
+        # Create a PaymentIntent with SEPA Direct Debit
+        payment_intent = stripe.PaymentIntent.create(
+            amount=plan["price_cents"],
+            currency="eur",
+            payment_method_types=["sepa_debit"],
+            payment_method_data={
+                "type": "sepa_debit",
+                "sepa_debit": {"iban": data.iban},
+                "billing_details": {
+                    "name": data.account_holder_name,
+                    "email": data.email
+                }
+            },
+            confirm=True,
+            mandate_data={
+                "customer_acceptance": {
+                    "type": "online",
+                    "online": {
+                        "ip_address": request.client.host,
+                        "user_agent": request.headers.get("user-agent", "")
+                    }
+                }
+            },
+            metadata={
+                "user_id": user_id,
+                "plan_id": data.plan_id,
+                "region_id": data.region_id,
+                "payment_method": "sepa"
+            },
+            return_url=f"{data.origin_url}/subscription/success?payment_intent={{PAYMENT_INTENT_ID}}&region={data.region_id}"
+        )
+        
+        # Create payment transaction record
+        transaction = {
+            "id": str(uuid.uuid4()),
+            "payment_intent_id": payment_intent.id,
+            "user_id": user_id,
+            "plan_id": data.plan_id,
+            "region_id": data.region_id,
+            "amount": plan["price"],
+            "currency": "eur",
+            "payment_method": "sepa",
+            "status": "pending",
+            "payment_status": payment_intent.status,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.payment_transactions.insert_one(transaction)
+        
+        logging.info(f"SEPA PaymentIntent created: {payment_intent.id} - Status: {payment_intent.status}")
+        
+        # SEPA can be processing, succeeded, or requires_action
+        if payment_intent.status == "succeeded":
+            # Immediate success (rare for SEPA)
+            return {
+                "status": "succeeded",
+                "payment_intent_id": payment_intent.id,
+                "message": "Paiement SEPA réussi"
+            }
+        elif payment_intent.status == "processing":
+            # Normal for SEPA - payment is being processed
+            return {
+                "status": "processing",
+                "payment_intent_id": payment_intent.id,
+                "message": "Paiement SEPA en cours de traitement. Vous recevrez une confirmation par email sous 5-14 jours ouvrés."
+            }
+        elif payment_intent.status == "requires_action":
+            return {
+                "status": "requires_action",
+                "payment_intent_id": payment_intent.id,
+                "next_action": payment_intent.next_action,
+                "message": "Action supplémentaire requise"
+            }
+        else:
+            return {
+                "status": payment_intent.status,
+                "payment_intent_id": payment_intent.id
+            }
+            
+    except stripe.error.CardError as e:
+        logging.error(f"SEPA error: {e.user_message}")
+        raise HTTPException(status_code=400, detail=e.user_message)
+    except stripe.error.InvalidRequestError as e:
+        logging.error(f"SEPA invalid request: {str(e)}")
+        raise HTTPException(status_code=400, detail="IBAN invalide ou données incorrectes")
+    except Exception as e:
+        logging.error(f"SEPA payment error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erreur lors du traitement du paiement SEPA")
+
 @api_router.get("/payments/status/{session_id}")
 async def get_payment_status(session_id: str, request: Request, current_user: dict = Depends(get_current_user)):
     host_url = str(request.base_url).rstrip('/')
@@ -1963,6 +2078,112 @@ async def stripe_webhook(request: Request):
         return {"status": "ok"}
     except Exception as e:
         logging.error(f"Webhook error: {e}")
+        return {"status": "error"}
+
+@api_router.post("/webhook/stripe/sepa")
+async def stripe_sepa_webhook(request: Request):
+    """Handle SEPA payment webhooks separately"""
+    body = await request.body()
+    signature = request.headers.get("Stripe-Signature")
+    webhook_secret = os.environ.get('STRIPE_WEBHOOK_SECRET')
+    stripe_key = os.environ.get('STRIPE_API_KEY')
+    stripe.api_key = stripe_key
+    
+    try:
+        event = stripe.Webhook.construct_event(body, signature, webhook_secret)
+        logging.info(f"SEPA Webhook event: {event['type']}")
+        
+        if event['type'] == 'payment_intent.succeeded':
+            payment_intent = event['data']['object']
+            payment_intent_id = payment_intent['id']
+            metadata = payment_intent.get('metadata', {})
+            
+            # Check if this is a SEPA payment
+            if metadata.get('payment_method') == 'sepa':
+                transaction = await db.payment_transactions.find_one(
+                    {"payment_intent_id": payment_intent_id}, 
+                    {"_id": 0}
+                )
+                
+                if transaction:
+                    await db.payment_transactions.update_one(
+                        {"payment_intent_id": payment_intent_id},
+                        {"$set": {"status": "completed", "payment_status": "succeeded"}}
+                    )
+                    
+                    plan = SUBSCRIPTION_PLANS.get(transaction["plan_id"])
+                    if plan:
+                        expires_at = datetime.now(timezone.utc) + timedelta(hours=plan["duration_hours"])
+                        region_id = transaction.get("region_id")
+                        user_id = transaction.get("user_id")
+                        
+                        user = await db.users.find_one({"id": user_id})
+                        
+                        if region_id and user:
+                            # Multi-region subscription
+                            new_subscription = {
+                                "region_id": region_id,
+                                "plan_id": transaction["plan_id"],
+                                "expires_at": expires_at.isoformat(),
+                                "is_active": True,
+                                "payment_method": "sepa",
+                                "created_at": datetime.now(timezone.utc).isoformat()
+                            }
+                            
+                            existing_subs = user.get("subscriptions", [])
+                            updated = False
+                            for i, sub in enumerate(existing_subs):
+                                if sub.get("region_id") == region_id:
+                                    existing_subs[i] = new_subscription
+                                    updated = True
+                                    break
+                            
+                            if not updated:
+                                existing_subs.append(new_subscription)
+                            
+                            await db.users.update_one(
+                                {"id": user_id},
+                                {"$set": {
+                                    "subscriptions": existing_subs,
+                                    "subscription_active": True,
+                                    "subscription_expires": expires_at.isoformat(),
+                                    "subscription_plan": transaction["plan_id"]
+                                }}
+                            )
+                            
+                            logging.info(f"✅ SEPA Subscription activated for user {user_id} in region {region_id}")
+                            
+                            # Send confirmation email
+                            region = await db.regions.find_one({"id": region_id}, {"_id": 0})
+                            region_name = region.get("name", region_id) if region else region_id
+                            plan_display = f"{plan['name']} - {region_name} (SEPA)"
+                            expires_str = expires_at.strftime("%d/%m/%Y à %H:%M")
+                            user_lang = region.get("language", "fr") if region else "fr"
+                            
+                            await send_subscription_confirmation_email(
+                                user.get("email"),
+                                user.get("first_name", ""),
+                                plan_display,
+                                expires_str,
+                                user_lang
+                            )
+        
+        elif event['type'] == 'payment_intent.payment_failed':
+            payment_intent = event['data']['object']
+            payment_intent_id = payment_intent['id']
+            
+            await db.payment_transactions.update_one(
+                {"payment_intent_id": payment_intent_id},
+                {"$set": {"status": "failed", "payment_status": "failed"}}
+            )
+            logging.warning(f"SEPA payment failed: {payment_intent_id}")
+        
+        return {"status": "ok"}
+    except stripe.error.SignatureVerificationError as e:
+        logging.error(f"SEPA Webhook signature verification failed: {e}")
+        raise HTTPException(status_code=400, detail="Invalid signature")
+    except Exception as e:
+        logging.error(f"SEPA Webhook error: {e}")
         return {"status": "error"}
 
 # Driver Location Routes
