@@ -1863,11 +1863,13 @@ async def stripe_webhook(request: Request):
     host_url = str(request.base_url).rstrip('/')
     webhook_url = f"{host_url}/api/webhook/stripe"
     stripe_key = os.environ.get('STRIPE_API_KEY')
+    webhook_secret = os.environ.get('STRIPE_WEBHOOK_SECRET')
     
-    stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_url=webhook_url)
+    stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_secret=webhook_secret, webhook_url=webhook_url)
     
     try:
         webhook_response = await stripe_checkout.handle_webhook(body, signature)
+        logging.info(f"Webhook received: payment_status={webhook_response.payment_status}, session_id={webhook_response.session_id}")
         
         if webhook_response.payment_status == "paid":
             session_id = webhook_response.session_id
@@ -1919,6 +1921,7 @@ async def stripe_webhook(request: Request):
                                 "subscription_plan": transaction["plan_id"]
                             }}
                         )
+                        logging.info(f"✅ Subscription activated for user {transaction['user_id']} in region {region_id}")
                     else:
                         # Legacy single-region subscription
                         await db.users.update_one(
