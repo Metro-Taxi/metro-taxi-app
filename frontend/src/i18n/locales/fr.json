@@ -33,7 +33,39 @@
     "regionRequired": "Veuillez sélectionner une région",
     "subscriptionForRegion": "Abonnement pour",
     "activeInRegions": "Actif dans les régions",
-    "noActiveSubscription": "Pas d'abonnement actif pour cette région"
+    "noActiveSubscription": "Pas d'abonnement actif pour cette région",
+    "admin": {
+      "title": "Gestion des Régions",
+      "subtitle": "Créer, activer ou désactiver des régions de service",
+      "create": "Créer une région",
+      "createRegion": "Créer une nouvelle région",
+      "editRegion": "Modifier la région",
+      "noRegions": "Aucune région configurée",
+      "active": "Active",
+      "inactive": "Inactive",
+      "activate": "Activer",
+      "deactivate": "Désactiver",
+      "activated": "Région activée",
+      "deactivated": "Région désactivée",
+      "created": "Région créée avec succès",
+      "updated": "Région mise à jour avec succès",
+      "deleted": "Région supprimée",
+      "activateError": "Erreur lors de l'activation",
+      "deactivateError": "Erreur lors de la désactivation",
+      "saveError": "Erreur lors de la sauvegarde",
+      "deleteError": "Erreur lors de la suppression",
+      "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette région ?",
+      "fillRequired": "Veuillez remplir tous les champs obligatoires",
+      "regionId": "ID de la région",
+      "regionName": "Nom d'affichage",
+      "idHelp": "Utilisé dans les URLs (ex: paris.metro-taxi.com)",
+      "country": "Pays",
+      "currency": "Devise",
+      "language": "Langue",
+      "bounds": "Limites géographiques",
+      "boundsHelp": "Définissez la zone où le service est disponible",
+      "launchDate": "Date de lancement"
+    }
   },
   "popup": {
     "importantTitle": "Important",
@@ -194,7 +226,8 @@
         "drivers": "Chauffeurs",
         "users": "Utilisateurs",
         "subscriptions": "Abonnements",
-        "cards": "Cartes virtuelles"
+        "cards": "Cartes virtuelles",
+        "regions": "Régions"
       },
       "drivers": {
         "title": "Gestion des chauffeurs",

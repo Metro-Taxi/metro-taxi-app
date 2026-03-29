@@ -5,11 +5,14 @@ import {
   Car, Users, CreditCard, MapPin, LogOut, Menu, X, 
   Check, XCircle, Eye, UserCheck, UserX, BarChart3,
   TrendingUp, Activity, Mail, Phone, Calendar, IdCard,
-  Clock, AlertTriangle, RefreshCw, Trash2
+  Clock, AlertTriangle, RefreshCw, Trash2, Globe, Plus,
+  Power, PowerOff, Edit, Save, Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import axios from 'axios';
@@ -17,6 +20,20 @@ import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/LanguageSelector';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Country flag mapping
+const countryFlags = {
+  FR: '🇫🇷',
+  GB: '🇬🇧',
+  ES: '🇪🇸',
+  DE: '🇩🇪',
+  IT: '🇮🇹',
+  PT: '🇵🇹',
+  NL: '🇳🇱',
+  BE: '🇧🇪',
+  CH: '🇨🇭',
+  US: '🇺🇸',
+};
 
 const AdminDashboard = () => {
   const { admin, token, logout } = useAuth();
@@ -32,6 +49,22 @@ const AdminDashboard = () => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [cardDialogOpen, setCardDialogOpen] = useState(false);
   const [cleanupLoading, setCleanupLoading] = useState(false);
+  
+  // Region states
+  const [regions, setRegions] = useState([]);
+  const [regionDialogOpen, setRegionDialogOpen] = useState(false);
+  const [editingRegion, setEditingRegion] = useState(null);
+  const [regionForm, setRegionForm] = useState({
+    id: '',
+    name: '',
+    country: 'FR',
+    currency: 'EUR',
+    language: 'fr',
+    timezone: 'Europe/Paris',
+    bounds: { north: 0, south: 0, east: 0, west: 0 },
+    is_active: false
+  });
+  const [savingRegion, setSavingRegion] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -40,12 +73,13 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [statsRes, driversRes, usersRes, cardsRes, subsRes] = await Promise.all([
+      const [statsRes, driversRes, usersRes, cardsRes, subsRes, regionsRes] = await Promise.all([
         axios.get(`${API}/admin/stats`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API}/admin/drivers`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API}/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API}/admin/cards`, { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(`${API}/admin/subscriptions`, { headers: { Authorization: `Bearer ${token}` } })
+        axios.get(`${API}/admin/subscriptions`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${API}/regions`, { headers: { Authorization: `Bearer ${token}` } })
       ]);
       
       setStats(statsRes.data);
@@ -53,6 +87,7 @@ const AdminDashboard = () => {
       setUsers(usersRes.data.users || []);
       setVirtualCards(cardsRes.data.cards || []);
       setSubscriptionStats(subsRes.data);
+      setRegions(regionsRes.data || []);
     } catch (error) {
       console.error('Fetch error:', error);
       toast.error(t('dashboard.admin.common.loadingError'));
@@ -115,6 +150,118 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  // Region management functions
+  const openCreateRegionDialog = () => {
+    setEditingRegion(null);
+    setRegionForm({
+      id: '',
+      name: '',
+      country: 'FR',
+      currency: 'EUR',
+      language: 'fr',
+      timezone: 'Europe/Paris',
+      bounds: { north: 0, south: 0, east: 0, west: 0 },
+      is_active: false
+    });
+    setRegionDialogOpen(true);
+  };
+
+  const openEditRegionDialog = (region) => {
+    setEditingRegion(region);
+    setRegionForm({
+      id: region.id,
+      name: region.name,
+      country: region.country,
+      currency: region.currency,
+      language: region.language,
+      timezone: region.timezone || 'Europe/Paris',
+      bounds: region.bounds || { north: 0, south: 0, east: 0, west: 0 },
+      is_active: region.is_active
+    });
+    setRegionDialogOpen(true);
+  };
+
+  const handleRegionFormChange = (field, value) => {
+    if (field.startsWith('bounds.')) {
+      const boundField = field.split('.')[1];
+      setRegionForm(prev => ({
+        ...prev,
+        bounds: { ...prev.bounds, [boundField]: parseFloat(value) || 0 }
+      }));
+    } else {
+      setRegionForm(prev => ({ ...prev, [field]: value }));
+    }
+  };
+
+  const saveRegion = async () => {
+    if (!regionForm.id || !regionForm.name) {
+      toast.error(t('regions.admin.fillRequired', 'Please fill all required fields'));
+      return;
+    }
+
+    setSavingRegion(true);
+    try {
+      if (editingRegion) {
+        await axios.put(`${API}/admin/regions/${editingRegion.id}`, regionForm, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success(t('regions.admin.updated', 'Region updated successfully'));
+      } else {
+        await axios.post(`${API}/admin/regions`, regionForm, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success(t('regions.admin.created', 'Region created successfully'));
+      }
+      setRegionDialogOpen(false);
+      fetchData();
+    } catch (error) {
+      const message = error.response?.data?.detail || t('regions.admin.saveError', 'Error saving region');
+      toast.error(message);
+    } finally {
+      setSavingRegion(false);
+    }
+  };
+
+  const activateRegion = async (regionId) => {
+    try {
+      await axios.post(`${API}/admin/regions/${regionId}/activate`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success(t('regions.admin.activated', 'Region activated'));
+      fetchData();
+    } catch (error) {
+      toast.error(t('regions.admin.activateError', 'Error activating region'));
+    }
+  };
+
+  const deactivateRegion = async (regionId) => {
+    try {
+      await axios.post(`${API}/admin/regions/${regionId}/deactivate`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success(t('regions.admin.deactivated', 'Region deactivated'));
+      fetchData();
+    } catch (error) {
+      toast.error(t('regions.admin.deactivateError', 'Error deactivating region'));
+    }
+  };
+
+  const deleteRegion = async (regionId) => {
+    if (!window.confirm(t('regions.admin.confirmDelete', 'Are you sure you want to delete this region?'))) {
+      return;
+    }
+    try {
+      await axios.delete(`${API}/admin/regions/${regionId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success(t('regions.admin.deleted', 'Region deleted'));
+      fetchData();
+    } catch (error) {
+      const message = error.response?.data?.detail || t('regions.admin.deleteError', 'Error deleting region');
+      toast.error(message);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -245,6 +392,14 @@ const AdminDashboard = () => {
             >
               <IdCard className="w-4 h-4 mr-2" />
               {t('dashboard.admin.tabs.cards')}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="regions"
+              className="data-[state=active]:bg-[#FFD60A] data-[state=active]:text-black"
+              data-testid="regions-tab"
+            >
+              <Globe className="w-4 h-4 mr-2" />
+              {t('dashboard.admin.tabs.regions', 'Regions')}
             </TabsTrigger>
           </TabsList>
 
@@ -673,6 +828,151 @@ const AdminDashboard = () => {
               )}
             </div>
           </TabsContent>
+
+          {/* Regions Tab */}
+          <TabsContent value="regions">
+            <div className="bg-[#18181B] border border-zinc-800 rounded overflow-hidden">
+              <div className="p-4 border-b border-zinc-800 flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-bold text-white">{t('regions.admin.title', 'Region Management')}</h2>
+                  <p className="text-zinc-400 text-sm">{t('regions.admin.subtitle', 'Create, activate or deactivate service regions')}</p>
+                </div>
+                <Button 
+                  onClick={openCreateRegionDialog}
+                  className="bg-[#FFD60A] text-black hover:bg-[#FFD60A]/90"
+                  data-testid="create-region-btn"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  {t('regions.admin.create', 'Create Region')}
+                </Button>
+              </div>
+              
+              {loading ? (
+                <div className="p-8 text-center">
+                  <div className="w-8 h-8 border-4 border-[#FFD60A] border-t-transparent rounded-full animate-spin mx-auto"></div>
+                </div>
+              ) : regions.length === 0 ? (
+                <div className="p-8 text-center text-zinc-400">
+                  {t('regions.admin.noRegions', 'No regions configured')}
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                  {regions.map((region) => (
+                    <motion.div 
+                      key={region.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`relative bg-zinc-900 border-2 rounded-xl p-5 ${
+                        region.is_active ? 'border-green-500/50' : 'border-zinc-700'
+                      }`}
+                      data-testid={`region-card-${region.id}`}
+                    >
+                      {/* Status Badge */}
+                      <div className="absolute top-3 right-3">
+                        <span className={`text-xs px-2 py-1 rounded font-bold ${
+                          region.is_active 
+                            ? 'bg-green-500/20 text-green-400' 
+                            : 'bg-zinc-700 text-zinc-400'
+                        }`}>
+                          {region.is_active ? t('regions.admin.active', 'Active') : t('regions.admin.inactive', 'Inactive')}
+                        </span>
+                      </div>
+                      
+                      {/* Region Info */}
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="text-4xl">{countryFlags[region.country] || '🌍'}</span>
+                        <div>
+                          <h3 className="font-bold text-white text-lg">{region.name}</h3>
+                          <p className="text-zinc-400 text-sm">{region.id}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Stats */}
+                      <div className="grid grid-cols-2 gap-3 mb-4">
+                        <div className="bg-zinc-800 rounded p-3">
+                          <p className="text-2xl font-bold text-white">{region.driver_count || 0}</p>
+                          <p className="text-xs text-zinc-400">{t('dashboard.admin.stats.drivers', 'Drivers')}</p>
+                        </div>
+                        <div className="bg-zinc-800 rounded p-3">
+                          <p className="text-2xl font-bold text-white">{region.user_count || 0}</p>
+                          <p className="text-xs text-zinc-400">{t('dashboard.admin.stats.users', 'Users')}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Details */}
+                      <div className="space-y-2 mb-4 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-zinc-400">{t('regions.admin.currency', 'Currency')}</span>
+                          <span className="text-white font-medium">{region.currency}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-zinc-400">{t('regions.admin.language', 'Language')}</span>
+                          <span className="text-white font-medium">{region.language.toUpperCase()}</span>
+                        </div>
+                        {region.launch_date && (
+                          <div className="flex justify-between">
+                            <span className="text-zinc-400">{t('regions.admin.launchDate', 'Launch Date')}</span>
+                            <span className="text-white font-medium">{formatDate(region.launch_date)}</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Actions */}
+                      <div className="flex gap-2 pt-3 border-t border-zinc-800">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openEditRegionDialog(region)}
+                          className="flex-1"
+                          data-testid={`edit-region-${region.id}`}
+                        >
+                          <Edit className="w-4 h-4 mr-1" />
+                          {t('common.edit', 'Edit')}
+                        </Button>
+                        {region.is_active ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => deactivateRegion(region.id)}
+                            className="flex-1 text-red-400 border-red-400/50 hover:bg-red-400/10"
+                            data-testid={`deactivate-region-${region.id}`}
+                          >
+                            <PowerOff className="w-4 h-4 mr-1" />
+                            {t('regions.admin.deactivate', 'Deactivate')}
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => activateRegion(region.id)}
+                            className="flex-1 text-green-400 border-green-400/50 hover:bg-green-400/10"
+                            data-testid={`activate-region-${region.id}`}
+                          >
+                            <Power className="w-4 h-4 mr-1" />
+                            {t('regions.admin.activate', 'Activate')}
+                          </Button>
+                        )}
+                      </div>
+                      
+                      {/* Delete button (only if no drivers/users) */}
+                      {(region.driver_count === 0 && region.user_count === 0) && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteRegion(region.id)}
+                          className="w-full mt-2 text-red-400 hover:bg-red-400/10"
+                          data-testid={`delete-region-${region.id}`}
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          {t('common.delete', 'Delete')}
+                        </Button>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </TabsContent>
         </Tabs>
 
         {/* Card Detail Dialog */}
@@ -766,6 +1066,177 @@ const AdminDashboard = () => {
                 </div>
               </div>
             )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Region Create/Edit Dialog */}
+        <Dialog open={regionDialogOpen} onOpenChange={setRegionDialogOpen}>
+          <DialogContent className="bg-[#18181B] border-zinc-800 max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-white">
+                {editingRegion 
+                  ? t('regions.admin.editRegion', 'Edit Region') 
+                  : t('regions.admin.createRegion', 'Create New Region')
+                }
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-4">
+              {/* Basic Info */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-zinc-300">{t('regions.admin.regionId', 'Region ID')} *</Label>
+                  <Input
+                    value={regionForm.id}
+                    onChange={(e) => handleRegionFormChange('id', e.target.value.toLowerCase())}
+                    placeholder="paris"
+                    className="bg-zinc-900 border-zinc-700 text-white"
+                    disabled={!!editingRegion}
+                    data-testid="region-id-input"
+                  />
+                  <p className="text-xs text-zinc-500">{t('regions.admin.idHelp', 'Used in URLs (e.g., paris.metro-taxi.com)')}</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-zinc-300">{t('regions.admin.regionName', 'Display Name')} *</Label>
+                  <Input
+                    value={regionForm.name}
+                    onChange={(e) => handleRegionFormChange('name', e.target.value)}
+                    placeholder="Île-de-France"
+                    className="bg-zinc-900 border-zinc-700 text-white"
+                    data-testid="region-name-input"
+                  />
+                </div>
+              </div>
+              
+              {/* Country & Currency */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-zinc-300">{t('regions.admin.country', 'Country')}</Label>
+                  <select
+                    value={regionForm.country}
+                    onChange={(e) => handleRegionFormChange('country', e.target.value)}
+                    className="w-full h-10 px-3 rounded-md bg-zinc-900 border border-zinc-700 text-white"
+                    data-testid="region-country-select"
+                  >
+                    <option value="FR">🇫🇷 France</option>
+                    <option value="GB">🇬🇧 United Kingdom</option>
+                    <option value="ES">🇪🇸 Spain</option>
+                    <option value="DE">🇩🇪 Germany</option>
+                    <option value="IT">🇮🇹 Italy</option>
+                    <option value="PT">🇵🇹 Portugal</option>
+                    <option value="NL">🇳🇱 Netherlands</option>
+                    <option value="BE">🇧🇪 Belgium</option>
+                    <option value="CH">🇨🇭 Switzerland</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-zinc-300">{t('regions.admin.currency', 'Currency')}</Label>
+                  <select
+                    value={regionForm.currency}
+                    onChange={(e) => handleRegionFormChange('currency', e.target.value)}
+                    className="w-full h-10 px-3 rounded-md bg-zinc-900 border border-zinc-700 text-white"
+                    data-testid="region-currency-select"
+                  >
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                    <option value="CHF">CHF (Fr)</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-zinc-300">{t('regions.admin.language', 'Language')}</Label>
+                  <select
+                    value={regionForm.language}
+                    onChange={(e) => handleRegionFormChange('language', e.target.value)}
+                    className="w-full h-10 px-3 rounded-md bg-zinc-900 border border-zinc-700 text-white"
+                    data-testid="region-language-select"
+                  >
+                    <option value="fr">Français</option>
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="de">Deutsch</option>
+                    <option value="it">Italiano</option>
+                    <option value="pt">Português</option>
+                    <option value="nl">Nederlands</option>
+                  </select>
+                </div>
+              </div>
+              
+              {/* Geographic Bounds */}
+              <div className="space-y-3">
+                <Label className="text-zinc-300">{t('regions.admin.bounds', 'Geographic Bounds')}</Label>
+                <p className="text-xs text-zinc-500">{t('regions.admin.boundsHelp', 'Define the area where the service is available')}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">North (Lat)</Label>
+                    <Input
+                      type="number"
+                      step="0.0001"
+                      value={regionForm.bounds.north}
+                      onChange={(e) => handleRegionFormChange('bounds.north', e.target.value)}
+                      className="bg-zinc-900 border-zinc-700 text-white"
+                      placeholder="49.24"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">South (Lat)</Label>
+                    <Input
+                      type="number"
+                      step="0.0001"
+                      value={regionForm.bounds.south}
+                      onChange={(e) => handleRegionFormChange('bounds.south', e.target.value)}
+                      className="bg-zinc-900 border-zinc-700 text-white"
+                      placeholder="48.12"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">East (Lng)</Label>
+                    <Input
+                      type="number"
+                      step="0.0001"
+                      value={regionForm.bounds.east}
+                      onChange={(e) => handleRegionFormChange('bounds.east', e.target.value)}
+                      className="bg-zinc-900 border-zinc-700 text-white"
+                      placeholder="3.56"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-zinc-400">West (Lng)</Label>
+                    <Input
+                      type="number"
+                      step="0.0001"
+                      value={regionForm.bounds.west}
+                      onChange={(e) => handleRegionFormChange('bounds.west', e.target.value)}
+                      className="bg-zinc-900 border-zinc-700 text-white"
+                      placeholder="1.45"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Save Button */}
+              <div className="flex gap-3 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setRegionDialogOpen(false)}
+                  className="flex-1"
+                >
+                  {t('common.cancel', 'Cancel')}
+                </Button>
+                <Button
+                  onClick={saveRegion}
+                  disabled={savingRegion}
+                  className="flex-1 bg-[#FFD60A] text-black hover:bg-[#FFD60A]/90"
+                  data-testid="save-region-btn"
+                >
+                  {savingRegion ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4 mr-2" />
+                  )}
+                  {editingRegion ? t('common.save', 'Save') : t('regions.admin.create', 'Create')}
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
       </div>

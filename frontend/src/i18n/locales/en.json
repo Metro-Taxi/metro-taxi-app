@@ -34,7 +34,39 @@
     "regionRequired": "Please select a region",
     "subscriptionForRegion": "Subscription for",
     "activeInRegions": "Active in regions",
-    "noActiveSubscription": "No active subscription for this region"
+    "noActiveSubscription": "No active subscription for this region",
+    "admin": {
+      "title": "Region Management",
+      "subtitle": "Create, activate or deactivate service regions",
+      "create": "Create Region",
+      "createRegion": "Create New Region",
+      "editRegion": "Edit Region",
+      "noRegions": "No regions configured",
+      "active": "Active",
+      "inactive": "Inactive",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "activated": "Region activated",
+      "deactivated": "Region deactivated",
+      "created": "Region created successfully",
+      "updated": "Region updated successfully",
+      "deleted": "Region deleted",
+      "activateError": "Error activating region",
+      "deactivateError": "Error deactivating region",
+      "saveError": "Error saving region",
+      "deleteError": "Error deleting region",
+      "confirmDelete": "Are you sure you want to delete this region?",
+      "fillRequired": "Please fill all required fields",
+      "regionId": "Region ID",
+      "regionName": "Display Name",
+      "idHelp": "Used in URLs (e.g., paris.metro-taxi.com)",
+      "country": "Country",
+      "currency": "Currency",
+      "language": "Language",
+      "bounds": "Geographic Bounds",
+      "boundsHelp": "Define the area where the service is available",
+      "launchDate": "Launch Date"
+    }
   },
   "popup": {
     "importantTitle": "Important",
@@ -189,7 +221,8 @@
         "drivers": "Drivers",
         "users": "Users",
         "subscriptions": "Subscriptions",
-        "cards": "Virtual Cards"
+        "cards": "Virtual Cards",
+        "regions": "Regions"
       },
       "drivers": {
         "title": "Driver management",
