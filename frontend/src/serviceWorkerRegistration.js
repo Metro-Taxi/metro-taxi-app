@@ -7,19 +7,40 @@ export function registerServiceWorker() {
         .then((registration) => {
           console.log('SW registered: ', registration.scope);
           
+          // Check for updates every 5 minutes
+          setInterval(() => {
+            registration.update();
+          }, 5 * 60 * 1000);
+          
+          // Check for updates on page focus
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+              registration.update();
+            }
+          });
+          
           // Check for updates
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // New update available
-                console.log('New content available, please refresh.');
-                // Optionally show a toast/notification to the user
-                if (window.confirm('Une nouvelle version de Métro-Taxi est disponible. Voulez-vous rafraîchir?')) {
+                // New update available - auto-refresh for better UX
+                console.log('New content available, refreshing...');
+                
+                // Skip waiting and activate new service worker immediately
+                newWorker.postMessage({ type: 'SKIP_WAITING' });
+                
+                // Show notification and refresh
+                if (window.confirm('Une nouvelle version de Métro-Taxi est disponible. Cliquez OK pour mettre à jour.')) {
                   window.location.reload();
                 }
               }
             });
+          });
+          
+          // Listen for controller change and refresh
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            window.location.reload();
           });
         })
         .catch((error) => {

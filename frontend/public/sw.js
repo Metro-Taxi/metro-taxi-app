@@ -1,7 +1,7 @@
-const CACHE_NAME = 'metro-taxi-v3';
-const STATIC_CACHE = 'metro-taxi-static-v3';
-const DYNAMIC_CACHE = 'metro-taxi-dynamic-v3';
-const API_CACHE = 'metro-taxi-api-v2';
+const CACHE_NAME = 'metro-taxi-v4';
+const STATIC_CACHE = 'metro-taxi-static-v4';
+const DYNAMIC_CACHE = 'metro-taxi-dynamic-v4';
+const API_CACHE = 'metro-taxi-api-v3';
 
 // Resources to cache immediately
 const STATIC_ASSETS = [
@@ -23,9 +23,17 @@ const CACHEABLE_API_ROUTES = [
   '/api/notifications'
 ];
 
+// Listen for skip waiting message from main thread
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('[Service Worker] Received SKIP_WAITING, activating new version...');
+    self.skipWaiting();
+  }
+});
+
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing...');
+  console.log('[Service Worker] Installing v4...');
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then((cache) => {
@@ -34,6 +42,7 @@ self.addEventListener('install', (event) => {
       })
       .then(() => {
         console.log('[Service Worker] Install complete');
+        // Auto skip waiting for faster updates
         return self.skipWaiting();
       })
       .catch((error) => {
