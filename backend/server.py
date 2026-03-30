@@ -812,6 +812,7 @@ class DriverRegisterWithRegion(BaseModel):
     vehicle_type: str
     seats: int
     vtc_license: str
+    tax_id: Optional[str] = None  # SIRET (FR), NIF (PT/ES), etc.
     region_id: str  # Required for drivers
     iban: Optional[str] = None
     bic: Optional[str] = None
@@ -1515,6 +1516,7 @@ async def register_driver(data: DriverRegisterWithRegion, request: Request):
         "vehicle_type": data.vehicle_type,
         "seats": data.seats,
         "vtc_license": data.vtc_license,
+        "tax_id": data.tax_id,  # SIRET (FR), NIF (PT/ES), etc.
         "iban": data.iban,
         "bic": data.bic,
         "region_id": data.region_id,  # Associate driver with region
@@ -2090,13 +2092,32 @@ async def stripe_webhook(request: Request):
                     
                     plan = SUBSCRIPTION_PLANS.get(transaction["plan_id"])
                     if plan:
-                        expires_at = datetime.now(timezone.utc) + timedelta(hours=plan["duration_hours"])
+                        now = datetime.now(timezone.utc)
                         region_id = transaction.get("region_id")
                         user_id = transaction.get("user_id")
                         
                         user = await db.users.find_one({"id": user_id})
                         
                         if region_id and user:
+                            # Check if user has an existing active subscription for this region
+                            existing_subs = user.get("subscriptions", [])
+                            base_date = now  # Default: start from now
+                            
+                            for sub in existing_subs:
+                                if sub.get("region_id") == region_id:
+                                    try:
+                                        existing_expires = datetime.fromisoformat(sub.get("expires_at", "").replace('Z', '+00:00'))
+                                        # If subscription is still active, chain the new one after it
+                                        if existing_expires > now:
+                                            base_date = existing_expires
+                                            logging.info(f"Chaining subscription: new period starts at {base_date.isoformat()}")
+                                    except (ValueError, TypeError):
+                                        pass
+                                    break
+                            
+                            # Calculate expiration from base_date (either now or end of current subscription)
+                            expires_at = base_date + timedelta(hours=plan["duration_hours"])
+                            
                             # Multi-region subscription
                             new_subscription = {
                                 "region_id": region_id,
@@ -2104,10 +2125,9 @@ async def stripe_webhook(request: Request):
                                 "expires_at": expires_at.isoformat(),
                                 "is_active": True,
                                 "payment_method": "card",
-                                "created_at": datetime.now(timezone.utc).isoformat()
+                                "created_at": now.isoformat()
                             }
                             
-                            existing_subs = user.get("subscriptions", [])
                             updated = False
                             for i, sub in enumerate(existing_subs):
                                 if sub.get("region_id") == region_id:
@@ -2205,13 +2225,32 @@ async def stripe_sepa_webhook(request: Request):
                     
                     plan = SUBSCRIPTION_PLANS.get(transaction["plan_id"])
                     if plan:
-                        expires_at = datetime.now(timezone.utc) + timedelta(hours=plan["duration_hours"])
+                        now = datetime.now(timezone.utc)
                         region_id = transaction.get("region_id")
                         user_id = transaction.get("user_id")
                         
                         user = await db.users.find_one({"id": user_id})
                         
                         if region_id and user:
+                            # Check if user has an existing active subscription for this region
+                            existing_subs = user.get("subscriptions", [])
+                            base_date = now  # Default: start from now
+                            
+                            for sub in existing_subs:
+                                if sub.get("region_id") == region_id:
+                                    try:
+                                        existing_expires = datetime.fromisoformat(sub.get("expires_at", "").replace('Z', '+00:00'))
+                                        # If subscription is still active, chain the new one after it
+                                        if existing_expires > now:
+                                            base_date = existing_expires
+                                            logging.info(f"SEPA: Chaining subscription: new period starts at {base_date.isoformat()}")
+                                    except (ValueError, TypeError):
+                                        pass
+                                    break
+                            
+                            # Calculate expiration from base_date
+                            expires_at = base_date + timedelta(hours=plan["duration_hours"])
+                            
                             # Multi-region subscription
                             new_subscription = {
                                 "region_id": region_id,
@@ -2219,10 +2258,9 @@ async def stripe_sepa_webhook(request: Request):
                                 "expires_at": expires_at.isoformat(),
                                 "is_active": True,
                                 "payment_method": "sepa",
-                                "created_at": datetime.now(timezone.utc).isoformat()
+                                "created_at": now.isoformat()
                             }
                             
-                            existing_subs = user.get("subscriptions", [])
                             updated = False
                             for i, sub in enumerate(existing_subs):
                                 if sub.get("region_id") == region_id:

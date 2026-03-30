@@ -21,6 +21,37 @@ const countryFlags = {
   DE: '🇩🇪',
   IT: '🇮🇹',
   PT: '🇵🇹',
+  NL: '🇳🇱',
+  BE: '🇧🇪',
+  CH: '🇨🇭',
+  SE: '🇸🇪',
+  NO: '🇳🇴',
+  DK: '🇩🇰',
+  SA: '🇸🇦',
+  RU: '🇷🇺',
+  CN: '🇨🇳',
+  IN: '🇮🇳',
+};
+
+// Tax ID labels by country (in local language)
+const taxIdLabels = {
+  FR: { label: 'Numéro SIRET', placeholder: 'Ex: 123 456 789 00012', format: 'SIRET (14 chiffres)' },
+  ES: { label: 'NIF / NIE', placeholder: 'Ex: 12345678A', format: 'NIF/NIE' },
+  PT: { label: 'NIF', placeholder: 'Ex: 123456789', format: 'NIF (9 chiffres)' },
+  DE: { label: 'Steuernummer', placeholder: 'Ex: 12/345/67890', format: 'Steuernummer' },
+  IT: { label: 'Partita IVA', placeholder: 'Ex: IT12345678901', format: 'Partita IVA' },
+  GB: { label: 'VAT Number / UTR', placeholder: 'Ex: GB123456789', format: 'VAT/UTR' },
+  NL: { label: 'BTW-nummer', placeholder: 'Ex: NL123456789B01', format: 'BTW-nummer' },
+  BE: { label: 'Numéro TVA / BTW', placeholder: 'Ex: BE0123456789', format: 'TVA/BTW' },
+  CH: { label: 'UID / MwSt-Nr', placeholder: 'Ex: CHE-123.456.789', format: 'UID' },
+  SE: { label: 'Organisationsnummer', placeholder: 'Ex: 5501011234', format: 'Org.nummer' },
+  NO: { label: 'Organisasjonsnummer', placeholder: 'Ex: 123456789', format: 'Org.nummer' },
+  DK: { label: 'CVR-nummer', placeholder: 'Ex: 12345678', format: 'CVR' },
+  SA: { label: 'رقم التسجيل الضريبي', placeholder: 'Ex: 300000000000003', format: 'VAT Number' },
+  RU: { label: 'ИНН', placeholder: 'Ex: 1234567890', format: 'ИНН' },
+  CN: { label: '统一社会信用代码', placeholder: 'Ex: 91110000...', format: '统一社会信用代码' },
+  IN: { label: 'GST Number / PAN', placeholder: 'Ex: ABCDE1234F', format: 'GST/PAN' },
+  DEFAULT: { label: 'Tax ID', placeholder: 'Enter your tax ID', format: 'Tax ID' }
 };
 
 const RegisterDriver = () => {
@@ -36,6 +67,7 @@ const RegisterDriver = () => {
     vehicle_type: '',
     seats: 4,
     vtc_license: '',
+    tax_id: '',
     iban: '',
     bic: '',
     region_id: ''
@@ -45,8 +77,17 @@ const RegisterDriver = () => {
   const [regions, setRegions] = useState([]);
   const [regionsLoading, setRegionsLoading] = useState(true);
   const [detectingLocation, setDetectingLocation] = useState(false);
+  const [selectedRegion, setSelectedRegion] = useState(null);
   const { registerDriver } = useAuth();
   const navigate = useNavigate();
+
+  // Get tax ID label based on selected region's country
+  const getTaxIdConfig = () => {
+    if (selectedRegion && selectedRegion.country) {
+      return taxIdLabels[selectedRegion.country] || taxIdLabels.DEFAULT;
+    }
+    return taxIdLabels.DEFAULT;
+  };
 
   useEffect(() => {
     fetchRegions();
@@ -59,6 +100,7 @@ const RegisterDriver = () => {
       // Auto-select if only one region
       if (response.data.length === 1) {
         setFormData(prev => ({ ...prev, region_id: response.data[0].id }));
+        setSelectedRegion(response.data[0]);
       }
     } catch (error) {
       console.error('Error fetching regions:', error);
@@ -90,6 +132,7 @@ const RegisterDriver = () => {
 
       if (response.data.detected && response.data.region) {
         setFormData(prev => ({ ...prev, region_id: response.data.region.id }));
+        setSelectedRegion(response.data.region);
         toast.success(t('regions.detected', 'Region detected: ') + response.data.region.name);
       } else {
         toast.info(t('regions.notDetected', 'No active region found for your location'));
@@ -108,6 +151,11 @@ const RegisterDriver = () => {
 
   const handleSelectChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
+    // Update selectedRegion when region changes
+    if (name === 'region_id') {
+      const region = regions.find(r => r.id === value);
+      setSelectedRegion(region || null);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -383,6 +431,30 @@ const RegisterDriver = () => {
                       data-testid="driver-license-input"
                     />
                   </div>
+                </div>
+                
+                {/* Tax ID field - changes based on country */}
+                <div className="space-y-2">
+                  <Label htmlFor="tax_id" className="text-zinc-300">
+                    {getTaxIdConfig().label}
+                    <span className="text-zinc-500 text-xs ml-2">({getTaxIdConfig().format})</span>
+                  </Label>
+                  <div className="relative">
+                    <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                    <Input
+                      id="tax_id"
+                      name="tax_id"
+                      value={formData.tax_id}
+                      onChange={handleChange}
+                      placeholder={getTaxIdConfig().placeholder}
+                      className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
+                      required
+                      data-testid="driver-tax-id-input"
+                    />
+                  </div>
+                  {!selectedRegion && (
+                    <p className="text-amber-400 text-xs">{t('driverRegister.selectRegionForTaxId', 'Sélectionnez une région pour voir le format requis')}</p>
+                  )}
                 </div>
               </div>
             </div>
