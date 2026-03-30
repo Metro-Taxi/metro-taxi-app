@@ -1801,6 +1801,7 @@ async def create_checkout_with_region(data: CheckoutRequestWithRegion, request: 
     # ==========================================
     # PROTECTION DOUBLE PAIEMENT (A)
     # Vérifier si l'utilisateur a déjà un abonnement actif pour cette région
+    # Permet le renouvellement si l'abonnement expire dans moins de 48h
     # ==========================================
     user = await db.users.find_one({"id": user_id}, {"_id": 0})
     if user:
@@ -1811,11 +1812,13 @@ async def create_checkout_with_region(data: CheckoutRequestWithRegion, request: 
                 try:
                     expires_str = sub.get("expires_at", "")
                     expires = datetime.fromisoformat(expires_str.replace('Z', '+00:00'))
-                    if expires > now:
-                        hours_remaining = round((expires - now).total_seconds() / 3600)
+                    hours_remaining = (expires - now).total_seconds() / 3600
+                    
+                    # Permettre le renouvellement si expire dans moins de 48h
+                    if expires > now and hours_remaining > 48:
                         raise HTTPException(
                             status_code=400, 
-                            detail=f"Vous avez déjà un abonnement actif pour cette région (expire dans {hours_remaining}h). Connectez-vous sur vos autres appareils avec le même email pour y accéder."
+                            detail=f"Vous avez déjà un abonnement actif pour cette région (expire dans {round(hours_remaining)}h). Connectez-vous sur vos autres appareils avec le même email pour y accéder."
                         )
                 except (ValueError, TypeError):
                     pass
@@ -1904,6 +1907,7 @@ async def create_sepa_checkout(data: SepaCheckoutRequest, request: Request, curr
     # ==========================================
     # PROTECTION DOUBLE PAIEMENT (A)
     # Vérifier si l'utilisateur a déjà un abonnement actif pour cette région
+    # Permet le renouvellement si l'abonnement expire dans moins de 48h
     # ==========================================
     user = await db.users.find_one({"id": user_id}, {"_id": 0})
     if user:
@@ -1914,11 +1918,13 @@ async def create_sepa_checkout(data: SepaCheckoutRequest, request: Request, curr
                 try:
                     expires_str = sub.get("expires_at", "")
                     expires = datetime.fromisoformat(expires_str.replace('Z', '+00:00'))
-                    if expires > now:
-                        hours_remaining = round((expires - now).total_seconds() / 3600)
+                    hours_remaining = (expires - now).total_seconds() / 3600
+                    
+                    # Permettre le renouvellement si expire dans moins de 48h
+                    if expires > now and hours_remaining > 48:
                         raise HTTPException(
                             status_code=400, 
-                            detail=f"Vous avez déjà un abonnement actif pour cette région (expire dans {hours_remaining}h). Connectez-vous sur vos autres appareils avec le même email pour y accéder."
+                            detail=f"Vous avez déjà un abonnement actif pour cette région (expire dans {round(hours_remaining)}h). Connectez-vous sur vos autres appareils avec le même email pour y accéder."
                         )
                 except (ValueError, TypeError):
                     pass
