@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Car, ArrowLeft, User, Phone, Mail, CreditCard, Calendar, Shield, QrCode } from 'lucide-react';
+import { Car, ArrowLeft, User, Phone, Mail, CreditCard, Calendar, Shield, QrCode, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import axios from 'axios';
@@ -11,10 +11,12 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const Profile = () => {
   const { user, token } = useAuth();
   const [virtualCard, setVirtualCard] = useState(null);
+  const [userRegions, setUserRegions] = useState([]);
 
   useEffect(() => {
     if (user?.id) {
       fetchVirtualCard();
+      fetchUserRegions();
     }
   }, [user]);
 
@@ -26,6 +28,22 @@ const Profile = () => {
       setVirtualCard(response.data.card);
     } catch (error) {
       console.error('Error fetching virtual card:', error);
+    }
+  };
+
+  const fetchUserRegions = async () => {
+    try {
+      // Get user's active subscriptions with region info
+      const subsResponse = await axios.get(`${API}/subscription/regions`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Filter only active subscriptions and map to region info
+      const activeRegions = (subsResponse.data.subscriptions || [])
+        .filter(sub => sub.is_active)
+        .map(sub => sub.region || { name: sub.region_id, region_id: sub.region_id });
+      setUserRegions(activeRegions);
+    } catch (error) {
+      console.error('Error fetching regions:', error);
     }
   };
 
@@ -182,6 +200,23 @@ const Profile = () => {
                 <p className="text-white font-medium">{formatDate(user?.created_at)}</p>
               </div>
             </div>
+
+            {/* Régions avec abonnement */}
+            {userRegions.length > 0 && (
+              <div className="flex items-center gap-4 p-4 bg-zinc-900 rounded">
+                <Globe className="w-5 h-5 text-zinc-400" />
+                <div>
+                  <p className="text-zinc-400 text-sm">Région(s) active(s)</p>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {userRegions.map((region, index) => (
+                      <span key={index} className="px-2 py-1 bg-[#FFD60A]/20 text-[#FFD60A] rounded text-sm font-medium">
+                        {region.name || region.region_id}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </motion.div>
 

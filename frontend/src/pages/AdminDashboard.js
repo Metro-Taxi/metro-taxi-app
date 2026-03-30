@@ -6,7 +6,7 @@ import {
   Check, XCircle, Eye, UserCheck, UserX, BarChart3,
   TrendingUp, Activity, Mail, Phone, Calendar, IdCard,
   Clock, AlertTriangle, RefreshCw, Trash2, Globe, Plus,
-  Power, PowerOff, Edit, Save, Loader2
+  Power, PowerOff, Edit, Save, Loader2, Banknote, Send
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -65,6 +65,12 @@ const AdminDashboard = () => {
     is_active: false
   });
   const [savingRegion, setSavingRegion] = useState(false);
+  
+  // Payout states
+  const [pendingPayouts, setPendingPayouts] = useState([]);
+  const [payoutHistory, setPayoutHistory] = useState([]);
+  const [processingPayout, setProcessingPayout] = useState(null);
+  const [processingAllPayouts, setProcessingAllPayouts] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -73,13 +79,15 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [statsRes, driversRes, usersRes, cardsRes, subsRes, regionsRes] = await Promise.all([
+      const [statsRes, driversRes, usersRes, cardsRes, subsRes, regionsRes, earningsRes, payoutsRes] = await Promise.all([
         axios.get(`${API}/admin/stats`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API}/admin/drivers`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API}/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API}/admin/cards`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API}/admin/subscriptions`, { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(`${API}/regions`, { headers: { Authorization: `Bearer ${token}` } })
+        axios.get(`${API}/regions`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${API}/admin/driver-earnings`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: { earnings: [] } })),
+        axios.get(`${API}/admin/payouts-history`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: { payouts: [] } }))
       ]);
       
       setStats(statsRes.data);
@@ -88,6 +96,8 @@ const AdminDashboard = () => {
       setVirtualCards(cardsRes.data.cards || []);
       setSubscriptionStats(subsRes.data);
       setRegions(regionsRes.data || []);
+      setPendingPayouts(earningsRes.data.earnings?.filter(e => e.payout_status === 'pending') || []);
+      setPayoutHistory(payoutsRes.data.payouts || []);
     } catch (error) {
       console.error('Fetch error:', error);
       toast.error(t('dashboard.admin.common.loadingError'));
@@ -117,6 +127,41 @@ const AdminDashboard = () => {
       fetchData();
     } catch (error) {
       toast.error(t('common.activateError'));
+    }
+  };
+
+  // Payout functions
+  const processDriverPayout = async (driverId) => {
+    setProcessingPayout(driverId);
+    try {
+      const response = await axios.post(`${API}/admin/stripe-connect/process-payout/${driverId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success(response.data.message || t('dashboard.admin.payouts.success', 'Virement effectué'));
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('dashboard.admin.payouts.error', 'Erreur lors du virement'));
+    } finally {
+      setProcessingPayout(null);
+    }
+  };
+
+  const processAllPayouts = async () => {
+    if (!window.confirm(t('dashboard.admin.payouts.confirmAll', 'Êtes-vous sûr de vouloir effectuer tous les virements en attente ?'))) {
+      return;
+    }
+    setProcessingAllPayouts(true);
+    try {
+      const response = await axios.post(`${API}/admin/stripe-connect/process-all-payouts`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const { processed_count, total_amount, errors_count } = response.data;
+      toast.success(t('dashboard.admin.payouts.allSuccess', `${processed_count} virements effectués (€${total_amount?.toFixed(2)}). ${errors_count} erreurs.`));
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('dashboard.admin.payouts.allError', 'Erreur lors des virements'));
+    } finally {
+      setProcessingAllPayouts(false);
     }
   };
 
@@ -400,6 +445,14 @@ const AdminDashboard = () => {
             >
               <Globe className="w-4 h-4 mr-2" />
               {t('dashboard.admin.tabs.regions', 'Regions')}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="payouts"
+              className="data-[state=active]:bg-[#FFD60A] data-[state=active]:text-black"
+              data-testid="payouts-tab"
+            >
+              <Banknote className="w-4 h-4 mr-2" />
+              {t('dashboard.admin.tabs.payouts', 'Virements')}
             </TabsTrigger>
           </TabsList>
 
@@ -971,6 +1024,123 @@ const AdminDashboard = () => {
                   ))}
                 </div>
               )}
+            </div>
+          </TabsContent>
+
+          {/* Payouts Tab */}
+          <TabsContent value="payouts">
+            <div className="bg-[#18181B] border border-zinc-800 rounded overflow-hidden">
+              <div className="p-4 border-b border-zinc-800 flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-bold text-white">{t('dashboard.admin.payouts.title', 'Virements Chauffeurs')}</h2>
+                  <p className="text-zinc-400 text-sm">{t('dashboard.admin.payouts.subtitle', 'Gérez les virements vers les chauffeurs (Date automatique: le 15 du mois)')}</p>
+                </div>
+                <Button
+                  onClick={processAllPayouts}
+                  disabled={processingAllPayouts || pendingPayouts.length === 0}
+                  className="bg-[#FFD60A] text-black hover:bg-[#e6c109]"
+                  data-testid="process-all-payouts-btn"
+                >
+                  {processingAllPayouts ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4 mr-2" />
+                  )}
+                  {t('dashboard.admin.payouts.processAll', 'Effectuer tous les virements')}
+                </Button>
+              </div>
+              
+              {/* Pending Payouts */}
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-white mb-4">{t('dashboard.admin.payouts.pending', 'Virements en attente')}</h3>
+                {loading ? (
+                  <div className="p-8 text-center">
+                    <div className="w-8 h-8 border-4 border-[#FFD60A] border-t-transparent rounded-full animate-spin mx-auto"></div>
+                  </div>
+                ) : pendingPayouts.length === 0 ? (
+                  <div className="p-8 text-center text-zinc-400">
+                    {t('dashboard.admin.payouts.noPending', 'Aucun virement en attente')}
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-zinc-800">
+                          <th className="text-left p-3 text-zinc-400">{t('dashboard.admin.payouts.driver', 'Chauffeur')}</th>
+                          <th className="text-left p-3 text-zinc-400">{t('dashboard.admin.payouts.month', 'Mois')}</th>
+                          <th className="text-left p-3 text-zinc-400">{t('dashboard.admin.payouts.km', 'KM')}</th>
+                          <th className="text-left p-3 text-zinc-400">{t('dashboard.admin.payouts.rides', 'Trajets')}</th>
+                          <th className="text-left p-3 text-zinc-400">{t('dashboard.admin.payouts.amount', 'Montant')}</th>
+                          <th className="text-left p-3 text-zinc-400">{t('dashboard.admin.payouts.actions', 'Actions')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pendingPayouts.map((payout, index) => (
+                          <tr key={index} className="border-b border-zinc-800/50 hover:bg-zinc-800/30">
+                            <td className="p-3 text-white">{payout.driver_name || payout.driver_id}</td>
+                            <td className="p-3 text-zinc-300">{payout.month}</td>
+                            <td className="p-3 text-zinc-300">{payout.total_km?.toFixed(1)} km</td>
+                            <td className="p-3 text-zinc-300">{payout.rides_count}</td>
+                            <td className="p-3 text-[#FFD60A] font-bold">€{payout.total_revenue?.toFixed(2)}</td>
+                            <td className="p-3">
+                              <Button
+                                size="sm"
+                                onClick={() => processDriverPayout(payout.driver_id)}
+                                disabled={processingPayout === payout.driver_id}
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                                data-testid={`payout-btn-${payout.driver_id}`}
+                              >
+                                {processingPayout === payout.driver_id ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <Send className="w-4 h-4" />
+                                )}
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
+              {/* Payout History */}
+              <div className="p-4 border-t border-zinc-800">
+                <h3 className="text-lg font-semibold text-white mb-4">{t('dashboard.admin.payouts.history', 'Historique des virements')}</h3>
+                {payoutHistory.length === 0 ? (
+                  <div className="p-4 text-center text-zinc-400">
+                    {t('dashboard.admin.payouts.noHistory', 'Aucun historique de virement')}
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-zinc-800">
+                          <th className="text-left p-3 text-zinc-400">{t('dashboard.admin.payouts.date', 'Date')}</th>
+                          <th className="text-left p-3 text-zinc-400">{t('dashboard.admin.payouts.driver', 'Chauffeur')}</th>
+                          <th className="text-left p-3 text-zinc-400">{t('dashboard.admin.payouts.amount', 'Montant')}</th>
+                          <th className="text-left p-3 text-zinc-400">{t('dashboard.admin.payouts.status', 'Statut')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {payoutHistory.slice(0, 20).map((payout, index) => (
+                          <tr key={index} className="border-b border-zinc-800/50">
+                            <td className="p-3 text-zinc-300">{new Date(payout.created_at).toLocaleDateString('fr-FR')}</td>
+                            <td className="p-3 text-white">{payout.driver_name}</td>
+                            <td className="p-3 text-[#FFD60A] font-bold">€{payout.total_revenue?.toFixed(2)}</td>
+                            <td className="p-3">
+                              <span className="px-2 py-1 rounded text-xs bg-green-600/20 text-green-400">
+                                {payout.status === 'transferred' ? t('dashboard.admin.payouts.transferred', 'Transféré') : payout.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             </div>
           </TabsContent>
         </Tabs>

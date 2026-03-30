@@ -159,18 +159,22 @@ london.metro-taxi.com → CNAME → votre-app.emergent.host
 - `payout_history` - Historique virements
 
 ## 📅 Dernière Mise à Jour
-**30/03/2026**
-- ✅ **Bug d'arrondi Stripe corrigé** : Le montant 16,99€ s'affichait 16,98€ sur Stripe. Cause : division flottante. Solution : passage direct du montant en centimes (`price_cents`) au SDK Stripe natif.
-- ✅ **Migration SDK Stripe** : Remplacement du wrapper `emergentintegrations` par le SDK Python `stripe` natif pour la création de sessions Checkout et la validation des webhooks.
-- ✅ **Erreur de syntaxe corrigée** : Un `}` orphelin dans le webhook Stripe a été réparé (dictionnaire `new_subscription` tronqué).
-- ✅ **Refactoring modulaire Phase 1** :
-  - `server.py` réduit de 5247 à 5070 lignes (-177 lignes)
-  - `/app/backend/routes/regions.py` - Toutes les routes `/regions/*` et `/admin/regions/*`
-  - `/app/backend/services/auth.py` - Service d'authentification JWT
-  - `/app/backend/models/schemas.py` - Tous les modèles Pydantic
-  - `/app/backend/config.py` - Configuration centralisée
-  - `/app/backend/database.py` - Connexion MongoDB
-  - `/app/backend/utils/helpers.py` - Fonctions utilitaires
+**30/03/2026 - Session 2**
+- ✅ **Date de virement automatique changée** : 10 → **15** du mois
+- ✅ **Onglet Virements Admin** : Ajout d'un nouvel onglet dans le dashboard admin avec :
+  - Bouton "Effectuer tous les virements" (manuel)
+  - Tableau des virements en attente avec bouton de virement individuel
+  - Historique des virements effectués
+- ✅ **Région affichée dans le profil** : Badge avec le nom de la région dans les informations personnelles
+- ✅ **Région affichée dans le dashboard chauffeur** : Section "Région" dans le menu latéral
+- ✅ **Champ de recherche d'adresse** : Autocomplétion avec Nominatim (OpenStreetMap) pour définir la destination
+  - Recherche en temps réel avec suggestions
+  - Option de cliquer sur la carte conservée
+
+**30/03/2026 - Session 1**
+- ✅ **Bug d'arrondi Stripe corrigé** : Le montant 16,99€ s'affichait 16,98€ sur Stripe
+- ✅ **Migration SDK Stripe** : emergentintegrations → SDK Python `stripe` natif
+- ✅ **Refactoring modulaire Phase 1** : Routes `/regions/*` migrées vers `routes/regions.py`
 
 **28/03/2026**
 - ✅ **Traductions Dashboard Admin vérifiées** : Toutes les langues (EN, ES, etc.) correctement traduites

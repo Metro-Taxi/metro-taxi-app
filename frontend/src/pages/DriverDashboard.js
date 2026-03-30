@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, User, LogOut, Menu, X, Power, MapPin, Check, XCircle, Users, Navigation, Wallet, ArrowLeft } from 'lucide-react';
+import { Car, User, LogOut, Menu, X, Power, MapPin, Check, XCircle, Users, Navigation, Wallet, ArrowLeft, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -270,6 +270,15 @@ const DriverDashboard = () => {
                   <p className="text-zinc-400 text-sm">{t('dashboard.driver.availableSeats')}</p>
                   <p className="text-[#FFD60A] font-bold text-2xl">{availableSeats} / {driver?.seats}</p>
                 </div>
+                {driver?.region_id && (
+                  <div className="bg-zinc-900 p-4 rounded border border-zinc-800">
+                    <p className="text-zinc-400 text-sm flex items-center gap-2">
+                      <Globe className="w-4 h-4" />
+                      {t('dashboard.driver.region', 'Région')}
+                    </p>
+                    <p className="text-[#FFD60A] font-medium capitalize">{driver.region_id}</p>
+                  </div>
+                )}
               </div>
               
               {/* Earnings Button */}

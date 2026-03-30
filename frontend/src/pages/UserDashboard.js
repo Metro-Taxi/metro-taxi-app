@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Circle, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass, History, Star, Home, AlertTriangle, Bell, MessageCircle } from 'lucide-react';
+import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass, History, Star, Home, AlertTriangle, Bell, MessageCircle, Search, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
@@ -112,6 +112,11 @@ const UserDashboard = () => {
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
   const [showChat, setShowChat] = useState(false);
   const [chatDriverName, setChatDriverName] = useState('');
+  
+  // Address search states
+  const [addressSearch, setAddressSearch] = useState('');
+  const [addressSuggestions, setAddressSuggestions] = useState([]);
+  const [searchingAddress, setSearchingAddress] = useState(false);
 
   // Paris center as default
   const defaultCenter = [48.8566, 2.3522];
@@ -304,6 +309,49 @@ const UserDashboard = () => {
       setShowDestinationPicker(false);
       toast.success(t('common.destinationSet'));
     }
+  };
+
+  // Search address using Nominatim (OpenStreetMap)
+  const searchAddress = async (query) => {
+    if (!query || query.length < 3) {
+      setAddressSuggestions([]);
+      return;
+    }
+    
+    setSearchingAddress(true);
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=fr,gb,de,es,it,be,ch,nl`,
+        { headers: { 'Accept-Language': 'fr' } }
+      );
+      setAddressSuggestions(response.data || []);
+    } catch (error) {
+      console.error('Address search error:', error);
+      setAddressSuggestions([]);
+    } finally {
+      setSearchingAddress(false);
+    }
+  };
+
+  // Debounced address search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (addressSearch) {
+        searchAddress(addressSearch);
+      }
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [addressSearch]);
+
+  // Select address from suggestions
+  const selectAddress = (suggestion) => {
+    const lat = parseFloat(suggestion.lat);
+    const lng = parseFloat(suggestion.lon);
+    setDestination([lat, lng]);
+    setAddressSearch(suggestion.display_name.split(',')[0]);
+    setAddressSuggestions([]);
+    setShowDestinationPicker(false);
+    toast.success(t('common.destinationSet'));
   };
 
   const handleDriverSelect = (driver) => {
@@ -976,10 +1024,48 @@ const UserDashboard = () => {
         </div>
       )}
 
-      {/* Destination picker hint */}
+      {/* Destination picker with address search */}
       {showDestinationPicker && (
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[1000] bg-blue-500 text-white px-4 py-2 rounded-full text-sm">
-          {t('dashboard.user.clickMap')}
+        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[1000] w-80 max-w-[90vw]">
+          <div className="bg-[#18181B] border border-zinc-700 rounded-lg shadow-xl p-3">
+            <div className="relative mb-2">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
+              <input
+                type="text"
+                value={addressSearch}
+                onChange={(e) => setAddressSearch(e.target.value)}
+                placeholder={t('dashboard.user.searchAddress', 'Rechercher une adresse...')}
+                className="w-full pl-10 pr-10 py-2 bg-zinc-900 border border-zinc-700 rounded text-white text-sm focus:outline-none focus:border-[#FFD60A]"
+                data-testid="address-search-input"
+              />
+              {searchingAddress && (
+                <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#FFD60A] animate-spin" />
+              )}
+            </div>
+            
+            {/* Address suggestions */}
+            {addressSuggestions.length > 0 && (
+              <div className="max-h-48 overflow-y-auto border-t border-zinc-700">
+                {addressSuggestions.map((suggestion, index) => (
+                  <button
+                    key={index}
+                    onClick={() => selectAddress(suggestion)}
+                    className="w-full text-left p-2 hover:bg-zinc-800 text-sm text-white border-b border-zinc-800 last:border-b-0"
+                    data-testid={`address-suggestion-${index}`}
+                  >
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-4 h-4 text-[#FFD60A] mt-0.5 flex-shrink-0" />
+                      <span className="line-clamp-2">{suggestion.display_name}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+            
+            <div className="text-center text-xs text-zinc-500 mt-2 pt-2 border-t border-zinc-700">
+              {t('dashboard.user.orClickMap', 'ou cliquez sur la carte')}
+            </div>
+          </div>
         </div>
       )}
 
