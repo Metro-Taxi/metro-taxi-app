@@ -170,6 +170,11 @@ london.metro-taxi.com → CNAME → votre-app.emergent.host
 - ✅ **Champ de recherche d'adresse** : Autocomplétion avec Nominatim (OpenStreetMap) pour définir la destination
   - Recherche en temps réel avec suggestions
   - Option de cliquer sur la carte conservée
+- ✅ **Protection contre double paiement** (CRITIQUE pour la réputation) :
+  - **Vérification API** : L'API refuse le paiement si l'utilisateur a déjà un abonnement actif pour la région
+  - **Messages d'avertissement** : Alertes visibles sur les pages d'inscription et d'abonnement
+  - **Email de rappel** : Email après paiement avec instructions pour se connecter sur d'autres appareils
+  - **Info connecté** : Message bleu indiquant l'email de l'utilisateur connecté sur la page d'abonnement
 
 **30/03/2026 - Session 1**
 - ✅ **Bug d'arrondi Stripe corrigé** : Le montant 16,99€ s'affichait 16,98€ sur Stripe

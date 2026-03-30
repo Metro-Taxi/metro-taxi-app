@@ -1024,7 +1024,10 @@ async def send_subscription_confirmation_email(email: str, name: str, plan_name:
             "message": f"Votre abonnement <strong>{plan_name}</strong> a été activé avec succès.",
             "valid_until": f"Valide jusqu'au : <strong>{expires_at}</strong>",
             "cta": "Accéder à mon compte",
-            "enjoy": "Profitez de trajets illimités sur tout le réseau Métro-Taxi !"
+            "enjoy": "Profitez de trajets illimités sur tout le réseau Métro-Taxi !",
+            "multi_device_title": "Utiliser sur plusieurs appareils ?",
+            "multi_device_text": f"Connectez-vous simplement avec votre email <strong>{email}</strong> sur votre téléphone, tablette ou ordinateur pour accéder à votre abonnement partout.",
+            "multi_device_warning": "Ne créez pas un nouveau compte - utilisez toujours le même email pour éviter un double paiement."
         },
         "en": {
             "subject": "Subscription activated - Métro-Taxi",
@@ -1033,7 +1036,10 @@ async def send_subscription_confirmation_email(email: str, name: str, plan_name:
             "message": f"Your <strong>{plan_name}</strong> subscription has been successfully activated.",
             "valid_until": f"Valid until: <strong>{expires_at}</strong>",
             "cta": "Access my account",
-            "enjoy": "Enjoy unlimited rides across the entire Métro-Taxi network!"
+            "enjoy": "Enjoy unlimited rides across the entire Métro-Taxi network!",
+            "multi_device_title": "Use on multiple devices?",
+            "multi_device_text": f"Simply log in with your email <strong>{email}</strong> on your phone, tablet or computer to access your subscription everywhere.",
+            "multi_device_warning": "Don't create a new account - always use the same email to avoid double payment."
         }
     }
     
@@ -1061,6 +1067,20 @@ async def send_subscription_confirmation_email(email: str, name: str, plan_name:
                                 <p style="color: #ffffff; margin: 0 0 20px 0; font-size: 18px;">{t['message']}</p>
                                 <p style="color: #FFD60A; margin: 0 0 30px 0; font-size: 16px;">{t['valid_until']}</p>
                                 <p style="color: #a1a1aa; margin: 0; font-size: 14px;">{t['enjoy']}</p>
+                            </td>
+                        </tr>
+                        <!-- PROTECTION DOUBLE PAIEMENT (D) - Section multi-appareils -->
+                        <tr>
+                            <td style="padding: 0 30px 30px 30px;">
+                                <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                                    <tr>
+                                        <td style="padding: 20px;">
+                                            <p style="color: #92400e; margin: 0 0 10px 0; font-size: 16px; font-weight: bold;">📱 {t['multi_device_title']}</p>
+                                            <p style="color: #78350f; margin: 0 0 10px 0; font-size: 14px;">{t['multi_device_text']}</p>
+                                            <p style="color: #dc2626; margin: 0; font-size: 13px; font-weight: bold;">⚠️ {t['multi_device_warning']}</p>
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
                         </tr>
                         <tr>
@@ -1778,6 +1798,28 @@ async def create_checkout_with_region(data: CheckoutRequestWithRegion, request: 
     plan = SUBSCRIPTION_PLANS[data.plan_id]
     user_id = current_user["user_id"]
     
+    # ==========================================
+    # PROTECTION DOUBLE PAIEMENT (A)
+    # Vérifier si l'utilisateur a déjà un abonnement actif pour cette région
+    # ==========================================
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if user:
+        existing_subs = user.get("subscriptions", [])
+        now = datetime.now(timezone.utc)
+        for sub in existing_subs:
+            if sub.get("region_id") == data.region_id:
+                try:
+                    expires_str = sub.get("expires_at", "")
+                    expires = datetime.fromisoformat(expires_str.replace('Z', '+00:00'))
+                    if expires > now:
+                        hours_remaining = round((expires - now).total_seconds() / 3600)
+                        raise HTTPException(
+                            status_code=400, 
+                            detail=f"Vous avez déjà un abonnement actif pour cette région (expire dans {hours_remaining}h). Connectez-vous sur vos autres appareils avec le même email pour y accéder."
+                        )
+                except (ValueError, TypeError):
+                    pass
+    
     # Get currency from region (default EUR)
     currency = region.get("currency", "EUR").lower()
     
@@ -1858,6 +1900,28 @@ async def create_sepa_checkout(data: SepaCheckoutRequest, request: Request, curr
     
     plan = SUBSCRIPTION_PLANS[data.plan_id]
     user_id = current_user["user_id"]
+    
+    # ==========================================
+    # PROTECTION DOUBLE PAIEMENT (A)
+    # Vérifier si l'utilisateur a déjà un abonnement actif pour cette région
+    # ==========================================
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if user:
+        existing_subs = user.get("subscriptions", [])
+        now = datetime.now(timezone.utc)
+        for sub in existing_subs:
+            if sub.get("region_id") == data.region_id:
+                try:
+                    expires_str = sub.get("expires_at", "")
+                    expires = datetime.fromisoformat(expires_str.replace('Z', '+00:00'))
+                    if expires > now:
+                        hours_remaining = round((expires - now).total_seconds() / 3600)
+                        raise HTTPException(
+                            status_code=400, 
+                            detail=f"Vous avez déjà un abonnement actif pour cette région (expire dans {hours_remaining}h). Connectez-vous sur vos autres appareils avec le même email pour y accéder."
+                        )
+                except (ValueError, TypeError):
+                    pass
     
     stripe_key = os.environ.get('STRIPE_API_KEY')
     stripe.api_key = stripe_key

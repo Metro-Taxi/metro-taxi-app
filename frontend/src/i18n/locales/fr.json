@@ -18,6 +18,7 @@
     "yes": "Oui",
     "no": "Non",
     "or": "ou",
+    "login": "Se connecter",
     "cardLoadError": "Erreur lors du chargement des cartes",
     "driverActivated": "Chauffeur activé avec succès",
     "activateError": "Erreur lors de l'activation",
@@ -113,7 +114,8 @@
     "dashboard": "Tableau de bord"
   },
   "auth": {
-    "login": {
+    "login": "Se connecter",
+    "loginPage": {
       "title": "Connexion",
       "subtitle": "Accédez à votre compte Métro-Taxi",
       "email": "Email",
@@ -158,6 +160,8 @@
       "success": "Inscription réussie !",
       "error": "Erreur lors de l'inscription",
       "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "alreadyHaveAccount": "Déjà un compte ?",
+      "loginToAccess": "Connectez-vous pour retrouver votre abonnement.",
       "vehicleTypes": {
         "sedan": "Berline",
         "suv": "SUV",
@@ -317,6 +321,10 @@
   "subscription": {
     "title": "Choisissez votre abonnement",
     "subtitle": "Un abonnement simple. Des trajets illimités. Payez une fois, voyagez sans compter.",
+    "alreadyAccount": "Déjà inscrit ?",
+    "alreadyAccountDesc": "Connectez-vous avec votre email pour retrouver votre abonnement sur tous vos appareils et éviter un double paiement.",
+    "connectedAs": "Connecté en tant que",
+    "syncInfo": "Votre abonnement sera automatiquement disponible sur tous vos appareils en vous connectant avec ce même email.",
     "expiredTitle": "Abonnement expiré",
     "expiredMessage": "Votre abonnement a expiré. Veuillez le renouveler pour continuer à utiliser Métro-Taxi.",
     "blockedFeatures": "Fonctionnalités bloquées :",

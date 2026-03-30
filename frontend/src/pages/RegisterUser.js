@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Car, Mail, Lock, User, Phone, Eye, EyeOff } from 'lucide-react';
+import { Car, Mail, Lock, User, Phone, Eye, EyeOff, AlertTriangle, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -73,7 +73,27 @@ const RegisterUser = () => {
         {/* Register Form */}
         <div className="bg-[#18181B] border border-zinc-800 p-8 rounded-sm">
           <h1 className="text-2xl font-bold text-white mb-2 text-center">{t('auth.register.user.title')}</h1>
-          <p className="text-zinc-400 text-center mb-6">{t('auth.register.user.subtitle')}</p>
+          <p className="text-zinc-400 text-center mb-4">{t('auth.register.user.subtitle')}</p>
+          
+          {/* PROTECTION DOUBLE PAIEMENT (C) - Message d'avertissement */}
+          <div className="mb-6 p-3 bg-amber-500/10 border border-amber-500/40 rounded-lg">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+              <div className="text-sm">
+                <span className="text-amber-400 font-medium">{t('auth.register.alreadyHaveAccount', 'Déjà un compte ?')}</span>
+                <p className="text-zinc-400 mt-1">
+                  {t('auth.register.loginToAccess', 'Connectez-vous pour retrouver votre abonnement.')}
+                </p>
+                <Link 
+                  to="/login" 
+                  className="inline-flex items-center gap-1 text-amber-400 hover:text-amber-300 mt-2 font-medium"
+                >
+                  <LogIn className="w-4 h-4" />
+                  {t('common.login', 'Se connecter')}
+                </Link>
+              </div>
+            </div>
+          </div>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">

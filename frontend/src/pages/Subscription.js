@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Car, ArrowLeft, Check, CreditCard, Shield, Clock, Users, Globe, MapPin, Loader2, Building2 } from 'lucide-react';
+import { Car, ArrowLeft, Check, CreditCard, Shield, Clock, Users, Globe, MapPin, Loader2, Building2, AlertTriangle, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -263,7 +263,7 @@ const Subscription = () => {
     <div className="min-h-screen bg-[#09090B] py-12 px-4">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-12">
+        <div className="flex items-center justify-between mb-8">
           <Link to="/dashboard" className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
             <ArrowLeft className="w-5 h-5" />
             {t('cgu.back', 'Retour')}
@@ -276,6 +276,51 @@ const Subscription = () => {
             </div>
           </div>
         </div>
+
+        {/* PROTECTION DOUBLE PAIEMENT (C) - Message d'avertissement */}
+        {!user && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-amber-500/10 border border-amber-500/50 rounded-lg"
+          >
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-amber-400 font-bold mb-1">
+                  {t('subscription.alreadyAccount', 'Déjà inscrit ?')}
+                </h4>
+                <p className="text-zinc-300 text-sm mb-3">
+                  {t('subscription.alreadyAccountDesc', 'Connectez-vous avec votre email pour retrouver votre abonnement sur tous vos appareils et éviter un double paiement.')}
+                </p>
+                <Link 
+                  to="/login" 
+                  className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-black font-bold px-4 py-2 rounded transition-colors"
+                >
+                  <LogIn className="w-4 h-4" />
+                  {t('auth.login', 'Se connecter')}
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {user && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg"
+          >
+            <div className="flex items-start gap-3">
+              <Shield className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+              <p className="text-zinc-300 text-sm">
+                <span className="text-blue-400 font-medium">{t('subscription.connectedAs', 'Connecté en tant que')} {user.email}</span>
+                <br />
+                {t('subscription.syncInfo', 'Votre abonnement sera automatiquement disponible sur tous vos appareils en vous connectant avec ce même email.')}
+              </p>
+            </div>
+          </motion.div>
+        )}
 
         {/* Current subscription status */}
         {userSubscriptions.length > 0 && (
