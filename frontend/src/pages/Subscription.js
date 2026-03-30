@@ -118,6 +118,8 @@ const Subscription = () => {
     setLoading(planId);
     try {
       const originUrl = window.location.origin;
+      console.log('Creating checkout session...', { planId, regionId: selectedRegion.id });
+      
       const response = await axios.post(`${API}/payments/checkout/region`, {
         plan_id: planId,
         region_id: selectedRegion.id,
@@ -126,21 +128,32 @@ const Subscription = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       
+      console.log('Checkout response:', response.data);
+      
       if (response.data.url) {
         // Set redirecting flag to prevent React updates during redirect
         setIsRedirecting(true);
         
-        // Redirect to Stripe
-        window.location.href = response.data.url;
+        // Show toast before redirect
+        toast.success(t('subscription.redirecting', 'Redirection vers Stripe...'));
+        
+        // Small delay to ensure state is updated before redirect
+        setTimeout(() => {
+          console.log('Redirecting to:', response.data.url);
+          window.location.href = response.data.url;
+        }, 200);
       } else {
+        console.error('No URL in response:', response.data);
         toast.error(t('subscription.error', 'Error creating payment session'));
         setLoading(null);
       }
     } catch (error) {
       console.error('Checkout error:', error);
+      console.error('Error response:', error.response?.data);
       const message = error.response?.data?.detail || t('subscription.error', 'Erreur lors de la création du paiement');
       toast.error(message);
       setLoading(null);
+      setIsRedirecting(false);
     }
   };
 
