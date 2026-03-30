@@ -2020,25 +2020,26 @@ async def stripe_webhook(request: Request):
                         user = await db.users.find_one({"id": user_id})
                         
                         if region_id and user:
-                            "expires_at": expires_at.isoformat(),
-                            "is_active": True,
-                            "created_at": datetime.now(timezone.utc).isoformat()
-                        }
-                        
-                        # Check if user already has a subscription for this region
-                        user = await db.users.find_one({"id": transaction["user_id"]})
-                        existing_subs = user.get("subscriptions", []) if user else []
-                        
-                        # Update existing or add new
-                        updated = False
-                        for i, sub in enumerate(existing_subs):
-                            if sub.get("region_id") == region_id:
-                                existing_subs[i] = new_subscription
-                                updated = True
-                                break
-                        
-                        if not updated:
-                            existing_subs.append(new_subscription)
+                            # Multi-region subscription
+                            new_subscription = {
+                                "region_id": region_id,
+                                "plan_id": transaction["plan_id"],
+                                "expires_at": expires_at.isoformat(),
+                                "is_active": True,
+                                "payment_method": "card",
+                                "created_at": datetime.now(timezone.utc).isoformat()
+                            }
+                            
+                            existing_subs = user.get("subscriptions", [])
+                            updated = False
+                            for i, sub in enumerate(existing_subs):
+                                if sub.get("region_id") == region_id:
+                                    existing_subs[i] = new_subscription
+                                    updated = True
+                                    break
+                            
+                            if not updated:
+                                existing_subs.append(new_subscription)
                         
                         await db.users.update_one(
                             {"id": transaction["user_id"]},

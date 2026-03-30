@@ -159,6 +159,16 @@ london.metro-taxi.com → CNAME → votre-app.emergent.host
 - `payout_history` - Historique virements
 
 ## 📅 Dernière Mise à Jour
+**30/03/2026**
+- ✅ **Bug d'arrondi Stripe corrigé** : Le montant 16,99€ s'affichait 16,98€ sur Stripe. Cause : division flottante. Solution : passage direct du montant en centimes (`price_cents`) au SDK Stripe natif.
+- ✅ **Migration SDK Stripe** : Remplacement du wrapper `emergentintegrations` par le SDK Python `stripe` natif pour la création de sessions Checkout et la validation des webhooks.
+- ✅ **Erreur de syntaxe corrigée** : Un `}` orphelin dans le webhook Stripe a été réparé (dictionnaire `new_subscription` tronqué).
+- ✅ **Structure de refactoring avancée** : Création des fichiers modulaires :
+  - `/app/backend/config.py` - Configuration centralisée
+  - `/app/backend/database.py` - Connexion MongoDB
+  - `/app/backend/models/schemas.py` - Tous les modèles Pydantic
+  - `/app/backend/utils/helpers.py` - Fonctions utilitaires (geo, auth, sanitization)
+
 **28/03/2026**
 - ✅ **Traductions Dashboard Admin vérifiées** : Toutes les langues (EN, ES, etc.) correctement traduites
   - "Drivers" → "Conductores" (ES) - Corrigé
@@ -173,7 +183,6 @@ london.metro-taxi.com → CNAME → votre-app.emergent.host
 - ✅ **Emails de rappel d'expiration** : Envoi automatique à 48h, 24h et le jour de l'expiration
 - ✅ **Chat en temps réel** : WebSocket usager/chauffeur pendant un trajet
 - ✅ **Mode hors ligne PWA amélioré** : Page offline personnalisée + cache API
-- ✅ **Structure refactoring préparée** : Dossiers `routes/`, `models/`, `services/`, `utils/` créés
 
 ## 🔧 Configuration Production
 Variables d'environnement à configurer sur Emergent pour la production :
@@ -190,7 +199,9 @@ STRIPE_API_KEY=sk_live_... (déjà configuré)
 Les noms propres stockés dans la base de données (ex: "Test Driver", "Boniface Tegang") ne changent **PAS** quand on change la langue de l'interface. Ce sont des **données** entrées par les utilisateurs, pas des clés de traduction. L'internationalisation (i18n) ne traduit que les labels et menus de l'interface.
 
 ## 🔄 Prochaines Étapes
-- [ ] Refactoring de `server.py` (4400+ lignes → modules séparés)
+- [ ] **Refactoring progressif de `server.py`** (5237 lignes → modules séparés)
+  - Structure prête : `config.py`, `database.py`, `models/`, `utils/`
+  - Migration à faire : extraire les routes vers `routes/auth.py`, `routes/payments.py`, etc.
 - [ ] Déploiement en production sur metro-taxi.com
 - [ ] Test des notifications push en production avec vraies VAPID keys
 - [ ] Découpage de `UserDashboard.js` (1000+ lignes)
@@ -198,3 +209,4 @@ Les noms propres stockés dans la base de données (ex: "Test Driver", "Boniface
 ## 📦 Backlog Futur
 - Amélioration mode hors ligne avancé pour PWA
 - Tests automatisés (pytest backend, Jest frontend)
+- Chat en temps réel usager/chauffeur pendant trajet

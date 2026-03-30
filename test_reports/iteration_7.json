@@ -1,0 +1,110 @@
+{
+  "summary": "Completed backend testing for Stripe rounding bug fix (iteration 7). The fix replaces emergentintegrations wrapper with native Stripe Python SDK, passing amounts in centimes directly (price_cents). All 12 tests passed: login, Stripe checkout session creation for 1week (1699 centimes = 16.99€) and 24h (699 centimes = 6.99€) plans, regions endpoint, and webhook signature validation.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+
+  "passed_tests": [
+    "API health check - subscriptions/plans endpoint accessible",
+    "Subscription plans correctly configured with price_cents field (24h=699, 1week=1699, 1month=5399)",
+    "GET /api/regions returns regions list with driver/user counts",
+    "GET /api/regions/active returns only active regions",
+    "Login rejects invalid credentials (401)",
+    "Login with test user testuser@metro-taxi.com successful",
+    "POST /api/payments/checkout/region requires authentication (401)",
+    "POST /api/payments/checkout/region with plan_id='1week' creates Stripe session (1699 centimes = 16.99€)",
+    "POST /api/payments/checkout/region with plan_id='24h' creates Stripe session (699 centimes = 6.99€)",
+    "Checkout rejects invalid plan_id (400)",
+    "Checkout rejects invalid region_id (400)",
+    "Webhook rejects invalid Stripe signature"
+  ],
+
+  "test_report_links": [
+    "/app/backend/tests/test_stripe_checkout.py",
+    "/app/test_reports/pytest/pytest_results_stripe.xml"
+  ],
+
+  "action_items": [],
+
+  "critical_code_review_comments": [
+    "Stripe rounding bug fix verified: price_cents is now passed directly to stripe.checkout.Session.create() as unit_amount (line 1790)",
+    "Native Stripe SDK (stripe.checkout.Session.create) used instead of emergentintegrations wrapper",
+    "SUBSCRIPTION_PLANS correctly defines both price (float) and price_cents (integer) for each plan"
+  ],
+
+  "updated_files": [
+    "/app/backend/tests/test_stripe_checkout.py"
+  ],
+
+  "success_rate": {
+    "backend": "100% (12/12 tests passed)",
+    "frontend": "N/A (backend only testing requested)"
+  },
+
+  "test_credentials": {
+    "test_user": "testuser@metro-taxi.com / test123456"
+  },
+
+  "seed_data_creation": "Test user testuser@metro-taxi.com created during testing if not existing",
+
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+
+  "context_for_next_testing_agent": "Stripe rounding bug fix verified. The /api/payments/checkout/region endpoint now uses native Stripe SDK with price_cents (integer) instead of emergentintegrations wrapper. Tested plans: 24h (699 centimes = 6.99€), 1week (1699 centimes = 16.99€). IMPORTANT: Stripe is in LIVE mode (sk_live_*) - do not complete actual payments during testing.",
+
+  "features_verified": {
+    "stripe_checkout_1week": {
+      "status": "PASS",
+      "endpoint": "POST /api/payments/checkout/region",
+      "plan_id": "1week",
+      "expected_amount_cents": 1699,
+      "expected_amount_eur": 16.99,
+      "stripe_session_created": true,
+      "url_format": "https://checkout.stripe.com/c/pay/cs_live_*"
+    },
+    "stripe_checkout_24h": {
+      "status": "PASS",
+      "endpoint": "POST /api/payments/checkout/region",
+      "plan_id": "24h",
+      "expected_amount_cents": 699,
+      "expected_amount_eur": 6.99,
+      "stripe_session_created": true,
+      "url_format": "https://checkout.stripe.com/c/pay/cs_live_*"
+    },
+    "regions_endpoint": {
+      "status": "PASS",
+      "endpoint": "GET /api/regions",
+      "active_region_found": "paris (Île-de-France)"
+    },
+    "user_login": {
+      "status": "PASS",
+      "endpoint": "POST /api/auth/login",
+      "test_user": "testuser@metro-taxi.com"
+    }
+  },
+
+  "rounding_bug_fix_verification": {
+    "bug_description": "Price 16.99€ was displayed as 16.98€ on Stripe due to floating point division in emergentintegrations wrapper",
+    "fix_applied": "Replaced emergentintegrations wrapper with native Stripe Python SDK, passing price_cents directly as unit_amount",
+    "code_location": "/app/backend/server.py lines 1760-1830",
+    "verification": "Stripe checkout sessions created successfully with correct amounts in centimes"
+  },
+
+  "mocked_apis": {
+    "has_mocked_apis": false,
+    "mocked_apis_list": []
+  },
+
+  "warnings": [
+    "STRIPE IS IN LIVE MODE - Do not complete actual payments during testing",
+    "Webhook cannot be fully tested without valid Stripe signature"
+  ]
+}
