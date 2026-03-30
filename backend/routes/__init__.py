@@ -1,1 +1,6 @@
-# Empty init file to make routes a package
+"""
+Routes API pour Métro-Taxi
+"""
+from .regions import router as regions_router
+
+__all__ = ['regions_router']
