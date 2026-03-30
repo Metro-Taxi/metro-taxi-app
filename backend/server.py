@@ -1774,48 +1774,60 @@ async def create_checkout_with_region(data: CheckoutRequestWithRegion, request: 
     # Get currency from region (default EUR)
     currency = region.get("currency", "EUR").lower()
     
-    host_url = str(request.base_url).rstrip('/')
-    webhook_url = f"{host_url}/api/webhook/stripe"
     stripe_key = os.environ.get('STRIPE_API_KEY')
-    
-    stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_url=webhook_url)
+    stripe.api_key = stripe_key
     
     success_url = f"{data.origin_url}/subscription/success?session_id={{CHECKOUT_SESSION_ID}}&region={data.region_id}"
     cancel_url = f"{data.origin_url}/subscription?region={data.region_id}"
     
-    checkout_request = CheckoutSessionRequest(
-        amount=plan["price_cents"] / 100,
-        currency=currency,
-        success_url=success_url,
-        cancel_url=cancel_url,
-        metadata={
-            "user_id": user_id, 
+    try:
+        # Use Stripe API directly for precise amount handling (in cents)
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': currency,
+                    'unit_amount': plan["price_cents"],  # Amount in cents (integer)
+                    'product_data': {
+                        'name': f"Métro-Taxi - {plan['name']}",
+                        'description': f"Abonnement {plan['name']} - {region.get('name', data.region_id)}"
+                    },
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata={
+                "user_id": user_id, 
+                "plan_id": data.plan_id,
+                "region_id": data.region_id
+            }
+        )
+        
+        # Create payment transaction record with region
+        transaction = {
+            "id": str(uuid.uuid4()),
+            "session_id": session.id,
+            "user_id": user_id,
             "plan_id": data.plan_id,
-            "region_id": data.region_id
+            "region_id": data.region_id,
+            "amount": plan["price"],
+            "currency": currency,
+            "status": "pending",
+            "payment_status": "initiated",
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
-    )
+        await db.payment_transactions.insert_one(transaction)
+        
+        # Remove _id from region before returning
+        region_response = {k: v for k, v in region.items() if k != "_id"}
+        
+        return {"url": session.url, "session_id": session.id, "region": region_response}
     
-    session = await stripe_checkout.create_checkout_session(checkout_request)
-    
-    # Create payment transaction record with region
-    transaction = {
-        "id": str(uuid.uuid4()),
-        "session_id": session.session_id,
-        "user_id": user_id,
-        "plan_id": data.plan_id,
-        "region_id": data.region_id,
-        "amount": plan["price"],
-        "currency": currency,
-        "status": "pending",
-        "payment_status": "initiated",
-        "created_at": datetime.now(timezone.utc).isoformat()
-    }
-    await db.payment_transactions.insert_one(transaction)
-    
-    # Remove _id from region before returning
-    region_response = {k: v for k, v in region.items() if k != "_id"}
-    
-    return {"url": session.url, "session_id": session.session_id, "region": region_response}
+    except stripe.error.StripeError as e:
+        logging.error(f"Stripe checkout error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 # SEPA Direct Debit Payment Model
 class SepaCheckoutRequest(BaseModel):
@@ -1975,37 +1987,39 @@ async def stripe_webhook(request: Request):
     body = await request.body()
     signature = request.headers.get("Stripe-Signature")
     
-    host_url = str(request.base_url).rstrip('/')
-    webhook_url = f"{host_url}/api/webhook/stripe"
     stripe_key = os.environ.get('STRIPE_API_KEY')
     webhook_secret = os.environ.get('STRIPE_WEBHOOK_SECRET')
-    
-    stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_secret=webhook_secret, webhook_url=webhook_url)
+    stripe.api_key = stripe_key
     
     try:
-        webhook_response = await stripe_checkout.handle_webhook(body, signature)
-        logging.info(f"Webhook received: payment_status={webhook_response.payment_status}, session_id={webhook_response.session_id}")
+        event = stripe.Webhook.construct_event(body, signature, webhook_secret)
+        logging.info(f"Webhook received: type={event['type']}")
         
-        if webhook_response.payment_status == "paid":
-            session_id = webhook_response.session_id
-            transaction = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+        if event['type'] == 'checkout.session.completed':
+            session = event['data']['object']
+            session_id = session['id']
+            payment_status = session.get('payment_status', '')
             
-            if transaction:
-                await db.payment_transactions.update_one(
-                    {"session_id": session_id},
-                    {"$set": {"status": "completed", "payment_status": "paid"}}
-                )
+            logging.info(f"Checkout completed: session_id={session_id}, payment_status={payment_status}")
+            
+            if payment_status == "paid":
+                transaction = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
                 
-                plan = SUBSCRIPTION_PLANS.get(transaction["plan_id"])
-                if plan:
-                    expires_at = datetime.now(timezone.utc) + timedelta(hours=plan["duration_hours"])
-                    region_id = transaction.get("region_id")
+                if transaction:
+                    await db.payment_transactions.update_one(
+                        {"session_id": session_id},
+                        {"$set": {"status": "completed", "payment_status": "paid"}}
+                    )
                     
-                    if region_id:
-                        # Multi-region subscription: add to subscriptions array
-                        new_subscription = {
-                            "region_id": region_id,
-                            "plan_id": transaction["plan_id"],
+                    plan = SUBSCRIPTION_PLANS.get(transaction["plan_id"])
+                    if plan:
+                        expires_at = datetime.now(timezone.utc) + timedelta(hours=plan["duration_hours"])
+                        region_id = transaction.get("region_id")
+                        user_id = transaction.get("user_id")
+                        
+                        user = await db.users.find_one({"id": user_id})
+                        
+                        if region_id and user:
                             "expires_at": expires_at.isoformat(),
                             "is_active": True,
                             "created_at": datetime.now(timezone.utc).isoformat()
