@@ -441,7 +441,6 @@ const Subscription = () => {
                 >
                   <Building2 className="w-4 h-4 mr-2" />
                   {t('sepa.payWithSepa', 'Payer par prélèvement SEPA')}
-                  <span className="ml-2 text-xs text-green-400">(-4%)</span>
                 </Button>
               )}
             </motion.div>
@@ -466,10 +465,9 @@ const Subscription = () => {
             <div className="bg-zinc-800 px-4 py-2 rounded flex items-center gap-2">
               <span className="text-white text-sm font-medium">American Express</span>
             </div>
-            <div className="bg-green-800/50 border border-green-600/50 px-4 py-2 rounded flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-green-400" />
-              <span className="text-green-400 text-sm font-medium">SEPA</span>
-              <span className="text-green-300 text-xs">(-4%)</span>
+            <div className="bg-zinc-800 px-4 py-2 rounded flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-white" />
+              <span className="text-white text-sm font-medium">SEPA</span>
             </div>
           </div>
         </motion.div>
@@ -516,12 +514,9 @@ const Subscription = () => {
           </DialogHeader>
           
           <div className="space-y-4 py-4">
-            {/* SEPA Benefits */}
-            <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
-              <p className="text-green-400 text-sm font-medium mb-1">
-                {t('sepa.saveMoney', 'Économisez ~4% sur les frais !')}
-              </p>
-              <p className="text-zinc-400 text-xs">
+            {/* SEPA Info */}
+            <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3">
+              <p className="text-zinc-300 text-sm">
                 {t('sepa.sepaInfo', 'Le prélèvement SEPA est traité sous 5-14 jours ouvrés.')}
               </p>
             </div>
