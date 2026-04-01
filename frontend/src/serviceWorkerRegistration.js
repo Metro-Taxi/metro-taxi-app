@@ -1,4 +1,8 @@
 // Service Worker Registration for PWA
+
+// Store the waiting service worker for later activation
+let waitingServiceWorker = null;
+
 export function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -24,18 +28,21 @@ export function registerServiceWorker() {
             const newWorker = registration.installing;
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // New update available - auto-refresh for better UX
-                console.log('New content available, refreshing...');
+                // New update available
+                console.log('New content available!');
+                waitingServiceWorker = newWorker;
                 
-                // Skip waiting and activate new service worker immediately
-                newWorker.postMessage({ type: 'SKIP_WAITING' });
-                
-                // Show notification and refresh
-                if (window.confirm('Une nouvelle version de Métro-Taxi est disponible. Cliquez OK pour mettre à jour.')) {
-                  window.location.reload();
-                }
+                // Dispatch custom event to notify React components
+                window.dispatchEvent(new CustomEvent('sw-update-available'));
               }
             });
+          });
+          
+          // Listen for user's decision to update
+          window.addEventListener('sw-do-update', () => {
+            if (waitingServiceWorker) {
+              waitingServiceWorker.postMessage({ type: 'SKIP_WAITING' });
+            }
           });
           
           // Listen for controller change and refresh

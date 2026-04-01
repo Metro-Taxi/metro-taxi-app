@@ -214,6 +214,8 @@ Les noms propres stockés dans la base de données (ex: "Test Driver", "Boniface
 ## 🔄 Prochaines Étapes
 - [x] **Migration routes régions** vers `routes/regions.py` ✅ (30/03/2026)
 - [x] **Correction audio Landing page** - Cache Service Worker + gestion erreurs ✅ (01/04/2026)
+- [x] **Traductions bouton "Écouter"** - 16 langues ✅ (01/04/2026)
+- [x] **Notification mise à jour PWA** - Composant élégant traduit en 16 langues ✅ (01/04/2026)
 - [ ] **Migration routes auth** vers `routes/auth.py`
 - [ ] **Migration routes paiements** vers `routes/payments.py`
 - [ ] **Migration routes chauffeurs** vers `routes/drivers.py`
@@ -229,13 +231,20 @@ Les noms propres stockés dans la base de données (ex: "Test Driver", "Boniface
 
 ## 📝 Changelog
 
-### 01/04/2026 - Audio Landing Page
+### 01/04/2026 - Audio Landing Page & Notification Mise à Jour PWA
 - **Corrigé** : Problème de lenteur de chargement audio (headers Cache-Control)
-  - Service Worker v5 avec stratégie **cache-first** pour les fichiers audio
-  - Les 16 fichiers MP3 sont pré-chargés dans le cache `metro-taxi-audio-v1`
+  - Service Worker v7 avec stratégie **cache-first** pour les fichiers audio
+  - Les 16 fichiers MP3 sont pré-chargés dans le cache `metro-taxi-audio-v3`
   - Après premier chargement, audio instantané depuis le cache
 - **Corrigé** : Écran noir sur desktop au clic sur le bouton audio
   - Ajout de `safePlayAudio()` pour gérer les erreurs de lecture (politique Autoplay)
   - Les erreurs de play() sont maintenant silencieusement gérées sans crasher
 - **Ajouté** : Endpoint backend `/api/audio/voiceover/{filename}` (fallback si local indisponible)
 - **Amélioré** : Logique de préchargement audio avec priorité : Local SW cache > Backend API > TTS API
+- **Ajouté** : Traductions du bouton "Écouter" / "Stop" dans les 16 langues
+- **Ajouté** : Composant `UpdateNotification.jsx` - Notification élégante quand une nouvelle version est disponible
+  - Design moderne avec gradient et animation
+  - Traduit dans les 16 langues
+  - Boutons "Mettre à jour" et "Plus tard"
+  - Responsive (desktop et mobile)
+

@@ -411,6 +411,14 @@
     "stop": "停止",
     "preparing": "准备中..."
   },
+  "update": {
+    "title": "新版本可用",
+    "subtitle": "Métro-Taxi 已更新",
+    "description": "重新加载以享受最新的改进和修复。",
+    "updateNow": "立即更新",
+    "updating": "更新中...",
+    "later": "稍后"
+  },
   "footer": {
     "rights": "版权所有",
     "contact": "联系我们",

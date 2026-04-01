@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { RegionProvider } from "@/contexts/RegionContext";
 import InstallPWABanner from "@/components/InstallPWABanner";
+import UpdateNotification from "@/components/UpdateNotification";
 
 // Pages
 import Landing from "@/pages/Landing";
@@ -150,6 +151,7 @@ function App() {
             <AppRoutes />
             <Toaster position="top-right" richColors />
             <InstallPWABanner />
+            <UpdateNotification />
           </RegionProvider>
         </AuthProvider>
       </BrowserRouter>

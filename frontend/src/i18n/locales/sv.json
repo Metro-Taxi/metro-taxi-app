@@ -407,6 +407,14 @@
     "stop": "Stopp",
     "preparing": "Förbereder..."
   },
+  "update": {
+    "title": "Ny version tillgänglig",
+    "subtitle": "Métro-Taxi har uppdaterats",
+    "description": "Ladda om för att njuta av de senaste förbättringarna och korrigeringarna.",
+    "updateNow": "Uppdatera nu",
+    "updating": "Uppdaterar...",
+    "later": "Senare"
+  },
   "footer": {
     "rights": "Alle rettigheter forbeholdt",
     "contact": "Kontakt",

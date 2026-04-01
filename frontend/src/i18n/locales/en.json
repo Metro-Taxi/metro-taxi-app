@@ -485,6 +485,14 @@
     "stop": "Stop",
     "preparing": "Preparing..."
   },
+  "update": {
+    "title": "New version available",
+    "subtitle": "Métro-Taxi has been updated",
+    "description": "Reload to enjoy the latest improvements and fixes.",
+    "updateNow": "Update now",
+    "updating": "Updating...",
+    "later": "Later"
+  },
   "footer": {
     "rights": "All rights reserved",
     "contact": "Contact",

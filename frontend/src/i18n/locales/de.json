@@ -407,6 +407,14 @@
     "stop": "Stopp",
     "preparing": "Vorbereitung..."
   },
+  "update": {
+    "title": "Neue Version verfügbar",
+    "subtitle": "Métro-Taxi wurde aktualisiert",
+    "description": "Laden Sie die Seite neu, um die neuesten Verbesserungen zu genießen.",
+    "updateNow": "Jetzt aktualisieren",
+    "updating": "Aktualisierung...",
+    "later": "Später"
+  },
   "footer": {
     "rights": "Alle Rechte vorbehalten",
     "contact": "Kontakt",
