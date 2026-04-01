@@ -629,8 +629,15 @@
     "installDescription": "Ajoutez l'application sur votre écran d'accueil pour un accès rapide",
     "installButton": "Installer",
     "later": "Plus tard",
-    "iosInstructions": "Sur iOS:",
-    "iosSteps": "Appuyez sur Partager → \"Sur l'écran d'accueil\""
+    "understood": "J'ai compris",
+    "iosTitle": "Pour installer sur iPhone/iPad :",
+    "iosStep1": "Appuyez sur le bouton Partager",
+    "iosStep2": "Faites défiler et appuyez sur \"Sur l'écran d'accueil\"",
+    "iosStep3": "Appuyez sur \"Ajouter\"",
+    "androidTitle": "Pour installer sur Android :",
+    "androidStep1": "Appuyez sur le menu ⋮ en haut à droite",
+    "androidStep2": "Sélectionnez \"Installer l'application\" ou \"Ajouter à l'écran d'accueil\"",
+    "genericInstructions": "Utilisez le menu de votre navigateur pour ajouter cette page à votre écran d'accueil"
   },
   "rideHistory": {
     "title": "Historique des trajets",

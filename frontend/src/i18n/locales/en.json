@@ -599,8 +599,15 @@
     "installDescription": "Add the app to your home screen for quick access",
     "installButton": "Install",
     "later": "Later",
-    "iosInstructions": "On iOS:",
-    "iosSteps": "Tap Share → \"Add to Home Screen\""
+    "understood": "Got it",
+    "iosTitle": "To install on iPhone/iPad:",
+    "iosStep1": "Tap the Share button",
+    "iosStep2": "Scroll down and tap \"Add to Home Screen\"",
+    "iosStep3": "Tap \"Add\"",
+    "androidTitle": "To install on Android:",
+    "androidStep1": "Tap the menu ⋮ in the top right",
+    "androidStep2": "Select \"Install app\" or \"Add to Home screen\"",
+    "genericInstructions": "Use your browser menu to add this page to your home screen"
   },
   "rideHistory": {
     "title": "Ride History",
