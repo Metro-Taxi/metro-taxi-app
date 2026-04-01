@@ -19,11 +19,24 @@ const Landing = () => {
   const [audioProgress, setAudioProgress] = useState(0);
   const [userInteracted, setUserInteracted] = useState(false);
   const [autoplayAttempted, setAutoplayAttempted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const audioRef = useRef(null);
   const audioBlobRef = useRef(null);
   const videoRef = useRef(null);
   const videoSectionRef = useRef(null);
   const preloadingRef = useRef(false);
+
+  // Detect if mobile device (client-side) - MUST be before other effects that use isMobile
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                     (window.innerWidth <= 768);
+      setIsMobile(mobile);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Get language code - keep full code if it exists in languages list, otherwise get base
   const getLanguageCode = (langCode) => {
@@ -39,55 +52,49 @@ const Landing = () => {
   
   const currentLanguage = languages.find(l => l.code === getLanguageCode(i18n.language)) || languages[0];
 
-  // Preload audio in background when component mounts or language changes
+  // Preload audio in background AFTER initial render (delayed to not block UI)
   useEffect(() => {
-    const preloadAudio = async () => {
-      if (preloadingRef.current) return;
-      preloadingRef.current = true;
-      
-      setAudioReady(false);
-      setAudioProgress(0);
-      
-      try {
-        // Priority order:
-        // 1. Local static files (cached by Service Worker - FASTEST after first load)
-        // 2. Backend API endpoint (has proper cache headers)
-        // 3. TTS API generation (slowest, fallback only)
+    // Delay audio preload to prioritize UI rendering
+    const delayTimer = setTimeout(() => {
+      const preloadAudio = async () => {
+        if (preloadingRef.current) return;
+        preloadingRef.current = true;
         
-        const langCode = i18n.language.split('-')[0]; // Get base language
+        setAudioReady(false);
+        setAudioProgress(0);
         
-        // Try local static files first (Service Worker will cache these)
-        const localUrl = `/audio/voiceover/voiceover_${i18n.language}.mp3`;
-        const localFallbackUrl = `/audio/voiceover/voiceover_${langCode}.mp3`;
-        
-        let response = await fetch(localUrl);
-        
-        // If exact language not found locally, try base language
-        if (!response.ok && langCode !== i18n.language) {
-          response = await fetch(localFallbackUrl);
-        }
-        
-        // If local files not found, try backend API
-        if (!response.ok) {
-          console.log('Local audio not found, trying backend API...');
-          const apiAudioUrl = `${API}/api/audio/voiceover/voiceover_${i18n.language}.mp3`;
-          response = await fetch(apiAudioUrl);
+        try {
+          const langCode = i18n.language.split('-')[0];
+          
+          // Try local static files first (Service Worker will cache these)
+          const localUrl = `/audio/voiceover/voiceover_${i18n.language}.mp3`;
+          const localFallbackUrl = `/audio/voiceover/voiceover_${langCode}.mp3`;
+          
+          let response = await fetch(localUrl);
           
           if (!response.ok && langCode !== i18n.language) {
-            const apiFallbackUrl = `${API}/api/audio/voiceover/voiceover_${langCode}.mp3`;
-            response = await fetch(apiFallbackUrl);
+            response = await fetch(localFallbackUrl);
           }
-        }
-        
-        // Last resort: TTS API generation
-        if (!response.ok) {
-          console.log('Cached audio not found, falling back to TTS API...');
-          response = await fetch(`${API}/api/tts/voiceover`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ language: i18n.language, voice: 'nova' })
-          });
-        }
+          
+          // If local files not found, try backend API
+          if (!response.ok) {
+            const apiAudioUrl = `${API}/api/audio/voiceover/voiceover_${i18n.language}.mp3`;
+            response = await fetch(apiAudioUrl);
+            
+            if (!response.ok && langCode !== i18n.language) {
+              const apiFallbackUrl = `${API}/api/audio/voiceover/voiceover_${langCode}.mp3`;
+              response = await fetch(apiFallbackUrl);
+            }
+          }
+          
+          // Last resort: TTS API generation (skip on mobile to save bandwidth)
+          if (!response.ok && !isMobile) {
+            response = await fetch(`${API}/api/tts/voiceover`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ language: i18n.language, voice: 'nova' })
+            });
+          }
 
         if (!response.ok) throw new Error('Audio load failed');
 
@@ -139,7 +146,10 @@ const Landing = () => {
 
     // Start preloading
     preloadAudio();
-  }, [i18n.language]);
+    }, 1500); // Delay 1.5s to prioritize UI rendering
+    
+    return () => clearTimeout(delayTimer);
+  }, [i18n.language, isMobile]);
 
   const changeLanguage = (code) => {
     i18n.changeLanguage(code);
@@ -264,21 +274,6 @@ const Landing = () => {
         URL.revokeObjectURL(audioBlobRef.current);
       }
     };
-  }, []);
-
-  // Detect if mobile device (client-side)
-  const [isMobile, setIsMobile] = useState(false);
-  
-  useEffect(() => {
-    // Detect mobile on client side
-    const checkMobile = () => {
-      const mobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                     (window.innerWidth <= 768);
-      setIsMobile(mobile);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   // Track user interaction to enable autoplay (desktop only)

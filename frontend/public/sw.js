@@ -1,47 +1,25 @@
-const CACHE_NAME = 'metro-taxi-v7';
-const STATIC_CACHE = 'metro-taxi-static-v7';
-const DYNAMIC_CACHE = 'metro-taxi-dynamic-v7';
-const API_CACHE = 'metro-taxi-api-v6';
-const AUDIO_CACHE = 'metro-taxi-audio-v3';
+const CACHE_NAME = 'metro-taxi-v8';
+const STATIC_CACHE = 'metro-taxi-static-v8';
+const DYNAMIC_CACHE = 'metro-taxi-dynamic-v8';
+const API_CACHE = 'metro-taxi-api-v7';
+const AUDIO_CACHE = 'metro-taxi-audio-v4';
 
-// Resources to cache immediately
+// Critical resources to cache immediately (minimal set for fast startup)
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/offline.html',
   '/manifest.json',
-  '/icons/icon-72x72.png',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
-  '/icons/favicon.ico'
+  '/icons/icon-192x192.png'
 ];
 
-// Audio files to pre-cache (voiceovers for all languages)
-const AUDIO_ASSETS = [
-  '/audio/voiceover/voiceover_fr.mp3',
-  '/audio/voiceover/voiceover_en.mp3',
-  '/audio/voiceover/voiceover_en-GB.mp3',
-  '/audio/voiceover/voiceover_es.mp3',
-  '/audio/voiceover/voiceover_de.mp3',
-  '/audio/voiceover/voiceover_it.mp3',
-  '/audio/voiceover/voiceover_pt.mp3',
-  '/audio/voiceover/voiceover_nl.mp3',
-  '/audio/voiceover/voiceover_sv.mp3',
-  '/audio/voiceover/voiceover_no.mp3',
-  '/audio/voiceover/voiceover_da.mp3',
-  '/audio/voiceover/voiceover_zh.mp3',
-  '/audio/voiceover/voiceover_hi.mp3',
-  '/audio/voiceover/voiceover_pa.mp3',
-  '/audio/voiceover/voiceover_ar.mp3',
-  '/audio/voiceover/voiceover_ru.mp3'
-];
+// Audio files are NOT pre-cached anymore - they load on demand and get cached
+// This speeds up initial app load significantly on mobile
+const AUDIO_ASSETS = [];
 
 // API endpoints to cache for offline use
 const CACHEABLE_API_ROUTES = [
   '/api/auth/me',
-  '/api/subscriptions/plans',
-  '/api/rides/history',
-  '/api/notifications'
+  '/api/subscriptions/plans'
 ];
 
 // Listen for skip waiting message from main thread
@@ -52,34 +30,17 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// Install event - cache static assets and audio files
+// Install event - cache ONLY critical static assets (fast startup)
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing v7...');
+  console.log('[Service Worker] Installing v8 (optimized)...');
   event.waitUntil(
-    Promise.all([
-      // Cache static assets
-      caches.open(STATIC_CACHE)
-        .then((cache) => {
-          console.log('[Service Worker] Caching static assets');
-          return cache.addAll(STATIC_ASSETS);
-        }),
-      // Cache audio files separately (they are larger)
-      caches.open(AUDIO_CACHE)
-        .then((cache) => {
-          console.log('[Service Worker] Pre-caching audio files...');
-          // Cache audio files one by one to avoid timeout on slow connections
-          return Promise.allSettled(
-            AUDIO_ASSETS.map(url => 
-              cache.add(url).catch(err => {
-                console.warn('[Service Worker] Failed to cache audio:', url, err);
-              })
-            )
-          );
-        })
-    ])
+    caches.open(STATIC_CACHE)
+      .then((cache) => {
+        console.log('[Service Worker] Caching critical assets only');
+        return cache.addAll(STATIC_ASSETS);
+      })
       .then(() => {
-        console.log('[Service Worker] Install complete');
-        // Auto skip waiting for faster updates
+        console.log('[Service Worker] Install complete - fast startup mode');
         return self.skipWaiting();
       })
       .catch((error) => {

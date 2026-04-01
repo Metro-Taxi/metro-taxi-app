@@ -40,7 +40,60 @@
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
-        <div id="root"></div>
+        <div id="root">
+            <!-- Splash Screen - Shows instantly while React loads -->
+            <div id="splash-screen" style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+            ">
+                <div style="
+                    width: 80px;
+                    height: 80px;
+                    background: linear-gradient(135deg, #FFD60A 0%, #E6C209 100%);
+                    border-radius: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-bottom: 24px;
+                    animation: pulse 1.5s ease-in-out infinite;
+                ">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2">
+                        <path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/>
+                        <circle cx="6.5" cy="16.5" r="2.5"/>
+                        <circle cx="16.5" cy="16.5" r="2.5"/>
+                    </svg>
+                </div>
+                <h1 style="
+                    color: #FFD60A;
+                    font-family: 'Inter', -apple-system, sans-serif;
+                    font-size: 28px;
+                    font-weight: 700;
+                    margin: 0 0 8px 0;
+                    letter-spacing: -0.5px;
+                ">Métro-Taxi</h1>
+                <p style="
+                    color: #888;
+                    font-family: -apple-system, sans-serif;
+                    font-size: 14px;
+                    margin: 0;
+                ">Chargement...</p>
+            </div>
+            <style>
+                @keyframes pulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                }
+            </style>
+        </div>
         <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

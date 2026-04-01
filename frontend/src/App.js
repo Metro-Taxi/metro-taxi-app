@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
@@ -6,6 +6,16 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { RegionProvider } from "@/contexts/RegionContext";
 import InstallPWABanner from "@/components/InstallPWABanner";
 import UpdateNotification from "@/components/UpdateNotification";
+
+// Remove splash screen once React is loaded
+const removeSplashScreen = () => {
+  const splash = document.getElementById('splash-screen');
+  if (splash) {
+    splash.style.transition = 'opacity 0.3s ease-out';
+    splash.style.opacity = '0';
+    setTimeout(() => splash.remove(), 300);
+  }
+};
 
 // Pages
 import Landing from "@/pages/Landing";
@@ -143,6 +153,11 @@ function AppRoutes() {
 }
 
 function App() {
+  // Remove splash screen when app is ready
+  useEffect(() => {
+    removeSplashScreen();
+  }, []);
+
   return (
     <div className="App">
       <BrowserRouter>
