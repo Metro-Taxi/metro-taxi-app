@@ -159,6 +159,12 @@ london.metro-taxi.com → CNAME → votre-app.emergent.host
 - `payout_history` - Historique virements
 
 ## 📅 Dernière Mise à Jour
+**01/04/2026 - Session Charly**
+- ✅ **Bug bouton audio mobile corrigé** : Suppression variables non définies (`audioReady`, `audioProgress`)
+- ✅ **Tests de régression complets** : 100% réussis (Backend 11/11, Frontend tous passés)
+- ✅ **Vérification cohérence MongoDB** : API et scripts utilisent la même base de données
+- ✅ **Début refactoring server.py** : Création `/app/backend/routes/auth.py` (non intégré, préparation)
+
 **30/03/2026 - Session 3**
 - ✅ **Champ Tax ID pour chauffeurs** : Numéro d'identification fiscale adapté par pays
   - France : Numéro SIRET (14 chiffres)
