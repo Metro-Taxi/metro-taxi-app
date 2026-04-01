@@ -293,8 +293,26 @@ const Landing = () => {
     };
   }, []);
 
-  // Track user interaction to enable autoplay
+  // Detect if mobile device (client-side)
+  const [isMobile, setIsMobile] = useState(false);
+  
   useEffect(() => {
+    // Detect mobile on client side
+    const checkMobile = () => {
+      const mobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                     (window.innerWidth <= 768);
+      setIsMobile(mobile);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Track user interaction to enable autoplay (desktop only)
+  useEffect(() => {
+    // Skip autoplay tracking on mobile - audio will only play on button click
+    if (isMobile) return;
+
     const handleInteraction = () => {
       setUserInteracted(true);
     };
@@ -302,19 +320,20 @@ const Landing = () => {
     // Listen for any user interaction
     window.addEventListener('click', handleInteraction, { once: true });
     window.addEventListener('scroll', handleInteraction, { once: true });
-    window.addEventListener('touchstart', handleInteraction, { once: true });
     window.addEventListener('keydown', handleInteraction, { once: true });
 
     return () => {
       window.removeEventListener('click', handleInteraction);
       window.removeEventListener('scroll', handleInteraction);
-      window.removeEventListener('touchstart', handleInteraction);
       window.removeEventListener('keydown', handleInteraction);
     };
-  }, []);
+  }, [isMobile]);
 
-  // Auto-play when video section becomes visible AND audio is ready AND user has interacted
+  // Auto-play when video section becomes visible (DESKTOP ONLY)
+  // On mobile, audio only plays when user clicks the button
   useEffect(() => {
+    // Disable autoplay on mobile - browsers block it anyway
+    if (isMobile) return;
     if (!videoSectionRef.current || autoplayAttempted) return;
 
     const observer = new IntersectionObserver(
@@ -322,7 +341,7 @@ const Landing = () => {
         entries.forEach((entry) => {
           // When video section is 50% visible
           if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-            // Try to autoplay if audio is ready and user has interacted
+            // Try to autoplay if audio is ready and user has interacted (desktop only)
             if (audioReady && userInteracted && !audioPlaying && !autoplayAttempted) {
               setAutoplayAttempted(true);
               playVoiceover();
@@ -338,7 +357,7 @@ const Landing = () => {
     return () => {
       observer.disconnect();
     };
-  }, [audioReady, userInteracted, audioPlaying, autoplayAttempted]);
+  }, [audioReady, userInteracted, audioPlaying, autoplayAttempted, isMobile]);
 
   return (
     <div className="min-h-screen bg-[#09090B]">
