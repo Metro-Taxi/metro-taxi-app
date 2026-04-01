@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, Users, MapPin, CreditCard, Shield, Clock, Globe, ChevronDown, Volume2, VolumeX, Loader2, Play, HelpCircle } from 'lucide-react';
+import { Car, Users, MapPin, CreditCard, Shield, Clock, Globe, ChevronDown, Volume2, VolumeX, Loader2, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { languages } from '@/i18n';
@@ -292,38 +292,33 @@ const Landing = () => {
               {t('common.error')}
             </video>
             
-            {/* Voiceover Button */}
+            {/* Voiceover Button - Simple synchronous click handler for mobile compatibility */}
             <button
               onClick={playVoiceover}
-              disabled={audioLoading && !audioReady}
+              disabled={audioLoading}
               className={`absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 rounded-full font-bold transition-all ${
                 audioPlaying 
                   ? 'bg-[#FFD60A] text-black' 
-                  : audioReady
-                    ? 'bg-green-600 text-white hover:bg-green-700'
-                    : 'bg-black/70 text-white hover:bg-black/90'
+                  : audioLoading
+                    ? 'bg-zinc-700 text-zinc-400 cursor-wait'
+                    : 'bg-green-600 text-white hover:bg-green-700'
               }`}
               data-testid="voiceover-btn"
             >
-              {audioLoading && !audioReady ? (
+              {audioLoading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  <span className="hidden sm:inline">{t('video.loading')}</span>
-                </>
-              ) : !audioReady ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span className="hidden sm:inline">{audioProgress > 0 ? `${audioProgress}%` : t('video.preparing', 'Préparation...')}</span>
+                  <span className="hidden sm:inline">{t('video.loading', 'Chargement...')}</span>
                 </>
               ) : audioPlaying ? (
                 <>
                   <VolumeX className="w-5 h-5" />
-                  <span className="hidden sm:inline">{t('video.stop')}</span>
+                  <span className="hidden sm:inline">{t('video.stop', 'Stop')}</span>
                 </>
               ) : (
                 <>
                   <Volume2 className="w-5 h-5" />
-                  <span className="hidden sm:inline">{currentLanguage.flag} {t('video.listen')}</span>
+                  <span className="hidden sm:inline">{currentLanguage.flag} {t('video.listen', 'Écouter')}</span>
                 </>
               )}
             </button>
