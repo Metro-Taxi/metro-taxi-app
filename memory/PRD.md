@@ -232,6 +232,20 @@ Les noms propres stockés dans la base de données (ex: "Test Driver", "Boniface
 
 ## 📝 Changelog
 
+### 01/04/2026 - Correction Bug Bouton Audio Mobile (Session 2)
+- **Corrigé** : Bouton audio "Écouter" bloqué/figé sur mobile
+  - Suppression des variables non définies (`audioReady`, `audioProgress`) qui causaient une erreur JavaScript
+  - Simplification du JSX du bouton pour n'utiliser que `audioPlaying` et `audioLoading`
+  - États du bouton :
+    - Initial : fond vert (`bg-green-600`), texte "Écouter"
+    - Chargement : fond gris (`bg-zinc-700`), icône spinner
+    - Lecture : fond jaune (`bg-[#FFD60A]`), texte "Stop"
+- **Testé** : 100% des tests passés (13/13) - Desktop et Mobile
+  - Bouton visible et cliquable
+  - Transitions d'état correctes
+  - Changement de langue fonctionnel (FR: "Écouter", EN: "Listen")
+  - Endpoints audio HTTP 200
+
 ### 01/04/2026 - Audio Landing Page & Notification Mise à Jour PWA
 - **Corrigé** : Problème de lenteur de chargement audio (headers Cache-Control)
   - Service Worker v7 avec stratégie **cache-first** pour les fichiers audio
