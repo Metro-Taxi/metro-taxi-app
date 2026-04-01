@@ -218,12 +218,21 @@ STRIPE_API_KEY=sk_live_... (déjà configuré)
 Les noms propres stockés dans la base de données (ex: "Test Driver", "Boniface Tegang") ne changent **PAS** quand on change la langue de l'interface. Ce sont des **données** entrées par les utilisateurs, pas des clés de traduction. L'internationalisation (i18n) ne traduit que les labels et menus de l'interface.
 
 ## 🔄 Prochaines Étapes
-- [x] **Migration routes régions** vers `routes/regions.py` ✅ (30/03/2026)
-- [x] **Correction audio Landing page** - Cache Service Worker + gestion erreurs ✅ (01/04/2026)
-- [x] **Traductions bouton "Écouter"** - 16 langues ✅ (01/04/2026)
-- [x] **Notification mise à jour PWA** - Composant élégant traduit en 16 langues ✅ (01/04/2026)
-- [x] **Centre d'aide avec Chatbot IA** - FAQ + GPT multilingue ✅ (01/04/2026)
-- [ ] **Migration routes auth** vers `routes/auth.py`
+
+### Refactoring server.py - Phase 1 COMPLÈTE ✅
+Modules créés et prêts à intégrer :
+| Module | Lignes | Routes couvertes |
+|--------|--------|------------------|
+| `routes/auth.py` | 295 | `/auth/*` (register, login, verify) |
+| `routes/drivers.py` | 229 | `/drivers/*` (location, earnings, bank) |
+| `routes/matching.py` | 309 | `/matching/*` (algorithme, réseau) |
+| `routes/notifications.py` | 242 | `/notifications/*` (push, status) |
+| `routes/regions.py` | 228 | `/regions/*` (déjà intégré) |
+
+**Prochaine étape** : Intégrer les routers dans server.py et supprimer le code dupliqué.
+
+### Autres tâches
+- [ ] **Migration routes auth** vers `routes/auth.py` ✅ (30/03/2026)
 - [ ] **Migration routes paiements** vers `routes/payments.py`
 - [ ] **Migration routes chauffeurs** vers `routes/drivers.py`
 - [ ] **Migration routes admin** vers `routes/admin.py`
