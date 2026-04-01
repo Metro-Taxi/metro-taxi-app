@@ -608,5 +608,19 @@
     "code": "DKK",
     "symbol": "kr",
     "position": "after"
+  },
+  "help": {
+    "button": "HJÆLP",
+    "title": "Hjælpecenter",
+    "subtitle": "Hvordan kan vi hjælpe dig?",
+    "faqTab": "Ofte stillede spørgsmål",
+    "chatTab": "AI-assistent",
+    "notFound": "Fandt du ikke dit svar?",
+    "askAI": "Spørg assistenten",
+    "chatWelcome": "Hej! Jeg er din assistent.",
+    "chatIntro": "Stil mig dine spørgsmål om Métro-Taxi. Jeg svarer på dit sprog!",
+    "chatPlaceholder": "Skriv dit spørgsmål...",
+    "chatError": "Beklager, jeg har et problem. Prøv venligst igen.",
+    "newChat": "Ny samtale"
   }
 }

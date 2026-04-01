@@ -612,5 +612,19 @@
     "code": "CNY",
     "symbol": "¥",
     "position": "before"
+  },
+  "help": {
+    "button": "帮助",
+    "title": "帮助中心",
+    "subtitle": "我们如何帮助您？",
+    "faqTab": "常见问题",
+    "chatTab": "AI助手",
+    "notFound": "没有找到答案？",
+    "askAI": "询问助手",
+    "chatWelcome": "您好！我是您的助手。",
+    "chatIntro": "向我询问关于Métro-Taxi的问题。我会用您的语言回答！",
+    "chatPlaceholder": "输入您的问题...",
+    "chatError": "抱歉，我遇到了问题。请重试。",
+    "newChat": "新对话"
   }
 }

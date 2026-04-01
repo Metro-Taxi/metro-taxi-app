@@ -608,5 +608,19 @@
     "code": "SEK",
     "symbol": "kr",
     "position": "after"
+  },
+  "help": {
+    "button": "HJÄLP",
+    "title": "Hjälpcenter",
+    "subtitle": "Hur kan vi hjälpa dig?",
+    "faqTab": "Vanliga frågor",
+    "chatTab": "AI-assistent",
+    "notFound": "Hittade du inte ditt svar?",
+    "askAI": "Fråga assistenten",
+    "chatWelcome": "Hej! Jag är din assistent.",
+    "chatIntro": "Ställ dina frågor om Métro-Taxi. Jag svarar på ditt språk!",
+    "chatPlaceholder": "Skriv din fråga...",
+    "chatError": "Tyvärr, jag har ett problem. Försök igen.",
+    "newChat": "Ny konversation"
   }
 }

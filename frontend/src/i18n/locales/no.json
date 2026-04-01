@@ -608,5 +608,19 @@
     "code": "NOK",
     "symbol": "kr",
     "position": "after"
+  },
+  "help": {
+    "button": "HJELP",
+    "title": "Hjelpesenter",
+    "subtitle": "Hvordan kan vi hjelpe deg?",
+    "faqTab": "Vanlige spørsmål",
+    "chatTab": "AI-assistent",
+    "notFound": "Fant du ikke svaret ditt?",
+    "askAI": "Spør assistenten",
+    "chatWelcome": "Hei! Jeg er din assistent.",
+    "chatIntro": "Still meg spørsmål om Métro-Taxi. Jeg svarer på ditt språk!",
+    "chatPlaceholder": "Skriv spørsmålet ditt...",
+    "chatError": "Beklager, jeg har et problem. Prøv igjen.",
+    "newChat": "Ny samtale"
   }
 }

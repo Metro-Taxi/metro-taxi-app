@@ -608,5 +608,19 @@
     "code": "EUR",
     "symbol": "€",
     "position": "after"
+  },
+  "help": {
+    "button": "HULP",
+    "title": "Helpcentrum",
+    "subtitle": "Hoe kunnen we u helpen?",
+    "faqTab": "Veelgestelde vragen",
+    "chatTab": "AI-assistent",
+    "notFound": "Geen antwoord gevonden?",
+    "askAI": "Vraag de assistent",
+    "chatWelcome": "Hallo! Ik ben uw assistent.",
+    "chatIntro": "Stel mij uw vragen over Métro-Taxi. Ik antwoord in uw taal!",
+    "chatPlaceholder": "Typ uw vraag...",
+    "chatError": "Sorry, ik heb een probleem. Probeer het opnieuw.",
+    "newChat": "Nieuw gesprek"
   }
 }

@@ -608,5 +608,19 @@
     "code": "GBP",
     "symbol": "£",
     "position": "before"
+  },
+  "help": {
+    "button": "HELP",
+    "title": "Help Centre",
+    "subtitle": "How can we help you?",
+    "faqTab": "FAQ",
+    "chatTab": "AI Assistant",
+    "notFound": "Didn't find your answer?",
+    "askAI": "Ask the assistant",
+    "chatWelcome": "Hello! I'm your assistant.",
+    "chatIntro": "Ask me your questions about Métro-Taxi. I respond in your language!",
+    "chatPlaceholder": "Type your question...",
+    "chatError": "Sorry, I'm experiencing an issue. Please try again.",
+    "newChat": "New conversation"
   }
 }
