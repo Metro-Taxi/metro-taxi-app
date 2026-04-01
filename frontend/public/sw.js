@@ -1,7 +1,8 @@
-const CACHE_NAME = 'metro-taxi-v4';
-const STATIC_CACHE = 'metro-taxi-static-v4';
-const DYNAMIC_CACHE = 'metro-taxi-dynamic-v4';
-const API_CACHE = 'metro-taxi-api-v3';
+const CACHE_NAME = 'metro-taxi-v5';
+const STATIC_CACHE = 'metro-taxi-static-v5';
+const DYNAMIC_CACHE = 'metro-taxi-dynamic-v5';
+const API_CACHE = 'metro-taxi-api-v4';
+const AUDIO_CACHE = 'metro-taxi-audio-v1';
 
 // Resources to cache immediately
 const STATIC_ASSETS = [
@@ -13,6 +14,26 @@ const STATIC_ASSETS = [
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
   '/icons/favicon.ico'
+];
+
+// Audio files to pre-cache (voiceovers for all languages)
+const AUDIO_ASSETS = [
+  '/audio/voiceover/voiceover_fr.mp3',
+  '/audio/voiceover/voiceover_en.mp3',
+  '/audio/voiceover/voiceover_en-GB.mp3',
+  '/audio/voiceover/voiceover_es.mp3',
+  '/audio/voiceover/voiceover_de.mp3',
+  '/audio/voiceover/voiceover_it.mp3',
+  '/audio/voiceover/voiceover_pt.mp3',
+  '/audio/voiceover/voiceover_nl.mp3',
+  '/audio/voiceover/voiceover_sv.mp3',
+  '/audio/voiceover/voiceover_no.mp3',
+  '/audio/voiceover/voiceover_da.mp3',
+  '/audio/voiceover/voiceover_zh.mp3',
+  '/audio/voiceover/voiceover_hi.mp3',
+  '/audio/voiceover/voiceover_pa.mp3',
+  '/audio/voiceover/voiceover_ar.mp3',
+  '/audio/voiceover/voiceover_ru.mp3'
 ];
 
 // API endpoints to cache for offline use
@@ -31,15 +52,31 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// Install event - cache static assets
+// Install event - cache static assets and audio files
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing v4...');
+  console.log('[Service Worker] Installing v5...');
   event.waitUntil(
-    caches.open(STATIC_CACHE)
-      .then((cache) => {
-        console.log('[Service Worker] Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
-      })
+    Promise.all([
+      // Cache static assets
+      caches.open(STATIC_CACHE)
+        .then((cache) => {
+          console.log('[Service Worker] Caching static assets');
+          return cache.addAll(STATIC_ASSETS);
+        }),
+      // Cache audio files separately (they are larger)
+      caches.open(AUDIO_CACHE)
+        .then((cache) => {
+          console.log('[Service Worker] Pre-caching audio files...');
+          // Cache audio files one by one to avoid timeout on slow connections
+          return Promise.allSettled(
+            AUDIO_ASSETS.map(url => 
+              cache.add(url).catch(err => {
+                console.warn('[Service Worker] Failed to cache audio:', url, err);
+              })
+            )
+          );
+        })
+    ])
       .then(() => {
         console.log('[Service Worker] Install complete');
         // Auto skip waiting for faster updates
@@ -63,6 +100,7 @@ self.addEventListener('activate', (event) => {
               return cacheName !== STATIC_CACHE && 
                      cacheName !== DYNAMIC_CACHE &&
                      cacheName !== API_CACHE &&
+                     cacheName !== AUDIO_CACHE &&
                      cacheName.startsWith('metro-taxi-');
             })
             .map((cacheName) => {
@@ -95,6 +133,32 @@ self.addEventListener('fetch', (event) => {
 
   // Skip external resources
   if (url.origin !== location.origin) {
+    return;
+  }
+
+  // CACHE-FIRST for audio files (they don't change once generated)
+  if (url.pathname.includes('/audio/voiceover/') && url.pathname.endsWith('.mp3')) {
+    event.respondWith(
+      caches.open(AUDIO_CACHE).then((cache) => {
+        return cache.match(request).then((cachedResponse) => {
+          if (cachedResponse) {
+            console.log('[Service Worker] Audio served from cache:', url.pathname);
+            return cachedResponse;
+          }
+          // Not in cache, fetch from network and cache it
+          return fetch(request).then((networkResponse) => {
+            if (networkResponse.ok) {
+              cache.put(request, networkResponse.clone());
+              console.log('[Service Worker] Audio cached:', url.pathname);
+            }
+            return networkResponse;
+          }).catch((error) => {
+            console.error('[Service Worker] Audio fetch failed:', error);
+            return new Response('Audio unavailable', { status: 503 });
+          });
+        });
+      })
+    );
     return;
   }
 

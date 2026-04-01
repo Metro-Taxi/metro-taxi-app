@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, WebSocket, WebSocketDisconnect
-from fastapi.responses import Response
+from fastapi.responses import Response, FileResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -5256,6 +5256,43 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str, user_type: str)
                     
     except WebSocketDisconnect:
         manager.disconnect(user_id)
+
+# ============================================
+# STATIC AUDIO FILES WITH CACHE HEADERS
+# ============================================
+# Serve pre-generated voiceover MP3 files with long cache headers
+# This avoids the no-cache issue from the React dev server
+
+AUDIO_DIR = Path(__file__).parent.parent / "frontend" / "public" / "audio" / "voiceover"
+
+@app.get("/api/audio/voiceover/{filename}")
+async def serve_voiceover_audio(filename: str):
+    """
+    Serve pre-generated voiceover MP3 files with proper caching headers.
+    Files are immutable (pre-generated), so we can cache them for a long time.
+    """
+    # Sanitize filename to prevent path traversal
+    if ".." in filename or "/" in filename or "\\" in filename:
+        raise HTTPException(status_code=400, detail="Invalid filename")
+    
+    # Only allow .mp3 files
+    if not filename.endswith(".mp3"):
+        raise HTTPException(status_code=400, detail="Only MP3 files are allowed")
+    
+    file_path = AUDIO_DIR / filename
+    
+    if not file_path.exists() or not file_path.is_file():
+        raise HTTPException(status_code=404, detail="Audio file not found")
+    
+    # Return file with aggressive caching headers (1 year)
+    return FileResponse(
+        path=str(file_path),
+        media_type="audio/mpeg",
+        headers={
+            "Cache-Control": "public, max-age=31536000, immutable",
+            "Accept-Ranges": "bytes"
+        }
+    )
 
 # Include the router in the main app
 app.include_router(api_router)

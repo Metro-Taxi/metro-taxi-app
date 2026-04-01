@@ -47,21 +47,39 @@ const Landing = () => {
       setAudioProgress(0);
       
       try {
-        // First, try to load from static cached file (FAST!)
+        // Priority order:
+        // 1. Local static files (cached by Service Worker - FASTEST after first load)
+        // 2. Backend API endpoint (has proper cache headers)
+        // 3. TTS API generation (slowest, fallback only)
+        
         const langCode = i18n.language.split('-')[0]; // Get base language
-        const staticUrl = `/audio/voiceover/voiceover_${i18n.language}.mp3`;
-        const fallbackUrl = `/audio/voiceover/voiceover_${langCode}.mp3`;
         
-        let response = await fetch(staticUrl);
+        // Try local static files first (Service Worker will cache these)
+        const localUrl = `/audio/voiceover/voiceover_${i18n.language}.mp3`;
+        const localFallbackUrl = `/audio/voiceover/voiceover_${langCode}.mp3`;
         
-        // If exact language not found, try base language
+        let response = await fetch(localUrl);
+        
+        // If exact language not found locally, try base language
         if (!response.ok && langCode !== i18n.language) {
-          response = await fetch(fallbackUrl);
+          response = await fetch(localFallbackUrl);
         }
         
-        // If still not found, fall back to API generation
+        // If local files not found, try backend API
         if (!response.ok) {
-          console.log('Static file not found, falling back to API...');
+          console.log('Local audio not found, trying backend API...');
+          const apiAudioUrl = `${API}/api/audio/voiceover/voiceover_${i18n.language}.mp3`;
+          response = await fetch(apiAudioUrl);
+          
+          if (!response.ok && langCode !== i18n.language) {
+            const apiFallbackUrl = `${API}/api/audio/voiceover/voiceover_${langCode}.mp3`;
+            response = await fetch(apiFallbackUrl);
+          }
+        }
+        
+        // Last resort: TTS API generation
+        if (!response.ok) {
+          console.log('Cached audio not found, falling back to TTS API...');
           response = await fetch(`${API}/api/tts/voiceover`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -136,6 +154,21 @@ const Landing = () => {
         return;
       }
 
+      // Helper function to safely play audio
+      const safePlayAudio = async (audio) => {
+        try {
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            await playPromise;
+          }
+          return true;
+        } catch (playError) {
+          // Handle autoplay policy / DOM exception gracefully
+          console.warn('Audio play() failed:', playError.message);
+          return false;
+        }
+      };
+
       // If audio is ready (preloaded), play immediately
       if (audioReady && audioBlobRef.current) {
         audioRef.current = new Audio(audioBlobRef.current);
@@ -149,26 +182,31 @@ const Landing = () => {
           audioRef.current = null;
         };
         
-        // Sync with video if present
+        // Sync with video if present (non-blocking)
         if (videoRef.current) {
           try {
             videoRef.current.currentTime = 0;
             videoRef.current.muted = true;
-            videoRef.current.play().catch(e => console.log('Video autoplay blocked:', e));
+            videoRef.current.play().catch(() => {}); // Silently ignore video errors
           } catch (e) {
-            console.log('Video sync error:', e);
+            // Ignore video sync errors
           }
         }
         
-        await audioRef.current.play();
-        setAudioPlaying(true);
+        const played = await safePlayAudio(audioRef.current);
+        if (played) {
+          setAudioPlaying(true);
+        } else {
+          // Cleanup on failure
+          audioRef.current = null;
+        }
         return;
       }
 
       // If not preloaded yet, load on demand (fallback)
       setAudioLoading(true);
       
-      // Try static file first
+      // Try local files first (cached by Service Worker)
       const langCode = i18n.language.split('-')[0];
       let audioUrl = `/audio/voiceover/voiceover_${i18n.language}.mp3`;
       
@@ -178,7 +216,13 @@ const Landing = () => {
         response = await fetch(audioUrl);
       }
       
-      // Fallback to API if static file not found
+      // Try backend API if local not found
+      if (!response.ok) {
+        audioUrl = `${API}/api/audio/voiceover/voiceover_${i18n.language}.mp3`;
+        response = await fetch(audioUrl);
+      }
+      
+      // Fallback to TTS API if cached file not found
       if (!response.ok) {
         response = await fetch(`${API}/api/tts/voiceover`, {
           method: 'POST',
@@ -204,23 +248,32 @@ const Landing = () => {
         audioRef.current = null;
       };
       
-      // Sync with video if present
+      // Sync with video if present (non-blocking)
       if (videoRef.current) {
         try {
           videoRef.current.currentTime = 0;
           videoRef.current.muted = true;
-          videoRef.current.play().catch(e => console.log('Video autoplay blocked:', e));
+          videoRef.current.play().catch(() => {}); // Silently ignore video errors
         } catch (e) {
-          console.log('Video sync error:', e);
+          // Ignore video sync errors
         }
       }
       
-      await audioRef.current.play();
-      setAudioPlaying(true);
-      setAudioReady(true);
+      const played = await safePlayAudio(audioRef.current);
+      if (played) {
+        setAudioPlaying(true);
+        setAudioReady(true);
+      } else {
+        // Cleanup on failure
+        audioRef.current = null;
+      }
     } catch (error) {
       console.error('Voiceover error:', error);
       setAudioPlaying(false);
+      // Ensure cleanup
+      if (audioRef.current) {
+        audioRef.current = null;
+      }
     } finally {
       setAudioLoading(false);
     }
