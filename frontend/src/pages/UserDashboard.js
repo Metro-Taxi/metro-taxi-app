@@ -114,6 +114,8 @@ const UserDashboard = () => {
   const [showChat, setShowChat] = useState(false);
   const [chatDriverName, setChatDriverName] = useState('');
   const [showHelp, setShowHelp] = useState(false);
+  const [searchingVehicles, setSearchingVehicles] = useState(false);
+  const [matchedDrivers, setMatchedDrivers] = useState([]);
   
   // Address search states
   const [addressSearch, setAddressSearch] = useState('');
@@ -256,6 +258,7 @@ const UserDashboard = () => {
   const fetchOptimalRoute = useCallback(async () => {
     if (!userLocation || !destination) return;
     
+    setSearchingVehicles(true);
     try {
       const response = await axios.post(`${API}/matching/optimal-route`, {
         user_lat: userLocation[0],
@@ -268,8 +271,37 @@ const UserDashboard = () => {
       setOptimalRoute(response.data.route);
     } catch (error) {
       console.error('Fetch optimal route error:', error);
+      setOptimalRoute(null);
+    } finally {
+      setSearchingVehicles(false);
     }
   }, [token, userLocation, destination]);
+
+  // Fetch matching drivers for the selected destination
+  const fetchMatchingDrivers = useCallback(async () => {
+    if (!userLocation || !destination) return;
+    
+    setSearchingVehicles(true);
+    try {
+      const response = await axios.post(`${API}/matching/find-drivers`, {
+        user_lat: userLocation[0],
+        user_lng: userLocation[1],
+        dest_lat: destination[0],
+        dest_lng: destination[1]
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setMatchedDrivers(response.data.drivers || []);
+      
+      // Also fetch optimal route
+      await fetchOptimalRoute();
+    } catch (error) {
+      console.error('Fetch matching drivers error:', error);
+      setMatchedDrivers([]);
+    } finally {
+      setSearchingVehicles(false);
+    }
+  }, [token, userLocation, destination, fetchOptimalRoute]);
 
   // Fetch network status
   const fetchNetworkStatus = useCallback(async () => {
@@ -300,9 +332,12 @@ const UserDashboard = () => {
   useEffect(() => {
     if (destination) {
       fetchTransfers();
-      fetchOptimalRoute();
+      fetchMatchingDrivers();
+    } else {
+      setMatchedDrivers([]);
+      setOptimalRoute(null);
     }
-  }, [destination, fetchTransfers, fetchOptimalRoute]);
+  }, [destination, fetchTransfers, fetchMatchingDrivers]);
 
   // Handle map click to set destination
   const handleMapClick = (e) => {
@@ -1080,9 +1115,9 @@ const UserDashboard = () => {
         </div>
       )}
 
-      {/* Optimal Route Panel */}
+      {/* Optimal Route Panel - Shows after destination is selected */}
       <AnimatePresence>
-        {destination && optimalRoute && !selectedDriver && !activeRide && (
+        {destination && !selectedDriver && !activeRide && (
           <motion.div
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
@@ -1090,82 +1125,161 @@ const UserDashboard = () => {
             className="ride-panel"
           >
             <div className="max-w-lg mx-auto">
+              {/* Header with destination */}
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-white text-lg flex items-center gap-2">
-                  <Route className="w-5 h-5 text-[#FFD60A]" />
-                  {t('common.optimalRoute')}
+                  <MapPin className="w-5 h-5 text-red-500" />
+                  {t('dashboard.user.destinationSelected', 'Destination sélectionnée')}
                 </h3>
                 <button 
                   onClick={() => {
                     setDestination(null);
                     setOptimalRoute(null);
+                    setMatchedDrivers([]);
                   }}
                   className="text-zinc-400 hover:text-white"
+                  data-testid="clear-destination-btn"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* Route summary */}
-              <div className="grid grid-cols-3 gap-3 mb-4">
-                <div className="bg-zinc-800/50 p-3 rounded text-center">
-                  <p className="text-2xl font-bold text-[#FFD60A]">{optimalRoute.total_distance_km}</p>
-                  <p className="text-xs text-zinc-400">{t('common.kmTotal')}</p>
-                </div>
-                <div className="bg-zinc-800/50 p-3 rounded text-center">
-                  <p className="text-2xl font-bold text-blue-400">{optimalRoute.total_transfers}</p>
-                  <p className="text-xs text-zinc-400">{t('common.transfers')}</p>
-                </div>
-                <div className="bg-zinc-800/50 p-3 rounded text-center">
-                  <p className="text-2xl font-bold text-green-400">{optimalRoute.estimated_total_time_minutes}</p>
-                  <p className="text-xs text-zinc-400">{t('dashboard.user.minutes')}</p>
-                </div>
-              </div>
+              {/* Search button - Always visible when destination is set */}
+              <Button
+                onClick={fetchMatchingDrivers}
+                disabled={searchingVehicles}
+                className="w-full bg-[#FFD60A] text-black font-bold h-12 hover:bg-[#E6C209] mb-4"
+                data-testid="search-vehicles-btn"
+              >
+                {searchingVehicles ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    {t('dashboard.user.searchingVehicles', 'Recherche en cours...')}
+                  </>
+                ) : (
+                  <>
+                    <Search className="w-5 h-5 mr-2" />
+                    {t('dashboard.user.findVehicles', 'Rechercher les véhicules')}
+                  </>
+                )}
+              </Button>
 
-              {/* Route efficiency */}
-              <div className="mb-4">
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-zinc-400">{t('common.routeEfficiency')}</span>
-                  <span className="text-[#FFD60A]">{optimalRoute.route_efficiency}%</span>
-                </div>
-                <Progress value={optimalRoute.route_efficiency} className="h-2" />
-              </div>
-
-              {/* Segments */}
-              {optimalRoute.segments && optimalRoute.segments.length > 0 && (
-                <div className="space-y-2 mb-4">
-                  <p className="text-sm text-zinc-400">{t('common.routeSegments')} :</p>
-                  {optimalRoute.segments.map((segment, index) => (
-                    <div key={index} className="bg-zinc-800/30 p-3 rounded border border-zinc-700">
-                      <div className="flex items-center justify-between">
-                        <span className="text-white font-medium">{t('dashboard.user.segment')} {segment.index}</span>
-                        <span className="text-xs text-zinc-400">{segment.distance_km} km • {segment.eta_minutes} {t('dashboard.user.min')}</span>
-                      </div>
-                      {segment.driver && (
-                        <div className="flex items-center gap-2 mt-2 text-sm">
-                          <Car className="w-4 h-4 text-[#FFD60A]" />
-                          <span className="text-zinc-300">{segment.driver.first_name}</span>
-                          <span className="text-zinc-500">•</span>
-                          <span className="text-zinc-400">{segment.driver.vehicle_plate}</span>
-                          <span className="text-green-400 ml-auto">{segment.driver.available_seats} {t('dashboard.user.seats')}</span>
-                        </div>
-                      )}
-                      {!segment.driver && (
-                        <p className="text-xs text-yellow-400 mt-1">{t('common.searchingForDriver')}</p>
-                      )}
+              {/* Route summary - Only show if optimalRoute exists */}
+              {optimalRoute && (
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Route className="w-4 h-4 text-[#FFD60A]" />
+                    <span className="text-sm text-zinc-400">{t('common.optimalRoute', 'Trajet optimal')}</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="bg-zinc-800/50 p-2 rounded text-center">
+                      <p className="text-lg font-bold text-[#FFD60A]">{optimalRoute.total_distance_km || '?'}</p>
+                      <p className="text-xs text-zinc-400">km</p>
                     </div>
-                  ))}
+                    <div className="bg-zinc-800/50 p-2 rounded text-center">
+                      <p className="text-lg font-bold text-blue-400">{optimalRoute.total_transfers || 0}</p>
+                      <p className="text-xs text-zinc-400">{t('common.transfers', 'transferts')}</p>
+                    </div>
+                    <div className="bg-zinc-800/50 p-2 rounded text-center">
+                      <p className="text-lg font-bold text-green-400">{optimalRoute.estimated_total_time_minutes || '?'}</p>
+                      <p className="text-xs text-zinc-400">min</p>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {/* Select first driver */}
-              {optimalRoute.segments && optimalRoute.segments[0]?.driver && (
+              {/* Available vehicles list */}
+              {matchedDrivers.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-sm text-zinc-400 mb-2 flex items-center gap-2">
+                    <Car className="w-4 h-4 text-[#FFD60A]" />
+                    {t('dashboard.user.availableVehicles', 'Véhicules disponibles')} ({matchedDrivers.length})
+                  </p>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {matchedDrivers.slice(0, 5).map((driver) => (
+                      <div 
+                        key={driver.id}
+                        className="bg-zinc-800/50 p-3 rounded border border-zinc-700 hover:border-[#FFD60A] cursor-pointer transition-all"
+                        onClick={() => handleDriverSelect(driver)}
+                        data-testid={`driver-option-${driver.id}`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-[#FFD60A] flex items-center justify-center text-black font-bold">
+                              {driver.first_name?.charAt(0) || 'C'}
+                            </div>
+                            <div>
+                              <p className="text-white font-medium">{driver.first_name}</p>
+                              <p className="text-xs text-zinc-400">{driver.vehicle_plate} • {driver.vehicle_type}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-green-400 font-bold">{driver.available_seats} {t('dashboard.user.seats', 'places')}</p>
+                            {driver.matching && (
+                              <p className="text-xs text-zinc-500">
+                                {driver.matching.pickup_distance} km • {driver.matching.eta_minutes} min
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        {driver.matching && (
+                          <div className="mt-2 flex items-center gap-2">
+                            <Progress value={driver.matching.score} className="h-1 flex-1" />
+                            <span className="text-xs text-[#FFD60A]">{Math.round(driver.matching.score)}%</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* No vehicles message */}
+              {!searchingVehicles && matchedDrivers.length === 0 && optimalRoute && (
+                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded p-3 mb-4">
+                  <div className="flex items-center gap-2 text-yellow-400">
+                    <AlertTriangle className="w-5 h-5" />
+                    <p className="text-sm">{t('dashboard.user.noVehiclesFound', 'Aucun véhicule disponible pour le moment')}</p>
+                  </div>
+                  <p className="text-xs text-zinc-400 mt-1">
+                    {t('dashboard.user.tryAgainLater', 'Réessayez dans quelques instants ou modifiez votre destination')}
+                  </p>
+                </div>
+              )}
+
+              {/* Segments detail (collapsible) */}
+              {optimalRoute?.segments && optimalRoute.segments.length > 0 && (
+                <details className="mb-4">
+                  <summary className="text-sm text-zinc-400 cursor-pointer hover:text-white">
+                    {t('common.routeSegments', 'Détails du trajet')} ({optimalRoute.segments.length} segments)
+                  </summary>
+                  <div className="space-y-2 mt-2">
+                    {optimalRoute.segments.map((segment, index) => (
+                      <div key={index} className="bg-zinc-800/30 p-2 rounded border border-zinc-700 text-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="text-white">{t('dashboard.user.segment', 'Segment')} {segment.index}</span>
+                          <span className="text-xs text-zinc-400">{segment.distance_km} km</span>
+                        </div>
+                        {segment.driver && (
+                          <div className="flex items-center gap-2 mt-1 text-xs text-zinc-400">
+                            <Car className="w-3 h-3 text-[#FFD60A]" />
+                            <span>{segment.driver.first_name} - {segment.driver.vehicle_plate}</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              )}
+
+              {/* Select first driver button - Only if optimal route has a driver */}
+              {optimalRoute?.segments?.[0]?.driver && (
                 <Button
                   onClick={() => handleDriverSelect(optimalRoute.segments[0].driver)}
-                  className="w-full bg-[#FFD60A] text-black font-bold h-12 hover:bg-[#E6C209]"
-                  data-testid="select-route-btn"
+                  className="w-full bg-green-600 text-white font-bold h-12 hover:bg-green-700"
+                  data-testid="select-optimal-route-btn"
                 >
-                  {t('common.requestThisRide')}
+                  {t('common.requestOptimalRide', 'Demander le trajet optimal')}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               )}

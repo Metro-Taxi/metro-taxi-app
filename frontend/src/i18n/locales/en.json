@@ -24,7 +24,9 @@
     "activateError": "Error during activation",
     "driverDeactivated": "Driver deactivated successfully",
     "deactivateError": "Error during deactivation",
-    "cleanupError": "Error during cleanup"
+    "cleanupError": "Error during cleanup",
+    "destinationSet": "Destination set",
+    "subscribed": "Subscribed"
   },
   "regions": {
     "selectRegion": "Select your region",
