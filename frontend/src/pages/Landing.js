@@ -15,317 +15,92 @@ const Landing = () => {
   const [helpOpen, setHelpOpen] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [audioLoading, setAudioLoading] = useState(false);
-  const [audioReady, setAudioReady] = useState(false);
-  const [audioProgress, setAudioProgress] = useState(0);
-  const [userInteracted, setUserInteracted] = useState(false);
-  const [autoplayAttempted, setAutoplayAttempted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const audioRef = useRef(null);
-  const audioBlobRef = useRef(null);
   const videoRef = useRef(null);
   const videoSectionRef = useRef(null);
-  const preloadingRef = useRef(false);
-
-  // Detect if mobile device (client-side) - MUST be before other effects that use isMobile
-  useEffect(() => {
-    const checkMobile = () => {
-      const mobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                     (window.innerWidth <= 768);
-      setIsMobile(mobile);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   // Get language code - keep full code if it exists in languages list, otherwise get base
   const getLanguageCode = (langCode) => {
     if (!langCode) return 'fr';
-    // First try the full code
     const fullCode = langCode.split('@')[0];
     if (languages.find(l => l.code === fullCode)) {
       return fullCode;
     }
-    // Otherwise return base language
     return fullCode.split('-')[0];
   };
   
   const currentLanguage = languages.find(l => l.code === getLanguageCode(i18n.language)) || languages[0];
 
-  // Preload audio in background AFTER initial render (delayed to not block UI)
-  useEffect(() => {
-    // Delay audio preload to prioritize UI rendering
-    const delayTimer = setTimeout(() => {
-      const preloadAudio = async () => {
-        if (preloadingRef.current) return;
-        preloadingRef.current = true;
-        
-        setAudioReady(false);
-        setAudioProgress(0);
-        
-        try {
-          const langCode = i18n.language.split('-')[0];
-          
-          // Try local static files first (Service Worker will cache these)
-          const localUrl = `/audio/voiceover/voiceover_${i18n.language}.mp3`;
-          const localFallbackUrl = `/audio/voiceover/voiceover_${langCode}.mp3`;
-          
-          let response = await fetch(localUrl);
-          
-          if (!response.ok && langCode !== i18n.language) {
-            response = await fetch(localFallbackUrl);
-          }
-          
-          // If local files not found, try backend API
-          if (!response.ok) {
-            const apiAudioUrl = `${API}/api/audio/voiceover/voiceover_${i18n.language}.mp3`;
-            response = await fetch(apiAudioUrl);
-            
-            if (!response.ok && langCode !== i18n.language) {
-              const apiFallbackUrl = `${API}/api/audio/voiceover/voiceover_${langCode}.mp3`;
-              response = await fetch(apiFallbackUrl);
-            }
-          }
-          
-          // Last resort: TTS API generation (skip on mobile to save bandwidth)
-          if (!response.ok && !isMobile) {
-            response = await fetch(`${API}/api/tts/voiceover`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ language: i18n.language, voice: 'nova' })
-            });
-          }
-
-        if (!response.ok) throw new Error('Audio load failed');
-
-        // Get content length for progress
-        const contentLength = response.headers.get('content-length');
-        const total = parseInt(contentLength, 10) || 0;
-        
-        // Read the stream with progress
-        const reader = response.body.getReader();
-        const chunks = [];
-        let received = 0;
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          chunks.push(value);
-          received += value.length;
-          if (total > 0) {
-            setAudioProgress(Math.round((received / total) * 100));
-          }
-        }
-
-        // Combine chunks into blob
-        const blob = new Blob(chunks, { type: 'audio/mpeg' });
-        audioBlobRef.current = URL.createObjectURL(blob);
-        setAudioReady(true);
-        setAudioProgress(100);
-        console.log('Audio preloaded successfully for', i18n.language);
-        
-      } catch (error) {
-        console.error('Audio preload error:', error);
-      } finally {
-        preloadingRef.current = false;
-      }
-    };
-
-    // Clear previous audio blob when language changes
-    if (audioBlobRef.current) {
-      URL.revokeObjectURL(audioBlobRef.current);
-      audioBlobRef.current = null;
-    }
-    
-    // Stop playing audio if language changes
+  const changeLanguage = (code) => {
+    // Stop audio when changing language
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
       setAudioPlaying(false);
     }
-
-    // Start preloading
-    preloadAudio();
-    }, 1500); // Delay 1.5s to prioritize UI rendering
-    
-    return () => clearTimeout(delayTimer);
-  }, [i18n.language, isMobile]);
-
-  const changeLanguage = (code) => {
     i18n.changeLanguage(code);
     setLanguageMenuOpen(false);
   };
 
+  // SIMPLE audio player - no preloading, just load and play on click
   const playVoiceover = () => {
-    try {
-      // If audio is playing, stop it
-      if (audioPlaying && audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-        audioRef.current = null;
-        setAudioPlaying(false);
-        return;
-      }
-
-      // If audio is ready (preloaded), play immediately
-      if (audioReady && audioBlobRef.current) {
-        // Create new Audio element
-        const audio = new Audio(audioBlobRef.current);
-        audioRef.current = audio;
-        
-        audio.onended = () => {
-          setAudioPlaying(false);
-          audioRef.current = null;
-        };
-        
-        audio.onerror = (e) => {
-          console.error('Audio playback error:', e);
-          setAudioPlaying(false);
-          audioRef.current = null;
-        };
-
-        // Play immediately - SYNCHRONOUS call is critical for mobile
-        const playPromise = audio.play();
-        
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              setAudioPlaying(true);
-              // Sync video (non-blocking)
-              if (videoRef.current) {
-                videoRef.current.currentTime = 0;
-                videoRef.current.muted = true;
-                videoRef.current.play().catch(() => {});
-              }
-            })
-            .catch((error) => {
-              console.warn('Audio play failed:', error.message);
-              setAudioPlaying(false);
-              audioRef.current = null;
-            });
-        }
-        return;
-      }
-
-      // If not preloaded, show loading and fetch
-      setAudioLoading(true);
-      
-      const langCode = i18n.language.split('-')[0];
-      const urls = [
-        `/audio/voiceover/voiceover_${i18n.language}.mp3`,
-        `/audio/voiceover/voiceover_${langCode}.mp3`,
-        `${API}/api/audio/voiceover/voiceover_${i18n.language}.mp3`
-      ];
-
-      // Try to fetch and play
-      const tryFetch = async () => {
-        for (const url of urls) {
-          try {
-            const response = await fetch(url);
-            if (response.ok) {
-              const blob = await response.blob();
-              const blobUrl = URL.createObjectURL(blob);
-              audioBlobRef.current = blobUrl;
-              setAudioReady(true);
-              setAudioLoading(false);
-              
-              // Now play it
-              const audio = new Audio(blobUrl);
-              audioRef.current = audio;
-              
-              audio.onended = () => {
-                setAudioPlaying(false);
-                audioRef.current = null;
-              };
-              
-              audio.play()
-                .then(() => setAudioPlaying(true))
-                .catch((e) => {
-                  console.warn('Audio play failed after load:', e);
-                  setAudioPlaying(false);
-                });
-              return;
-            }
-          } catch (e) {
-            console.warn('Fetch failed for:', url);
-          }
-        }
-        // All URLs failed
-        setAudioLoading(false);
-        console.error('Could not load audio from any source');
-      };
-
-      tryFetch();
-      
-    } catch (error) {
-      console.error('Voiceover error:', error);
+    // If already playing, stop
+    if (audioPlaying && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
       setAudioPlaying(false);
-      setAudioLoading(false);
+      return;
     }
+
+    // Show loading state
+    setAudioLoading(true);
+
+    // Build audio URL
+    const langCode = i18n.language.split('-')[0];
+    const audioUrl = `/audio/voiceover/voiceover_${langCode}.mp3`;
+
+    // Create and play audio directly
+    const audio = new Audio(audioUrl);
+    audioRef.current = audio;
+
+    audio.oncanplaythrough = () => {
+      setAudioLoading(false);
+      audio.play()
+        .then(() => {
+          setAudioPlaying(true);
+        })
+        .catch((err) => {
+          console.warn('Play failed:', err);
+          setAudioLoading(false);
+          setAudioPlaying(false);
+        });
+    };
+
+    audio.onended = () => {
+      setAudioPlaying(false);
+      audioRef.current = null;
+    };
+
+    audio.onerror = () => {
+      console.error('Audio load error');
+      setAudioLoading(false);
+      setAudioPlaying(false);
+      audioRef.current = null;
+    };
+
+    // Start loading
+    audio.load();
   };
 
-  // Cleanup audio on unmount
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
-      }
-      if (audioBlobRef.current) {
-        URL.revokeObjectURL(audioBlobRef.current);
+        audioRef.current = null;
       }
     };
   }, []);
-
-  // Track user interaction to enable autoplay (desktop only)
-  useEffect(() => {
-    // Skip autoplay tracking on mobile - audio will only play on button click
-    if (isMobile) return;
-
-    const handleInteraction = () => {
-      setUserInteracted(true);
-    };
-
-    // Listen for any user interaction
-    window.addEventListener('click', handleInteraction, { once: true });
-    window.addEventListener('scroll', handleInteraction, { once: true });
-    window.addEventListener('keydown', handleInteraction, { once: true });
-
-    return () => {
-      window.removeEventListener('click', handleInteraction);
-      window.removeEventListener('scroll', handleInteraction);
-      window.removeEventListener('keydown', handleInteraction);
-    };
-  }, [isMobile]);
-
-  // Auto-play when video section becomes visible (DESKTOP ONLY)
-  // On mobile, audio only plays when user clicks the button
-  useEffect(() => {
-    // Disable autoplay on mobile - browsers block it anyway
-    if (isMobile) return;
-    if (!videoSectionRef.current || autoplayAttempted) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          // When video section is 50% visible
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-            // Try to autoplay if audio is ready and user has interacted (desktop only)
-            if (audioReady && userInteracted && !audioPlaying && !autoplayAttempted) {
-              setAutoplayAttempted(true);
-              playVoiceover();
-            }
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-
-    observer.observe(videoSectionRef.current);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [audioReady, userInteracted, audioPlaying, autoplayAttempted, isMobile]);
 
   return (
     <div className="min-h-screen bg-[#09090B]">
