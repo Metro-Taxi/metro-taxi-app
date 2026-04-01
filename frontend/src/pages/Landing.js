@@ -13,8 +13,12 @@ const Landing = () => {
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [audioLoading, setAudioLoading] = useState(false);
+  const [audioReady, setAudioReady] = useState(false);
+  const [audioProgress, setAudioProgress] = useState(0);
   const audioRef = useRef(null);
+  const audioBlobRef = useRef(null);
   const videoRef = useRef(null);
+  const preloadingRef = useRef(false);
 
   // Get language code - keep full code if it exists in languages list, otherwise get base
   const getLanguageCode = (langCode) => {
@@ -30,20 +34,96 @@ const Landing = () => {
   
   const currentLanguage = languages.find(l => l.code === getLanguageCode(i18n.language)) || languages[0];
 
-  const changeLanguage = (code) => {
-    i18n.changeLanguage(code);
-    setLanguageMenuOpen(false);
-    // Stop any playing audio when language changes
+  // Preload audio in background when component mounts or language changes
+  useEffect(() => {
+    const preloadAudio = async () => {
+      if (preloadingRef.current) return;
+      preloadingRef.current = true;
+      
+      setAudioReady(false);
+      setAudioProgress(0);
+      
+      try {
+        // First, try to load from static cached file (FAST!)
+        const langCode = i18n.language.split('-')[0]; // Get base language
+        const staticUrl = `/audio/voiceover/voiceover_${i18n.language}.mp3`;
+        const fallbackUrl = `/audio/voiceover/voiceover_${langCode}.mp3`;
+        
+        let response = await fetch(staticUrl);
+        
+        // If exact language not found, try base language
+        if (!response.ok && langCode !== i18n.language) {
+          response = await fetch(fallbackUrl);
+        }
+        
+        // If still not found, fall back to API generation
+        if (!response.ok) {
+          console.log('Static file not found, falling back to API...');
+          response = await fetch(`${API}/api/tts/voiceover`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ language: i18n.language, voice: 'nova' })
+          });
+        }
+
+        if (!response.ok) throw new Error('Audio load failed');
+
+        // Get content length for progress
+        const contentLength = response.headers.get('content-length');
+        const total = parseInt(contentLength, 10) || 0;
+        
+        // Read the stream with progress
+        const reader = response.body.getReader();
+        const chunks = [];
+        let received = 0;
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+          received += value.length;
+          if (total > 0) {
+            setAudioProgress(Math.round((received / total) * 100));
+          }
+        }
+
+        // Combine chunks into blob
+        const blob = new Blob(chunks, { type: 'audio/mpeg' });
+        audioBlobRef.current = URL.createObjectURL(blob);
+        setAudioReady(true);
+        setAudioProgress(100);
+        console.log('Audio preloaded successfully for', i18n.language);
+        
+      } catch (error) {
+        console.error('Audio preload error:', error);
+      } finally {
+        preloadingRef.current = false;
+      }
+    };
+
+    // Clear previous audio blob when language changes
+    if (audioBlobRef.current) {
+      URL.revokeObjectURL(audioBlobRef.current);
+      audioBlobRef.current = null;
+    }
+    
+    // Stop playing audio if language changes
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
       setAudioPlaying(false);
     }
+
+    // Start preloading
+    preloadAudio();
+  }, [i18n.language]);
+
+  const changeLanguage = (code) => {
+    i18n.changeLanguage(code);
+    setLanguageMenuOpen(false);
   };
 
   const playVoiceover = async () => {
-    if (audioLoading) return;
-
     // If audio is playing, stop it
     if (audioPlaying && audioRef.current) {
       audioRef.current.pause();
@@ -52,6 +132,27 @@ const Landing = () => {
       return;
     }
 
+    // If audio is ready (preloaded), play immediately
+    if (audioReady && audioBlobRef.current) {
+      audioRef.current = new Audio(audioBlobRef.current);
+      audioRef.current.onended = () => {
+        setAudioPlaying(false);
+        audioRef.current = null;
+      };
+      
+      // Sync with video if present
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
+        videoRef.current.muted = true;
+        videoRef.current.play();
+      }
+      
+      await audioRef.current.play();
+      setAudioPlaying(true);
+      return;
+    }
+
+    // If not preloaded yet, load on demand (fallback)
     setAudioLoading(true);
     try {
       const response = await fetch(`${API}/api/tts/voiceover`, {
@@ -64,6 +165,7 @@ const Landing = () => {
 
       const blob = await response.blob();
       const audioUrl = URL.createObjectURL(blob);
+      audioBlobRef.current = audioUrl;
       
       audioRef.current = new Audio(audioUrl);
       audioRef.current.onended = () => {
@@ -80,6 +182,7 @@ const Landing = () => {
       
       await audioRef.current.play();
       setAudioPlaying(true);
+      setAudioReady(true);
     } catch (error) {
       console.error('Voiceover error:', error);
     } finally {
@@ -92,6 +195,9 @@ const Landing = () => {
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
+      }
+      if (audioBlobRef.current) {
+        URL.revokeObjectURL(audioBlobRef.current);
       }
     };
   }, []);
@@ -279,18 +385,25 @@ const Landing = () => {
             {/* Voiceover Button */}
             <button
               onClick={playVoiceover}
-              disabled={audioLoading}
+              disabled={audioLoading && !audioReady}
               className={`absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 rounded-full font-bold transition-all ${
                 audioPlaying 
                   ? 'bg-[#FFD60A] text-black' 
-                  : 'bg-black/70 text-white hover:bg-black/90'
+                  : audioReady
+                    ? 'bg-green-600 text-white hover:bg-green-700'
+                    : 'bg-black/70 text-white hover:bg-black/90'
               }`}
               data-testid="voiceover-btn"
             >
-              {audioLoading ? (
+              {audioLoading && !audioReady ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
                   <span className="hidden sm:inline">{t('video.loading')}</span>
+                </>
+              ) : !audioReady ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span className="hidden sm:inline">{audioProgress > 0 ? `${audioProgress}%` : t('video.preparing', 'Préparation...')}</span>
                 </>
               ) : audioPlaying ? (
                 <>
@@ -300,7 +413,7 @@ const Landing = () => {
               ) : (
                 <>
                   <Volume2 className="w-5 h-5" />
-                  <span className="hidden sm:inline">{currentLanguage.flag} Voix off</span>
+                  <span className="hidden sm:inline">{currentLanguage.flag} {t('video.listen', 'Écouter')}</span>
                 </>
               )}
             </button>

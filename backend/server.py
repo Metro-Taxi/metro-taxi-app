@@ -4002,6 +4002,25 @@ async def generate_voiceover(request: TTSRequest):
     if request.language not in VIDEO_SCRIPTS:
         raise HTTPException(status_code=400, detail=f"Language '{request.language}' not supported")
     
+    # Check for cached audio file first
+    cache_dir = "/app/frontend/public/audio/voiceover"
+    cache_file = f"{cache_dir}/voiceover_{request.language}.mp3"
+    
+    # If cached file exists, serve it directly (FAST!)
+    if os.path.exists(cache_file):
+        logging.info(f"Serving cached voiceover for {request.language}")
+        with open(cache_file, "rb") as f:
+            audio_bytes = f.read()
+        return Response(
+            content=audio_bytes,
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": f"inline; filename=voiceover_{request.language}.mp3",
+                "Cache-Control": "public, max-age=31536000"  # Cache for 1 year
+            }
+        )
+    
+    # Generate new audio if not cached
     script = VIDEO_SCRIPTS[request.language]
     
     try:
@@ -4009,6 +4028,7 @@ async def generate_voiceover(request: TTSRequest):
         if not api_key:
             raise HTTPException(status_code=500, detail="TTS API key not configured")
         
+        logging.info(f"Generating voiceover for {request.language} (will be cached)")
         tts = OpenAITextToSpeech(api_key=api_key)
         
         # Generate speech
@@ -4020,12 +4040,22 @@ async def generate_voiceover(request: TTSRequest):
             response_format="mp3"
         )
         
+        # Save to cache for future requests
+        try:
+            os.makedirs(cache_dir, exist_ok=True)
+            with open(cache_file, "wb") as f:
+                f.write(audio_bytes)
+            logging.info(f"Cached voiceover for {request.language}")
+        except Exception as cache_error:
+            logging.warning(f"Could not cache voiceover: {cache_error}")
+        
         # Return audio as response
         return Response(
             content=audio_bytes,
             media_type="audio/mpeg",
             headers={
-                "Content-Disposition": f"inline; filename=voiceover_{request.language}.mp3"
+                "Content-Disposition": f"inline; filename=voiceover_{request.language}.mp3",
+                "Cache-Control": "public, max-age=31536000"
             }
         )
         
@@ -4055,6 +4085,81 @@ async def get_available_languages():
             {"code": "ru", "name": "Русский", "flag": "🇷🇺"},
             {"code": "it", "name": "Italiano", "flag": "🇮🇹"}
         ]
+    }
+
+@api_router.post("/admin/tts/pregenerate-all")
+async def pregenerate_all_voiceovers(current_user: dict = Depends(get_current_user)):
+    """Pre-generate and cache all voiceover audio files (Admin only)"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    cache_dir = "/app/frontend/public/audio/voiceover"
+    os.makedirs(cache_dir, exist_ok=True)
+    
+    api_key = os.environ.get("EMERGENT_LLM_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="TTS API key not configured")
+    
+    tts = OpenAITextToSpeech(api_key=api_key)
+    
+    results = {"generated": [], "failed": [], "skipped": []}
+    
+    for lang, script in VIDEO_SCRIPTS.items():
+        cache_file = f"{cache_dir}/voiceover_{lang}.mp3"
+        
+        # Skip if already cached
+        if os.path.exists(cache_file):
+            results["skipped"].append(lang)
+            continue
+        
+        try:
+            logging.info(f"Pre-generating voiceover for {lang}...")
+            audio_bytes = await tts.generate_speech(
+                text=script,
+                model="tts-1",
+                voice="nova",
+                speed=1.0,
+                response_format="mp3"
+            )
+            
+            with open(cache_file, "wb") as f:
+                f.write(audio_bytes)
+            
+            results["generated"].append(lang)
+            logging.info(f"Generated and cached voiceover for {lang}")
+            
+        except Exception as e:
+            logging.error(f"Failed to generate voiceover for {lang}: {e}")
+            results["failed"].append({"lang": lang, "error": str(e)})
+    
+    return {
+        "status": "complete",
+        "results": results,
+        "total_cached": len(results["generated"]) + len(results["skipped"])
+    }
+
+@api_router.get("/admin/tts/cache-status")
+async def get_voiceover_cache_status(current_user: dict = Depends(get_current_user)):
+    """Check which voiceovers are cached (Admin only)"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    cache_dir = "/app/frontend/public/audio/voiceover"
+    status = {}
+    
+    for lang in VIDEO_SCRIPTS.keys():
+        cache_file = f"{cache_dir}/voiceover_{lang}.mp3"
+        if os.path.exists(cache_file):
+            file_size = os.path.getsize(cache_file)
+            status[lang] = {"cached": True, "size_kb": round(file_size / 1024, 1)}
+        else:
+            status[lang] = {"cached": False}
+    
+    cached_count = sum(1 for s in status.values() if s["cached"])
+    return {
+        "cached": cached_count,
+        "total": len(VIDEO_SCRIPTS),
+        "languages": status
     }
 
 # ============================================
