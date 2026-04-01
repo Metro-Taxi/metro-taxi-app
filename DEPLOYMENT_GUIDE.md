@@ -295,3 +295,148 @@ En cas de problème :
 2. Vérifiez la configuration Nginx
 3. Vérifiez les variables d'environnement
 4. Vérifiez la connexion MongoDB
+
+---
+
+## 🌍 Configuration Multi-Régions (Sous-domaines)
+
+Pour déployer Metro-Taxi avec des sous-domaines par région (paris.metro-taxi.com, lyon.metro-taxi.com, etc.) :
+
+### 1. Configuration DNS
+
+Ajoutez ces enregistrements DNS pour chaque région :
+
+| Type | Nom | Valeur |
+|------|-----|--------|
+| A | paris | `IP_DE_VOTRE_SERVEUR` |
+| A | lyon | `IP_DE_VOTRE_SERVEUR` |
+| A | london | `IP_DE_VOTRE_SERVEUR` |
+
+### 2. Configuration Nginx Multi-Régions
+
+```nginx
+# /etc/nginx/sites-available/metro-taxi-regions
+
+# Redirection HTTP -> HTTPS pour tous les sous-domaines
+server {
+    listen 80;
+    server_name *.metro-taxi.com;
+    return 301 https://$host$request_uri;
+}
+
+# Configuration HTTPS pour les sous-domaines régionaux
+server {
+    listen 443 ssl http2;
+    server_name ~^(?<region>.+)\.metro-taxi\.com$;
+
+    ssl_certificate /etc/letsencrypt/live/metro-taxi.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/metro-taxi.com/privkey.pem;
+
+    # API Backend avec région en header
+    location /api {
+        proxy_pass http://localhost:8001;
+        proxy_http_version 1.1;
+        proxy_set_header X-Region $region;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # WebSocket
+    location /ws {
+        proxy_pass http://localhost:8001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header X-Region $region;
+    }
+
+    # Frontend
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Region $region;
+    }
+}
+```
+
+### 3. Certificat SSL Wildcard
+
+```bash
+# Installer certbot avec plugin DNS (exemple avec Cloudflare)
+pip install certbot-dns-cloudflare
+
+# Créer fichier credentials
+cat > /root/.cloudflare.ini << EOF
+dns_cloudflare_email = votre@email.com
+dns_cloudflare_api_key = votre_cle_api_cloudflare
+EOF
+chmod 600 /root/.cloudflare.ini
+
+# Générer certificat wildcard
+certbot certonly --dns-cloudflare \
+  --dns-cloudflare-credentials /root/.cloudflare.ini \
+  -d metro-taxi.com \
+  -d *.metro-taxi.com
+```
+
+### 4. Détection Région dans le Frontend
+
+Le frontend détecte automatiquement la région via l'URL :
+
+```javascript
+// Dans votre code React
+const getRegionFromUrl = () => {
+  const hostname = window.location.hostname;
+  const match = hostname.match(/^([a-z]+)\.metro-taxi\.com$/);
+  return match ? match[1] : 'paris'; // Paris par défaut
+};
+```
+
+### 5. Régions Disponibles
+
+| Région | Sous-domaine | Code |
+|--------|--------------|------|
+| Île-de-France | paris.metro-taxi.com | `paris` |
+| Rhône-Alpes | lyon.metro-taxi.com | `lyon` |
+| Greater London | london.metro-taxi.com | `london` |
+
+---
+
+## 📱 PWA - Installation Mobile
+
+L'application est une Progressive Web App installable :
+
+1. Ouvrez https://metro-taxi.com sur mobile
+2. Cliquez sur "Ajouter à l'écran d'accueil"
+3. L'app fonctionne comme une application native
+
+### Configuration PWA
+
+Les fichiers PWA sont dans `/frontend/public/` :
+- `manifest.json` - Configuration de l'app
+- `sw.js` - Service Worker pour le cache
+- `icons/` - Icônes de l'app
+
+---
+
+## 🔔 Notifications Push (VAPID)
+
+Les clés VAPID sont configurées dans `/backend/.env` :
+
+```bash
+VAPID_PUBLIC_KEY=votre_cle_publique
+VAPID_PRIVATE_KEY=votre_cle_privee
+VAPID_CONTACT=mailto:contact@metro-taxi.com
+```
+
+Pour générer de nouvelles clés :
+```bash
+python3 -c "
+from py_vapid import Vapid
+v = Vapid()
+v.generate_keys()
+print('PUBLIC:', v.public_key_urlsafe_base64())
+print('PRIVATE:', v.private_pem().decode())
+"
+```
