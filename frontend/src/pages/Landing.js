@@ -1,16 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, Users, MapPin, CreditCard, Shield, Clock, Globe, ChevronDown, Volume2, VolumeX, Loader2, Play } from 'lucide-react';
+import { Car, Users, MapPin, CreditCard, Shield, Clock, Globe, ChevronDown, Volume2, VolumeX, Loader2, Play, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { languages } from '@/i18n';
+import HelpCenter from '@/components/HelpCenter';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
 const Landing = () => {
   const { t, i18n } = useTranslation();
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [audioLoading, setAudioLoading] = useState(false);
   const [audioReady, setAudioReady] = useState(false);
@@ -401,6 +403,16 @@ const Landing = () => {
                   )}
                 </AnimatePresence>
               </div>
+
+              {/* Help Button */}
+              <Button 
+                onClick={() => setHelpOpen(true)}
+                className="bg-[#FFD60A] text-black font-bold hover:bg-[#E6C209] hidden sm:flex items-center gap-2"
+                data-testid="help-nav-btn"
+              >
+                <HelpCircle className="w-4 h-4" />
+                {t('help.button', 'AIDE')}
+              </Button>
 
               <Link to="/login">
                 <Button variant="ghost" className="text-white hover:text-[#FFD60A]" data-testid="login-nav-btn">
@@ -830,6 +842,22 @@ const Landing = () => {
           </div>
         </div>
       </footer>
+
+      {/* Floating Help Button for Mobile */}
+      <button
+        onClick={() => setHelpOpen(true)}
+        className="fixed bottom-6 right-6 sm:hidden w-14 h-14 bg-[#FFD60A] text-black rounded-full shadow-lg flex items-center justify-center z-40 hover:bg-[#E6C209] transition-colors"
+        data-testid="help-floating-btn"
+      >
+        <HelpCircle className="w-6 h-6" />
+      </button>
+
+      {/* Help Center Modal */}
+      <HelpCenter 
+        isOpen={helpOpen} 
+        onClose={() => setHelpOpen(false)} 
+        userType="user" 
+      />
     </div>
   );
 };

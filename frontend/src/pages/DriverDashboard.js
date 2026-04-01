@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, User, LogOut, Menu, X, Power, MapPin, Check, XCircle, Users, Navigation, Wallet, ArrowLeft, Globe } from 'lucide-react';
+import { Car, User, LogOut, Menu, X, Power, MapPin, Check, XCircle, Users, Navigation, Wallet, ArrowLeft, Globe, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import DriverEarnings from './DriverEarnings';
+import HelpCenter from '@/components/HelpCenter';
 import 'leaflet/dist/leaflet.css';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -54,6 +55,7 @@ const DriverDashboard = () => {
   const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showEarnings, setShowEarnings] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const [driverLocation, setDriverLocation] = useState(null);
   const [isActive, setIsActive] = useState(driver?.is_active || false);
   const [pendingRides, setPendingRides] = useState([]);
@@ -297,6 +299,16 @@ const DriverDashboard = () => {
               
               <Button 
                 variant="ghost" 
+                className="w-full justify-start text-zinc-300 hover:bg-zinc-800"
+                onClick={() => { setShowHelp(true); setMenuOpen(false); }}
+                data-testid="driver-help-btn"
+              >
+                <HelpCircle className="w-5 h-5 mr-3 text-[#FFD60A]" />
+                {t('help.button', 'AIDE')}
+              </Button>
+              
+              <Button 
+                variant="ghost" 
                 className="w-full justify-start text-red-400 hover:bg-red-500/10 hover:text-red-400"
                 onClick={handleLogout}
                 data-testid="driver-logout-btn"
@@ -531,6 +543,13 @@ const DriverDashboard = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Help Center */}
+      <HelpCenter 
+        isOpen={showHelp} 
+        onClose={() => setShowHelp(false)} 
+        userType="driver" 
+      />
     </div>
   );
 };

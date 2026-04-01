@@ -216,6 +216,7 @@ Les noms propres stockés dans la base de données (ex: "Test Driver", "Boniface
 - [x] **Correction audio Landing page** - Cache Service Worker + gestion erreurs ✅ (01/04/2026)
 - [x] **Traductions bouton "Écouter"** - 16 langues ✅ (01/04/2026)
 - [x] **Notification mise à jour PWA** - Composant élégant traduit en 16 langues ✅ (01/04/2026)
+- [x] **Centre d'aide avec Chatbot IA** - FAQ + GPT multilingue ✅ (01/04/2026)
 - [ ] **Migration routes auth** vers `routes/auth.py`
 - [ ] **Migration routes paiements** vers `routes/payments.py`
 - [ ] **Migration routes chauffeurs** vers `routes/drivers.py`
@@ -247,4 +248,9 @@ Les noms propres stockés dans la base de données (ex: "Test Driver", "Boniface
   - Traduit dans les 16 langues
   - Boutons "Mettre à jour" et "Plus tard"
   - Responsive (desktop et mobile)
+- **Ajouté** : Centre d'aide complet (`HelpCenter.jsx`)
+  - FAQ organisées par catégories (Usagers: Abonnements, Trajets, Compte / Chauffeurs: Inscription, Revenus, Application)
+  - Chatbot IA GPT-4o-mini multilingue (répond dans la langue de l'utilisateur)
+  - Endpoint backend `/api/help/chat` avec stockage des conversations
+  - Bouton AIDE visible sur: page d'accueil (nav + flottant mobile), dashboard usager, dashboard chauffeur
 

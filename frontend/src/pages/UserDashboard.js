@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Circle, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass, History, Star, Home, AlertTriangle, Bell, MessageCircle, Search, Loader2 } from 'lucide-react';
+import { Car, User, MapPin, LogOut, CreditCard, Menu, X, Navigation, Users, ArrowRight, RefreshCw, Mail, Clock, Route, Compass, History, Star, Home, AlertTriangle, Bell, MessageCircle, Search, Loader2, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
@@ -15,6 +15,7 @@ import NotificationCenter from '@/components/NotificationCenter';
 import RideHistory from '@/pages/RideHistory';
 import { PendingRatings } from '@/components/RatingSystem';
 import ChatWindow from '@/components/ChatWindow';
+import HelpCenter from '@/components/HelpCenter';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -112,6 +113,7 @@ const UserDashboard = () => {
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
   const [showChat, setShowChat] = useState(false);
   const [chatDriverName, setChatDriverName] = useState('');
+  const [showHelp, setShowHelp] = useState(false);
   
   // Address search states
   const [addressSearch, setAddressSearch] = useState('');
@@ -610,6 +612,15 @@ const UserDashboard = () => {
                 >
                   <History className="w-5 h-5 mr-3" />
                   {t('rideHistory.title', 'Ride History')}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-start text-zinc-300 hover:bg-zinc-800"
+                  onClick={() => { setShowHelp(true); setMenuOpen(false); }}
+                  data-testid="help-menu-btn"
+                >
+                  <HelpCircle className="w-5 h-5 mr-3 text-[#FFD60A]" />
+                  {t('help.button', 'AIDE')}
                 </Button>
                 <Button 
                   variant="ghost" 
@@ -1189,6 +1200,13 @@ const UserDashboard = () => {
           />
         )}
       </AnimatePresence>
+
+      {/* Help Center */}
+      <HelpCenter 
+        isOpen={showHelp} 
+        onClose={() => setShowHelp(false)} 
+        userType="user" 
+      />
     </div>
   );
 };

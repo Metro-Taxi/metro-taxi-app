@@ -21,6 +21,7 @@ import resend
 import stripe
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 from emergentintegrations.llm.openai import OpenAITextToSpeech
+from emergentintegrations.llm.chat import LlmChat, UserMessage
 from pywebpush import webpush, WebPushException
 
 ROOT_DIR = Path(__file__).parent
@@ -5293,6 +5294,120 @@ async def serve_voiceover_audio(filename: str):
             "Accept-Ranges": "bytes"
         }
     )
+
+# ============================================
+# AI HELP CHATBOT
+# ============================================
+# Multilingual AI chatbot for customer support
+
+class ChatMessage(BaseModel):
+    message: str
+    language: str = "fr"
+    session_id: Optional[str] = None
+    user_type: str = "user"  # "user" or "driver"
+
+class ChatResponse(BaseModel):
+    response: str
+    session_id: str
+
+# System prompts for the chatbot
+CHATBOT_SYSTEM_PROMPT = """Tu es l'assistant virtuel de Métro-Taxi, une plateforme de mise en relation entre usagers et chauffeurs VTC.
+
+RÈGLES IMPORTANTES:
+1. Réponds TOUJOURS dans la langue de l'utilisateur (détectée automatiquement)
+2. Sois concis, professionnel et amical
+3. Si tu ne connais pas la réponse, suggère de contacter le support
+4. Ne donne JAMAIS d'informations fausses sur les tarifs ou les politiques
+
+INFORMATIONS SUR MÉTRO-TAXI:
+- Abonnements: Différents plans selon les régions (mensuel, trimestriel, annuel)
+- Les abonnements s'enchaînent automatiquement (la nouvelle période s'ajoute à l'ancienne)
+- Les chauffeurs reçoivent leurs virements le 15 de chaque mois
+- L'application est disponible en 16 langues
+- Support disponible par email
+
+POUR LES USAGERS:
+- Comment s'abonner: Aller sur "Abonnements" et choisir un plan
+- Comment commander un trajet: Depuis le tableau de bord, entrer destination et cliquer "Commander"
+- Annulation: Possible avant l'arrivée du chauffeur
+- Paiement: Carte bancaire via Stripe (sécurisé)
+
+POUR LES CHAUFFEURS:
+- Inscription: Formulaire avec pièces d'identité, permis, numéro fiscal (SIRET/NIF)
+- Validation: Un admin doit valider le profil avant de pouvoir accepter des courses
+- Revenus: Visibles dans le tableau de bord, virements le 15 du mois
+- IBAN: À renseigner dans les paramètres pour recevoir les virements
+
+Si l'utilisateur pose une question hors sujet, ramène poliment la conversation vers Métro-Taxi."""
+
+@app.post("/api/help/chat", response_model=ChatResponse)
+async def help_chatbot(chat_message: ChatMessage):
+    """
+    AI-powered multilingual chatbot for customer support.
+    Responds in the user's language automatically.
+    """
+    try:
+        emergent_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not emergent_key:
+            raise HTTPException(status_code=500, detail="Chatbot not configured")
+        
+        # Generate session ID if not provided
+        session_id = chat_message.session_id or str(uuid.uuid4())
+        
+        # Customize system prompt based on user type
+        user_context = "Tu parles à un USAGER (client qui commande des trajets)." if chat_message.user_type == "user" else "Tu parles à un CHAUFFEUR VTC partenaire."
+        
+        # Language instruction
+        language_names = {
+            "fr": "français", "en": "English", "es": "español", "de": "Deutsch",
+            "it": "italiano", "pt": "português", "nl": "Nederlands", "sv": "svenska",
+            "no": "norsk", "da": "dansk", "zh": "中文", "hi": "हिन्दी",
+            "pa": "ਪੰਜਾਬੀ", "ar": "العربية", "ru": "русский"
+        }
+        lang_name = language_names.get(chat_message.language.split('-')[0], "français")
+        
+        full_system = f"{CHATBOT_SYSTEM_PROMPT}\n\n{user_context}\n\nIMPORTANT: Réponds en {lang_name}."
+        
+        # Initialize chat
+        chat = LlmChat(
+            api_key=emergent_key,
+            session_id=session_id,
+            system_message=full_system
+        ).with_model("openai", "gpt-4o-mini")
+        
+        # Send message and get response
+        user_msg = UserMessage(text=chat_message.message)
+        response = await chat.send_message(user_msg)
+        
+        # Store conversation in database for analytics (optional)
+        await db.help_conversations.insert_one({
+            "session_id": session_id,
+            "user_type": chat_message.user_type,
+            "language": chat_message.language,
+            "user_message": chat_message.message,
+            "bot_response": response,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        })
+        
+        return ChatResponse(response=response, session_id=session_id)
+        
+    except Exception as e:
+        logging.error(f"Chatbot error: {e}")
+        # Fallback message in user's language
+        fallback_messages = {
+            "fr": "Désolé, je rencontre un problème technique. Veuillez réessayer ou contacter le support.",
+            "en": "Sorry, I'm experiencing a technical issue. Please try again or contact support.",
+            "es": "Lo siento, estoy experimentando un problema técnico. Por favor, inténtelo de nuevo.",
+            "de": "Entschuldigung, ich habe ein technisches Problem. Bitte versuchen Sie es erneut.",
+            "it": "Mi dispiace, sto riscontrando un problema tecnico. Per favore riprova.",
+            "pt": "Desculpe, estou com um problema técnico. Por favor, tente novamente.",
+            "ar": "عذراً، أواجه مشكلة تقنية. يرجى المحاولة مرة أخرى.",
+            "zh": "抱歉，我遇到了技术问题。请重试。",
+            "ru": "Извините, у меня техническая проблема. Пожалуйста, попробуйте снова."
+        }
+        lang = chat_message.language.split('-')[0]
+        fallback = fallback_messages.get(lang, fallback_messages["en"])
+        return ChatResponse(response=fallback, session_id=chat_message.session_id or str(uuid.uuid4()))
 
 # Include the router in the main app
 app.include_router(api_router)
