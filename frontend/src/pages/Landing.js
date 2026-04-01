@@ -146,137 +146,110 @@ const Landing = () => {
     setLanguageMenuOpen(false);
   };
 
-  const playVoiceover = async () => {
+  const playVoiceover = () => {
     try {
       // If audio is playing, stop it
       if (audioPlaying && audioRef.current) {
         audioRef.current.pause();
+        audioRef.current.currentTime = 0;
         audioRef.current = null;
         setAudioPlaying(false);
         return;
       }
 
-      // Helper function to safely play audio
-      const safePlayAudio = async (audio) => {
-        try {
-          const playPromise = audio.play();
-          if (playPromise !== undefined) {
-            await playPromise;
-          }
-          return true;
-        } catch (playError) {
-          // Handle autoplay policy / DOM exception gracefully
-          console.warn('Audio play() failed:', playError.message);
-          return false;
-        }
-      };
-
       // If audio is ready (preloaded), play immediately
       if (audioReady && audioBlobRef.current) {
-        audioRef.current = new Audio(audioBlobRef.current);
-        audioRef.current.onended = () => {
+        // Create new Audio element
+        const audio = new Audio(audioBlobRef.current);
+        audioRef.current = audio;
+        
+        audio.onended = () => {
           setAudioPlaying(false);
           audioRef.current = null;
         };
-        audioRef.current.onerror = (e) => {
+        
+        audio.onerror = (e) => {
           console.error('Audio playback error:', e);
           setAudioPlaying(false);
           audioRef.current = null;
         };
+
+        // Play immediately - SYNCHRONOUS call is critical for mobile
+        const playPromise = audio.play();
         
-        // Sync with video if present (non-blocking)
-        if (videoRef.current) {
-          try {
-            videoRef.current.currentTime = 0;
-            videoRef.current.muted = true;
-            videoRef.current.play().catch(() => {}); // Silently ignore video errors
-          } catch (e) {
-            // Ignore video sync errors
-          }
-        }
-        
-        const played = await safePlayAudio(audioRef.current);
-        if (played) {
-          setAudioPlaying(true);
-        } else {
-          // Cleanup on failure
-          audioRef.current = null;
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setAudioPlaying(true);
+              // Sync video (non-blocking)
+              if (videoRef.current) {
+                videoRef.current.currentTime = 0;
+                videoRef.current.muted = true;
+                videoRef.current.play().catch(() => {});
+              }
+            })
+            .catch((error) => {
+              console.warn('Audio play failed:', error.message);
+              setAudioPlaying(false);
+              audioRef.current = null;
+            });
         }
         return;
       }
 
-      // If not preloaded yet, load on demand (fallback)
+      // If not preloaded, show loading and fetch
       setAudioLoading(true);
       
-      // Try local files first (cached by Service Worker)
       const langCode = i18n.language.split('-')[0];
-      let audioUrl = `/audio/voiceover/voiceover_${i18n.language}.mp3`;
-      
-      let response = await fetch(audioUrl);
-      if (!response.ok) {
-        audioUrl = `/audio/voiceover/voiceover_${langCode}.mp3`;
-        response = await fetch(audioUrl);
-      }
-      
-      // Try backend API if local not found
-      if (!response.ok) {
-        audioUrl = `${API}/api/audio/voiceover/voiceover_${i18n.language}.mp3`;
-        response = await fetch(audioUrl);
-      }
-      
-      // Fallback to TTS API if cached file not found
-      if (!response.ok) {
-        response = await fetch(`${API}/api/tts/voiceover`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ language: i18n.language, voice: 'nova' })
-        });
-      }
+      const urls = [
+        `/audio/voiceover/voiceover_${i18n.language}.mp3`,
+        `/audio/voiceover/voiceover_${langCode}.mp3`,
+        `${API}/api/audio/voiceover/voiceover_${i18n.language}.mp3`
+      ];
 
-      if (!response.ok) throw new Error('Audio load failed');
-
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      audioBlobRef.current = blobUrl;
-      
-      audioRef.current = new Audio(blobUrl);
-      audioRef.current.onended = () => {
-        setAudioPlaying(false);
-        audioRef.current = null;
-      };
-      audioRef.current.onerror = (e) => {
-        console.error('Audio playback error:', e);
-        setAudioPlaying(false);
-        audioRef.current = null;
-      };
-      
-      // Sync with video if present (non-blocking)
-      if (videoRef.current) {
-        try {
-          videoRef.current.currentTime = 0;
-          videoRef.current.muted = true;
-          videoRef.current.play().catch(() => {}); // Silently ignore video errors
-        } catch (e) {
-          // Ignore video sync errors
+      // Try to fetch and play
+      const tryFetch = async () => {
+        for (const url of urls) {
+          try {
+            const response = await fetch(url);
+            if (response.ok) {
+              const blob = await response.blob();
+              const blobUrl = URL.createObjectURL(blob);
+              audioBlobRef.current = blobUrl;
+              setAudioReady(true);
+              setAudioLoading(false);
+              
+              // Now play it
+              const audio = new Audio(blobUrl);
+              audioRef.current = audio;
+              
+              audio.onended = () => {
+                setAudioPlaying(false);
+                audioRef.current = null;
+              };
+              
+              audio.play()
+                .then(() => setAudioPlaying(true))
+                .catch((e) => {
+                  console.warn('Audio play failed after load:', e);
+                  setAudioPlaying(false);
+                });
+              return;
+            }
+          } catch (e) {
+            console.warn('Fetch failed for:', url);
+          }
         }
-      }
+        // All URLs failed
+        setAudioLoading(false);
+        console.error('Could not load audio from any source');
+      };
+
+      tryFetch();
       
-      const played = await safePlayAudio(audioRef.current);
-      if (played) {
-        setAudioPlaying(true);
-        setAudioReady(true);
-      } else {
-        // Cleanup on failure
-        audioRef.current = null;
-      }
     } catch (error) {
       console.error('Voiceover error:', error);
       setAudioPlaying(false);
-      // Ensure cleanup
-      if (audioRef.current) {
-        audioRef.current = null;
-      }
-    } finally {
       setAudioLoading(false);
     }
   };
