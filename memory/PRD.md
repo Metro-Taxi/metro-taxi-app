@@ -159,6 +159,15 @@ london.metro-taxi.com → CNAME → votre-app.emergent.host
 - `payout_history` - Historique virements
 
 ## 📅 Dernière Mise à Jour
+**01/04/2026 - Session Charly (Suite)**
+- ✅ **Nouveau panneau de destination** : Après sélection de destination, affiche:
+  - Bouton "Rechercher les véhicules" toujours visible
+  - Résumé du trajet (km, transferts, temps estimé)
+  - Liste des véhicules disponibles avec score de matching
+  - Message si aucun véhicule disponible
+- ✅ **Traductions ajoutées** : `destinationSelected`, `searchingVehicles`, `findVehicles`, `noVehiclesFound`, etc.
+- ✅ **Tests passés** : 100% (13/13) sur le flux de destination
+
 **01/04/2026 - Session Charly**
 - ✅ **Bug bouton audio mobile corrigé** : Suppression variables non définies (`audioReady`, `audioProgress`)
 - ✅ **Tests de régression complets** : 100% réussis (Backend 11/11, Frontend tous passés)
