@@ -402,7 +402,10 @@
   },
   "video": {
     "title": "Ontdek Métro-Taxi",
-    "loading": "Voice-over laden..."
+    "loading": "Voice-over laden...",
+    "listen": "Luisteren",
+    "stop": "Stop",
+    "preparing": "Voorbereiden..."
   },
   "footer": {
     "rights": "Alle rechten voorbehouden",

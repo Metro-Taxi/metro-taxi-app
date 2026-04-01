@@ -451,7 +451,10 @@
   },
   "video": {
     "title": "Scopri Métro-Taxi",
-    "loading": "Caricamento voce..."
+    "loading": "Caricamento voce...",
+    "listen": "Ascolta",
+    "stop": "Stop",
+    "preparing": "Preparazione..."
   },
   "footer": {
     "rights": "Tutti i diritti riservati",

@@ -402,7 +402,10 @@
   },
   "video": {
     "title": "Entdecken Sie Métro-Taxi",
-    "loading": "Sprachausgabe wird geladen..."
+    "loading": "Sprachausgabe wird geladen...",
+    "listen": "Anhören",
+    "stop": "Stopp",
+    "preparing": "Vorbereitung..."
   },
   "footer": {
     "rights": "Alle Rechte vorbehalten",

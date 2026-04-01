@@ -1,8 +1,8 @@
-const CACHE_NAME = 'metro-taxi-v5';
-const STATIC_CACHE = 'metro-taxi-static-v5';
-const DYNAMIC_CACHE = 'metro-taxi-dynamic-v5';
-const API_CACHE = 'metro-taxi-api-v4';
-const AUDIO_CACHE = 'metro-taxi-audio-v1';
+const CACHE_NAME = 'metro-taxi-v6';
+const STATIC_CACHE = 'metro-taxi-static-v6';
+const DYNAMIC_CACHE = 'metro-taxi-dynamic-v6';
+const API_CACHE = 'metro-taxi-api-v5';
+const AUDIO_CACHE = 'metro-taxi-audio-v2';
 
 // Resources to cache immediately
 const STATIC_ASSETS = [
@@ -54,7 +54,7 @@ self.addEventListener('message', (event) => {
 
 // Install event - cache static assets and audio files
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing v5...');
+  console.log('[Service Worker] Installing v6...');
   event.waitUntil(
     Promise.all([
       // Cache static assets

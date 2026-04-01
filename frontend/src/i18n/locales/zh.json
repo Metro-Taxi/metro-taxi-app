@@ -406,7 +406,10 @@
   },
   "video": {
     "title": "探索Métro-Taxi",
-    "loading": "加载配音..."
+    "loading": "加载配音...",
+    "listen": "收听",
+    "stop": "停止",
+    "preparing": "准备中..."
   },
   "footer": {
     "rights": "版权所有",

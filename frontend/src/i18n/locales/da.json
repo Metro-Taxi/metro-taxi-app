@@ -401,8 +401,11 @@
     "ctaSubtext": "Gratis • Ingen binding"
   },
   "video": {
-    "title": "Oppdag Métro-Taxi",
-    "loading": "Laster stemme..."
+    "title": "Opdag Métro-Taxi",
+    "loading": "Indlæser stemme...",
+    "listen": "Lyt",
+    "stop": "Stop",
+    "preparing": "Forbereder..."
   },
   "footer": {
     "rights": "Alle rettigheter forbeholdt",

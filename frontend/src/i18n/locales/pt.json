@@ -402,7 +402,10 @@
   },
   "video": {
     "title": "Descubra o Métro-Taxi",
-    "loading": "A carregar voz..."
+    "loading": "A carregar voz...",
+    "listen": "Ouvir",
+    "stop": "Parar",
+    "preparing": "A preparar..."
   },
   "footer": {
     "rights": "Todos os direitos reservados",

@@ -416,7 +416,10 @@
   },
   "video": {
     "title": "Descubre Métro-Taxi",
-    "loading": "Cargando voz..."
+    "loading": "Cargando voz...",
+    "listen": "Escuchar",
+    "stop": "Detener",
+    "preparing": "Preparando..."
   },
   "footer": {
     "rights": "Todos los derechos reservados",

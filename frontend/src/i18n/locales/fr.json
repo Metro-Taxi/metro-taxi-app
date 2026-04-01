@@ -509,7 +509,10 @@
   },
   "video": {
     "title": "Découvrez Métro-Taxi",
-    "loading": "Chargement de la voix off..."
+    "loading": "Chargement de la voix off...",
+    "listen": "Écouter",
+    "stop": "Stop",
+    "preparing": "Préparation..."
   },
   "footer": {
     "rights": "Tous droits réservés",

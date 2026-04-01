@@ -480,7 +480,10 @@
   },
   "video": {
     "title": "Discover Métro-Taxi",
-    "loading": "Loading voiceover..."
+    "loading": "Loading voiceover...",
+    "listen": "Listen",
+    "stop": "Stop",
+    "preparing": "Preparing..."
   },
   "footer": {
     "rights": "All rights reserved",

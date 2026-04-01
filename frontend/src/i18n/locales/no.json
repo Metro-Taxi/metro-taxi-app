@@ -402,7 +402,10 @@
   },
   "video": {
     "title": "Oppdag Métro-Taxi",
-    "loading": "Laster stemme..."
+    "loading": "Laster stemme...",
+    "listen": "Lytt",
+    "stop": "Stopp",
+    "preparing": "Forbereder..."
   },
   "footer": {
     "rights": "Alle rettigheter forbeholdt",

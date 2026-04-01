@@ -544,12 +544,12 @@ const Landing = () => {
               ) : audioPlaying ? (
                 <>
                   <VolumeX className="w-5 h-5" />
-                  <span className="hidden sm:inline">Stop</span>
+                  <span className="hidden sm:inline">{t('video.stop')}</span>
                 </>
               ) : (
                 <>
                   <Volume2 className="w-5 h-5" />
-                  <span className="hidden sm:inline">{currentLanguage.flag} {t('video.listen', 'Écouter')}</span>
+                  <span className="hidden sm:inline">{currentLanguage.flag} {t('video.listen')}</span>
                 </>
               )}
             </button>
