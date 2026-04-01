@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, Users, MapPin, CreditCard, Shield, Clock, Globe, ChevronDown, Volume2, VolumeX, Loader2 } from 'lucide-react';
+import { Car, Users, MapPin, CreditCard, Shield, Clock, Globe, ChevronDown, Volume2, VolumeX, Loader2, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { languages } from '@/i18n';
@@ -15,9 +15,12 @@ const Landing = () => {
   const [audioLoading, setAudioLoading] = useState(false);
   const [audioReady, setAudioReady] = useState(false);
   const [audioProgress, setAudioProgress] = useState(0);
+  const [userInteracted, setUserInteracted] = useState(false);
+  const [autoplayAttempted, setAutoplayAttempted] = useState(false);
   const audioRef = useRef(null);
   const audioBlobRef = useRef(null);
   const videoRef = useRef(null);
+  const videoSectionRef = useRef(null);
   const preloadingRef = useRef(false);
 
   // Get language code - keep full code if it exists in languages list, otherwise get base
@@ -124,60 +127,92 @@ const Landing = () => {
   };
 
   const playVoiceover = async () => {
-    // If audio is playing, stop it
-    if (audioPlaying && audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-      setAudioPlaying(false);
-      return;
-    }
-
-    // If audio is ready (preloaded), play immediately
-    if (audioReady && audioBlobRef.current) {
-      audioRef.current = new Audio(audioBlobRef.current);
-      audioRef.current.onended = () => {
-        setAudioPlaying(false);
+    try {
+      // If audio is playing, stop it
+      if (audioPlaying && audioRef.current) {
+        audioRef.current.pause();
         audioRef.current = null;
-      };
+        setAudioPlaying(false);
+        return;
+      }
+
+      // If audio is ready (preloaded), play immediately
+      if (audioReady && audioBlobRef.current) {
+        audioRef.current = new Audio(audioBlobRef.current);
+        audioRef.current.onended = () => {
+          setAudioPlaying(false);
+          audioRef.current = null;
+        };
+        audioRef.current.onerror = (e) => {
+          console.error('Audio playback error:', e);
+          setAudioPlaying(false);
+          audioRef.current = null;
+        };
+        
+        // Sync with video if present
+        if (videoRef.current) {
+          try {
+            videoRef.current.currentTime = 0;
+            videoRef.current.muted = true;
+            videoRef.current.play().catch(e => console.log('Video autoplay blocked:', e));
+          } catch (e) {
+            console.log('Video sync error:', e);
+          }
+        }
+        
+        await audioRef.current.play();
+        setAudioPlaying(true);
+        return;
+      }
+
+      // If not preloaded yet, load on demand (fallback)
+      setAudioLoading(true);
       
-      // Sync with video if present
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-        videoRef.current.muted = true;
-        videoRef.current.play();
+      // Try static file first
+      const langCode = i18n.language.split('-')[0];
+      let audioUrl = `/audio/voiceover/voiceover_${i18n.language}.mp3`;
+      
+      let response = await fetch(audioUrl);
+      if (!response.ok) {
+        audioUrl = `/audio/voiceover/voiceover_${langCode}.mp3`;
+        response = await fetch(audioUrl);
       }
       
-      await audioRef.current.play();
-      setAudioPlaying(true);
-      return;
-    }
+      // Fallback to API if static file not found
+      if (!response.ok) {
+        response = await fetch(`${API}/api/tts/voiceover`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ language: i18n.language, voice: 'nova' })
+        });
+      }
 
-    // If not preloaded yet, load on demand (fallback)
-    setAudioLoading(true);
-    try {
-      const response = await fetch(`${API}/api/tts/voiceover`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ language: i18n.language, voice: 'nova' })
-      });
-
-      if (!response.ok) throw new Error('TTS request failed');
+      if (!response.ok) throw new Error('Audio load failed');
 
       const blob = await response.blob();
-      const audioUrl = URL.createObjectURL(blob);
-      audioBlobRef.current = audioUrl;
+      const blobUrl = URL.createObjectURL(blob);
+      audioBlobRef.current = blobUrl;
       
-      audioRef.current = new Audio(audioUrl);
+      audioRef.current = new Audio(blobUrl);
       audioRef.current.onended = () => {
+        setAudioPlaying(false);
+        audioRef.current = null;
+      };
+      audioRef.current.onerror = (e) => {
+        console.error('Audio playback error:', e);
         setAudioPlaying(false);
         audioRef.current = null;
       };
       
       // Sync with video if present
       if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-        videoRef.current.muted = true;
-        videoRef.current.play();
+        try {
+          videoRef.current.currentTime = 0;
+          videoRef.current.muted = true;
+          videoRef.current.play().catch(e => console.log('Video autoplay blocked:', e));
+        } catch (e) {
+          console.log('Video sync error:', e);
+        }
       }
       
       await audioRef.current.play();
@@ -185,6 +220,7 @@ const Landing = () => {
       setAudioReady(true);
     } catch (error) {
       console.error('Voiceover error:', error);
+      setAudioPlaying(false);
     } finally {
       setAudioLoading(false);
     }
@@ -201,6 +237,53 @@ const Landing = () => {
       }
     };
   }, []);
+
+  // Track user interaction to enable autoplay
+  useEffect(() => {
+    const handleInteraction = () => {
+      setUserInteracted(true);
+    };
+
+    // Listen for any user interaction
+    window.addEventListener('click', handleInteraction, { once: true });
+    window.addEventListener('scroll', handleInteraction, { once: true });
+    window.addEventListener('touchstart', handleInteraction, { once: true });
+    window.addEventListener('keydown', handleInteraction, { once: true });
+
+    return () => {
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('scroll', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+    };
+  }, []);
+
+  // Auto-play when video section becomes visible AND audio is ready AND user has interacted
+  useEffect(() => {
+    if (!videoSectionRef.current || autoplayAttempted) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // When video section is 50% visible
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            // Try to autoplay if audio is ready and user has interacted
+            if (audioReady && userInteracted && !audioPlaying && !autoplayAttempted) {
+              setAutoplayAttempted(true);
+              playVoiceover();
+            }
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(videoSectionRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [audioReady, userInteracted, audioPlaying, autoplayAttempted]);
 
   return (
     <div className="min-h-screen bg-[#09090B]">
@@ -345,7 +428,7 @@ const Landing = () => {
       </section>
       
       {/* Video Section */}
-      <section className="py-20 px-6 bg-[#09090B]">
+      <section ref={videoSectionRef} className="py-20 px-6 bg-[#09090B]">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
