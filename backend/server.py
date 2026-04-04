@@ -2026,41 +2026,56 @@ async def create_sepa_checkout(data: SepaCheckoutRequest, request: Request, curr
 
 @api_router.get("/payments/status/{session_id}")
 async def get_payment_status(session_id: str, request: Request, current_user: dict = Depends(get_current_user)):
-    host_url = str(request.base_url).rstrip('/')
-    webhook_url = f"{host_url}/api/webhook/stripe"
+    """Check payment status using Stripe API directly to avoid emergentintegrations bug"""
     stripe_key = os.environ.get('STRIPE_API_KEY')
+    if not stripe_key:
+        raise HTTPException(status_code=500, detail="Stripe API key not configured")
     
-    stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_url=webhook_url)
-    status = await stripe_checkout.get_checkout_status(session_id)
-    
-    # Update transaction and subscription if paid
-    if status.payment_status == "paid":
-        transaction = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
-        if transaction and transaction.get("payment_status") != "paid":
-            await db.payment_transactions.update_one(
-                {"session_id": session_id},
-                {"$set": {"status": "completed", "payment_status": "paid"}}
-            )
-            
-            # Activate subscription
-            plan = SUBSCRIPTION_PLANS.get(transaction["plan_id"])
-            if plan:
-                expires_at = datetime.now(timezone.utc) + timedelta(hours=plan["duration_hours"])
-                await db.users.update_one(
-                    {"id": transaction["user_id"]},
-                    {"$set": {
-                        "subscription_active": True,
-                        "subscription_expires": expires_at.isoformat(),
-                        "subscription_plan": transaction["plan_id"]
-                    }}
+    try:
+        # Use Stripe API directly instead of emergentintegrations (bug with metadata validation)
+        stripe.api_key = stripe_key
+        session = stripe.checkout.Session.retrieve(session_id)
+        
+        payment_status = session.payment_status or "unpaid"
+        status = session.status or "open"
+        amount_total = session.amount_total or 0
+        currency = session.currency or "eur"
+        
+        # Update transaction and subscription if paid
+        if payment_status == "paid":
+            transaction = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+            if transaction and transaction.get("payment_status") != "paid":
+                await db.payment_transactions.update_one(
+                    {"session_id": session_id},
+                    {"$set": {"status": "completed", "payment_status": "paid"}}
                 )
-    
-    return {
-        "status": status.status,
-        "payment_status": status.payment_status,
-        "amount_total": status.amount_total,
-        "currency": status.currency
-    }
+                
+                # Activate subscription
+                plan = SUBSCRIPTION_PLANS.get(transaction["plan_id"])
+                if plan:
+                    expires_at = datetime.now(timezone.utc) + timedelta(hours=plan["duration_hours"])
+                    await db.users.update_one(
+                        {"id": transaction["user_id"]},
+                        {"$set": {
+                            "subscription_active": True,
+                            "subscription_expires": expires_at.isoformat(),
+                            "subscription_plan": transaction["plan_id"]
+                        }}
+                    )
+                    logging.info(f"✅ Subscription activated for user {transaction['user_id']} via status check")
+        
+        return {
+            "status": status,
+            "payment_status": payment_status,
+            "amount_total": amount_total,
+            "currency": currency
+        }
+    except stripe.error.StripeError as e:
+        logging.error(f"Stripe error checking payment status: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur Stripe: {str(e)}")
+    except Exception as e:
+        logging.error(f"Error checking payment status: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erreur lors de la vérification du paiement")
 
 @api_router.post("/webhook/stripe")
 async def stripe_webhook(request: Request):
