@@ -558,7 +558,9 @@
     "error": "Échec de la vérification",
     "errorDesc": "Le lien est invalide ou a expiré.",
     "goLogin": "Se connecter",
-    "goHome": "Retour à l'accueil"
+    "goHome": "Retour à l'accueil",
+    "emailSent": "Email de vérification envoyé !",
+    "sendError": "Erreur lors de l'envoi de l'email"
   },
   "driverRegister": {
     "title": "Inscription Chauffeur VTC",

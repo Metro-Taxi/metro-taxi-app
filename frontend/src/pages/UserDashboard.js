@@ -1037,7 +1037,21 @@ const UserDashboard = () => {
             <Mail className="w-5 h-5 text-yellow-500" />
             <div className="flex-1">
               <p className="text-yellow-400 text-sm font-medium">{t('dashboard.user.emailNotVerified')}</p>
-              <p className="text-yellow-400/70 text-xs">{t('dashboard.user.verifyEmail')}</p>
+              <button 
+                onClick={async () => {
+                  try {
+                    await axios.post(`${API}/auth/resend-verification`, {}, {
+                      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                    });
+                    toast.success(t('verifyEmail.emailSent', 'Email de vérification envoyé !'));
+                  } catch (error) {
+                    toast.error(t('verifyEmail.error', 'Erreur lors de l\'envoi'));
+                  }
+                }}
+                className="text-yellow-400 text-xs underline hover:text-yellow-300 transition-colors"
+              >
+                {t('dashboard.user.verifyEmail')}
+              </button>
             </div>
           </div>
         </div>
