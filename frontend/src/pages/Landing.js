@@ -122,7 +122,7 @@ const Landing = () => {
         <nav className="absolute top-0 left-0 right-0 z-50 px-6 py-4">
           <div className="max-w-7xl mx-auto flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <Car className="w-8 h-8 text-[#FFD60A]" />
+              <img src="/icons/icon-72x72.png" alt="Métro-Taxi" className="w-10 h-10" />
               <span className="text-2xl font-black text-white tracking-tight">MÉTRO-TAXI</span>
             </div>
             <div className="flex items-center gap-4">
@@ -583,7 +583,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 mb-4 md:mb-0">
-              <Car className="w-6 h-6 text-[#FFD60A]" />
+              <img src="/icons/icon-72x72.png" alt="Métro-Taxi" className="w-8 h-8" />
               <span className="text-xl font-black text-white">MÉTRO-TAXI</span>
             </div>
             <div className="flex gap-8 text-zinc-400">
