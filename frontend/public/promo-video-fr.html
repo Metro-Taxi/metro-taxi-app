@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métro-Taxi - Vidéo Promo FR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Arial Black', Arial, sans-serif;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            background: #000;
+            overflow: hidden;
+        }
+        
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .text-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+        
+        .promo-text {
+            color: #FFD60A;
+            font-size: 48px;
+            font-weight: 900;
+            text-align: center;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.9);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.4s ease-out;
+            padding: 20px 40px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 15px;
+            margin: 10px;
+        }
+        
+        .promo-text.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .promo-text.small {
+            font-size: 36px;
+        }
+        
+        .promo-text.logo {
+            font-size: 64px;
+            color: #FFD60A;
+            background: #000;
+            padding: 30px 60px;
+            border: 4px solid #FFD60A;
+        }
+        
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #FFD60A;
+            color: #000;
+            border: none;
+            padding: 20px 50px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s;
+        }
+        
+        .play-button:hover {
+            background: #E6C209;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        
+        .play-button.hidden {
+            display: none;
+        }
+        
+        .instructions {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #FFD60A;
+            font-size: 14px;
+            text-align: center;
+            background: rgba(0,0,0,0.8);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video id="promoVideo" muted>
+            <source src="/videos/stop-commission-v2.mp4" type="video/mp4">
+        </video>
+        
+        <audio id="voiceOver" src="/audio/promo/promo-voice-fr.mp3"></audio>
+        
+        <div class="text-overlay">
+            <div id="text1" class="promo-text">Encore des commissions ? 😤</div>
+            <div id="text2" class="promo-text">Et si tu gardais 100% ?</div>
+            <div id="text3" class="promo-text small">0 commission. Aucun abonnement.</div>
+            <div id="text4" class="promo-text small">Des passagers déjà abonnés.</div>
+            <div id="text5" class="promo-text logo">MÉTRO-TAXI</div>
+            <div id="text6" class="promo-text">Inscription gratuite !</div>
+        </div>
+        
+        <button id="playBtn" class="play-button">▶ LANCER LA VIDÉO</button>
+    </div>
+    
+    <div class="instructions">
+        💡 Astuce : Utilise un enregistreur d'écran (OBS, Xbox Game Bar, ou outil intégré) pour capturer cette vidéo
+    </div>
+    
+    <script>
+        const video = document.getElementById('promoVideo');
+        const audio = document.getElementById('voiceOver');
+        const playBtn = document.getElementById('playBtn');
+        
+        const texts = [
+            { id: 'text1', start: 0, end: 2 },
+            { id: 'text2', start: 2, end: 4 },
+            { id: 'text3', start: 4, end: 5.5 },
+            { id: 'text4', start: 5.5, end: 7 },
+            { id: 'text5', start: 7, end: 9 },
+            { id: 'text6', start: 9, end: 12 }
+        ];
+        
+        // Hide all texts initially
+        texts.forEach(t => {
+            document.getElementById(t.id).classList.remove('visible');
+        });
+        
+        playBtn.addEventListener('click', () => {
+            playBtn.classList.add('hidden');
+            video.play();
+            audio.play();
+        });
+        
+        // Sync texts with audio
+        audio.addEventListener('timeupdate', () => {
+            const currentTime = audio.currentTime;
+            
+            texts.forEach(t => {
+                const element = document.getElementById(t.id);
+                if (currentTime >= t.start && currentTime < t.end) {
+                    element.classList.add('visible');
+                } else {
+                    element.classList.remove('visible');
+                }
+            });
+        });
+        
+        // Loop video if audio is still playing
+        video.addEventListener('ended', () => {
+            if (!audio.ended) {
+                video.currentTime = 0;
+                video.play();
+            }
+        });
+        
+        // Reset when audio ends
+        audio.addEventListener('ended', () => {
+            video.pause();
+            playBtn.classList.remove('hidden');
+            texts.forEach(t => {
+                document.getElementById(t.id).classList.remove('visible');
+            });
+        });
+    </script>
+</body>
+</html>
