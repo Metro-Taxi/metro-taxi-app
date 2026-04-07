@@ -24,6 +24,10 @@ const RegisterUser = () => {
     city: '',
     date_of_birth: ''
   });
+  // Champs séparés pour la date de naissance
+  const [birthDay, setBirthDay] = useState('');
+  const [birthMonth, setBirthMonth] = useState('');
+  const [birthYear, setBirthYear] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { registerUser } = useAuth();
@@ -31,6 +35,16 @@ const RegisterUser = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Construire la date de naissance au format YYYY-MM-DD
+  const buildDateOfBirth = () => {
+    if (birthDay && birthMonth && birthYear) {
+      const day = birthDay.padStart(2, '0');
+      const month = birthMonth.padStart(2, '0');
+      return `${birthYear}-${month}-${day}`;
+    }
+    return '';
   };
 
   const handleSubmit = async (e) => {
@@ -46,10 +60,27 @@ const RegisterUser = () => {
       return;
     }
 
+    // Valider la date de naissance
+    const dateOfBirth = buildDateOfBirth();
+    if (!birthDay || !birthMonth || !birthYear) {
+      toast.error(t('auth.register.dateRequired', 'Veuillez entrer votre date de naissance complète'));
+      return;
+    }
+    
+    // Valider que c'est une date valide
+    const birthDate = new Date(dateOfBirth);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    if (age < 16 || age > 120) {
+      toast.error(t('auth.register.invalidAge', 'Âge invalide (minimum 16 ans)'));
+      return;
+    }
+
     setLoading(true);
 
     try {
       const { confirmPassword, ...submitData } = formData;
+      submitData.date_of_birth = dateOfBirth;
       await registerUser(submitData);
       toast.success(t('auth.register.success'));
       navigate('/subscription');
@@ -216,22 +247,60 @@ const RegisterUser = () => {
               </div>
             </div>
 
-            {/* Date de naissance */}
+            {/* Date de naissance - 3 champs séparés */}
             <div className="space-y-2">
-              <Label htmlFor="date_of_birth" className="text-zinc-300">{t('auth.register.dateOfBirth')}</Label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
-                <Input
-                  id="date_of_birth"
-                  name="date_of_birth"
-                  type="date"
-                  value={formData.date_of_birth}
-                  onChange={handleChange}
-                  className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
-                  required
-                  data-testid="register-dob-input"
-                />
+              <Label className="text-zinc-300">{t('auth.register.dateOfBirth')}</Label>
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={2}
+                    value={birthDay}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '').slice(0, 2);
+                      setBirthDay(val);
+                    }}
+                    placeholder={t('auth.register.day', 'JJ')}
+                    className="bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A] text-center"
+                    required
+                    data-testid="register-dob-day"
+                  />
+                </div>
+                <div>
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={2}
+                    value={birthMonth}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '').slice(0, 2);
+                      setBirthMonth(val);
+                    }}
+                    placeholder={t('auth.register.month', 'MM')}
+                    className="bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A] text-center"
+                    required
+                    data-testid="register-dob-month"
+                  />
+                </div>
+                <div>
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={4}
+                    value={birthYear}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                      setBirthYear(val);
+                    }}
+                    placeholder={t('auth.register.year', 'AAAA')}
+                    className="bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A] text-center"
+                    required
+                    data-testid="register-dob-year"
+                  />
+                </div>
               </div>
+              <p className="text-xs text-zinc-500">{t('auth.register.dateFormat', 'Format: JJ / MM / AAAA')}</p>
             </div>
 
             <div className="space-y-2">
