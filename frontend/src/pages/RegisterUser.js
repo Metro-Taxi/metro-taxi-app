@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Car, Mail, Lock, User, Phone, Eye, EyeOff, AlertTriangle, LogIn } from 'lucide-react';
+import { Car, Mail, Lock, User, Phone, Eye, EyeOff, AlertTriangle, LogIn, MapPin, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,7 +17,12 @@ const RegisterUser = () => {
     email: '',
     phone: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    // Nouveaux champs obligatoires
+    street_address: '',
+    postal_code: '',
+    city: '',
+    date_of_birth: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -160,6 +165,71 @@ const RegisterUser = () => {
                   className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
                   required
                   data-testid="register-phone-input"
+                />
+              </div>
+            </div>
+
+            {/* Adresse complète */}
+            <div className="space-y-2">
+              <Label htmlFor="street_address" className="text-zinc-300">{t('auth.register.streetAddress')}</Label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                <Input
+                  id="street_address"
+                  name="street_address"
+                  value={formData.street_address}
+                  onChange={handleChange}
+                  placeholder="12 rue de la Paix"
+                  className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
+                  required
+                  data-testid="register-street-input"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="postal_code" className="text-zinc-300">{t('auth.register.postalCode')}</Label>
+                <Input
+                  id="postal_code"
+                  name="postal_code"
+                  value={formData.postal_code}
+                  onChange={handleChange}
+                  placeholder="75001"
+                  className="bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
+                  required
+                  data-testid="register-postal-input"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="city" className="text-zinc-300">{t('auth.register.city')}</Label>
+                <Input
+                  id="city"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  placeholder="Paris"
+                  className="bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
+                  required
+                  data-testid="register-city-input"
+                />
+              </div>
+            </div>
+
+            {/* Date de naissance */}
+            <div className="space-y-2">
+              <Label htmlFor="date_of_birth" className="text-zinc-300">{t('auth.register.dateOfBirth')}</Label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                <Input
+                  id="date_of_birth"
+                  name="date_of_birth"
+                  type="date"
+                  value={formData.date_of_birth}
+                  onChange={handleChange}
+                  className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
+                  required
+                  data-testid="register-dob-input"
                 />
               </div>
             </div>

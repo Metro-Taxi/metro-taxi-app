@@ -594,6 +594,11 @@ class UserRegister(BaseModel):
     email: EmailStr
     phone: str
     password: str
+    # Nouveaux champs obligatoires
+    street_address: str  # Rue
+    postal_code: str     # Code postal
+    city: str            # Ville
+    date_of_birth: str   # Date de naissance (format: YYYY-MM-DD)
 
 class DriverRegister(BaseModel):
     first_name: str
@@ -1449,7 +1454,12 @@ async def register_user(data: UserRegister, request: Request):
         "verification_token": verification_token,
         "subscription_active": False,
         "subscription_expires": None,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        # Nouveaux champs obligatoires
+        "street_address": data.street_address,
+        "postal_code": data.postal_code,
+        "city": data.city,
+        "date_of_birth": data.date_of_birth
     }
     
     # Create response before inserting to avoid ObjectId contamination
