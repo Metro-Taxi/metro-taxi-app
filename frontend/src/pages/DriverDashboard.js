@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import L from 'leaflet';
@@ -39,13 +39,24 @@ const userRequestIcon = L.divIcon({
 });
 
 // Map component that updates center
-const MapUpdater = ({ center }) => {
+const MapUpdater = ({ center, defaultCenter }) => {
   const map = useMap();
+  const hasInitialized = useRef(false);
+  
   useEffect(() => {
-    if (center) {
-      map.setView(center, map.getZoom());
+    // Au premier chargement, centrer sur Paris immédiatement
+    if (!hasInitialized.current) {
+      map.setView(defaultCenter || [48.8566, 2.3522], 13);
+      hasInitialized.current = true;
+    }
+  }, [map, defaultCenter]);
+  
+  useEffect(() => {
+    if (center && hasInitialized.current) {
+      map.flyTo(center, 14, { duration: 1 });
     }
   }, [center, map]);
+  
   return null;
 };
 
@@ -332,7 +343,7 @@ const DriverDashboard = () => {
           attribution='&copy; OpenStreetMap'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <MapUpdater center={driverLocation} />
+        <MapUpdater center={driverLocation} defaultCenter={defaultCenter} />
         
         {/* Driver location */}
         {driverLocation && (
