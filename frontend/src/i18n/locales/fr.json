@@ -198,6 +198,7 @@
       "clickMap": "Cliquez sur la carte pour définir votre destination",
       "requestRide": "Demander ce trajet",
       "yourPosition": "Votre position",
+      "locating": "Localisation en cours...",
       "destination": "Destination",
       "destinationSelected": "Destination sélectionnée",
       "searchingVehicles": "Recherche en cours...",

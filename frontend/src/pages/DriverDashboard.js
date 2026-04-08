@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, User, LogOut, Menu, X, Power, MapPin, Check, XCircle, Users, Navigation, Wallet, ArrowLeft, Globe, HelpCircle } from 'lucide-react';
+import { Car, User, LogOut, Menu, X, Power, MapPin, Check, XCircle, Users, Navigation, Wallet, ArrowLeft, Globe, HelpCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -39,21 +39,18 @@ const userRequestIcon = L.divIcon({
 });
 
 // Map component that updates center
-const MapUpdater = ({ center, defaultCenter }) => {
+const MapUpdater = ({ center }) => {
   const map = useMap();
   const hasInitialized = useRef(false);
   
   useEffect(() => {
-    // Au premier chargement, centrer sur Paris immédiatement
-    if (!hasInitialized.current) {
-      map.setView(defaultCenter || [48.8566, 2.3522], 13);
+    if (center && !hasInitialized.current) {
+      // Premier centrage sur la position du chauffeur
+      map.setView(center, 15);
       hasInitialized.current = true;
-    }
-  }, [map, defaultCenter]);
-  
-  useEffect(() => {
-    if (center && hasInitialized.current) {
-      map.flyTo(center, 14, { duration: 1 });
+    } else if (center && hasInitialized.current) {
+      // Mises à jour suivantes avec animation légère
+      map.flyTo(center, 15, { duration: 0.5 });
     }
   }, [center, map]);
   
@@ -73,17 +70,20 @@ const DriverDashboard = () => {
   const [activeRide, setActiveRide] = useState(null);
   const [loading, setLoading] = useState(false);
   const [availableSeats, setAvailableSeats] = useState(driver?.seats || 4);
+  const [locatingDriver, setLocatingDriver] = useState(true);
 
-  // Paris center as default
+  // Paris center as default (fallback only)
   const defaultCenter = [48.8566, 2.3522];
 
   // Get driver location and update
   useEffect(() => {
+    setLocatingDriver(true);
     if (navigator.geolocation) {
       const watchId = navigator.geolocation.watchPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           setDriverLocation([latitude, longitude]);
+          setLocatingDriver(false);
           if (isActive) {
             updateDriverLocation(latitude, longitude);
           }
@@ -91,13 +91,15 @@ const DriverDashboard = () => {
         (error) => {
           console.error('Geolocation error:', error);
           setDriverLocation(defaultCenter);
+          setLocatingDriver(false);
         },
-        { enableHighAccuracy: true, maximumAge: 5000 }
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
       );
 
       return () => navigator.geolocation.clearWatch(watchId);
     } else {
       setDriverLocation(defaultCenter);
+      setLocatingDriver(false);
     }
   }, [isActive]);
 
@@ -333,6 +335,12 @@ const DriverDashboard = () => {
       </AnimatePresence>
 
       {/* Map */}
+      {locatingDriver ? (
+        <div className="h-full w-full flex flex-col items-center justify-center bg-zinc-900">
+          <Loader2 className="w-12 h-12 text-[#FFD60A] animate-spin mb-4" />
+          <p className="text-white text-lg">{t('dashboard.user.locating', 'Localisation en cours...')}</p>
+        </div>
+      ) : (
       <MapContainer
         center={driverLocation || defaultCenter}
         zoom={15}
@@ -343,7 +351,7 @@ const DriverDashboard = () => {
           attribution='&copy; OpenStreetMap'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <MapUpdater center={driverLocation} defaultCenter={defaultCenter} />
+        <MapUpdater center={driverLocation} />
         
         {/* Driver location */}
         {driverLocation && (
@@ -380,6 +388,7 @@ const DriverDashboard = () => {
           </Marker>
         ))}
       </MapContainer>
+      )}
 
       {/* Toggle Active Button */}
       <div className="absolute top-20 left-4 z-[1000]">

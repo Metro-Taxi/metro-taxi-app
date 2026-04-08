@@ -168,6 +168,7 @@
       "clickMap": "Click on the map to set your destination",
       "requestRide": "Request this ride",
       "yourPosition": "Your position",
+      "locating": "Getting your location...",
       "destination": "Destination",
       "remove": "Remove",
       "optimalRoute": "Optimal route",

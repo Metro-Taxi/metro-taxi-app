@@ -68,21 +68,18 @@ const destinationIcon = L.divIcon({
 });
 
 // Map component that updates center
-const MapUpdater = ({ center, defaultCenter }) => {
+const MapUpdater = ({ center }) => {
   const map = useMap();
   const hasInitialized = useRef(false);
   
   useEffect(() => {
-    // Au premier chargement, centrer sur Paris immédiatement
-    if (!hasInitialized.current) {
-      map.setView(defaultCenter || [48.8566, 2.3522], 13);
+    if (center && !hasInitialized.current) {
+      // Premier centrage sur la position de l'utilisateur
+      map.setView(center, 15);
       hasInitialized.current = true;
-    }
-  }, [map, defaultCenter]);
-  
-  useEffect(() => {
-    if (center && hasInitialized.current) {
-      map.flyTo(center, 14, { duration: 1 });
+    } else if (center && hasInitialized.current) {
+      // Mises à jour suivantes avec animation
+      map.flyTo(center, 15, { duration: 0.5 });
     }
   }, [center, map]);
   
@@ -132,27 +129,33 @@ const UserDashboard = () => {
   const [addressSearch, setAddressSearch] = useState('');
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [searchingAddress, setSearchingAddress] = useState(false);
+  const [locatingUser, setLocatingUser] = useState(true);
 
-  // Paris center as default
+  // Paris center as default (fallback only)
   const defaultCenter = [48.8566, 2.3522];
 
-  // Get user location
+  // Get user location - priority on user's actual position
   useEffect(() => {
+    setLocatingUser(true);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           setUserLocation([latitude, longitude]);
           updateUserLocation(latitude, longitude);
+          setLocatingUser(false);
         },
         (error) => {
           console.error('Geolocation error:', error);
+          // Fallback to Paris only if geolocation fails
           setUserLocation(defaultCenter);
+          setLocatingUser(false);
         },
-        { enableHighAccuracy: true }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else {
       setUserLocation(defaultCenter);
+      setLocatingUser(false);
     }
   }, []);
 
@@ -684,9 +687,15 @@ const UserDashboard = () => {
       </AnimatePresence>
 
       {/* Map */}
+      {locatingUser ? (
+        <div className="h-full w-full flex flex-col items-center justify-center bg-zinc-900">
+          <Loader2 className="w-12 h-12 text-[#FFD60A] animate-spin mb-4" />
+          <p className="text-white text-lg">{t('dashboard.user.locating', 'Localisation en cours...')}</p>
+        </div>
+      ) : (
       <MapContainer
         center={userLocation || defaultCenter}
-        zoom={14}
+        zoom={15}
         className="h-full w-full z-0"
         zoomControl={false}
       >
@@ -694,7 +703,7 @@ const UserDashboard = () => {
           attribution='&copy; OpenStreetMap'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <MapUpdater center={userLocation} defaultCenter={defaultCenter} />
+        <MapUpdater center={userLocation} />
         <MapClickHandler onMapClick={handleMapClick} isActive={showDestinationPicker} />
         
         {/* User location */}
@@ -823,6 +832,7 @@ const UserDashboard = () => {
           );
         })}
       </MapContainer>
+      )}
 
       {/* Bottom Panel - Active Ride with Progress */}
       <AnimatePresence>
