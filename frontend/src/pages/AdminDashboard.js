@@ -585,8 +585,8 @@ const AdminDashboard = () => {
                       <tr>
                         <th>{t('dashboard.admin.users.user')}</th>
                         <th>{t('dashboard.admin.users.contact')}</th>
+                        <th>{t('dashboard.admin.users.identity', 'Identité')}</th>
                         <th>{t('dashboard.admin.users.subscription')}</th>
-                        <th>{t('dashboard.admin.users.expiration')}</th>
                         <th>{t('dashboard.admin.users.registration')}</th>
                       </tr>
                     </thead>
@@ -609,6 +609,23 @@ const AdminDashboard = () => {
                             <p className="text-zinc-500 text-xs">{user.phone}</p>
                           </td>
                           <td>
+                            <div className="text-sm">
+                              {user.date_of_birth && (
+                                <p className="text-white">
+                                  <span className="text-zinc-500">{t('dashboard.admin.users.birthDate', 'Né(e) le')}:</span> {formatDate(user.date_of_birth)}
+                                </p>
+                              )}
+                              {user.street_address && (
+                                <p className="text-zinc-400 text-xs mt-1">
+                                  {user.street_address}, {user.postal_code} {user.city}
+                                </p>
+                              )}
+                              {!user.date_of_birth && !user.street_address && (
+                                <span className="text-zinc-600 text-xs">{t('dashboard.admin.users.noIdentity', 'Non renseigné')}</span>
+                              )}
+                            </div>
+                          </td>
+                          <td>
                             <span className={`text-xs px-2 py-1 rounded ${
                               user.subscription_active 
                                 ? 'bg-green-500/20 text-green-400' 
@@ -616,11 +633,6 @@ const AdminDashboard = () => {
                             }`}>
                               {user.subscription_active ? t('dashboard.admin.users.active') : t('dashboard.admin.users.inactive')}
                             </span>
-                          </td>
-                          <td>
-                            <p className="text-white text-sm">
-                              {user.subscription_expires ? formatDate(user.subscription_expires) : '-'}
-                            </p>
                           </td>
                           <td>
                             <p className="text-zinc-400 text-sm">{formatDate(user.created_at)}</p>
