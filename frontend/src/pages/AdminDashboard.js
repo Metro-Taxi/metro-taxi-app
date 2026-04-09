@@ -345,92 +345,111 @@ const AdminDashboard = () => {
 
   // Export PDF des données utilisateur
   const exportUserPDF = (user) => {
-    const doc = new jsPDF();
-    
-    // En-tête
-    doc.setFontSize(20);
-    doc.setTextColor(255, 214, 10);
-    doc.text('MÉTRO-TAXI', 105, 20, { align: 'center' });
-    
-    doc.setFontSize(12);
-    doc.setTextColor(100);
-    doc.text('Fiche d\'identité utilisateur', 105, 30, { align: 'center' });
-    
-    doc.setFontSize(8);
-    doc.text(`Document généré le ${new Date().toLocaleString('fr-FR')}`, 105, 38, { align: 'center' });
-    
-    // Ligne de séparation
-    doc.setDrawColor(255, 214, 10);
-    doc.line(20, 45, 190, 45);
-    
-    // Informations utilisateur
-    doc.setFontSize(14);
-    doc.setTextColor(0);
-    doc.text('INFORMATIONS PERSONNELLES', 20, 55);
-    
-    doc.setFontSize(10);
-    const userInfo = [
-      ['ID Utilisateur', user.id],
-      ['Nom complet', `${user.first_name} ${user.last_name}`],
-      ['Email', user.email],
-      ['Téléphone', user.phone || 'Non renseigné'],
-      ['Date de naissance', user.date_of_birth ? formatDate(user.date_of_birth) : 'Non renseigné'],
-      ['Adresse', user.street_address || 'Non renseigné'],
-      ['Code postal', user.postal_code || 'Non renseigné'],
-      ['Ville', user.city || 'Non renseigné'],
-      ['Date d\'inscription', formatDate(user.created_at)],
-      ['Abonnement actif', user.subscription_active ? 'Oui' : 'Non'],
-      ['Expiration abonnement', user.subscription_expires ? formatDate(user.subscription_expires) : '-']
-    ];
-    
-    autoTable(doc, {
-      startY: 60,
-      head: [['Champ', 'Valeur']],
-      body: userInfo,
-      theme: 'striped',
-      headStyles: { fillColor: [255, 214, 10], textColor: [0, 0, 0] },
-      styles: { fontSize: 9 }
-    });
-    
-    // Historique des trajets si disponible
-    if (userRideHistory.length > 0) {
-      doc.addPage();
-      doc.setFontSize(14);
-      doc.text('HISTORIQUE DES TRAJETS', 20, 20);
+    try {
+      console.log('Generating PDF for user:', user.id);
+      const doc = new jsPDF();
       
-      const rideData = userRideHistory.map(ride => [
-        formatDate(ride.created_at),
-        ride.status,
-        ride.driver_name || 'N/A',
-        ride.pickup_address || 'N/A',
-        ride.destination_address || 'N/A'
-      ]);
+      // En-tête
+      doc.setFontSize(20);
+      doc.setTextColor(255, 214, 10);
+      doc.text('METRO-TAXI', 105, 20, { align: 'center' });
+      
+      doc.setFontSize(12);
+      doc.setTextColor(100);
+      doc.text('Fiche d\'identite utilisateur', 105, 30, { align: 'center' });
+      
+      doc.setFontSize(8);
+      doc.text('Document genere le ' + new Date().toLocaleString('fr-FR'), 105, 38, { align: 'center' });
+      
+      // Ligne de séparation
+      doc.setDrawColor(255, 214, 10);
+      doc.line(20, 45, 190, 45);
+      
+      // Informations utilisateur
+      doc.setFontSize(14);
+      doc.setTextColor(0);
+      doc.text('INFORMATIONS PERSONNELLES', 20, 55);
+      
+      doc.setFontSize(10);
+      const userInfo = [
+        ['ID Utilisateur', user.id || ''],
+        ['Nom complet', (user.first_name || '') + ' ' + (user.last_name || '')],
+        ['Email', user.email || ''],
+        ['Telephone', user.phone || 'Non renseigne'],
+        ['Date de naissance', user.date_of_birth ? formatDate(user.date_of_birth) : 'Non renseigne'],
+        ['Adresse', user.street_address || 'Non renseigne'],
+        ['Code postal', user.postal_code || 'Non renseigne'],
+        ['Ville', user.city || 'Non renseigne'],
+        ['Date inscription', formatDate(user.created_at)],
+        ['Abonnement actif', user.subscription_active ? 'Oui' : 'Non'],
+        ['Expiration abonnement', user.subscription_expires ? formatDate(user.subscription_expires) : '-']
+      ];
       
       autoTable(doc, {
-        startY: 25,
-        head: [['Date', 'Statut', 'Chauffeur', 'Départ', 'Destination']],
-        body: rideData,
+        startY: 60,
+        head: [['Champ', 'Valeur']],
+        body: userInfo,
         theme: 'striped',
         headStyles: { fillColor: [255, 214, 10], textColor: [0, 0, 0] },
-        styles: { fontSize: 8 }
+        styles: { fontSize: 9 }
       });
+      
+      // Historique des trajets si disponible
+      if (userRideHistory && userRideHistory.length > 0) {
+        doc.addPage();
+        doc.setFontSize(14);
+        doc.text('HISTORIQUE DES TRAJETS', 20, 20);
+        
+        const rideData = userRideHistory.map(ride => [
+          formatDate(ride.created_at),
+          ride.status || '',
+          ride.driver_name || 'N/A',
+          ride.pickup_address || 'N/A',
+          ride.destination_address || 'N/A'
+        ]);
+        
+        autoTable(doc, {
+          startY: 25,
+          head: [['Date', 'Statut', 'Chauffeur', 'Depart', 'Destination']],
+          body: rideData,
+          theme: 'striped',
+          headStyles: { fillColor: [255, 214, 10], textColor: [0, 0, 0] },
+          styles: { fontSize: 8 }
+        });
+      }
+      
+      // Mention RGPD
+      const pageCount = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(7);
+        doc.setTextColor(128);
+        doc.text(
+          'Document confidentiel - RGPD: Ces donnees ne peuvent etre transmises qu\'aux autorites competentes sur demande legale.',
+          105, 290, { align: 'center' }
+        );
+      }
+      
+      // Télécharger avec méthode robuste
+      const fileName = 'metrotaxi_user_' + user.id.slice(0, 8) + '_' + new Date().toISOString().slice(0, 10) + '.pdf';
+      
+      // Méthode 1: Créer un blob et un lien de téléchargement
+      const pdfBlob = doc.output('blob');
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+      
+      console.log('PDF generated and download triggered:', fileName);
+      toast.success(t('dashboard.admin.users.pdfExported', 'PDF exporte avec succes'));
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('Erreur lors de la generation du PDF: ' + error.message);
     }
-    
-    // Mention RGPD
-    const pageCount = doc.internal.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.setFontSize(7);
-      doc.setTextColor(128);
-      doc.text(
-        'Document confidentiel - RGPD: Ces données ne peuvent être transmises qu\'aux autorités compétentes sur demande légale.',
-        105, 290, { align: 'center' }
-      );
-    }
-    
-    // Télécharger
-    doc.save(`metrotaxi_user_${user.id.slice(0, 8)}_${new Date().toISOString().slice(0, 10)}.pdf`);
-    toast.success(t('dashboard.admin.users.pdfExported', 'PDF exporté avec succès'));
   };
 
   return (
