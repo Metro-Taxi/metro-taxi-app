@@ -20,7 +20,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/LanguageSelector';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -383,7 +383,7 @@ const AdminDashboard = () => {
       ['Expiration abonnement', user.subscription_expires ? formatDate(user.subscription_expires) : '-']
     ];
     
-    doc.autoTable({
+    autoTable(doc, {
       startY: 60,
       head: [['Champ', 'Valeur']],
       body: userInfo,
@@ -406,7 +406,7 @@ const AdminDashboard = () => {
         ride.destination_address || 'N/A'
       ]);
       
-      doc.autoTable({
+      autoTable(doc, {
         startY: 25,
         head: [['Date', 'Statut', 'Chauffeur', 'Départ', 'Destination']],
         body: rideData,
