@@ -20,7 +20,6 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/LanguageSelector';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -343,7 +342,7 @@ const AdminDashboard = () => {
     }
   };
 
-  // Export PDF des données utilisateur
+  // Export PDF des données utilisateur (sans autoTable)
   const exportUserPDF = (user) => {
     try {
       console.log('Generating PDF for user:', user.id);
@@ -351,18 +350,18 @@ const AdminDashboard = () => {
       
       // En-tête
       doc.setFontSize(20);
-      doc.setTextColor(255, 214, 10);
+      doc.setTextColor(255, 180, 0);
       doc.text('METRO-TAXI', 105, 20, { align: 'center' });
       
       doc.setFontSize(12);
       doc.setTextColor(100);
-      doc.text('Fiche d\'identite utilisateur', 105, 30, { align: 'center' });
+      doc.text('Fiche utilisateur', 105, 30, { align: 'center' });
       
       doc.setFontSize(8);
       doc.text('Document genere le ' + new Date().toLocaleString('fr-FR'), 105, 38, { align: 'center' });
       
       // Ligne de séparation
-      doc.setDrawColor(255, 214, 10);
+      doc.setDrawColor(255, 180, 0);
       doc.line(20, 45, 190, 45);
       
       // Informations utilisateur
@@ -371,69 +370,71 @@ const AdminDashboard = () => {
       doc.text('INFORMATIONS PERSONNELLES', 20, 55);
       
       doc.setFontSize(10);
-      const userInfo = [
-        ['ID Utilisateur', user.id || ''],
-        ['Nom complet', (user.first_name || '') + ' ' + (user.last_name || '')],
-        ['Email', user.email || ''],
-        ['Telephone', user.phone || 'Non renseigne'],
-        ['Date de naissance', user.date_of_birth ? formatDate(user.date_of_birth) : 'Non renseigne'],
-        ['Adresse', user.street_address || 'Non renseigne'],
-        ['Code postal', user.postal_code || 'Non renseigne'],
-        ['Ville', user.city || 'Non renseigne'],
-        ['Date inscription', formatDate(user.created_at)],
-        ['Abonnement actif', user.subscription_active ? 'Oui' : 'Non'],
-        ['Expiration abonnement', user.subscription_expires ? formatDate(user.subscription_expires) : '-']
-      ];
+      let y = 65;
+      const lineHeight = 8;
       
-      autoTable(doc, {
-        startY: 60,
-        head: [['Champ', 'Valeur']],
-        body: userInfo,
-        theme: 'striped',
-        headStyles: { fillColor: [255, 214, 10], textColor: [0, 0, 0] },
-        styles: { fontSize: 9 }
-      });
+      const addLine = (label, value) => {
+        doc.setTextColor(100);
+        doc.text(label + ':', 20, y);
+        doc.setTextColor(0);
+        doc.text(String(value || 'Non renseigne'), 80, y);
+        y += lineHeight;
+      };
       
-      // Historique des trajets si disponible
+      addLine('ID', user.id);
+      addLine('Nom', (user.first_name || '') + ' ' + (user.last_name || ''));
+      addLine('Email', user.email);
+      addLine('Telephone', user.phone);
+      addLine('Date naissance', user.date_of_birth ? formatDate(user.date_of_birth) : 'Non renseigne');
+      addLine('Adresse', user.street_address);
+      addLine('Code postal', user.postal_code);
+      addLine('Ville', user.city);
+      addLine('Inscription', formatDate(user.created_at));
+      addLine('Abonnement', user.subscription_active ? 'Actif' : 'Inactif');
+      addLine('Expiration', user.subscription_expires ? formatDate(user.subscription_expires) : '-');
+      
+      // Historique des trajets
+      y += 10;
+      doc.setFontSize(14);
+      doc.setTextColor(0);
+      doc.text('HISTORIQUE DES TRAJETS', 20, y);
+      y += 10;
+      
+      doc.setFontSize(10);
       if (userRideHistory && userRideHistory.length > 0) {
-        doc.addPage();
-        doc.setFontSize(14);
-        doc.text('HISTORIQUE DES TRAJETS', 20, 20);
-        
-        const rideData = userRideHistory.map(ride => [
-          formatDate(ride.created_at),
-          ride.status || '',
-          ride.driver_name || 'N/A',
-          ride.pickup_address || 'N/A',
-          ride.destination_address || 'N/A'
-        ]);
-        
-        autoTable(doc, {
-          startY: 25,
-          head: [['Date', 'Statut', 'Chauffeur', 'Depart', 'Destination']],
-          body: rideData,
-          theme: 'striped',
-          headStyles: { fillColor: [255, 214, 10], textColor: [0, 0, 0] },
-          styles: { fontSize: 8 }
+        userRideHistory.forEach((ride, index) => {
+          if (y > 270) {
+            doc.addPage();
+            y = 20;
+          }
+          doc.setTextColor(0);
+          doc.text((index + 1) + '. ' + formatDate(ride.created_at) + ' - ' + (ride.status || 'N/A'), 20, y);
+          y += 6;
+          doc.setTextColor(100);
+          doc.text('   Chauffeur: ' + (ride.driver_name || 'N/A'), 20, y);
+          y += 8;
         });
+      } else {
+        doc.setTextColor(100);
+        doc.text('Aucun trajet enregistre', 20, y);
       }
       
-      // Mention RGPD
+      // Mention RGPD en bas de chaque page
       const pageCount = doc.internal.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
         doc.setFontSize(7);
         doc.setTextColor(128);
         doc.text(
-          'Document confidentiel - RGPD: Ces donnees ne peuvent etre transmises qu\'aux autorites competentes sur demande legale.',
+          'Document confidentiel - RGPD: Donnees reservees aux autorites competentes sur demande legale.',
           105, 290, { align: 'center' }
         );
       }
       
-      // Télécharger avec méthode robuste
+      // Télécharger
       const fileName = 'metrotaxi_user_' + user.id.slice(0, 8) + '_' + new Date().toISOString().slice(0, 10) + '.pdf';
       
-      // Méthode 1: Créer un blob et un lien de téléchargement
+      // Créer un blob et télécharger
       const pdfBlob = doc.output('blob');
       const blobUrl = URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
@@ -444,11 +445,11 @@ const AdminDashboard = () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(blobUrl);
       
-      console.log('PDF generated and download triggered:', fileName);
+      console.log('PDF downloaded:', fileName);
       toast.success(t('dashboard.admin.users.pdfExported', 'PDF exporte avec succes'));
     } catch (error) {
       console.error('Error generating PDF:', error);
-      toast.error('Erreur lors de la generation du PDF: ' + error.message);
+      toast.error('Erreur: ' + error.message);
     }
   };
 
