@@ -3709,6 +3709,28 @@ async def get_all_users(current_user: dict = Depends(get_current_user)):
     users = await db.users.find({}, {"_id": 0, "password": 0}).to_list(1000)
     return {"users": users}
 
+# Admin - Get user ride history
+@api_router.get("/admin/user/{user_id}/rides")
+async def get_user_ride_history(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Get ride history for a specific user (admin only)"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    # Get all rides for this user
+    rides = await db.rides.find(
+        {"user_id": user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    # Enrich with driver names
+    for ride in rides:
+        if ride.get("driver_id"):
+            driver = await db.drivers.find_one({"id": ride["driver_id"]}, {"_id": 0, "first_name": 1, "last_name": 1})
+            if driver:
+                ride["driver_name"] = f"{driver['first_name']} {driver['last_name']}"
+    
+    return {"rides": rides}
+
 # Admin - Get subscription statistics
 @api_router.get("/admin/subscriptions")
 async def get_subscription_stats(current_user: dict = Depends(get_current_user)):

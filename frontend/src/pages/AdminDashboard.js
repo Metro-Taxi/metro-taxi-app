@@ -6,7 +6,8 @@ import {
   Check, XCircle, Eye, UserCheck, UserX, BarChart3,
   TrendingUp, Activity, Mail, Phone, Calendar, IdCard,
   Clock, AlertTriangle, RefreshCw, Trash2, Globe, Plus,
-  Power, PowerOff, Edit, Save, Loader2, Banknote, Send
+  Power, PowerOff, Edit, Save, Loader2, Banknote, Send,
+  FileText, Download, History, Shield, Info
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -18,6 +19,8 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/LanguageSelector';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -71,6 +74,13 @@ const AdminDashboard = () => {
   const [payoutHistory, setPayoutHistory] = useState([]);
   const [processingPayout, setProcessingPayout] = useState(null);
   const [processingAllPayouts, setProcessingAllPayouts] = useState(false);
+  
+  // User detail states
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [userDetailOpen, setUserDetailOpen] = useState(false);
+  const [userRideHistory, setUserRideHistory] = useState([]);
+  const [loadingUserHistory, setLoadingUserHistory] = useState(false);
+  const [rgpdDialogOpen, setRgpdDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -312,6 +322,115 @@ const AdminDashboard = () => {
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('fr-FR');
+  };
+
+  // Voir les détails d'un utilisateur et son historique
+  const viewUserDetails = async (user) => {
+    setSelectedUser(user);
+    setUserDetailOpen(true);
+    setLoadingUserHistory(true);
+    
+    try {
+      const response = await axios.get(`${API}/admin/user/${user.id}/rides`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUserRideHistory(response.data.rides || []);
+    } catch (error) {
+      console.error('Error fetching ride history:', error);
+      setUserRideHistory([]);
+    } finally {
+      setLoadingUserHistory(false);
+    }
+  };
+
+  // Export PDF des données utilisateur
+  const exportUserPDF = (user) => {
+    const doc = new jsPDF();
+    
+    // En-tête
+    doc.setFontSize(20);
+    doc.setTextColor(255, 214, 10);
+    doc.text('MÉTRO-TAXI', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.setTextColor(100);
+    doc.text('Fiche d\'identité utilisateur', 105, 30, { align: 'center' });
+    
+    doc.setFontSize(8);
+    doc.text(`Document généré le ${new Date().toLocaleString('fr-FR')}`, 105, 38, { align: 'center' });
+    
+    // Ligne de séparation
+    doc.setDrawColor(255, 214, 10);
+    doc.line(20, 45, 190, 45);
+    
+    // Informations utilisateur
+    doc.setFontSize(14);
+    doc.setTextColor(0);
+    doc.text('INFORMATIONS PERSONNELLES', 20, 55);
+    
+    doc.setFontSize(10);
+    const userInfo = [
+      ['ID Utilisateur', user.id],
+      ['Nom complet', `${user.first_name} ${user.last_name}`],
+      ['Email', user.email],
+      ['Téléphone', user.phone || 'Non renseigné'],
+      ['Date de naissance', user.date_of_birth ? formatDate(user.date_of_birth) : 'Non renseigné'],
+      ['Adresse', user.street_address || 'Non renseigné'],
+      ['Code postal', user.postal_code || 'Non renseigné'],
+      ['Ville', user.city || 'Non renseigné'],
+      ['Date d\'inscription', formatDate(user.created_at)],
+      ['Abonnement actif', user.subscription_active ? 'Oui' : 'Non'],
+      ['Expiration abonnement', user.subscription_expires ? formatDate(user.subscription_expires) : '-']
+    ];
+    
+    doc.autoTable({
+      startY: 60,
+      head: [['Champ', 'Valeur']],
+      body: userInfo,
+      theme: 'striped',
+      headStyles: { fillColor: [255, 214, 10], textColor: [0, 0, 0] },
+      styles: { fontSize: 9 }
+    });
+    
+    // Historique des trajets si disponible
+    if (userRideHistory.length > 0) {
+      doc.addPage();
+      doc.setFontSize(14);
+      doc.text('HISTORIQUE DES TRAJETS', 20, 20);
+      
+      const rideData = userRideHistory.map(ride => [
+        formatDate(ride.created_at),
+        ride.status,
+        ride.driver_name || 'N/A',
+        ride.pickup_address || 'N/A',
+        ride.destination_address || 'N/A'
+      ]);
+      
+      doc.autoTable({
+        startY: 25,
+        head: [['Date', 'Statut', 'Chauffeur', 'Départ', 'Destination']],
+        body: rideData,
+        theme: 'striped',
+        headStyles: { fillColor: [255, 214, 10], textColor: [0, 0, 0] },
+        styles: { fontSize: 8 }
+      });
+    }
+    
+    // Mention RGPD
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(7);
+      doc.setTextColor(128);
+      doc.text(
+        'Document confidentiel - RGPD: Ces données ne peuvent être transmises qu\'aux autorités compétentes sur demande légale.',
+        105, 290, { align: 'center' }
+      );
+    }
+    
+    // Télécharger
+    doc.save(`metrotaxi_user_${user.id.slice(0, 8)}_${new Date().toISOString().slice(0, 10)}.pdf`);
+    toast.success(t('dashboard.admin.users.pdfExported', 'PDF exporté avec succès'));
   };
 
   return (
@@ -565,9 +684,19 @@ const AdminDashboard = () => {
           {/* Users Tab */}
           <TabsContent value="users">
             <div className="bg-[#18181B] border border-zinc-800 rounded overflow-hidden">
-              <div className="p-4 border-b border-zinc-800">
-                <h2 className="text-xl font-bold text-white">{t('dashboard.admin.users.title')}</h2>
-                <p className="text-zinc-400 text-sm">{t('dashboard.admin.users.subtitle')}</p>
+              <div className="p-4 border-b border-zinc-800 flex justify-between items-center flex-wrap gap-4">
+                <div>
+                  <h2 className="text-xl font-bold text-white">{t('dashboard.admin.users.title')}</h2>
+                  <p className="text-zinc-400 text-sm">{t('dashboard.admin.users.subtitle')}</p>
+                </div>
+                <Button
+                  onClick={() => setRgpdDialogOpen(true)}
+                  variant="outline"
+                  className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  {t('dashboard.admin.users.rgpdInfo', 'Obligations RGPD')}
+                </Button>
               </div>
               
               {loading ? (
@@ -587,7 +716,7 @@ const AdminDashboard = () => {
                         <th>{t('dashboard.admin.users.contact')}</th>
                         <th>{t('dashboard.admin.users.identity', 'Identité')}</th>
                         <th>{t('dashboard.admin.users.subscription')}</th>
-                        <th>{t('dashboard.admin.users.registration')}</th>
+                        <th>{t('dashboard.admin.users.actions', 'Actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -633,9 +762,29 @@ const AdminDashboard = () => {
                             }`}>
                               {user.subscription_active ? t('dashboard.admin.users.active') : t('dashboard.admin.users.inactive')}
                             </span>
+                            <p className="text-zinc-500 text-xs mt-1">{formatDate(user.created_at)}</p>
                           </td>
                           <td>
-                            <p className="text-zinc-400 text-sm">{formatDate(user.created_at)}</p>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => viewUserDetails(user)}
+                                className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+                                title={t('dashboard.admin.users.viewHistory', 'Voir historique')}
+                              >
+                                <History className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => exportUserPDF(user)}
+                                className="text-green-400 hover:text-green-300 hover:bg-green-500/10"
+                                title={t('dashboard.admin.users.exportPdf', 'Exporter PDF')}
+                              >
+                                <Download className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -1419,6 +1568,191 @@ const AdminDashboard = () => {
                 </Button>
               </div>
             </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* RGPD Information Dialog */}
+        <Dialog open={rgpdDialogOpen} onOpenChange={setRgpdDialogOpen}>
+          <DialogContent className="bg-[#18181B] border-zinc-700 max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-white flex items-center gap-2">
+                <Shield className="w-6 h-6 text-blue-400" />
+                {t('dashboard.admin.rgpd.title', 'Obligations RGPD - Protection des données')}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 text-sm">
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded p-4">
+                <h3 className="font-bold text-blue-400 mb-2 flex items-center gap-2">
+                  <Info className="w-4 h-4" />
+                  {t('dashboard.admin.rgpd.whatIsRgpd', 'Qu\'est-ce que le RGPD ?')}
+                </h3>
+                <p className="text-zinc-300">
+                  {t('dashboard.admin.rgpd.rgpdDescription', 'Le Règlement Général sur la Protection des Données (RGPD) est une réglementation européenne qui encadre le traitement des données personnelles. En tant que responsable de traitement, vous avez des obligations légales.')}
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <h3 className="font-bold text-white">{t('dashboard.admin.rgpd.obligations', 'Vos obligations :')}</h3>
+                
+                <div className="bg-zinc-800/50 rounded p-3">
+                  <h4 className="font-semibold text-[#FFD60A]">1. {t('dashboard.admin.rgpd.retention', 'Durée de conservation')}</h4>
+                  <p className="text-zinc-400 mt-1">
+                    {t('dashboard.admin.rgpd.retentionDesc', 'Les données personnelles doivent être conservées uniquement le temps nécessaire. Pour un service VTC : 5 ans après la fin de la relation commerciale (obligation comptable et fiscale).')}
+                  </p>
+                </div>
+
+                <div className="bg-zinc-800/50 rounded p-3">
+                  <h4 className="font-semibold text-[#FFD60A]">2. {t('dashboard.admin.rgpd.security', 'Sécurité des données')}</h4>
+                  <p className="text-zinc-400 mt-1">
+                    {t('dashboard.admin.rgpd.securityDesc', 'Vous devez protéger les données contre les accès non autorisés, la perte ou la destruction. Les mots de passe sont chiffrés et les accès sont limités aux personnes habilitées.')}
+                  </p>
+                </div>
+
+                <div className="bg-zinc-800/50 rounded p-3">
+                  <h4 className="font-semibold text-[#FFD60A]">3. {t('dashboard.admin.rgpd.rights', 'Droits des utilisateurs')}</h4>
+                  <p className="text-zinc-400 mt-1">
+                    {t('dashboard.admin.rgpd.rightsDesc', 'Les utilisateurs ont le droit d\'accéder à leurs données, de les rectifier, de les supprimer (droit à l\'oubli), et de s\'opposer à leur traitement. Vous devez répondre sous 30 jours.')}
+                  </p>
+                </div>
+
+                <div className="bg-zinc-800/50 rounded p-3">
+                  <h4 className="font-semibold text-[#FFD60A]">4. {t('dashboard.admin.rgpd.authorities', 'Transmission aux autorités')}</h4>
+                  <p className="text-zinc-400 mt-1">
+                    {t('dashboard.admin.rgpd.authoritiesDesc', 'Les données peuvent être transmises aux autorités publiques (police, justice) uniquement sur demande officielle (réquisition judiciaire). Conservez une trace de ces demandes.')}
+                  </p>
+                </div>
+
+                <div className="bg-zinc-800/50 rounded p-3">
+                  <h4 className="font-semibold text-[#FFD60A]">5. {t('dashboard.admin.rgpd.breach', 'Violation de données')}</h4>
+                  <p className="text-zinc-400 mt-1">
+                    {t('dashboard.admin.rgpd.breachDesc', 'En cas de fuite de données, vous devez notifier la CNIL sous 72 heures et informer les personnes concernées si le risque est élevé.')}
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded p-4 mt-4">
+                <h3 className="font-bold text-yellow-400 mb-2">{t('dashboard.admin.rgpd.contact', 'Contact CNIL')}</h3>
+                <p className="text-zinc-300">
+                  {t('dashboard.admin.rgpd.cnilInfo', 'Commission Nationale de l\'Informatique et des Libertés')}
+                  <br />
+                  <span className="text-zinc-400">www.cnil.fr | 01 53 73 22 22</span>
+                </p>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* User Detail & History Dialog */}
+        <Dialog open={userDetailOpen} onOpenChange={setUserDetailOpen}>
+          <DialogContent className="bg-[#18181B] border-zinc-700 max-w-3xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-white flex items-center gap-2">
+                <Users className="w-6 h-6 text-blue-400" />
+                {t('dashboard.admin.users.userDetails', 'Détails de l\'utilisateur')}
+              </DialogTitle>
+            </DialogHeader>
+            
+            {selectedUser && (
+              <div className="space-y-6">
+                {/* User Info Card */}
+                <div className="bg-zinc-800/50 rounded-lg p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
+                        <Users className="w-8 h-8 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-white">
+                          {selectedUser.first_name} {selectedUser.last_name}
+                        </h3>
+                        <p className="text-zinc-400">{selectedUser.email}</p>
+                        <p className="text-zinc-500 text-sm">{selectedUser.phone}</p>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => exportUserPDF(selectedUser)}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      {t('dashboard.admin.users.exportPdf', 'Exporter PDF')}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Identity Info */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-zinc-800/30 rounded p-3">
+                    <p className="text-zinc-500 text-xs uppercase">{t('dashboard.admin.users.idLabel', 'Identifiant')}</p>
+                    <p className="text-white font-mono text-sm">{selectedUser.id}</p>
+                  </div>
+                  <div className="bg-zinc-800/30 rounded p-3">
+                    <p className="text-zinc-500 text-xs uppercase">{t('dashboard.admin.users.birthDate', 'Date de naissance')}</p>
+                    <p className="text-white">{selectedUser.date_of_birth ? formatDate(selectedUser.date_of_birth) : '-'}</p>
+                  </div>
+                  <div className="bg-zinc-800/30 rounded p-3 col-span-2">
+                    <p className="text-zinc-500 text-xs uppercase">{t('dashboard.admin.users.address', 'Adresse complète')}</p>
+                    <p className="text-white">
+                      {selectedUser.street_address ? (
+                        `${selectedUser.street_address}, ${selectedUser.postal_code} ${selectedUser.city}`
+                      ) : (
+                        <span className="text-zinc-600">Non renseigné</span>
+                      )}
+                    </p>
+                  </div>
+                  <div className="bg-zinc-800/30 rounded p-3">
+                    <p className="text-zinc-500 text-xs uppercase">{t('dashboard.admin.users.registration', 'Inscription')}</p>
+                    <p className="text-white">{formatDate(selectedUser.created_at)}</p>
+                  </div>
+                  <div className="bg-zinc-800/30 rounded p-3">
+                    <p className="text-zinc-500 text-xs uppercase">{t('dashboard.admin.users.subscription', 'Abonnement')}</p>
+                    <p className={selectedUser.subscription_active ? 'text-green-400' : 'text-zinc-400'}>
+                      {selectedUser.subscription_active ? 'Actif' : 'Inactif'}
+                      {selectedUser.subscription_expires && ` (exp: ${formatDate(selectedUser.subscription_expires)})`}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Ride History */}
+                <div>
+                  <h4 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                    <History className="w-5 h-5 text-[#FFD60A]" />
+                    {t('dashboard.admin.users.rideHistory', 'Historique des trajets')}
+                  </h4>
+                  
+                  {loadingUserHistory ? (
+                    <div className="text-center py-8">
+                      <Loader2 className="w-8 h-8 text-[#FFD60A] animate-spin mx-auto" />
+                    </div>
+                  ) : userRideHistory.length === 0 ? (
+                    <div className="text-center py-8 bg-zinc-800/30 rounded">
+                      <p className="text-zinc-500">{t('dashboard.admin.users.noRides', 'Aucun trajet enregistré')}</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {userRideHistory.map((ride, index) => (
+                        <div key={ride.id || index} className="bg-zinc-800/50 rounded p-3 flex justify-between items-center">
+                          <div>
+                            <p className="text-white text-sm">
+                              {ride.pickup_address || 'Départ'} → {ride.destination_address || 'Destination'}
+                            </p>
+                            <p className="text-zinc-500 text-xs">
+                              {formatDate(ride.created_at)} | Chauffeur: {ride.driver_name || 'N/A'}
+                            </p>
+                          </div>
+                          <span className={`text-xs px-2 py-1 rounded ${
+                            ride.status === 'completed' ? 'bg-green-500/20 text-green-400' :
+                            ride.status === 'cancelled' ? 'bg-red-500/20 text-red-400' :
+                            'bg-yellow-500/20 text-yellow-400'
+                          }`}>
+                            {ride.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </DialogContent>
         </Dialog>
       </div>
