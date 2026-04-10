@@ -80,6 +80,12 @@ const AdminDashboard = () => {
   const [userRideHistory, setUserRideHistory] = useState([]);
   const [loadingUserHistory, setLoadingUserHistory] = useState(false);
   const [rgpdDialogOpen, setRgpdDialogOpen] = useState(false);
+  
+  // Security states
+  const [securityStats, setSecurityStats] = useState(null);
+  const [loadingSecurityStats, setLoadingSecurityStats] = useState(false);
+  const [ipToBlock, setIpToBlock] = useState('');
+  const [blockDuration, setBlockDuration] = useState(60);
 
   useEffect(() => {
     fetchData();
@@ -204,6 +210,53 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  // Security functions
+  const fetchSecurityStats = async () => {
+    setLoadingSecurityStats(true);
+    try {
+      const response = await axios.get(`${API}/admin/security/stats`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSecurityStats(response.data);
+    } catch (error) {
+      toast.error(t('security.loadError', 'Erreur chargement statistiques sécurité'));
+    } finally {
+      setLoadingSecurityStats(false);
+    }
+  };
+
+  const blockIpAddress = async () => {
+    if (!ipToBlock.trim()) {
+      toast.error(t('security.ipRequired', 'Adresse IP requise'));
+      return;
+    }
+    try {
+      await axios.post(`${API}/admin/security/block-ip`, {
+        ip: ipToBlock.trim(),
+        duration_minutes: blockDuration
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success(t('security.ipBlocked', `IP ${ipToBlock} bloquée pour ${blockDuration} minutes`));
+      setIpToBlock('');
+      fetchSecurityStats();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('security.blockError', 'Erreur blocage IP'));
+    }
+  };
+
+  const unblockIpAddress = async (ip) => {
+    try {
+      await axios.post(`${API}/admin/security/unblock-ip`, { ip }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success(t('security.ipUnblocked', `IP ${ip} débloquée`));
+      fetchSecurityStats();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('security.unblockError', 'Erreur déblocage IP'));
+    }
   };
 
   // Region management functions
@@ -592,6 +645,15 @@ const AdminDashboard = () => {
             >
               <Banknote className="w-4 h-4 mr-2" />
               {t('dashboard.admin.tabs.payouts', 'Virements')}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="security"
+              className="data-[state=active]:bg-red-500 data-[state=active]:text-white"
+              data-testid="security-tab"
+              onClick={fetchSecurityStats}
+            >
+              <Shield className="w-4 h-4 mr-2" />
+              {t('dashboard.admin.tabs.security', 'Sécurité')}
             </TabsTrigger>
           </TabsList>
 
@@ -1319,6 +1381,166 @@ const AdminDashboard = () => {
                         ))}
                       </tbody>
                     </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Security Tab */}
+          <TabsContent value="security">
+            <div className="bg-[#18181B] border border-zinc-800 rounded overflow-hidden">
+              <div className="p-4 border-b border-zinc-800 flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-red-500" />
+                    {t('security.title', 'Pare-feu & Sécurité')}
+                  </h2>
+                  <p className="text-zinc-400 text-sm">{t('security.subtitle', 'Protection contre les attaques et tentatives de hacking')}</p>
+                </div>
+                <Button 
+                  onClick={fetchSecurityStats}
+                  className="bg-zinc-700 hover:bg-zinc-600"
+                  disabled={loadingSecurityStats}
+                >
+                  {loadingSecurityStats ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                </Button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                {/* Security Stats Cards */}
+                {securityStats ? (
+                  <>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="bg-zinc-800/50 rounded-lg p-4">
+                        <p className="text-zinc-400 text-sm">{t('security.blockedIps', 'IPs bloquées')}</p>
+                        <p className="text-2xl font-bold text-red-400">{securityStats.blocked_ips_count}</p>
+                      </div>
+                      <div className="bg-zinc-800/50 rounded-lg p-4">
+                        <p className="text-zinc-400 text-sm">{t('security.failedLogins', 'Échecs login')}</p>
+                        <p className="text-2xl font-bold text-amber-400">{securityStats.failed_login_ips_count}</p>
+                      </div>
+                      <div className="bg-zinc-800/50 rounded-lg p-4">
+                        <p className="text-zinc-400 text-sm">{t('security.suspiciousIps', 'IPs suspectes')}</p>
+                        <p className="text-2xl font-bold text-orange-400">{securityStats.suspicious_ips?.length || 0}</p>
+                      </div>
+                      <div className="bg-zinc-800/50 rounded-lg p-4">
+                        <p className="text-zinc-400 text-sm">{t('security.lockoutsActive', 'Verrouillages')}</p>
+                        <p className="text-2xl font-bold text-purple-400">{securityStats.lockouts_active}</p>
+                      </div>
+                    </div>
+
+                    {/* Manual IP Blocking */}
+                    <div className="bg-zinc-800/30 rounded-lg p-4">
+                      <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+                        <XCircle className="w-4 h-4 text-red-400" />
+                        {t('security.blockIp', 'Bloquer une adresse IP')}
+                      </h3>
+                      <div className="flex flex-wrap gap-3">
+                        <Input
+                          value={ipToBlock}
+                          onChange={(e) => setIpToBlock(e.target.value)}
+                          placeholder="192.168.1.1"
+                          className="w-48 bg-zinc-900 border-zinc-700"
+                        />
+                        <select
+                          value={blockDuration}
+                          onChange={(e) => setBlockDuration(parseInt(e.target.value))}
+                          className="bg-zinc-900 border border-zinc-700 rounded px-3 text-white"
+                        >
+                          <option value={15}>15 min</option>
+                          <option value={30}>30 min</option>
+                          <option value={60}>1 heure</option>
+                          <option value={1440}>24 heures</option>
+                          <option value={10080}>7 jours</option>
+                        </select>
+                        <Button onClick={blockIpAddress} className="bg-red-600 hover:bg-red-700">
+                          <Shield className="w-4 h-4 mr-2" />
+                          {t('security.block', 'Bloquer')}
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Blocked IPs List */}
+                    {securityStats.blocked_ips?.length > 0 && (
+                      <div className="bg-zinc-800/30 rounded-lg p-4">
+                        <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-red-400" />
+                          {t('security.currentlyBlocked', 'IPs actuellement bloquées')}
+                        </h3>
+                        <div className="space-y-2">
+                          {securityStats.blocked_ips.map((item, index) => (
+                            <div key={index} className="flex items-center justify-between bg-red-500/10 border border-red-500/30 rounded p-3">
+                              <div>
+                                <span className="text-white font-mono">{item.ip}</span>
+                                <span className="text-zinc-400 text-sm ml-3">
+                                  {t('security.expiresAt', 'Expire')}: {new Date(item.expires).toLocaleString('fr-FR')}
+                                </span>
+                              </div>
+                              <Button 
+                                onClick={() => unblockIpAddress(item.ip)}
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700"
+                              >
+                                <Check className="w-4 h-4 mr-1" />
+                                {t('security.unblock', 'Débloquer')}
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Suspicious IPs */}
+                    {securityStats.suspicious_ips?.length > 0 && (
+                      <div className="bg-zinc-800/30 rounded-lg p-4">
+                        <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+                          <Eye className="w-4 h-4 text-amber-400" />
+                          {t('security.watchList', 'IPs sous surveillance')}
+                        </h3>
+                        <div className="space-y-2">
+                          {securityStats.suspicious_ips.map((item, index) => (
+                            <div key={index} className="flex items-center justify-between bg-amber-500/10 border border-amber-500/30 rounded p-3">
+                              <div>
+                                <span className="text-white font-mono">{item.ip}</span>
+                                <span className="text-amber-400 text-sm ml-3">
+                                  Score: {item.score}/10
+                                </span>
+                              </div>
+                              <Button 
+                                onClick={() => { setIpToBlock(item.ip); setBlockDuration(60); }}
+                                size="sm"
+                                variant="outline"
+                                className="border-red-500 text-red-400 hover:bg-red-500/20"
+                              >
+                                <XCircle className="w-4 h-4 mr-1" />
+                                {t('security.quickBlock', 'Bloquer')}
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Protection Info */}
+                    <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+                      <h3 className="text-green-400 font-bold mb-2 flex items-center gap-2">
+                        <Check className="w-4 h-4" />
+                        {t('security.protectionActive', 'Protections actives')}
+                      </h3>
+                      <ul className="text-zinc-300 text-sm space-y-1">
+                        <li>✅ {t('security.feature1', 'Protection anti-brute force (5 tentatives max)')}</li>
+                        <li>✅ {t('security.feature2', 'Détection d\'injections SQL/NoSQL')}</li>
+                        <li>✅ {t('security.feature3', 'Blocage automatique des IPs suspectes')}</li>
+                        <li>✅ {t('security.feature4', 'Rate limiting sur les endpoints sensibles')}</li>
+                        <li>✅ {t('security.feature5', 'Headers de sécurité (XSS, CSRF)')}</li>
+                      </ul>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-12">
+                    <Shield className="w-16 h-16 text-zinc-600 mx-auto mb-4" />
+                    <p className="text-zinc-400">{t('security.clickToLoad', 'Cliquez sur Actualiser pour charger les statistiques de sécurité')}</p>
                   </div>
                 )}
               </div>

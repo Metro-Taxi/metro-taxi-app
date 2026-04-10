@@ -272,7 +272,9 @@
         "users": "Utilisateurs",
         "subscriptions": "Abonnements",
         "cards": "Cartes virtuelles",
-        "regions": "Régions"
+        "regions": "Régions",
+        "payouts": "Virements",
+        "security": "Sécurité"
       },
       "drivers": {
         "title": "Gestion des chauffeurs",
@@ -856,5 +858,33 @@
       "acceptRide": "Comment accepter une course ?",
       "acceptRideAnswer": "Quand une demande arrive, vous avez quelques secondes pour l'accepter. Cliquez sur \"Accepter\" pour prendre en charge l'usager."
     }
+  },
+  "security": {
+    "title": "Pare-feu & Sécurité",
+    "subtitle": "Protection contre les attaques et tentatives de hacking",
+    "blockedIps": "IPs bloquées",
+    "failedLogins": "Échecs de connexion",
+    "suspiciousIps": "IPs suspectes",
+    "lockoutsActive": "Verrouillages actifs",
+    "blockIp": "Bloquer une adresse IP",
+    "block": "Bloquer",
+    "unblock": "Débloquer",
+    "quickBlock": "Bloquer",
+    "currentlyBlocked": "IPs actuellement bloquées",
+    "watchList": "IPs sous surveillance",
+    "expiresAt": "Expire",
+    "protectionActive": "Protections actives",
+    "feature1": "Protection anti-brute force (5 tentatives max)",
+    "feature2": "Détection d'injections SQL/NoSQL",
+    "feature3": "Blocage automatique des IPs suspectes",
+    "feature4": "Rate limiting sur les endpoints sensibles",
+    "feature5": "Headers de sécurité (XSS, CSRF)",
+    "clickToLoad": "Cliquez sur Actualiser pour charger les statistiques de sécurité",
+    "loadError": "Erreur lors du chargement des statistiques de sécurité",
+    "ipRequired": "Adresse IP requise",
+    "ipBlocked": "IP bloquée avec succès",
+    "ipUnblocked": "IP débloquée avec succès",
+    "blockError": "Erreur lors du blocage de l'IP",
+    "unblockError": "Erreur lors du déblocage de l'IP"
   }
 }

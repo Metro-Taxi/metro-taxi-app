@@ -30,6 +30,16 @@ Plateforme web + mobile "Métro-Taxi" pour mettre en relation des usagers abonn�
   - Toast d'avertissement si re-clic
   - Écran de chargement plein page
 
+### Session 2025-04-10 (Suite)
+- [x] **Pare-feu & Sécurité** implémenté :
+  - Module `/app/backend/middleware/security.py`
+  - Protection anti-brute force (5 tentatives max, verrouillage 15 min)
+  - Détection injections SQL/NoSQL/XSS
+  - Blocage automatique IPs suspectes (score ≥10)
+  - Rate limiting sur endpoints sensibles
+  - Headers de sécurité (X-Frame-Options, X-XSS-Protection, etc.)
+  - Dashboard admin : Onglet "Sécurité" avec gestion IPs
+
 ### Sessions précédentes
 - [x] Vidéos promotionnelles (Sora 2 + TTS)
 - [x] Nouveaux champs d'inscription (adresse complète + date de naissance)

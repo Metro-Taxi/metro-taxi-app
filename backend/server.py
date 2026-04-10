@@ -2,6 +2,7 @@ from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, WebSock
 from fastapi.responses import Response, FileResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
+from slowapi.errors import RateLimitExceeded
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
@@ -23,6 +24,21 @@ from emergentintegrations.payments.stripe.checkout import StripeCheckout, Checko
 from emergentintegrations.llm.openai import OpenAITextToSpeech
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 from pywebpush import webpush, WebPushException
+
+# Security middleware imports
+from middleware.security import (
+    SecurityMiddleware, 
+    SecurityHeadersMiddleware, 
+    limiter, 
+    rate_limit_exceeded_handler,
+    record_failed_login,
+    clear_failed_login,
+    is_login_allowed,
+    get_security_stats,
+    manual_block_ip,
+    manual_unblock_ip,
+    get_client_ip
+)
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -59,7 +75,24 @@ DRIVER_RATE_PER_KM = 1.50  # €1.50 per kilometer
 PAYOUT_DAY = 15  # Day of month for automatic payouts (changed from 10 to 15 for better cash flow)
 
 # Create the main app
-app = FastAPI()
+app = FastAPI(
+    title="Métro-Taxi API",
+    description="API sécurisée pour la plateforme Métro-Taxi",
+    version="2.0.0"
+)
+
+# ============================================
+# SECURITY MIDDLEWARES (Order matters!)
+# ============================================
+# 1. Rate limiter state
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
+
+# 2. Security middleware (IP blocking, injection detection)
+app.add_middleware(SecurityMiddleware)
+
+# 3. Security headers middleware
+app.add_middleware(SecurityHeadersMiddleware)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
@@ -1694,10 +1727,20 @@ async def resend_verification(current_user: dict = Depends(get_current_user), re
     return {"message": "Email de vérification renvoyé", "verification_url": verification_url}
 
 @api_router.post("/auth/login")
-async def login(data: LoginRequest):
+async def login(data: LoginRequest, request: Request):
+    # Get client IP for security tracking
+    client_ip = get_client_ip(request)
+    
+    # Check if login is allowed (brute force protection)
+    allowed, message = is_login_allowed(client_ip)
+    if not allowed:
+        raise HTTPException(status_code=429, detail=message)
+    
     # Check users first
     user = await db.users.find_one({"email": data.email}, {"_id": 0})
     if user and verify_password(data.password, user["password"]):
+        # Clear failed attempts on successful login
+        clear_failed_login(client_ip)
         user_data = {k: v for k, v in user.items() if k != "password"}
         # Check if user is admin
         if user.get("role") == "admin":
@@ -1712,15 +1755,21 @@ async def login(data: LoginRequest):
     if driver and verify_password(data.password, driver["password"]):
         if not driver.get("is_validated"):
             raise HTTPException(status_code=403, detail="Compte en attente de validation admin")
+        # Clear failed attempts on successful login
+        clear_failed_login(client_ip)
         token = create_token(driver["id"], "driver")
         return {"token": token, "driver": {k: v for k, v in driver.items() if k != "password"}}
     
     # Check admin collection (legacy)
     admin = await db.admins.find_one({"email": data.email}, {"_id": 0})
     if admin and verify_password(data.password, admin["password"]):
+        # Clear failed attempts on successful login
+        clear_failed_login(client_ip)
         token = create_token(admin["id"], "admin")
         return {"token": token, "admin": {k: v for k, v in admin.items() if k != "password"}}
     
+    # Record failed login attempt
+    record_failed_login(client_ip, data.email)
     raise HTTPException(status_code=401, detail="Email ou mot de passe incorrect")
 
 @api_router.get("/auth/me")
@@ -3662,6 +3711,48 @@ async def get_admin_stats(current_user: dict = Depends(get_current_user)):
         "active_subscriptions": active_subscriptions,
         "active_rides": active_rides
     }
+
+# ============================================
+# SECURITY ADMIN ENDPOINTS
+# ============================================
+
+@api_router.get("/admin/security/stats")
+async def get_admin_security_stats(current_user: dict = Depends(get_current_user)):
+    """Get security statistics for admin dashboard"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    return get_security_stats()
+
+@api_router.post("/admin/security/block-ip")
+async def admin_block_ip(data: dict, current_user: dict = Depends(get_current_user)):
+    """Manually block an IP address"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    ip = data.get("ip")
+    duration = data.get("duration_minutes", 60)
+    
+    if not ip:
+        raise HTTPException(status_code=400, detail="IP address required")
+    
+    manual_block_ip(ip, duration)
+    return {"message": f"IP {ip} blocked for {duration} minutes", "success": True}
+
+@api_router.post("/admin/security/unblock-ip")
+async def admin_unblock_ip(data: dict, current_user: dict = Depends(get_current_user)):
+    """Manually unblock an IP address"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    ip = data.get("ip")
+    if not ip:
+        raise HTTPException(status_code=400, detail="IP address required")
+    
+    success = manual_unblock_ip(ip)
+    if success:
+        return {"message": f"IP {ip} unblocked", "success": True}
+    return {"message": f"IP {ip} was not blocked", "success": False}
 
 @api_router.get("/admin/drivers")
 async def get_all_drivers(current_user: dict = Depends(get_current_user)):
