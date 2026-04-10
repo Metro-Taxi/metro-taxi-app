@@ -376,7 +376,12 @@
     "chooseTitle": "CHOOSE YOUR",
     "planWord": "PLAN",
     "subscribeBtn": "SUBSCRIBE",
-    "error": "Payment creation error"
+    "error": "Payment creation error",
+    "paymentInProgress": "Payment in progress, please wait...",
+    "creatingSession": "Creating payment session...",
+    "processing": "Processing...",
+    "pleaseWait": "Please wait...",
+    "redirecting": "Redirecting to Stripe..."
   },
   "profile": {
     "title": "My Profile",

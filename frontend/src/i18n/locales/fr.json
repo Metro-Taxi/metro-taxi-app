@@ -444,7 +444,12 @@
     "chooseTitle": "CHOISISSEZ VOTRE",
     "planWord": "FORFAIT",
     "subscribeBtn": "S'ABONNER",
-    "error": "Erreur lors de la création du paiement"
+    "error": "Erreur lors de la création du paiement",
+    "paymentInProgress": "Paiement en cours, veuillez patienter...",
+    "creatingSession": "Création de la session de paiement...",
+    "processing": "Traitement...",
+    "pleaseWait": "Veuillez patienter...",
+    "redirecting": "Redirection vers Stripe..."
   },
   "profile": {
     "title": "Mon Profil",

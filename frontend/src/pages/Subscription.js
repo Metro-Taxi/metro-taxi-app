@@ -110,15 +110,26 @@ const Subscription = () => {
   };
 
   const handleSubscribe = async (planId) => {
+    // Empêcher les clics multiples
+    if (loading || isRedirecting) {
+      toast.warning(t('subscription.paymentInProgress', 'Paiement en cours, veuillez patienter...'));
+      return;
+    }
+    
     if (!selectedRegion) {
       toast.error(t('regions.regionRequired', 'Please select a region first'));
       return;
     }
 
     setLoading(planId);
+    setIsRedirecting(true); // Bloquer immédiatement
+    
     try {
       const originUrl = window.location.origin;
       console.log('Creating checkout session...', { planId, regionId: selectedRegion.id });
+      
+      // Afficher un message de patience
+      toast.info(t('subscription.creatingSession', 'Création de la session de paiement...'));
       
       const response = await axios.post(`${API}/payments/checkout/region`, {
         plan_id: planId,
@@ -131,9 +142,6 @@ const Subscription = () => {
       console.log('Checkout response:', response.data);
       
       if (response.data.url) {
-        // Set redirecting flag to prevent React updates during redirect
-        setIsRedirecting(true);
-        
         // Show toast before redirect
         toast.success(t('subscription.redirecting', 'Redirection vers Stripe...'));
         
@@ -141,11 +149,12 @@ const Subscription = () => {
         setTimeout(() => {
           console.log('Redirecting to:', response.data.url);
           window.location.href = response.data.url;
-        }, 200);
+        }, 300);
       } else {
         console.error('No URL in response:', response.data);
         toast.error(t('subscription.error', 'Error creating payment session'));
         setLoading(null);
+        setIsRedirecting(false);
       }
     } catch (error) {
       console.error('Checkout error:', error);
@@ -471,16 +480,21 @@ const Subscription = () => {
               
               <Button
                 onClick={() => handleSubscribe(plan.id)}
-                disabled={loading === plan.id}
+                disabled={loading !== null || isRedirecting}
                 className={`w-full h-12 font-bold ${
                   plan.popular 
                     ? 'bg-[#FFD60A] text-black hover:bg-[#E6C209]' 
                     : 'bg-zinc-800 text-white hover:bg-zinc-700'
-                }`}
+                } ${(loading !== null || isRedirecting) ? 'opacity-50 cursor-not-allowed' : ''}`}
                 data-testid={`subscribe-${plan.id}-btn`}
               >
                 {loading === plan.id ? (
-                  <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    <span>{t('subscription.processing', 'Traitement...')}</span>
+                  </div>
+                ) : (loading !== null || isRedirecting) ? (
+                  <span className="text-zinc-400">{t('subscription.pleaseWait', 'Veuillez patienter...')}</span>
                 ) : (
                   <>
                     <CreditCard className="w-4 h-4 mr-2" />
@@ -494,7 +508,8 @@ const Subscription = () => {
                 <Button
                   variant="outline"
                   onClick={() => openSepaDialog(plan.id)}
-                  className="w-full h-10 mt-2 text-sm border-zinc-700 hover:bg-zinc-800"
+                  disabled={loading !== null || isRedirecting || sepaLoading}
+                  className={`w-full h-10 mt-2 text-sm border-zinc-700 hover:bg-zinc-800 ${(loading !== null || isRedirecting || sepaLoading) ? 'opacity-50 cursor-not-allowed' : ''}`}
                   data-testid={`sepa-${plan.id}-btn`}
                 >
                   <Building2 className="w-4 h-4 mr-2" />
