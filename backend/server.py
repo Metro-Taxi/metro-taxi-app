@@ -3913,6 +3913,123 @@ async def cleanup_expired_subscriptions(current_user: dict = Depends(get_current
         "deactivated_users": deactivated
     }
 
+# Admin - Gift a free subscription to a user
+class GiftSubscriptionRequest(BaseModel):
+    user_id: str
+    plan_id: str  # "24h", "1week", "1month"
+    reason: Optional[str] = None  # "promo_lancement", "geste_commercial", "parrainage", etc.
+
+@api_router.post("/admin/subscriptions/gift")
+async def gift_subscription(data: GiftSubscriptionRequest, current_user: dict = Depends(get_current_user)):
+    """Gift a free subscription to a user (promotional or commercial gesture)"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    # Validate plan
+    if data.plan_id not in SUBSCRIPTION_PLANS:
+        raise HTTPException(status_code=400, detail=f"Plan invalide. Choisir parmi: {list(SUBSCRIPTION_PLANS.keys())}")
+    
+    plan = SUBSCRIPTION_PLANS[data.plan_id]
+    
+    # Find user
+    user = await db.users.find_one({"id": data.user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    
+    # Calculate expiration
+    now = datetime.now(timezone.utc)
+    
+    # If user already has active subscription, extend it
+    current_expires = None
+    if user.get("subscription_active") and user.get("subscription_expires"):
+        try:
+            current_expires = datetime.fromisoformat(user["subscription_expires"])
+            if current_expires > now:
+                # Extend from current expiration
+                new_expires = current_expires + timedelta(hours=plan["duration_hours"])
+            else:
+                new_expires = now + timedelta(hours=plan["duration_hours"])
+        except (ValueError, TypeError):
+            new_expires = now + timedelta(hours=plan["duration_hours"])
+    else:
+        new_expires = now + timedelta(hours=plan["duration_hours"])
+    
+    # Update user subscription
+    await db.users.update_one(
+        {"id": data.user_id},
+        {"$set": {
+            "subscription_active": True,
+            "subscription_expires": new_expires.isoformat(),
+            "subscription_plan": data.plan_id
+        }}
+    )
+    
+    # Log the gift in a collection for tracking
+    gift_record = {
+        "id": str(uuid.uuid4()),
+        "user_id": data.user_id,
+        "user_email": user.get("email"),
+        "user_name": f"{user.get('first_name', '')} {user.get('last_name', '')}".strip(),
+        "plan_id": data.plan_id,
+        "plan_name": plan["name"],
+        "plan_value": plan["price"],
+        "reason": data.reason or "non_spécifié",
+        "gifted_by": current_user["user_id"],
+        "gifted_at": now.isoformat(),
+        "expires_at": new_expires.isoformat()
+    }
+    await db.gift_subscriptions.insert_one(gift_record)
+    
+    # Send email notification to user
+    if RESEND_API_KEY and user.get("email"):
+        try:
+            resend.emails.send({
+                "from": SENDER_EMAIL,
+                "to": user["email"],
+                "subject": "🎁 Abonnement offert - Métro-Taxi",
+                "html": f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #09090B; color: white; padding: 30px; border-radius: 10px;">
+                    <h1 style="color: #FFD60A; text-align: center;">🎁 ABONNEMENT OFFERT</h1>
+                    <p>Bonjour {user.get('first_name', 'Cher client')},</p>
+                    <p>Nous avons le plaisir de vous offrir un abonnement <strong style="color: #FFD60A;">{plan['name']}</strong> !</p>
+                    <div style="background: #18181B; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+                        <p style="margin: 0; font-size: 24px; color: #FFD60A; font-weight: bold;">{plan['name']}</p>
+                        <p style="margin: 10px 0 0 0; color: #888;">Valeur: {plan['price']}€</p>
+                        <p style="margin: 10px 0 0 0; color: #888;">Expire le: {new_expires.strftime('%d/%m/%Y à %H:%M')}</p>
+                    </div>
+                    <p>Profitez de trajets illimités dès maintenant !</p>
+                    <p style="color: #888; font-size: 12px; margin-top: 30px;">L'équipe Métro-Taxi</p>
+                </div>
+                """
+            })
+        except Exception as e:
+            logging.warning(f"Failed to send gift notification email: {e}")
+    
+    return {
+        "success": True,
+        "message": f"Abonnement {plan['name']} offert à {user.get('email')}",
+        "user_email": user.get("email"),
+        "plan": plan["name"],
+        "expires_at": new_expires.isoformat(),
+        "extended": current_expires is not None and current_expires > now
+    }
+
+@api_router.get("/admin/subscriptions/gifts")
+async def get_gift_history(current_user: dict = Depends(get_current_user)):
+    """Get history of gifted subscriptions"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    gifts = await db.gift_subscriptions.find({}, {"_id": 0}).sort("gifted_at", -1).to_list(100)
+    
+    total_value = sum(g.get("plan_value", 0) for g in gifts)
+    
+    return {
+        "gifts": gifts,
+        "total_gifts": len(gifts),
+        "total_value": total_value
+    }
+
 # Admin - Get all virtual cards
 @api_router.get("/admin/cards")
 async def get_all_virtual_cards(current_user: dict = Depends(get_current_user)):

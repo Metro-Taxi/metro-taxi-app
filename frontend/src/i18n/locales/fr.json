@@ -886,5 +886,32 @@
     "ipUnblocked": "IP débloquée avec succès",
     "blockError": "Erreur lors du blocage de l'IP",
     "unblockError": "Erreur lors du déblocage de l'IP"
+  },
+  "gift": {
+    "title": "Offrir un abonnement",
+    "recipient": "Bénéficiaire",
+    "selectPlan": "Forfait à offrir",
+    "reason": "Motif",
+    "confirm": "Offrir",
+    "success": "Abonnement offert avec succès !",
+    "error": "Erreur lors de l'envoi du cadeau",
+    "emailNotice": "Un email de notification sera envoyé automatiquement au bénéficiaire.",
+    "hasActiveSubscription": "A déjà un abonnement actif (sera prolongé)",
+    "offerSubscription": "Offrir un abonnement",
+    "history": "Historique cadeaux",
+    "historyTitle": "Historique des abonnements offerts",
+    "historyError": "Erreur chargement historique",
+    "noHistory": "Aucun abonnement offert pour le moment",
+    "totalGifts": "Total offerts",
+    "totalValue": "Valeur totale",
+    "reasonLabel": "Motif",
+    "reasons": {
+      "promo": "Promotion lancement",
+      "commercial": "Geste commercial",
+      "referral": "Parrainage",
+      "loyalty": "Fidélité",
+      "compensation": "Compensation incident",
+      "other": "Autre"
+    }
   }
 }

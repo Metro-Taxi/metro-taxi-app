@@ -7,7 +7,7 @@ import {
   TrendingUp, Activity, Mail, Phone, Calendar, IdCard,
   Clock, AlertTriangle, RefreshCw, Trash2, Globe, Plus,
   Power, PowerOff, Edit, Save, Loader2, Banknote, Send,
-  FileText, Download, History, Shield, Info
+  FileText, Download, History, Shield, Info, Gift
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -86,6 +86,15 @@ const AdminDashboard = () => {
   const [loadingSecurityStats, setLoadingSecurityStats] = useState(false);
   const [ipToBlock, setIpToBlock] = useState('');
   const [blockDuration, setBlockDuration] = useState(60);
+  
+  // Gift subscription states
+  const [giftDialogOpen, setGiftDialogOpen] = useState(false);
+  const [selectedUserForGift, setSelectedUserForGift] = useState(null);
+  const [giftPlan, setGiftPlan] = useState('1week');
+  const [giftReason, setGiftReason] = useState('promo_lancement');
+  const [giftingSubscription, setGiftingSubscription] = useState(false);
+  const [giftHistory, setGiftHistory] = useState([]);
+  const [giftHistoryOpen, setGiftHistoryOpen] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -256,6 +265,49 @@ const AdminDashboard = () => {
       fetchSecurityStats();
     } catch (error) {
       toast.error(error.response?.data?.detail || t('security.unblockError', 'Erreur déblocage IP'));
+    }
+  };
+
+  // Gift subscription functions
+  const openGiftDialog = (user) => {
+    setSelectedUserForGift(user);
+    setGiftPlan('1week');
+    setGiftReason('promo_lancement');
+    setGiftDialogOpen(true);
+  };
+
+  const giftSubscription = async () => {
+    if (!selectedUserForGift) return;
+    
+    setGiftingSubscription(true);
+    try {
+      const response = await axios.post(`${API}/admin/subscriptions/gift`, {
+        user_id: selectedUserForGift.id,
+        plan_id: giftPlan,
+        reason: giftReason
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      toast.success(response.data.message || t('gift.success', 'Abonnement offert avec succès !'));
+      setGiftDialogOpen(false);
+      fetchData(); // Refresh user list
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('gift.error', 'Erreur lors de l\'envoi du cadeau'));
+    } finally {
+      setGiftingSubscription(false);
+    }
+  };
+
+  const fetchGiftHistory = async () => {
+    try {
+      const response = await axios.get(`${API}/admin/subscriptions/gifts`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setGiftHistory(response.data.gifts || []);
+      setGiftHistoryOpen(true);
+    } catch (error) {
+      toast.error(t('gift.historyError', 'Erreur chargement historique'));
     }
   };
 
@@ -771,14 +823,24 @@ const AdminDashboard = () => {
                   <h2 className="text-xl font-bold text-white">{t('dashboard.admin.users.title')}</h2>
                   <p className="text-zinc-400 text-sm">{t('dashboard.admin.users.subtitle')}</p>
                 </div>
-                <Button
-                  onClick={() => setRgpdDialogOpen(true)}
-                  variant="outline"
-                  className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
-                >
-                  <Shield className="w-4 h-4 mr-2" />
-                  {t('dashboard.admin.users.rgpdInfo', 'Obligations RGPD')}
-                </Button>
+                <div className="flex gap-2 flex-wrap">
+                  <Button
+                    onClick={fetchGiftHistory}
+                    variant="outline"
+                    className="border-[#FFD60A] text-[#FFD60A] hover:bg-[#FFD60A]/10"
+                  >
+                    <Gift className="w-4 h-4 mr-2" />
+                    {t('gift.history', 'Historique cadeaux')}
+                  </Button>
+                  <Button
+                    onClick={() => setRgpdDialogOpen(true)}
+                    variant="outline"
+                    className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
+                  >
+                    <Shield className="w-4 h-4 mr-2" />
+                    {t('dashboard.admin.users.rgpdInfo', 'Obligations RGPD')}
+                  </Button>
+                </div>
               </div>
               
               {loading ? (
@@ -847,7 +909,16 @@ const AdminDashboard = () => {
                             <p className="text-zinc-500 text-xs mt-1">{formatDate(user.created_at)}</p>
                           </td>
                           <td>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 flex-wrap">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => openGiftDialog(user)}
+                                className="text-[#FFD60A] hover:text-yellow-300 hover:bg-yellow-500/10"
+                                title={t('gift.offerSubscription', 'Offrir un abonnement')}
+                              >
+                                <Gift className="w-4 h-4" />
+                              </Button>
                               <Button
                                 size="sm"
                                 variant="ghost"
@@ -1995,6 +2066,167 @@ const AdminDashboard = () => {
                 </div>
               </div>
             )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Gift Subscription Dialog */}
+        <Dialog open={giftDialogOpen} onOpenChange={setGiftDialogOpen}>
+          <DialogContent className="bg-[#18181B] border-zinc-800 max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-white flex items-center gap-2">
+                <Gift className="w-5 h-5 text-[#FFD60A]" />
+                {t('gift.title', 'Offrir un abonnement')}
+              </DialogTitle>
+            </DialogHeader>
+            
+            {selectedUserForGift && (
+              <div className="space-y-4 py-4">
+                {/* User info */}
+                <div className="bg-zinc-800/50 rounded-lg p-4">
+                  <p className="text-zinc-400 text-sm">{t('gift.recipient', 'Bénéficiaire')}</p>
+                  <p className="text-white font-bold">{selectedUserForGift.first_name} {selectedUserForGift.last_name}</p>
+                  <p className="text-zinc-400 text-sm">{selectedUserForGift.email}</p>
+                  {selectedUserForGift.subscription_active && (
+                    <p className="text-green-400 text-xs mt-2">
+                      ✓ {t('gift.hasActiveSubscription', 'A déjà un abonnement actif (sera prolongé)')}
+                    </p>
+                  )}
+                </div>
+
+                {/* Plan selection */}
+                <div className="space-y-2">
+                  <Label className="text-zinc-300">{t('gift.selectPlan', 'Forfait à offrir')}</Label>
+                  <select
+                    value={giftPlan}
+                    onChange={(e) => setGiftPlan(e.target.value)}
+                    className="w-full bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-white"
+                  >
+                    <option value="24h">24 heures (6,99€)</option>
+                    <option value="1week">1 semaine (16,99€)</option>
+                    <option value="1month">1 mois (53,99€)</option>
+                  </select>
+                </div>
+
+                {/* Reason selection */}
+                <div className="space-y-2">
+                  <Label className="text-zinc-300">{t('gift.reason', 'Motif')}</Label>
+                  <select
+                    value={giftReason}
+                    onChange={(e) => setGiftReason(e.target.value)}
+                    className="w-full bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-white"
+                  >
+                    <option value="promo_lancement">{t('gift.reasons.promo', 'Promotion lancement')}</option>
+                    <option value="geste_commercial">{t('gift.reasons.commercial', 'Geste commercial')}</option>
+                    <option value="parrainage">{t('gift.reasons.referral', 'Parrainage')}</option>
+                    <option value="fidelite">{t('gift.reasons.loyalty', 'Fidélité')}</option>
+                    <option value="compensation">{t('gift.reasons.compensation', 'Compensation incident')}</option>
+                    <option value="autre">{t('gift.reasons.other', 'Autre')}</option>
+                  </select>
+                </div>
+
+                {/* Info */}
+                <div className="bg-[#FFD60A]/10 border border-[#FFD60A]/30 rounded-lg p-3">
+                  <p className="text-[#FFD60A] text-sm">
+                    {t('gift.emailNotice', 'Un email de notification sera envoyé automatiquement au bénéficiaire.')}
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setGiftDialogOpen(false)}
+                    className="flex-1"
+                  >
+                    {t('common.cancel', 'Annuler')}
+                  </Button>
+                  <Button
+                    onClick={giftSubscription}
+                    disabled={giftingSubscription}
+                    className="flex-1 bg-[#FFD60A] hover:bg-[#E6C209] text-black font-bold"
+                  >
+                    {giftingSubscription ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Gift className="w-4 h-4 mr-2" />
+                    )}
+                    {t('gift.confirm', 'Offrir')}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Gift History Dialog */}
+        <Dialog open={giftHistoryOpen} onOpenChange={setGiftHistoryOpen}>
+          <DialogContent className="bg-[#18181B] border-zinc-800 max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-white flex items-center gap-2">
+                <History className="w-5 h-5 text-[#FFD60A]" />
+                {t('gift.historyTitle', 'Historique des abonnements offerts')}
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="py-4">
+              {giftHistory.length === 0 ? (
+                <div className="text-center py-8">
+                  <Gift className="w-12 h-12 text-zinc-600 mx-auto mb-3" />
+                  <p className="text-zinc-400">{t('gift.noHistory', 'Aucun abonnement offert pour le moment')}</p>
+                </div>
+              ) : (
+                <>
+                  {/* Summary */}
+                  <div className="bg-zinc-800/50 rounded-lg p-4 mb-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-zinc-400 text-sm">{t('gift.totalGifts', 'Total offerts')}</p>
+                        <p className="text-2xl font-bold text-[#FFD60A]">{giftHistory.length}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-zinc-400 text-sm">{t('gift.totalValue', 'Valeur totale')}</p>
+                        <p className="text-2xl font-bold text-white">
+                          €{giftHistory.reduce((sum, g) => sum + (g.plan_value || 0), 0).toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* List */}
+                  <div className="space-y-3">
+                    {giftHistory.map((gift, index) => (
+                      <div key={index} className="bg-zinc-800/30 border border-zinc-700 rounded-lg p-4">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="text-white font-medium">{gift.user_name || 'Utilisateur'}</p>
+                            <p className="text-zinc-400 text-sm">{gift.user_email}</p>
+                          </div>
+                          <div className="text-right">
+                            <span className="bg-[#FFD60A]/20 text-[#FFD60A] text-sm px-2 py-1 rounded">
+                              {gift.plan_name}
+                            </span>
+                            <p className="text-zinc-400 text-xs mt-1">€{gift.plan_value}</p>
+                          </div>
+                        </div>
+                        <div className="mt-2 pt-2 border-t border-zinc-700 flex justify-between text-xs text-zinc-500">
+                          <span>
+                            {t('gift.reasonLabel', 'Motif')}: {
+                              gift.reason === 'promo_lancement' ? t('gift.reasons.promo', 'Promo lancement') :
+                              gift.reason === 'geste_commercial' ? t('gift.reasons.commercial', 'Geste commercial') :
+                              gift.reason === 'parrainage' ? t('gift.reasons.referral', 'Parrainage') :
+                              gift.reason === 'fidelite' ? t('gift.reasons.loyalty', 'Fidélité') :
+                              gift.reason === 'compensation' ? t('gift.reasons.compensation', 'Compensation') :
+                              gift.reason
+                            }
+                          </span>
+                          <span>{new Date(gift.gifted_at).toLocaleDateString('fr-FR')}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </DialogContent>
         </Dialog>
       </div>
