@@ -3983,9 +3983,9 @@ async def gift_subscription(data: GiftSubscriptionRequest, current_user: dict = 
     # Send email notification to user
     if RESEND_API_KEY and user.get("email"):
         try:
-            resend.emails.send({
+            params = {
                 "from": SENDER_EMAIL,
-                "to": user["email"],
+                "to": [user["email"]],
                 "subject": "🎁 Abonnement offert - Métro-Taxi",
                 "html": f"""
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #09090B; color: white; padding: 30px; border-radius: 10px;">
@@ -4001,7 +4001,9 @@ async def gift_subscription(data: GiftSubscriptionRequest, current_user: dict = 
                     <p style="color: #888; font-size: 12px; margin-top: 30px;">L'équipe Métro-Taxi</p>
                 </div>
                 """
-            })
+            }
+            await asyncio.to_thread(resend.Emails.send, params)
+            logging.info(f"Gift notification email sent to {user['email']}")
         except Exception as e:
             logging.warning(f"Failed to send gift notification email: {e}")
     
