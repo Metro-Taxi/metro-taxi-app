@@ -339,7 +339,16 @@
       "eco": "🌿 ਵਾਤਾਵਰਣ-ਅਨੁਕੂਲ"
     },
     "cta": "ਸਬਸਕ੍ਰਾਈਬ ਕਰੋ",
-    "popularBadge": "ਪ੍ਰਸਿੱਧ"
+    "popularBadge": "ਪ੍ਰਸਿੱਧ",
+    "comingSoon": "ਜਲਦੀ ਆ ਰਿਹਾ ਹੈ",
+    "upcomingMarkets": "ਸਾਡੇ ਆਉਣ ਵਾਲੇ ਬਾਜ਼ਾਰਾਂ ਵਿੱਚ ਕੀਮਤਾਂ",
+    "zoneA": "ਜ਼ੋਨ A - ਮੈਡ੍ਰਿਡ ਸੈਂਟਰੋ",
+    "zones12": "ਜ਼ੋਨ 1-2 - ਸੈਂਟਰਲ ਲੰਡਨ",
+    "regions": {
+      "paris": "ਇਲ-ਦੇ-ਫਰਾਂਸ",
+      "madrid": "ਮੈਡ੍ਰਿਡ",
+      "london": "ਲੰਡਨ"
+    }
   },
   "howItWorks": {
     "title": "ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ",
@@ -372,7 +381,27 @@
       "depending": "ਗਤੀਵਿਧੀ ਅਨੁਸਾਰ",
       "rangeMin": "₨ 629,999",
       "rangeMax": "₨ 839,999",
-      "maxRevenue": "₨ 2,099,999"
+      "maxRevenue": "₨ 2,099,999",
+      "byRegion": {
+        "paris": {
+          "rangeMin": "€2,250",
+          "rangeMax": "€3,000",
+          "maxRevenue": "€7,500",
+          "label": "ਇਲ-ਦੇ-ਫਰਾਂਸ"
+        },
+        "madrid": {
+          "rangeMin": "€7,500",
+          "rangeMax": "€10,000",
+          "maxRevenue": "€12,000",
+          "label": "ਮੈਡ੍ਰਿਡ"
+        },
+        "london": {
+          "rangeMin": "£12,000",
+          "rangeMax": "£15,000",
+          "maxRevenue": "£20,000",
+          "label": "ਲੰਡਨ"
+        }
+      }
     },
     "benefits": {
       "title": "ਫਾਇਦੇ",

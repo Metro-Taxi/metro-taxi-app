@@ -434,7 +434,7 @@
     "perDay": "/jour",
     "perWeek": "/semaine",
     "perMonth": "/mois",
-    "processing": "Traitement en cours...",
+    "processing": "Traitement...",
     "success": {
       "title": "Paiement réussi !",
       "subtitle": "Votre abonnement est maintenant actif",
@@ -449,7 +449,6 @@
     "error": "Erreur lors de la création du paiement",
     "paymentInProgress": "Paiement en cours, veuillez patienter...",
     "creatingSession": "Création de la session de paiement...",
-    "processing": "Traitement...",
     "pleaseWait": "Veuillez patienter...",
     "redirecting": "Redirection vers Stripe..."
   },

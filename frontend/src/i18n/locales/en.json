@@ -379,7 +379,6 @@
     "error": "Payment creation error",
     "paymentInProgress": "Payment in progress, please wait...",
     "creatingSession": "Creating payment session...",
-    "processing": "Processing...",
     "pleaseWait": "Please wait...",
     "redirecting": "Redirecting to Stripe..."
   },
@@ -438,7 +437,16 @@
       "eco": "🌿 Eco-friendly transport"
     },
     "cta": "SUBSCRIBE",
-    "popularBadge": "POPULAR"
+    "popularBadge": "POPULAR",
+    "comingSoon": "Coming soon",
+    "upcomingMarkets": "Prices in our upcoming markets",
+    "zoneA": "Zone A - Madrid Centro",
+    "zones12": "Zones 1-2 - Central London",
+    "regions": {
+      "paris": "Île-de-France",
+      "madrid": "Madrid",
+      "london": "London"
+    }
   },
   "howItWorks": {
     "title": "HOW IT WORKS",
@@ -471,7 +479,27 @@
       "depending": "depending on activity",
       "rangeMin": "$2,499",
       "rangeMax": "$3,299",
-      "maxRevenue": "$8,249"
+      "maxRevenue": "$8,249",
+      "byRegion": {
+        "paris": {
+          "rangeMin": "€2,250",
+          "rangeMax": "€3,000",
+          "maxRevenue": "€7,500",
+          "label": "Île-de-France"
+        },
+        "madrid": {
+          "rangeMin": "€7,500",
+          "rangeMax": "€10,000",
+          "maxRevenue": "€12,000",
+          "label": "Madrid"
+        },
+        "london": {
+          "rangeMin": "£12,000",
+          "rangeMax": "£15,000",
+          "maxRevenue": "£20,000",
+          "label": "London"
+        }
+      }
     },
     "benefits": {
       "title": "DRIVER BENEFITS",

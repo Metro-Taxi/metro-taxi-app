@@ -388,7 +388,16 @@
       "eco": "🌿 نقل صديق للبيئة"
     },
     "cta": "اشترك الآن",
-    "popularBadge": "شائع"
+    "popularBadge": "شائع",
+    "comingSoon": "قريباً",
+    "upcomingMarkets": "الأسعار في أسواقنا القادمة",
+    "zoneA": "المنطقة أ - وسط مدريد",
+    "zones12": "المناطق 1-2 - وسط لندن",
+    "regions": {
+      "paris": "إيل دو فرانس",
+      "madrid": "مدريد",
+      "london": "لندن"
+    }
   },
   "howItWorks": {
     "title": "كيف يعمل",
@@ -421,7 +430,27 @@
       "depending": "حسب النشاط",
       "rangeMin": "9,100 ر.س",
       "rangeMax": "12,150 ر.س",
-      "maxRevenue": "30,375 ر.س"
+      "maxRevenue": "30,375 ر.س",
+      "byRegion": {
+        "paris": {
+          "rangeMin": "٢٬٢٥٠ €",
+          "rangeMax": "٣٬٠٠٠ €",
+          "maxRevenue": "٧٬٥٠٠ €",
+          "label": "إيل دو فرانس"
+        },
+        "madrid": {
+          "rangeMin": "٧٬٥٠٠ €",
+          "rangeMax": "١٠٬٠٠٠ €",
+          "maxRevenue": "١٢٬٠٠٠ €",
+          "label": "مدريد"
+        },
+        "london": {
+          "rangeMin": "١٢٬٠٠٠ £",
+          "rangeMax": "١٥٬٠٠٠ £",
+          "maxRevenue": "٢٠٬٠٠٠ £",
+          "label": "لندن"
+        }
+      }
     },
     "benefits": {
       "title": "مزايا السائقين",
