@@ -120,8 +120,7 @@
     "dashboard": "Tableau de bord"
   },
   "auth": {
-    "login": "Se connecter",
-    "loginPage": {
+    "login": {
       "title": "Connexion",
       "subtitle": "Accédez à votre compte Métro-Taxi",
       "email": "Email",

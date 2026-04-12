@@ -19,6 +19,7 @@
     "no": "No",
     "or": "or",
     "home": "Home",
+    "login": "Log in",
     "cardLoadError": "Error loading cards",
     "driverActivated": "Driver activated successfully",
     "activateError": "Error during activation",
@@ -162,7 +163,9 @@
         "streetAddress": "123 Main Street",
         "postalCode": "10001",
         "city": "New York"
-      }
+      },
+      "alreadyHaveAccount": "Already have an account?",
+      "loginToAccess": "Log in to access your subscription."
     }
   },
   "dashboard": {

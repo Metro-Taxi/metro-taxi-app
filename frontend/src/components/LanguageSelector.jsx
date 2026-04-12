@@ -22,7 +22,6 @@ const LanguageSelector = ({ className = '' }) => {
 
   const changeLanguage = (code) => {
     i18n.changeLanguage(code);
-    localStorage.setItem('metro-taxi-language', code);
     setLanguageMenuOpen(false);
   };
 

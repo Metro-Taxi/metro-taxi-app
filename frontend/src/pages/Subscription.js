@@ -333,7 +333,7 @@ const Subscription = () => {
                   className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-black font-bold px-4 py-2 rounded transition-colors"
                 >
                   <LogIn className="w-4 h-4" />
-                  {t('auth.login', 'Se connecter')}
+                  {t('auth.login.submit')}
                 </Link>
               </div>
             </div>

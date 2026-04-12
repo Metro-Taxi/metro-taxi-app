@@ -1,6 +1,5 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
 
 import fr from './locales/fr.json';
 import en from './locales/en.json';
@@ -38,30 +37,54 @@ const resources = {
   ru: { translation: ru }
 };
 
+// Supported language codes — must match keys in resources
+const supportedLngs = Object.keys(resources);
+
+// Read persisted language (i18next default key)
+const storedLng = typeof window !== 'undefined'
+  ? localStorage.getItem('i18nextLng')
+  : null;
+
+// Determine initial language: stored > querystring > navigator > 'fr'
+function getInitialLng() {
+  if (storedLng && supportedLngs.includes(storedLng)) return storedLng;
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    const qs = params.get('lng');
+    if (qs && supportedLngs.includes(qs)) return qs;
+    // Try navigator languages
+    const navLangs = navigator.languages || [navigator.language];
+    for (const nl of navLangs) {
+      if (supportedLngs.includes(nl)) return nl;
+      const base = nl.split('-')[0];
+      if (supportedLngs.includes(base)) return base;
+    }
+  }
+  return 'fr';
+}
+
 i18n
-  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: {
-      'en-GB': ['en', 'fr'],
-      'en-US': ['en', 'fr'],
-      'default': ['en', 'fr']
-    },
+    lng: getInitialLng(),
+    supportedLngs,
+    fallbackLng: 'en',
     debug: false,
     interpolation: {
       escapeValue: false
     },
-    detection: {
-      order: ['querystring', 'localStorage', 'navigator'],
-      lookupQuerystring: 'lng',
-      caches: ['localStorage']
-    },
-    // Load all language codes including region variants like en-GB
-    load: 'all',
-    // Use specific language if available, fall back to base language
-    nonExplicitSupportedLngs: true
+    load: 'currentOnly'
   });
+
+// Keep document lang attribute in sync
+if (typeof document !== 'undefined') {
+  document.documentElement.lang = i18n.language;
+  i18n.on('languageChanged', (lng) => {
+    document.documentElement.lang = lng;
+    localStorage.setItem('i18nextLng', lng);
+  });
+}
 
 export default i18n;
 
