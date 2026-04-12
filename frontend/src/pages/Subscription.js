@@ -70,9 +70,22 @@ const Subscription = () => {
     }
   }, [searchParams, regions]);
 
-  const fetchPlans = async () => {
+  // Reload plans when region changes
+  useEffect(() => {
+    if (selectedRegion) {
+      fetchPlans(selectedRegion.id);
+    } else {
+      fetchPlans();
+    }
+  }, [selectedRegion]);
+
+  const fetchPlans = async (regionId = null) => {
     try {
-      const response = await axios.get(`${API}/subscriptions/plans`);
+      let url = `${API}/subscriptions/plans`;
+      if (regionId) {
+        url = `${API}/subscriptions/plans/region/${regionId}`;
+      }
+      const response = await axios.get(url);
       setPlans(response.data.plans);
     } catch (error) {
       console.error('Error fetching plans:', error);

@@ -480,6 +480,15 @@
   "pricing": {
     "title": "ABONNEMENTS",
     "subtitle": "Choisissez votre forfait",
+    "comingSoon": "Bientôt disponible",
+    "upcomingMarkets": "Tarifs dans nos prochains marchés",
+    "zoneA": "Zone A - Madrid Centro",
+    "zones12": "Zones 1-2 - Central London",
+    "regions": {
+      "paris": "Île-de-France",
+      "madrid": "Madrid",
+      "london": "Londres"
+    },
     "plans": {
       "day": {
         "name": "24 Heures",
