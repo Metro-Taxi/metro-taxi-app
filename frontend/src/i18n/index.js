@@ -43,13 +43,18 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'fr',
+    fallbackLng: {
+      'en-GB': ['en', 'fr'],
+      'en-US': ['en', 'fr'],
+      'default': ['en', 'fr']
+    },
     debug: false,
     interpolation: {
       escapeValue: false
     },
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['querystring', 'localStorage', 'navigator'],
+      lookupQuerystring: 'lng',
       caches: ['localStorage']
     },
     // Load all language codes including region variants like en-GB

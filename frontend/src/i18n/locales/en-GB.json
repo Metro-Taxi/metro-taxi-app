@@ -1,4 +1,83 @@
 {
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Try again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "or": "or",
+    "home": "Home",
+    "cardLoadError": "Error loading cards",
+    "driverActivated": "Driver activated successfully",
+    "activateError": "Error during activation",
+    "driverDeactivated": "Driver deactivated successfully",
+    "deactivateError": "Error during deactivation",
+    "cleanupError": "Error during cleanup",
+    "destinationSet": "Destination set",
+    "subscribed": "Subscribed"
+  },
+  "regions": {
+    "selectRegion": "Select your region",
+    "availableRegions": "Available regions",
+    "comingSoon": "Coming soon",
+    "detectLocation": "Detect my location",
+    "regionRequired": "Please select a region",
+    "subscriptionForRegion": "Subscription for",
+    "activeInRegions": "Active in regions",
+    "noActiveSubscription": "No active subscription for this region",
+    "admin": {
+      "title": "Region Management",
+      "subtitle": "Create, activate or deactivate service regions",
+      "create": "Create Region",
+      "createRegion": "Create New Region",
+      "editRegion": "Edit Region",
+      "noRegions": "No regions configured",
+      "active": "Active",
+      "inactive": "Inactive",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "activated": "Region activated",
+      "deactivated": "Region deactivated",
+      "created": "Region created successfully",
+      "updated": "Region updated successfully",
+      "deleted": "Region deleted",
+      "activateError": "Error activating region",
+      "deactivateError": "Error deactivating region",
+      "saveError": "Error saving region",
+      "deleteError": "Error deleting region",
+      "confirmDelete": "Are you sure you want to delete this region?",
+      "fillRequired": "Please fill all required fields",
+      "regionId": "Region ID",
+      "regionName": "Display Name",
+      "idHelp": "Used in URLs (e.g., paris.metro-taxi.com)",
+      "country": "Country",
+      "currency": "Currency",
+      "language": "Language",
+      "bounds": "Geographic Bounds",
+      "boundsHelp": "Define the area where the service is available",
+      "launchDate": "Launch Date"
+    }
+  },
+  "popup": {
+    "importantTitle": "Important",
+    "subscriptionRequired": "Your subscription must be active to use Métro-Taxi.",
+    "notificationReminder": "You will receive reminder notifications before expiry.",
+    "renewRecommendation": "We recommend renewing your subscription as soon as you receive these alerts to avoid any service interruption during your travels.",
+    "expiringSoon": "Your subscription expires in",
+    "understoodButton": "I understand"
+  },
   "hero": {
     "title": "MÉTRO-TAXI",
     "subtitle": "The subscription-based urban mobility network",
@@ -9,6 +88,7 @@
     "ecoMessage": "Reduce your carbon footprint by sharing rides"
   },
   "nav": {
+    "home": "Home",
     "login": "Login",
     "register": "Register",
     "pricing": "Pricing",
@@ -16,8 +96,7 @@
     "drivers": "Drivers",
     "logout": "Logout",
     "profile": "Profile",
-    "dashboard": "Dashboard",
-    "home": "Home"
+    "dashboard": "Dashboard"
   },
   "auth": {
     "login": {
@@ -49,6 +128,16 @@
       "phone": "Phone",
       "password": "Password",
       "confirmPassword": "Confirm Password",
+      "streetAddress": "Street Address",
+      "postalCode": "Postal Code",
+      "city": "City",
+      "dateOfBirth": "Date of Birth",
+      "day": "DD",
+      "month": "MM",
+      "year": "YYYY",
+      "dateFormat": "Format: DD / MM / YYYY",
+      "dateRequired": "Please enter your complete date of birth",
+      "invalidAge": "Invalid age (minimum 16 years)",
       "vehiclePlate": "Number Plate",
       "vehicleType": "Vehicle Type",
       "seats": "Number of Seats",
@@ -79,6 +168,7 @@
       "clickMap": "Click on the map to set your destination",
       "requestRide": "Request this ride",
       "yourPosition": "Your position",
+      "locating": "Getting your location...",
       "destination": "Destination",
       "remove": "Remove",
       "optimalRoute": "Optimal route",
@@ -144,7 +234,8 @@
         "drivers": "Drivers",
         "users": "Users",
         "subscriptions": "Subscriptions",
-        "cards": "Virtual Cards"
+        "cards": "Virtual Cards",
+        "regions": "Regions"
       },
       "drivers": {
         "title": "Driver management",
@@ -167,6 +258,9 @@
         "subtitle": "View registered user information",
         "user": "User",
         "contact": "Contact",
+        "identity": "Identity",
+        "birthDate": "Born on",
+        "noIdentity": "Not provided",
         "subscription": "Subscription",
         "expiration": "Expiration",
         "registration": "Registration",
@@ -217,37 +311,30 @@
   "subscription": {
     "title": "Choose your subscription",
     "subtitle": "Simple subscription. Unlimited rides. Pay once, travel without counting.",
+    "expiredTitle": "Subscription expired",
+    "expiredMessage": "Your subscription has expired. Please renew it to continue using Métro-Taxi.",
+    "blockedFeatures": "Blocked features:",
+    "blocked": {
+      "rides": "Ride booking",
+      "vehicles": "Vehicle connection",
+      "map": "Driver visualisation"
+    },
+    "renewButton": "Renew my subscription",
     "plans": {
       "day": {
-        "name": "24 HOURS",
+        "name": "24 Hours",
         "price": "£5.99",
-        "description": "Perfect for occasional use",
-        "period": "day",
-        "feature1": "Unlimited rides for 24h",
-        "feature2": "Access to all vehicles",
-        "feature3": "Optimised transfers"
+        "priceLocal": "£5.99"
       },
       "week": {
-        "name": "1 WEEK",
+        "name": "1 Week",
         "price": "£14.99",
-        "description": "Ideal for short stays",
-        "period": "week",
-        "feature1": "Unlimited rides for 7 days",
-        "feature2": "Priority access",
-        "feature3": "Optimised transfers",
-        "feature4": "Priority support"
+        "priceLocal": "£14.99"
       },
       "month": {
-        "name": "1 MONTH",
-        "price": "£46.99",
-        "description": "Best value for money",
-        "popular": "POPULAR",
-        "period": "month",
-        "feature1": "Unlimited rides for 30 days",
-        "feature2": "Priority access",
-        "feature3": "Optimised transfers",
-        "feature4": "Priority support",
-        "feature5": "Maximum savings"
+        "name": "1 Month",
+        "price": "£45.99",
+        "priceLocal": "£45.99"
       }
     },
     "features": {
@@ -270,19 +357,14 @@
       "validUntil": "Valid until",
       "goDashboard": "Go to dashboard"
     },
-    "expiredTitle": "Subscription expired",
-    "expiredMessage": "Your subscription has expired. Please renew it to continue using Métro-Taxi.",
-    "blockedFeatures": "Blocked features:",
-    "blocked": {
-      "rides": "Ride booking",
-      "vehicles": "Vehicle connection",
-      "map": "Driver visualisation"
-    },
-    "renewButton": "Renew my subscription",
     "chooseTitle": "CHOOSE YOUR",
     "planWord": "PLAN",
     "subscribeBtn": "SUBSCRIBE",
-    "error": "Payment creation error"
+    "error": "Payment creation error",
+    "paymentInProgress": "Payment in progress, please wait...",
+    "creatingSession": "Creating payment session...",
+    "pleaseWait": "Please wait...",
+    "redirecting": "Redirecting to Stripe..."
   },
   "profile": {
     "title": "My Profile",
@@ -332,7 +414,7 @@
       }
     },
     "features": {
-      "unlimited": "Unlimited rides",
+      "unlimited": "Unlimited journeys",
       "allVehicles": "Access to all vehicles",
       "support": "Priority support",
       "noCommitment": "No commitment",
@@ -452,33 +534,6 @@
     "cgu": "Terms",
     "cgv": "Sales Terms"
   },
-  "common": {
-    "loading": "Loading...",
-    "error": "An error occurred",
-    "retry": "Try again",
-    "save": "Save",
-    "cancel": "Cancel",
-    "confirm": "Confirm",
-    "delete": "Delete",
-    "edit": "Edit",
-    "back": "Back",
-    "next": "Next",
-    "previous": "Previous",
-    "search": "Search",
-    "filter": "Filter",
-    "all": "All",
-    "none": "None",
-    "yes": "Yes",
-    "no": "No",
-    "or": "or",
-    "home": "Home",
-    "cardLoadError": "Error loading cards",
-    "driverActivated": "Driver activated successfully",
-    "activateError": "Error during activation",
-    "driverDeactivated": "Driver deactivated successfully",
-    "deactivateError": "Error during deactivation",
-    "cleanupError": "Error during cleanup"
-  },
   "errors": {
     "required": "This field is required",
     "invalidEmail": "Invalid email",
@@ -572,39 +627,63 @@
     "stripeCreated": "Stripe account created! Redirecting...",
     "stripeError": "Error creating account"
   },
-  "popup": {
-    "importantTitle": "Important",
-    "subscriptionRequired": "Your subscription must be active to use Métro-Taxi.",
-    "notificationReminder": "You will receive reminder notifications before expiry.",
-    "renewRecommendation": "We recommend renewing your subscription as soon as you receive these alerts to avoid any service interruption during your travels.",
-    "expiringSoon": "Your subscription expires in",
-    "understoodButton": "I understand"
+  "pwa": {
+    "installTitle": "Install Métro-Taxi",
+    "installDescription": "Add the app to your home screen for quick access",
+    "installButton": "Install",
+    "later": "Later",
+    "understood": "Got it",
+    "iosTitle": "To install on iPhone/iPad:",
+    "iosStep1": "Tap the Share button",
+    "iosStep2": "Scroll down and tap \"Add to Home Screen\"",
+    "iosStep3": "Tap \"Add\"",
+    "androidTitle": "To install on Android:",
+    "androidStep1": "Tap the menu ⋮ in the top right",
+    "androidStep2": "Select \"Install app\" or \"Add to Home screen\"",
+    "genericInstructions": "Use your browser menu to add this page to your home screen"
   },
-  "cgv": {
-    "title": "General Terms of Sale",
-    "subscriptionModel": "Subscription Model",
-    "intro": "Métro-Taxi operates exclusively through subscriptions.",
-    "noPerRide": "No per-ride payment is required.",
-    "pricingTitle": "Pricing",
-    "pricing": {
-      "day": "24 hours",
-      "week": "1 week",
-      "month": "1 month"
-    },
-    "conditionsTitle": "Terms",
-    "condition1": "An active subscription is required to access the service",
-    "condition2": "Subscriptions are non-refundable except in exceptional cases",
-    "condition3": "Renewal is at the user's initiative",
-    "suspensionTitle": "Service Suspension",
-    "suspensionWarning": "Upon subscription expiry:",
-    "suspension1": "Access to the application is automatically disabled",
-    "suspension2": "No rides can be taken",
-    "readAndAccept": "I have read and accept the General Terms of Sale",
-    "acceptButton": "I accept the Terms"
+  "rideHistory": {
+    "title": "Ride History",
+    "subtitle": "View all your past rides",
+    "noRides": "No rides found",
+    "page": "Page",
+    "filterAll": "All",
+    "statusCompleted": "Completed",
+    "statusCancelled": "Cancelled",
+    "statusInProgress": "In Progress",
+    "statusPending": "Pending",
+    "statusAccepted": "Accepted",
+    "fetchError": "Error loading ride history"
+  },
+  "rating": {
+    "title": "Rate your ride",
+    "withDriver": "With",
+    "selectRating": "Please select a rating",
+    "success": "Thank you for your rating!",
+    "error": "Failed to submit rating",
+    "commentLabel": "Add a comment (optional)",
+    "commentPlaceholder": "Tell us about your experience...",
+    "submit": "Submit Rating",
+    "label1": "Poor",
+    "label2": "Fair",
+    "label3": "Good",
+    "label4": "Very Good",
+    "label5": "Excellent",
+    "pendingTitle": "Rate your recent rides",
+    "reviews": "reviews"
   },
   "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications yet",
+    "markAllRead": "Mark all read",
+    "allRead": "All notifications marked as read",
+    "justNow": "Just now",
+    "rideAccepted": "Ride accepted",
+    "driverArrived": "Driver arrived",
+    "subscriptionExpiring": "Subscription expiring soon",
     "renewNow": "Renew now",
     "subscriptionExpiryTitle": "Subscription expiring soon",
+    "subscriptionExpiryTitleToday": "Subscription expires today",
     "subscriptionExpiryBody": "Your Métro-Taxi subscription is expiring soon. Renew now to continue using the service without interruption."
   },
   "cgu": {
@@ -633,10 +712,42 @@
     "acceptButton": "I accept the Terms",
     "allRightsReserved": "All rights reserved."
   },
+  "cgv": {
+    "title": "General Terms of Sale",
+    "subscriptionModel": "Subscription Model",
+    "intro": "Métro-Taxi operates exclusively through subscriptions.",
+    "noPerRide": "No per-ride payment is required.",
+    "pricingTitle": "Pricing",
+    "pricing": {
+      "day": "24 hours",
+      "week": "1 week",
+      "month": "1 month"
+    },
+    "conditionsTitle": "Terms",
+    "condition1": "An active subscription is required to access the service",
+    "condition2": "Subscriptions are non-refundable except in exceptional cases",
+    "condition3": "Renewal is at the user's initiative",
+    "suspensionTitle": "Service Suspension",
+    "suspensionWarning": "Upon subscription expiry:",
+    "suspension1": "Access to the application is automatically disabled",
+    "suspension2": "No rides can be taken",
+    "readAndAccept": "I have read and accept the General Terms of Sale",
+    "acceptButton": "I accept the Terms"
+  },
   "currency": {
     "code": "GBP",
     "symbol": "£",
     "position": "before"
+  },
+  "chat": {
+    "partner": "Contact",
+    "typing": "Typing...",
+    "active": "Online",
+    "noMessages": "No messages",
+    "startConversation": "Start the conversation",
+    "placeholder": "Your message...",
+    "title": "Chat",
+    "openChat": "Open chat"
   },
   "help": {
     "button": "HELP",
