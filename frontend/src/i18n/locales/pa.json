@@ -64,6 +64,15 @@
         "suv": "SUV",
         "van": "ਵੈਨ",
         "luxury": "ਲਗਜ਼ਰੀ"
+      },
+      "placeholders": {
+        "firstName": "ਹਰਜੀਤ",
+        "lastName": "ਸਿੰਘ",
+        "email": "harjit@example.in",
+        "phone": "+91 98765 43210",
+        "streetAddress": "12 ਮੁੱਖ ਮਾਰਗ",
+        "postalCode": "110001",
+        "city": "ਨਵੀਂ ਦਿੱਲੀ"
       }
     }
   },

@@ -142,7 +142,7 @@ const RegisterUser = () => {
                     name="first_name"
                     value={formData.first_name}
                     onChange={handleChange}
-                    placeholder="Jean"
+                    placeholder={t('auth.register.placeholders.firstName', 'Jean')}
                     className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
                     required
                     data-testid="register-firstname-input"
@@ -156,7 +156,7 @@ const RegisterUser = () => {
                   name="last_name"
                   value={formData.last_name}
                   onChange={handleChange}
-                  placeholder="Dupont"
+                  placeholder={t('auth.register.placeholders.lastName', 'Dupont')}
                   className="bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
                   required
                   data-testid="register-lastname-input"
@@ -174,7 +174,7 @@ const RegisterUser = () => {
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="jean@exemple.com"
+                  placeholder={t('auth.register.placeholders.email', 'jean@exemple.com')}
                   className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
                   required
                   data-testid="register-email-input"
@@ -192,7 +192,7 @@ const RegisterUser = () => {
                   type="tel"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="06 12 34 56 78"
+                  placeholder={t('auth.register.placeholders.phone', '06 12 34 56 78')}
                   className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
                   required
                   data-testid="register-phone-input"
@@ -210,7 +210,7 @@ const RegisterUser = () => {
                   name="street_address"
                   value={formData.street_address}
                   onChange={handleChange}
-                  placeholder="12 rue de la Paix"
+                  placeholder={t('auth.register.placeholders.streetAddress', '12 rue de la Paix')}
                   className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
                   required
                   data-testid="register-street-input"
@@ -226,7 +226,7 @@ const RegisterUser = () => {
                   name="postal_code"
                   value={formData.postal_code}
                   onChange={handleChange}
-                  placeholder="75001"
+                  placeholder={t('auth.register.placeholders.postalCode', '75001')}
                   className="bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
                   required
                   data-testid="register-postal-input"
@@ -239,7 +239,7 @@ const RegisterUser = () => {
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
-                  placeholder="Paris"
+                  placeholder={t('auth.register.placeholders.city', 'Paris')}
                   className="bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
                   required
                   data-testid="register-city-input"

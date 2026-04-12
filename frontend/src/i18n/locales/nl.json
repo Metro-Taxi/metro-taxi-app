@@ -64,6 +64,15 @@
         "suv": "SUV",
         "van": "Busje",
         "luxury": "Luxe"
+      },
+      "placeholders": {
+        "firstName": "Jan",
+        "lastName": "de Vries",
+        "email": "jan@voorbeeld.nl",
+        "phone": "+31 6 12345678",
+        "streetAddress": "Hoofdstraat 12",
+        "postalCode": "1012 AA",
+        "city": "Amsterdam"
       }
     }
   },

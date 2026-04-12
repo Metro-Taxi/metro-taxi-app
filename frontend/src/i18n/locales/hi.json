@@ -64,6 +64,15 @@
         "suv": "SUV",
         "van": "वैन",
         "luxury": "लक्जरी"
+      },
+      "placeholders": {
+        "firstName": "राज",
+        "lastName": "शर्मा",
+        "email": "raj@example.in",
+        "phone": "+91 98765 43210",
+        "streetAddress": "12 मुख्य मार्ग",
+        "postalCode": "110001",
+        "city": "नई दिल्ली"
       }
     }
   },

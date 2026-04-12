@@ -64,6 +64,15 @@
         "suv": "SUV",
         "van": "فان",
         "luxury": "فاخرة"
+      },
+      "placeholders": {
+        "firstName": "أحمد",
+        "lastName": "محمد",
+        "email": "ahmed@example.sa",
+        "phone": "+966 50 123 4567",
+        "streetAddress": "شارع الملك 12",
+        "postalCode": "11564",
+        "city": "الرياض"
       }
     }
   },

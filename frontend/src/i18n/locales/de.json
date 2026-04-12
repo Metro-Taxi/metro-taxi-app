@@ -64,6 +64,15 @@
         "suv": "SUV",
         "van": "Van",
         "luxury": "Luxus"
+      },
+      "placeholders": {
+        "firstName": "Hans",
+        "lastName": "Müller",
+        "email": "hans@beispiel.de",
+        "phone": "+49 170 1234567",
+        "streetAddress": "Hauptstraße 12",
+        "postalCode": "10115",
+        "city": "Berlin"
       }
     }
   },

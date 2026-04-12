@@ -64,6 +64,15 @@
         "suv": "SUV",
         "van": "Van",
         "luxury": "Luksus"
+      },
+      "placeholders": {
+        "firstName": "Ole",
+        "lastName": "Hansen",
+        "email": "ole@eksempel.no",
+        "phone": "+47 412 34 567",
+        "streetAddress": "Storgata 12",
+        "postalCode": "0154",
+        "city": "Oslo"
       }
     }
   },

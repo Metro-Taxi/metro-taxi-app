@@ -64,6 +64,15 @@
         "suv": "SUV",
         "van": "Van",
         "luxury": "Luksus"
+      },
+      "placeholders": {
+        "firstName": "Erik",
+        "lastName": "Johansson",
+        "email": "erik@exempel.se",
+        "phone": "+46 70 123 4567",
+        "streetAddress": "Kungsgatan 12",
+        "postalCode": "111 43",
+        "city": "Stockholm"
       }
     }
   },

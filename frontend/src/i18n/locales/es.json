@@ -74,6 +74,15 @@
         "suv": "SUV",
         "van": "Van",
         "luxury": "Lujo"
+      },
+      "placeholders": {
+        "firstName": "Juan",
+        "lastName": "García",
+        "email": "juan@ejemplo.es",
+        "phone": "+34 612 345 678",
+        "streetAddress": "Calle Mayor 12",
+        "postalCode": "28001",
+        "city": "Madrid"
       }
     }
   },

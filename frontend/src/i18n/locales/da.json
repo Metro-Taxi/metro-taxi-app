@@ -64,6 +64,15 @@
         "suv": "SUV",
         "van": "Van",
         "luxury": "Luksus"
+      },
+      "placeholders": {
+        "firstName": "Lars",
+        "lastName": "Nielsen",
+        "email": "lars@eksempel.dk",
+        "phone": "+45 20 12 34 56",
+        "streetAddress": "Hovedgaden 12",
+        "postalCode": "1000",
+        "city": "København"
       }
     }
   },

@@ -64,6 +64,15 @@
         "suv": "SUV",
         "van": "Van",
         "luxury": "Lusso"
+      },
+      "placeholders": {
+        "firstName": "Marco",
+        "lastName": "Rossi",
+        "email": "marco@esempio.it",
+        "phone": "+39 333 1234567",
+        "streetAddress": "Via Roma 12",
+        "postalCode": "00100",
+        "city": "Roma"
       }
     }
   },

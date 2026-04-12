@@ -64,6 +64,15 @@
         "suv": "SUV",
         "van": "面包车",
         "luxury": "豪华车"
+      },
+      "placeholders": {
+        "firstName": "明",
+        "lastName": "王",
+        "email": "ming@example.cn",
+        "phone": "+86 138 1234 5678",
+        "streetAddress": "长安街12号",
+        "postalCode": "100000",
+        "city": "北京"
       }
     }
   },

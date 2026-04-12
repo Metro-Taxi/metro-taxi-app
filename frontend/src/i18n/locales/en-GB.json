@@ -26,7 +26,10 @@
     "deactivateError": "Error during deactivation",
     "cleanupError": "Error during cleanup",
     "destinationSet": "Destination set",
-    "subscribed": "Subscribed"
+    "subscribed": "Subscribed",
+    "goLogin": "Log in",
+    "loginLink": "Log in",
+    "login": "Log in"
   },
   "regions": {
     "selectRegion": "Select your region",
@@ -153,6 +156,18 @@
         "suv": "SUV",
         "van": "Van",
         "luxury": "Luxury"
+      },
+      "alreadyHaveAccount": "Already have an account?",
+      "loginToAccess": "Log in to access your subscription.",
+      "goToLogin": "Go to login",
+      "placeholders": {
+        "firstName": "John",
+        "lastName": "Smith",
+        "email": "john@example.co.uk",
+        "phone": "+44 7700 900000",
+        "streetAddress": "12 Baker Street",
+        "postalCode": "W1U 3BW",
+        "city": "London"
       }
     }
   },
@@ -364,7 +379,8 @@
     "paymentInProgress": "Payment in progress, please wait...",
     "creatingSession": "Creating payment session...",
     "pleaseWait": "Please wait...",
-    "redirecting": "Redirecting to Stripe..."
+    "redirecting": "Redirecting to Stripe...",
+    "alreadyAccountDesc": "Log in with your email to access your subscription on all your devices and avoid duplicate payments."
   },
   "profile": {
     "title": "My Profile",

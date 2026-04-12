@@ -64,6 +64,15 @@
         "suv": "Внедорожник",
         "van": "Минивэн",
         "luxury": "Люкс"
+      },
+      "placeholders": {
+        "firstName": "Иван",
+        "lastName": "Иванов",
+        "email": "ivan@example.ru",
+        "phone": "+7 916 123 4567",
+        "streetAddress": "ул. Тверская, д. 12",
+        "postalCode": "125009",
+        "city": "Москва"
       }
     }
   },

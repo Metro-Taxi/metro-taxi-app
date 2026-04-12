@@ -183,6 +183,15 @@
         "suv": "SUV",
         "van": "Van",
         "luxury": "Luxe"
+      },
+      "placeholders": {
+        "firstName": "Jean",
+        "lastName": "Dupont",
+        "email": "jean@exemple.com",
+        "phone": "06 12 34 56 78",
+        "streetAddress": "12 rue de la Paix",
+        "postalCode": "75001",
+        "city": "Paris"
       }
     }
   },

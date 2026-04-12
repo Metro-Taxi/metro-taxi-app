@@ -153,6 +153,15 @@
         "suv": "SUV",
         "van": "Van",
         "luxury": "Luxury"
+      },
+      "placeholders": {
+        "firstName": "John",
+        "lastName": "Smith",
+        "email": "john@example.com",
+        "phone": "+1 555 123 4567",
+        "streetAddress": "123 Main Street",
+        "postalCode": "10001",
+        "city": "New York"
       }
     }
   },

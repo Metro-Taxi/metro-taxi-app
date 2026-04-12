@@ -64,6 +64,15 @@
         "suv": "SUV",
         "van": "Van",
         "luxury": "Luxo"
+      },
+      "placeholders": {
+        "firstName": "João",
+        "lastName": "Silva",
+        "email": "joao@exemplo.pt",
+        "phone": "+351 912 345 678",
+        "streetAddress": "Rua Principal 12",
+        "postalCode": "1000-001",
+        "city": "Lisboa"
       }
     }
   },
