@@ -64,11 +64,97 @@ if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
 
 # Subscription Plans (prices in cents to avoid floating point issues)
+# Default plans (France/EUR)
 SUBSCRIPTION_PLANS = {
     "24h": {"name": "24 heures", "price": 6.99, "price_cents": 699, "duration_hours": 24},
     "1week": {"name": "1 semaine", "price": 16.99, "price_cents": 1699, "duration_hours": 168},
     "1month": {"name": "1 mois", "price": 53.99, "price_cents": 5399, "duration_hours": 720}
 }
+
+# Regional pricing configuration
+REGIONAL_PRICING = {
+    # France - Île-de-France (default)
+    "paris": {
+        "currency": "EUR",
+        "currency_symbol": "€",
+        "plans": {
+            "24h": {"name": "24 heures", "price": 6.99, "price_cents": 699},
+            "1week": {"name": "1 semaine", "price": 16.99, "price_cents": 1699},
+            "1month": {"name": "1 mois", "price": 53.99, "price_cents": 5399}
+        },
+        "driver_rate_per_km": 1.50
+    },
+    # France - Lyon
+    "lyon": {
+        "currency": "EUR",
+        "currency_symbol": "€",
+        "plans": {
+            "24h": {"name": "24 heures", "price": 6.99, "price_cents": 699},
+            "1week": {"name": "1 semaine", "price": 16.99, "price_cents": 1699},
+            "1month": {"name": "1 mois", "price": 53.99, "price_cents": 5399}
+        },
+        "driver_rate_per_km": 1.50
+    },
+    # UK - London Zones 1-2 (Central + Inner)
+    "london_central": {
+        "currency": "GBP",
+        "currency_symbol": "£",
+        "plans": {
+            "24h": {"name": "24 Hours", "price": 7.99, "price_cents": 799},
+            "1week": {"name": "1 Week", "price": 19.99, "price_cents": 1999},
+            "1month": {"name": "1 Month", "price": 59.99, "price_cents": 5999}
+        },
+        "driver_rate_per_km": 1.80
+    },
+    # UK - London Zones 1-4 (Extended)
+    "london_extended": {
+        "currency": "GBP",
+        "currency_symbol": "£",
+        "plans": {
+            "24h": {"name": "24 Hours", "price": 9.99, "price_cents": 999},
+            "1week": {"name": "1 Week", "price": 24.99, "price_cents": 2499},
+            "1month": {"name": "1 Month", "price": 79.99, "price_cents": 7999}
+        },
+        "driver_rate_per_km": 1.80
+    },
+    # UK - London Zones 1-6 (Greater London)
+    "london_greater": {
+        "currency": "GBP",
+        "currency_symbol": "£",
+        "plans": {
+            "24h": {"name": "24 Hours", "price": 11.99, "price_cents": 1199},
+            "1week": {"name": "1 Week", "price": 29.99, "price_cents": 2999},
+            "1month": {"name": "1 Month", "price": 99.99, "price_cents": 9999}
+        },
+        "driver_rate_per_km": 1.80
+    },
+    # Spain - Madrid Zone A (Centro + Banlieue proche)
+    "madrid_zona_a": {
+        "currency": "EUR",
+        "currency_symbol": "€",
+        "plans": {
+            "24h": {"name": "24 Horas", "price": 4.99, "price_cents": 499},
+            "1week": {"name": "1 Semana", "price": 12.99, "price_cents": 1299},
+            "1month": {"name": "1 Mes", "price": 34.99, "price_cents": 3499}
+        },
+        "driver_rate_per_km": 1.20
+    },
+    # Spain - Madrid Extended (Zones B1-B2)
+    "madrid_extended": {
+        "currency": "EUR",
+        "currency_symbol": "€",
+        "plans": {
+            "24h": {"name": "24 Horas", "price": 5.99, "price_cents": 599},
+            "1week": {"name": "1 Semana", "price": 14.99, "price_cents": 1499},
+            "1month": {"name": "1 Mes", "price": 44.99, "price_cents": 4499}
+        },
+        "driver_rate_per_km": 1.30
+    }
+}
+
+def get_regional_pricing(region_id: str) -> dict:
+    """Get pricing configuration for a specific region"""
+    return REGIONAL_PRICING.get(region_id, REGIONAL_PRICING.get("paris"))
 
 # Driver Revenue Configuration
 DRIVER_RATE_PER_KM = 1.50  # €1.50 per kilometer
@@ -1799,8 +1885,58 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 
 # Subscription & Payment Routes
 @api_router.get("/subscriptions/plans")
-async def get_subscription_plans():
-    return {"plans": SUBSCRIPTION_PLANS}
+async def get_subscription_plans(region_id: Optional[str] = None):
+    """Get subscription plans, optionally filtered by region"""
+    if region_id and region_id in REGIONAL_PRICING:
+        regional = REGIONAL_PRICING[region_id]
+        plans_with_duration = {}
+        for plan_id, plan_data in regional["plans"].items():
+            plans_with_duration[plan_id] = {
+                **plan_data,
+                "duration_hours": SUBSCRIPTION_PLANS[plan_id]["duration_hours"],
+                "currency": regional["currency"],
+                "currency_symbol": regional["currency_symbol"]
+            }
+        return {
+            "plans": plans_with_duration,
+            "region_id": region_id,
+            "currency": regional["currency"],
+            "driver_rate_per_km": regional["driver_rate_per_km"]
+        }
+    return {"plans": SUBSCRIPTION_PLANS, "currency": "EUR", "currency_symbol": "€"}
+
+@api_router.get("/subscriptions/plans/region/{region_id}")
+async def get_subscription_plans_for_region(region_id: str):
+    """Get subscription plans for a specific region"""
+    if region_id not in REGIONAL_PRICING:
+        # Fallback to default pricing
+        region_id = "paris"
+    
+    regional = REGIONAL_PRICING[region_id]
+    plans_with_duration = {}
+    for plan_id, plan_data in regional["plans"].items():
+        plans_with_duration[plan_id] = {
+            **plan_data,
+            "duration_hours": SUBSCRIPTION_PLANS[plan_id]["duration_hours"],
+            "currency": regional["currency"],
+            "currency_symbol": regional["currency_symbol"]
+        }
+    
+    return {
+        "plans": plans_with_duration,
+        "region_id": region_id,
+        "currency": regional["currency"],
+        "currency_symbol": regional["currency_symbol"],
+        "driver_rate_per_km": regional["driver_rate_per_km"]
+    }
+
+@api_router.get("/pricing/regions")
+async def get_all_regional_pricing():
+    """Get pricing for all regions (admin view)"""
+    return {
+        "pricing": REGIONAL_PRICING,
+        "default_plans": SUBSCRIPTION_PLANS
+    }
 
 @api_router.post("/payments/checkout")
 async def create_checkout(data: CheckoutRequest, request: Request, current_user: dict = Depends(get_current_user)):
@@ -5415,6 +5551,7 @@ async def verify_database_connection():
 async def initialize_default_regions():
     """Create default regions if they don't exist"""
     default_regions = [
+        # FRANCE
         {
             "id": "paris",
             "name": "Île-de-France",
@@ -5423,12 +5560,12 @@ async def initialize_default_regions():
             "language": "fr",
             "timezone": "Europe/Paris",
             "bounds": {
-                "north": 49.2415,  # North of Île-de-France
-                "south": 48.1200,  # South of Île-de-France
-                "east": 3.5590,    # East
-                "west": 1.4465     # West
+                "north": 49.2415,
+                "south": 48.1200,
+                "east": 3.5590,
+                "west": 1.4465
             },
-            "is_active": True,  # Paris is active by default
+            "is_active": True,
             "launch_date": datetime.now(timezone.utc).isoformat(),
             "created_at": datetime.now(timezone.utc).isoformat()
         },
@@ -5445,13 +5582,51 @@ async def initialize_default_regions():
                 "east": 5.2000,
                 "west": 4.5000
             },
-            "is_active": False,  # Lyon inactive for now
+            "is_active": False,
+            "launch_date": None,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        # UK - LONDON
+        {
+            "id": "london_central",
+            "name": "London Zones 1-2",
+            "description": "Central London + Inner (Camden, Greenwich, Brixton)",
+            "country": "GB",
+            "currency": "GBP",
+            "language": "en",
+            "timezone": "Europe/London",
+            "bounds": {
+                "north": 51.5500,
+                "south": 51.4500,
+                "east": 0.0500,
+                "west": -0.2500
+            },
+            "is_active": False,
             "launch_date": None,
             "created_at": datetime.now(timezone.utc).isoformat()
         },
         {
-            "id": "london",
-            "name": "Greater London",
+            "id": "london_extended",
+            "name": "London Zones 1-4",
+            "description": "Central + Stratford, Wimbledon, Wembley, Ealing",
+            "country": "GB",
+            "currency": "GBP",
+            "language": "en",
+            "timezone": "Europe/London",
+            "bounds": {
+                "north": 51.6200,
+                "south": 51.3500,
+                "east": 0.1500,
+                "west": -0.4000
+            },
+            "is_active": False,
+            "launch_date": None,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "london_greater",
+            "name": "Greater London (Zones 1-6)",
+            "description": "All Greater London including Heathrow, Croydon, Barnet",
             "country": "GB",
             "currency": "GBP",
             "language": "en",
@@ -5462,7 +5637,44 @@ async def initialize_default_regions():
                 "east": 0.3340,
                 "west": -0.5103
             },
-            "is_active": False,  # London inactive for now
+            "is_active": False,
+            "launch_date": None,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        # SPAIN - MADRID
+        {
+            "id": "madrid_zona_a",
+            "name": "Madrid Zone A",
+            "description": "Madrid Centro + Alcorcón, Getafe, Leganés, Alcobendas, Coslada",
+            "country": "ES",
+            "currency": "EUR",
+            "language": "es",
+            "timezone": "Europe/Madrid",
+            "bounds": {
+                "north": 40.5500,
+                "south": 40.3000,
+                "east": -3.5500,
+                "west": -3.8500
+            },
+            "is_active": False,
+            "launch_date": None,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "madrid_extended",
+            "name": "Madrid Zones B1-B2",
+            "description": "Grande couronne: Móstoles, Fuenlabrada, Parla, Arganda del Rey",
+            "country": "ES",
+            "currency": "EUR",
+            "language": "es",
+            "timezone": "Europe/Madrid",
+            "bounds": {
+                "north": 40.6500,
+                "south": 40.1500,
+                "east": -3.3000,
+                "west": -4.0500
+            },
+            "is_active": False,
             "launch_date": None,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
@@ -5474,6 +5686,12 @@ async def initialize_default_regions():
             await db.regions.insert_one(region)
             logging.info(f"✅ Created default region: {region['name']} ({region['id']})")
         else:
+            # Update existing region with new fields if missing
+            update_fields = {}
+            if "description" in region and not existing.get("description"):
+                update_fields["description"] = region["description"]
+            if update_fields:
+                await db.regions.update_one({"id": region["id"]}, {"$set": update_fields})
             logging.info(f"ℹ️ Region already exists: {region['name']} ({region['id']})")
 
 # WebSocket endpoint
