@@ -323,18 +323,18 @@
     "plans": {
       "day": {
         "name": "24 Hours",
-        "price": "£5.99",
-        "priceLocal": "£5.99"
+        "price": "£9.99",
+        "priceLocal": "£9.99"
       },
       "week": {
         "name": "1 Week",
-        "price": "£14.99",
-        "priceLocal": "£14.99"
+        "price": "£29.99",
+        "priceLocal": "£29.99"
       },
       "month": {
         "name": "1 Month",
-        "price": "£45.99",
-        "priceLocal": "£45.99"
+        "price": "£79.99",
+        "priceLocal": "£79.99"
       }
     },
     "features": {
@@ -396,20 +396,20 @@
     "plans": {
       "day": {
         "name": "24 Hours",
-        "price": "£5.99",
-        "priceLocal": "£5.99",
+        "price": "£9.99",
+        "priceLocal": "£9.99",
         "description": "Perfect for occasional use"
       },
       "week": {
         "name": "1 Week",
-        "price": "£14.99",
-        "priceLocal": "£14.99",
+        "price": "£29.99",
+        "priceLocal": "£29.99",
         "description": "Ideal for short stays"
       },
       "month": {
         "name": "1 Month",
-        "price": "£45.99",
-        "priceLocal": "£45.99",
+        "price": "£79.99",
+        "priceLocal": "£79.99",
         "description": "Best value for money"
       }
     },
