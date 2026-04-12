@@ -67,7 +67,8 @@ Plateforme web + mobile "Métro-Taxi" pour mettre en relation des usagers abonn�
 - [ ] **Migration Stripe → Crédit Agricole** : En attente des identifiants bancaires du client (Site ID, Clés HMAC, ICS)
 
 ### P1 - Haute priorité
-- [ ] Refactoring `server.py` Phase 2 (~5426 → ~3500 lignes) : extraire routes payments, admin, rides, ratings, chat, tts
+- [x] Refactoring `server.py` Phase 1+2 : 5940 → 4872 lignes (~1068 lignes extraites vers modules)
+- [ ] Refactoring Phase 3 : extraire routes admin, payments, rides (~4872 → ~3500 lignes)
 - [ ] Validation complète des fonctionnalités (Notifications Push, Historique, Notation)
 - [ ] Mettre en place VAPID keys de production
 
