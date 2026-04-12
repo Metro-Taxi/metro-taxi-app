@@ -478,55 +478,55 @@ const Landing = () => {
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-3xl">🇪🇸</span>
-                <h4 className="text-xl font-bold text-white">Madrid</h4>
+                <h4 className="text-xl font-bold text-white">{t('pricing.zones.madrid.title', 'Madrid')}</h4>
                 <span className="text-zinc-500 text-sm">({t('pricing.comingSoon', 'Bientôt disponible')})</span>
               </div>
               <div className="grid md:grid-cols-3 gap-4">
                 {/* Zone A */}
                 <div className="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700">
-                  <p className="text-[#FFD60A] font-bold text-sm mb-3">Zone A</p>
-                  <p className="text-zinc-500 text-xs mb-2">Madrid Centro, Alcorcón, Getafe, Leganés</p>
+                  <p className="text-[#FFD60A] font-bold text-sm mb-3">{t('pricing.zones.madrid.zoneA.name', 'Zone A')}</p>
+                  <p className="text-zinc-500 text-xs mb-2">{t('pricing.zones.madrid.zoneA.desc', 'Madrid Centro, Alcorcón, Getafe, Leganés')}</p>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between text-zinc-300">
-                      <span>24h</span><span className="font-bold text-[#FFD60A]">€4.99</span>
+                      <span>{t('pricing.zones.duration.day', '24h')}</span><span className="font-bold text-[#FFD60A]">€4.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
-                      <span>1 Sem.</span><span className="font-bold text-[#FFD60A]">€12.99</span>
+                      <span>{t('pricing.zones.duration.week', '1 Sem.')}</span><span className="font-bold text-[#FFD60A]">€12.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
-                      <span>1 Mes</span><span className="font-bold text-[#FFD60A]">€34.99</span>
+                      <span>{t('pricing.zones.duration.month', '1 Mois')}</span><span className="font-bold text-[#FFD60A]">€34.99</span>
                     </div>
                   </div>
                 </div>
                 {/* Zones B1-B2 */}
                 <div className="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700">
-                  <p className="text-[#FFD60A] font-bold text-sm mb-3">Zones B1-B2</p>
-                  <p className="text-zinc-500 text-xs mb-2">Móstoles, Fuenlabrada, Parla, Arganda</p>
+                  <p className="text-[#FFD60A] font-bold text-sm mb-3">{t('pricing.zones.madrid.zoneB.name', 'Zones B1-B2')}</p>
+                  <p className="text-zinc-500 text-xs mb-2">{t('pricing.zones.madrid.zoneB.desc', 'Móstoles, Fuenlabrada, Parla, Arganda')}</p>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between text-zinc-300">
-                      <span>24h</span><span className="font-bold text-[#FFD60A]">€5.99</span>
+                      <span>{t('pricing.zones.duration.day', '24h')}</span><span className="font-bold text-[#FFD60A]">€5.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
-                      <span>1 Sem.</span><span className="font-bold text-[#FFD60A]">€14.99</span>
+                      <span>{t('pricing.zones.duration.week', '1 Sem.')}</span><span className="font-bold text-[#FFD60A]">€14.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
-                      <span>1 Mes</span><span className="font-bold text-[#FFD60A]">€44.99</span>
+                      <span>{t('pricing.zones.duration.month', '1 Mois')}</span><span className="font-bold text-[#FFD60A]">€44.99</span>
                     </div>
                   </div>
                 </div>
                 {/* Zones B3/C1/C2 */}
                 <div className="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700">
-                  <p className="text-[#FFD60A] font-bold text-sm mb-3">Zones B3/C1/C2</p>
-                  <p className="text-zinc-500 text-xs mb-2">Alcalá de Henares, Torrejón de Ardoz</p>
+                  <p className="text-[#FFD60A] font-bold text-sm mb-3">{t('pricing.zones.madrid.zoneC.name', 'Zones B3/C1/C2')}</p>
+                  <p className="text-zinc-500 text-xs mb-2">{t('pricing.zones.madrid.zoneC.desc', 'Alcalá de Henares, Torrejón de Ardoz')}</p>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between text-zinc-300">
-                      <span>24h</span><span className="font-bold text-[#FFD60A]">€6.99</span>
+                      <span>{t('pricing.zones.duration.day', '24h')}</span><span className="font-bold text-[#FFD60A]">€6.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
-                      <span>1 Sem.</span><span className="font-bold text-[#FFD60A]">€17.99</span>
+                      <span>{t('pricing.zones.duration.week', '1 Sem.')}</span><span className="font-bold text-[#FFD60A]">€17.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
-                      <span>1 Mes</span><span className="font-bold text-[#FFD60A]">€54.99</span>
+                      <span>{t('pricing.zones.duration.month', '1 Mois')}</span><span className="font-bold text-[#FFD60A]">€54.99</span>
                     </div>
                   </div>
                 </div>
@@ -537,55 +537,55 @@ const Landing = () => {
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-3xl">🇬🇧</span>
-                <h4 className="text-xl font-bold text-white">London</h4>
+                <h4 className="text-xl font-bold text-white">{t('pricing.zones.london.title', 'London')}</h4>
                 <span className="text-zinc-500 text-sm">({t('pricing.comingSoon', 'Bientôt disponible')})</span>
               </div>
               <div className="grid md:grid-cols-3 gap-4">
                 {/* Zones 1-2 */}
                 <div className="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700">
-                  <p className="text-[#FFD60A] font-bold text-sm mb-3">Zones 1-2</p>
-                  <p className="text-zinc-500 text-xs mb-2">Central London, Camden, Greenwich</p>
+                  <p className="text-[#FFD60A] font-bold text-sm mb-3">{t('pricing.zones.london.zone12.name', 'Zones 1-2')}</p>
+                  <p className="text-zinc-500 text-xs mb-2">{t('pricing.zones.london.zone12.desc', 'Central London, Camden, Greenwich')}</p>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between text-zinc-300">
-                      <span>24h</span><span className="font-bold text-[#FFD60A]">£9.99</span>
+                      <span>{t('pricing.zones.duration.day', '24h')}</span><span className="font-bold text-[#FFD60A]">£9.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
-                      <span>1 Week</span><span className="font-bold text-[#FFD60A]">£29.99</span>
+                      <span>{t('pricing.zones.duration.week', '1 Week')}</span><span className="font-bold text-[#FFD60A]">£29.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
-                      <span>1 Month</span><span className="font-bold text-[#FFD60A]">£79.99</span>
+                      <span>{t('pricing.zones.duration.month', '1 Month')}</span><span className="font-bold text-[#FFD60A]">£79.99</span>
                     </div>
                   </div>
                 </div>
                 {/* Zones 1-4 */}
                 <div className="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700">
-                  <p className="text-[#FFD60A] font-bold text-sm mb-3">Zones 1-4</p>
-                  <p className="text-zinc-500 text-xs mb-2">+ Stratford, Wimbledon, Wembley</p>
+                  <p className="text-[#FFD60A] font-bold text-sm mb-3">{t('pricing.zones.london.zone14.name', 'Zones 1-4')}</p>
+                  <p className="text-zinc-500 text-xs mb-2">{t('pricing.zones.london.zone14.desc', '+ Stratford, Wimbledon, Wembley')}</p>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between text-zinc-300">
-                      <span>24h</span><span className="font-bold text-[#FFD60A]">£14.99</span>
+                      <span>{t('pricing.zones.duration.day', '24h')}</span><span className="font-bold text-[#FFD60A]">£14.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
-                      <span>1 Week</span><span className="font-bold text-[#FFD60A]">£44.99</span>
+                      <span>{t('pricing.zones.duration.week', '1 Week')}</span><span className="font-bold text-[#FFD60A]">£44.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
-                      <span>1 Month</span><span className="font-bold text-[#FFD60A]">£129.99</span>
+                      <span>{t('pricing.zones.duration.month', '1 Month')}</span><span className="font-bold text-[#FFD60A]">£129.99</span>
                     </div>
                   </div>
                 </div>
                 {/* Zones 1-6 */}
                 <div className="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700">
-                  <p className="text-[#FFD60A] font-bold text-sm mb-3">Zones 1-6</p>
-                  <p className="text-zinc-500 text-xs mb-2">Greater London + Heathrow</p>
+                  <p className="text-[#FFD60A] font-bold text-sm mb-3">{t('pricing.zones.london.zone16.name', 'Zones 1-6')}</p>
+                  <p className="text-zinc-500 text-xs mb-2">{t('pricing.zones.london.zone16.desc', 'Greater London + Heathrow')}</p>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between text-zinc-300">
-                      <span>24h</span><span className="font-bold text-[#FFD60A]">£19.99</span>
+                      <span>{t('pricing.zones.duration.day', '24h')}</span><span className="font-bold text-[#FFD60A]">£19.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
-                      <span>1 Week</span><span className="font-bold text-[#FFD60A]">£59.99</span>
+                      <span>{t('pricing.zones.duration.week', '1 Week')}</span><span className="font-bold text-[#FFD60A]">£59.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
-                      <span>1 Month</span><span className="font-bold text-[#FFD60A]">£169.99</span>
+                      <span>{t('pricing.zones.duration.month', '1 Month')}</span><span className="font-bold text-[#FFD60A]">£169.99</span>
                     </div>
                   </div>
                 </div>

@@ -430,6 +430,43 @@
       "paris": "Île-de-France",
       "madrid": "Madrid",
       "london": "London"
+    },
+    "zones": {
+      "madrid": {
+        "title": "Madrid",
+        "zoneA": {
+          "name": "Zone A",
+          "desc": "Madrid Centro, Alcorcón, Getafe, Leganés"
+        },
+        "zoneB": {
+          "name": "Zones B1-B2",
+          "desc": "Móstoles, Fuenlabrada, Parla, Arganda"
+        },
+        "zoneC": {
+          "name": "Zones B3/C1/C2",
+          "desc": "Alcalá de Henares, Torrejón de Ardoz"
+        }
+      },
+      "london": {
+        "title": "London",
+        "zone12": {
+          "name": "Zones 1-2",
+          "desc": "Central London, Camden, Greenwich"
+        },
+        "zone14": {
+          "name": "Zones 1-4",
+          "desc": "+ Stratford, Wimbledon, Wembley"
+        },
+        "zone16": {
+          "name": "Zones 1-6",
+          "desc": "Greater London + Heathrow"
+        }
+      },
+      "duration": {
+        "day": "24h",
+        "week": "1 Week",
+        "month": "1 Month"
+      }
     }
   },
   "howItWorks": {
