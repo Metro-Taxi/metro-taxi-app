@@ -23,6 +23,9 @@ Plateforme web + mobile "Métro-Taxi" pour mettre en relation des usagers abonn�
 
 ## What's Been Implemented
 
+### Session 2025-04-12 (Refactoring Phase 1)
+- [x] **Extraction emails → `services/emails.py`** : 4 fonctions email (vérification, confirmation abo, notification paiement, rappel expiration, cadeau) extraites de `server.py` (~514 lignes supprimées, 5940 → 5426)
+
 ### Session 2025-04-12
 - [x] **Correction bug internationalisation anglais (US + GB)** :
   - Refonte complète de la configuration i18n (`/app/frontend/src/i18n/index.js`)
@@ -64,7 +67,7 @@ Plateforme web + mobile "Métro-Taxi" pour mettre en relation des usagers abonn�
 - [ ] **Migration Stripe → Crédit Agricole** : En attente des identifiants bancaires du client (Site ID, Clés HMAC, ICS)
 
 ### P1 - Haute priorité
-- [ ] Refactoring `server.py` (~5900 lignes) → diviser en modules
+- [ ] Refactoring `server.py` Phase 2 (~5426 → ~3500 lignes) : extraire routes payments, admin, rides, ratings, chat, tts
 - [ ] Validation complète des fonctionnalités (Notifications Push, Historique, Notation)
 - [ ] Mettre en place VAPID keys de production
 
