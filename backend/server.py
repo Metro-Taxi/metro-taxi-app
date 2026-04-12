@@ -100,33 +100,33 @@ REGIONAL_PRICING = {
         "currency": "GBP",
         "currency_symbol": "£",
         "plans": {
-            "24h": {"name": "24 Hours", "price": 7.99, "price_cents": 799},
-            "1week": {"name": "1 Week", "price": 19.99, "price_cents": 1999},
-            "1month": {"name": "1 Month", "price": 59.99, "price_cents": 5999}
+            "24h": {"name": "24 Hours", "price": 9.99, "price_cents": 999},
+            "1week": {"name": "1 Week", "price": 29.99, "price_cents": 2999},
+            "1month": {"name": "1 Month", "price": 79.99, "price_cents": 7999}
         },
-        "driver_rate_per_km": 1.80
+        "driver_rate_per_km": 2.00
     },
     # UK - London Zones 1-4 (Extended)
     "london_extended": {
         "currency": "GBP",
         "currency_symbol": "£",
         "plans": {
-            "24h": {"name": "24 Hours", "price": 9.99, "price_cents": 999},
-            "1week": {"name": "1 Week", "price": 24.99, "price_cents": 2499},
-            "1month": {"name": "1 Month", "price": 79.99, "price_cents": 7999}
+            "24h": {"name": "24 Hours", "price": 14.99, "price_cents": 1499},
+            "1week": {"name": "1 Week", "price": 44.99, "price_cents": 4499},
+            "1month": {"name": "1 Month", "price": 129.99, "price_cents": 12999}
         },
-        "driver_rate_per_km": 1.80
+        "driver_rate_per_km": 2.00
     },
     # UK - London Zones 1-6 (Greater London)
     "london_greater": {
         "currency": "GBP",
         "currency_symbol": "£",
         "plans": {
-            "24h": {"name": "24 Hours", "price": 11.99, "price_cents": 1199},
-            "1week": {"name": "1 Week", "price": 29.99, "price_cents": 2999},
-            "1month": {"name": "1 Month", "price": 99.99, "price_cents": 9999}
+            "24h": {"name": "24 Hours", "price": 19.99, "price_cents": 1999},
+            "1week": {"name": "1 Week", "price": 59.99, "price_cents": 5999},
+            "1month": {"name": "1 Month", "price": 169.99, "price_cents": 16999}
         },
-        "driver_rate_per_km": 1.80
+        "driver_rate_per_km": 2.00
     },
     # Spain - Madrid Zone A (Centro + Banlieue proche)
     "madrid_zona_a": {
@@ -149,6 +149,17 @@ REGIONAL_PRICING = {
             "1month": {"name": "1 Mes", "price": 44.99, "price_cents": 4499}
         },
         "driver_rate_per_km": 1.30
+    },
+    # Spain - Madrid Grande Couronne (Zones B3/C1/C2)
+    "madrid_outer": {
+        "currency": "EUR",
+        "currency_symbol": "€",
+        "plans": {
+            "24h": {"name": "24 Horas", "price": 6.99, "price_cents": 699},
+            "1week": {"name": "1 Semana", "price": 17.99, "price_cents": 1799},
+            "1month": {"name": "1 Mes", "price": 54.99, "price_cents": 5499}
+        },
+        "driver_rate_per_km": 1.40
     }
 }
 
@@ -5673,6 +5684,24 @@ async def initialize_default_regions():
                 "south": 40.1500,
                 "east": -3.3000,
                 "west": -4.0500
+            },
+            "is_active": False,
+            "launch_date": None,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "madrid_outer",
+            "name": "Madrid Zones B3/C1/C2",
+            "description": "Grande couronne éloignée: Alcalá de Henares, Torrejón de Ardoz, San Fernando de Henares",
+            "country": "ES",
+            "currency": "EUR",
+            "language": "es",
+            "timezone": "Europe/Madrid",
+            "bounds": {
+                "north": 40.7500,
+                "south": 40.0500,
+                "east": -3.1000,
+                "west": -4.2000
             },
             "is_active": False,
             "launch_date": None,
