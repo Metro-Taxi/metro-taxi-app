@@ -467,7 +467,7 @@ const Landing = () => {
           </motion.div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Revenue Card */}
+            {/* Revenue Card - Multi-Region */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -476,21 +476,64 @@ const Landing = () => {
               className="bg-gradient-to-br from-[#FFD60A] to-[#E6C209] p-8 rounded-lg"
             >
               <h3 className="text-2xl font-black text-black mb-6">{t('drivers.revenue.title')}</h3>
-              <div className="bg-black/10 backdrop-blur-sm rounded-lg p-6 mb-6">
-                <div className="text-center">
-                  <p className="text-black/70 text-sm uppercase tracking-wide mb-2">{t('drivers.revenue.monthly')}</p>
-                  <div className="flex items-baseline justify-center gap-2">
-                    <span className="text-4xl md:text-5xl font-black text-black">{t('drivers.revenue.rangeMin')}</span>
-                    <span className="text-2xl text-black/70">-</span>
-                    <span className="text-4xl md:text-5xl font-black text-black">{t('drivers.revenue.rangeMax')}</span>
+              
+              {/* Paris/France */}
+              <div className="bg-black/10 backdrop-blur-sm rounded-lg p-4 mb-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-black font-bold flex items-center gap-2">
+                    <span className="text-xl">🇫🇷</span> {t('drivers.revenue.byRegion.paris.label', 'Île-de-France')}
+                  </span>
+                  <div className="text-right">
+                    <span className="text-2xl font-black text-black">{t('drivers.revenue.byRegion.paris.rangeMin', '2 250 €')} - {t('drivers.revenue.byRegion.paris.rangeMax', '3 000 €')}</span>
+                    <p className="text-xs text-black/60">{t('drivers.revenue.monthly')}</p>
                   </div>
-                  <p className="text-black/60 mt-2">{t('drivers.revenue.monthly')}</p>
                 </div>
               </div>
+
+              {/* Madrid/Spain */}
+              <div className="bg-black/10 backdrop-blur-sm rounded-lg p-4 mb-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-black font-bold flex items-center gap-2">
+                    <span className="text-xl">🇪🇸</span> {t('drivers.revenue.byRegion.madrid.label', 'Madrid')}
+                  </span>
+                  <div className="text-right">
+                    <span className="text-2xl font-black text-black">{t('drivers.revenue.byRegion.madrid.rangeMin', '7 500 €')} - {t('drivers.revenue.byRegion.madrid.rangeMax', '10 000 €')}</span>
+                    <p className="text-xs text-black/60">{t('drivers.revenue.monthly')}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* London/UK */}
+              <div className="bg-black/10 backdrop-blur-sm rounded-lg p-4 mb-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-black font-bold flex items-center gap-2">
+                    <span className="text-xl">🇬🇧</span> {t('drivers.revenue.byRegion.london.label', 'Londres')}
+                  </span>
+                  <div className="text-right">
+                    <span className="text-2xl font-black text-black">{t('drivers.revenue.byRegion.london.rangeMin', '£12 000')} - {t('drivers.revenue.byRegion.london.rangeMax', '£15 000')}</span>
+                    <p className="text-xs text-black/60">{t('drivers.revenue.monthly')}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Max Revenue */}
               <div className="bg-black text-white rounded-lg p-4 text-center">
                 <p className="text-sm text-zinc-400 mb-1">{t('drivers.revenue.upTo')}</p>
-                <p className="text-3xl font-black text-[#FFD60A]">{t('drivers.revenue.maxRevenue')}</p>
-                <p className="text-sm text-zinc-400">{t('drivers.revenue.depending')}</p>
+                <div className="flex justify-center gap-4 flex-wrap">
+                  <div>
+                    <p className="text-xl font-black text-[#FFD60A]">{t('drivers.revenue.byRegion.paris.maxRevenue', '7 500 €')}</p>
+                    <p className="text-xs text-zinc-500">🇫🇷</p>
+                  </div>
+                  <div>
+                    <p className="text-xl font-black text-[#FFD60A]">{t('drivers.revenue.byRegion.madrid.maxRevenue', '12 000 €')}</p>
+                    <p className="text-xs text-zinc-500">🇪🇸</p>
+                  </div>
+                  <div>
+                    <p className="text-xl font-black text-[#FFD60A]">{t('drivers.revenue.byRegion.london.maxRevenue', '£20 000')}</p>
+                    <p className="text-xs text-zinc-500">🇬🇧</p>
+                  </div>
+                </div>
+                <p className="text-sm text-zinc-400 mt-2">{t('drivers.revenue.depending')}</p>
               </div>
             </motion.div>
 
