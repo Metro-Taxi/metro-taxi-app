@@ -512,21 +512,18 @@
     "revenue": {
       "title": "POTENTIAL DRIVER INCOME",
       "monthly": "per month",
-      "upTo": "Significant growth potential",
+      "launchNote": "from launch",
       "depending": "depending on activity, availability and demand",
       "grossRevenue": "Indicated revenues are gross revenues.",
-      "rangeMin": "£4,000",
-      "rangeMax": "£6,000",
-      "launchNote": "from launch",
       "byRegion": {
         "paris": {
-          "rangeMin": "£4,000",
-          "rangeMax": "£6,000",
+          "rangeMin": "€2,250",
+          "rangeMax": "€3,000",
           "label": "Île-de-France"
         },
         "madrid": {
-          "rangeMin": "£4,000",
-          "rangeMax": "£6,000",
+          "rangeMin": "€4,000",
+          "rangeMax": "€5,000",
           "label": "Madrid"
         },
         "london": {

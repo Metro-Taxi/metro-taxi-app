@@ -590,21 +590,18 @@
     "revenue": {
       "title": "REVENU POTENTIEL CHAUFFEUR",
       "monthly": "par mois",
-      "upTo": "Potentiel d'augmentation significatif",
+      "launchNote": "dès le lancement",
       "depending": "selon l'activité, la disponibilité et la demande",
       "grossRevenue": "Les revenus indiqués sont des revenus bruts.",
-      "rangeMin": "4 000 £",
-      "rangeMax": "6 000 £",
-      "launchNote": "dès le lancement",
       "byRegion": {
         "paris": {
-          "rangeMin": "4 000 £",
-          "rangeMax": "6 000 £",
+          "rangeMin": "2 250 €",
+          "rangeMax": "3 000 €",
           "label": "Île-de-France"
         },
         "madrid": {
-          "rangeMin": "4 000 £",
-          "rangeMax": "6 000 £",
+          "rangeMin": "4 000 €",
+          "rangeMax": "5 000 €",
           "label": "Madrid"
         },
         "london": {
