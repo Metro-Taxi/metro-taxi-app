@@ -124,7 +124,7 @@ REGIONAL_PRICING = {
         "plans": {
             "24h": {"name": "24 Hours", "price": 19.99, "price_cents": 1999},
             "1week": {"name": "1 Week", "price": 59.99, "price_cents": 5999},
-            "1month": {"name": "1 Month", "price": 169.99, "price_cents": 16999}
+            "1month": {"name": "1 Month", "price": 149.00, "price_cents": 14900}
         },
         "driver_rate_per_km": 2.00
     },
