@@ -402,7 +402,7 @@
     "plans": {
       "day": {
         "name": "24 HEURES",
-        "price": "4,99 €",
+        "price": "6,99 €",
         "description": "Parfait pour un usage ponctuel",
         "period": "jour",
         "feature1": "Trajets illimités pendant 24h",
@@ -411,7 +411,7 @@
       },
       "week": {
         "name": "1 SEMAINE",
-        "price": "12,99 €",
+        "price": "16,99 €",
         "description": "Idéal pour les courts séjours",
         "period": "semaine",
         "feature1": "Trajets illimités pendant 7 jours",
@@ -421,7 +421,7 @@
       },
       "month": {
         "name": "1 MOIS",
-        "price": "34,99 €",
+        "price": "53,99 €",
         "description": "Le meilleur rapport qualité-prix",
         "popular": "POPULAIRE",
         "period": "mois",
@@ -499,20 +499,20 @@
     "plans": {
       "day": {
         "name": "24 Heures",
-        "price": "4,99 €",
-        "priceLocal": "4,99 €",
+        "price": "6,99 €",
+        "priceLocal": "6,99 €",
         "description": "Parfait pour un usage ponctuel"
       },
       "week": {
         "name": "1 Semaine",
-        "price": "12,99 €",
-        "priceLocal": "12,99 €",
+        "price": "16,99 €",
+        "priceLocal": "16,99 €",
         "description": "Idéal pour les courts séjours"
       },
       "month": {
         "name": "1 Mois",
-        "price": "34,99 €",
-        "priceLocal": "34,99 €",
+        "price": "53,99 €",
+        "priceLocal": "53,99 €",
         "description": "Le meilleur rapport qualité-prix"
       }
     },

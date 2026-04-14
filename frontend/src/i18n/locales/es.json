@@ -239,8 +239,8 @@
     "plans": {
       "day": {
         "name": "24 HORAS",
-        "price": "6,99 €",
-        "priceLocal": "6,99 €",
+        "price": "4,99 €",
+        "priceLocal": "4,99 €",
         "description": "Perfecto para uso ocasional",
         "period": "día",
         "feature1": "Viajes ilimitados por 24h",
@@ -249,8 +249,8 @@
       },
       "week": {
         "name": "1 SEMANA",
-        "price": "16,99 €",
-        "priceLocal": "16,99 €",
+        "price": "12,99 €",
+        "priceLocal": "12,99 €",
         "description": "Ideal para estancias cortas",
         "period": "semana",
         "feature1": "Viajes ilimitados por 7 días",
@@ -260,8 +260,8 @@
       },
       "month": {
         "name": "1 MES",
-        "price": "53,99 €",
-        "priceLocal": "53,99 €",
+        "price": "34,99 €",
+        "priceLocal": "34,99 €",
         "description": "La mejor relación calidad-precio",
         "popular": "POPULAR",
         "period": "mes",
@@ -337,20 +337,20 @@
     "plans": {
       "day": {
         "name": "24 Horas",
-        "price": "6,99 €",
-        "priceLocal": "6,99 €",
+        "price": "4,99 €",
+        "priceLocal": "4,99 €",
         "description": "Perfecto para uso ocasional"
       },
       "week": {
         "name": "1 Semana",
-        "price": "16,99 €",
-        "priceLocal": "16,99 €",
+        "price": "12,99 €",
+        "priceLocal": "12,99 €",
         "description": "Ideal para estancias cortas"
       },
       "month": {
         "name": "1 Mes",
-        "price": "53,99 €",
-        "priceLocal": "53,99 €",
+        "price": "34,99 €",
+        "priceLocal": "34,99 €",
         "description": "La mejor relación calidad-precio"
       }
     },

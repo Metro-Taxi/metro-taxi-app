@@ -338,18 +338,18 @@
     "plans": {
       "day": {
         "name": "24 Hours",
-        "price": "€4.99",
-        "priceLocal": "€4.99"
+        "price": "£9.99",
+        "priceLocal": "£9.99"
       },
       "week": {
         "name": "1 Week",
-        "price": "€12.99",
-        "priceLocal": "€12.99"
+        "price": "£29.99",
+        "priceLocal": "£29.99"
       },
       "month": {
         "name": "1 Month",
-        "price": "€34.99",
-        "priceLocal": "€34.99"
+        "price": "£79.99",
+        "priceLocal": "£79.99"
       }
     },
     "features": {
