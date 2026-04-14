@@ -335,7 +335,7 @@
     "plans": {
       "day": {
         "name": "24 HOURS",
-        "price": "$7.49",
+        "price": "€4.99",
         "description": "Perfect for occasional use",
         "period": "day",
         "feature1": "Unlimited rides for 24h",
@@ -344,7 +344,7 @@
       },
       "week": {
         "name": "1 WEEK",
-        "price": "$18.49",
+        "price": "€12.99",
         "description": "Ideal for short stays",
         "period": "week",
         "feature1": "Unlimited rides for 7 days",
@@ -354,7 +354,7 @@
       },
       "month": {
         "name": "1 MONTH",
-        "price": "$58.49",
+        "price": "€34.99",
         "description": "Best value for money",
         "popular": "POPULAR",
         "period": "month",
@@ -424,20 +424,20 @@
     "plans": {
       "day": {
         "name": "24 Hours",
-        "price": "$7.99",
-        "priceLocal": "$7.99",
+        "price": "€4.99",
+        "priceLocal": "€4.99",
         "description": "Perfect for occasional use"
       },
       "week": {
         "name": "1 Week",
-        "price": "$18.99",
-        "priceLocal": "$18.99",
+        "price": "€12.99",
+        "priceLocal": "€12.99",
         "description": "Ideal for short stays"
       },
       "month": {
         "name": "1 Month",
-        "price": "$59.99",
-        "priceLocal": "$59.99",
+        "price": "€34.99",
+        "priceLocal": "€34.99",
         "description": "Best value for money"
       }
     },
