@@ -23,6 +23,14 @@ Plateforme web + mobile "Métro-Taxi" pour mettre en relation des usagers abonn�
 
 ## What's Been Implemented
 
+### Session 2025-04-20
+- [x] **Chatbot IA Support** : page /support avec assistant GPT-4.1-mini
+  - Répond en 16 langues automatiquement
+  - Connaît tous les tarifs, zones, fonctionnement de Métro-Taxi
+  - Questions fréquentes en raccourcis
+  - Escalade vers email contact@metro-taxi.com si nécessaire
+  - Bouton AIDE redirige vers /support
+
 ### Session 2025-04-12 (Refactoring Phase 1)
 - [x] **Extraction emails → `services/emails.py`** : 4 fonctions email (vérification, confirmation abo, notification paiement, rappel expiration, cadeau) extraites de `server.py` (~514 lignes supprimées, 5940 → 5426)
 

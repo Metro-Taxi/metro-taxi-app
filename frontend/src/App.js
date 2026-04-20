@@ -31,6 +31,7 @@ import Profile from "@/pages/Profile";
 import VerifyEmail from "@/pages/VerifyEmail";
 import TermsAndConditions from "@/pages/TermsAndConditions";
 import SalesTerms from "@/pages/SalesTerms";
+import Support from "@/pages/Support";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -109,6 +110,7 @@ function AppRoutes() {
       <Route path="/terms" element={<TermsAndConditions />} />
       <Route path="/cgu" element={<TermsAndConditions />} />
       <Route path="/cgv" element={<SalesTerms />} />
+      <Route path="/support" element={<Support />} />
       
       {/* User Routes - Also allow admin for testing */}
       <Route path="/dashboard" element={
