@@ -5,9 +5,13 @@
 
 **Titre de l'invention :** Système et procédé de transbordement intelligent pour réseau de covoiturage urbain par abonnement
 
-**Inventeur :** Judée [Nom de famille]
+**Inventeur :** Judée Hamadjouldé Souleymane
 
-**Date :** Avril 2026
+**Date du document :** Avril 2026
+
+**Marque déposée :** Métro-Taxi
+- Dépôt initial auprès de l'INPI : **05 février 2020**
+- Modification du logo : **20 avril 2026**
 
 ---
 
