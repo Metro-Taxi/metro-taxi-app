@@ -5,7 +5,7 @@
 
 **Titre de l'invention :** Système et procédé de transbordement intelligent pour réseau de covoiturage urbain par abonnement
 
-**Inventeur :** Judée Hamadjouldé Souleymane
+**Inventeur :** Judée Hamadjouldé Souleymane Nazim
 
 **Date du document :** Avril 2026
 
