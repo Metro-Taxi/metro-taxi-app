@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Arial Black', Arial, sans-serif; }
+  .poster { width: 1080px; height: 1920px; background: linear-gradient(180deg, #0a0a0a 0%, #18181b 50%, #0a0a0a 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; position: relative; overflow: hidden; }
+  .poster::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 50% 30%, rgba(255,214,10,0.08) 0%, transparent 50%); }
+  .logo-section { text-align: center; margin-bottom: 80px; z-index: 1; }
+  .taxi-icon { font-size: 80px; margin-bottom: 20px; }
+  .logo { font-size: 72px; font-weight: 900; color: #FFD60A; letter-spacing: 4px; }
+  .main-title { font-size: 64px; font-weight: 900; color: #FFFFFF; text-align: center; line-height: 1.2; margin-bottom: 80px; z-index: 1; }
+  .main-title span { color: #FFD60A; }
+  .revenue-box { background: rgba(255,214,10,0.1); border: 2px solid #FFD60A; border-radius: 24px; padding: 50px 60px; text-align: center; margin-bottom: 70px; z-index: 1; }
+  .revenue-amount { font-size: 80px; font-weight: 900; color: #FFD60A; }
+  .revenue-period { font-size: 32px; color: #a1a1aa; margin-top: 10px; }
+  .badges { display: flex; flex-direction: column; gap: 24px; width: 100%; max-width: 700px; z-index: 1; margin-bottom: 80px; }
+  .badge { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 28px 40px; display: flex; align-items: center; gap: 20px; }
+  .badge-icon { width: 50px; height: 50px; background: #FFD60A; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .badge-text { font-size: 32px; font-weight: 700; color: #FFFFFF; }
+  .cta { background: #FFD60A; color: #000; font-size: 36px; font-weight: 900; padding: 28px 80px; border-radius: 16px; text-align: center; z-index: 1; letter-spacing: 2px; }
+  .website { color: #71717a; font-size: 24px; margin-top: 40px; z-index: 1; }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="logo-section">
+    <div class="taxi-icon">🚕</div>
+    <div class="logo">MÉTRO-TAXI</div>
+  </div>
+  
+  <div class="main-title">DEVENEZ<br><span>CHAUFFEUR PARTENAIRE</span></div>
+  
+  <div class="revenue-box">
+    <div class="revenue-amount">2 250 € - 3 000 €</div>
+    <div class="revenue-period">par mois dès le lancement</div>
+  </div>
+  
+  <div class="badges">
+    <div class="badge">
+      <div class="badge-icon">✓</div>
+      <div class="badge-text">Sans commission</div>
+    </div>
+    <div class="badge">
+      <div class="badge-icon">✓</div>
+      <div class="badge-text">Inscription gratuite</div>
+    </div>
+    <div class="badge">
+      <div class="badge-icon">✓</div>
+      <div class="badge-text">100% de vos revenus</div>
+    </div>
+  </div>
+  
+  <div class="cta">REJOIGNEZ-NOUS</div>
+  <div class="website">metro-taxi.com</div>
+</div>
+</body>
+</html>
