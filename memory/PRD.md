@@ -28,14 +28,18 @@ Plateforme web + mobile "Métro-Taxi" pour mettre en relation des usagers abonn�
   - Phrase technique "changez de véhicule en route" remplacée par **"Voyagez librement à travers toute la ville, sans contrainte, sans limite, jusqu'où vous voulez"** (Option 4) dans les 16 langues
   - 3 voix critiques (fr, en, es) régénérées et validées (HTTP 200)
 - [x] **🚨 FUITE CRITIQUE corrigée dans le chatbot IA** (`/app/backend/routes/support_chat.py`)
-  - Le system prompt contenait explicitement "transbordement" et "changer de véhicule en route" → le bot pouvait révéler le mécanisme à n'importe quel utilisateur
   - System prompt réécrit + directive d'interdiction multilingue ajoutée
-  - Test live validé : le chatbot répond désormais "réseau intelligent qui vous emmène partout" sans révéler le mécanisme
+  - Test live validé : le chatbot répond "réseau intelligent qui vous emmène partout" sans révéler le mécanisme
+- [x] **Nettoyage chirurgical des 16 fichiers i18n locales JSON**
+  - 13 chemins UI ciblés (common.transfers, dashboard.user.transferSuggestions, drivers.app.transfersDesc, cgu.service5, subscription.plans.{day,week,month}.feature3, etc.)
+  - **182 valeurs remplacées** par termes neutres ("itinéraires", "routes", "rutas", "Strecken"…)
+  - Stripe payouts (driverEarnings.transferred / payoutDate) intentionnellement intacts (virements bancaires légitimes)
+  - 16 JSON validés (parsing OK), screenshot Landing OK
 - [x] **Création du fichier `/app/SECURITY_BRAND_GUIDELINES.md`** — référentiel complet anti-fuite IP
   - 40+ termes interdits dans 16 langues
   - Distinction texte public (à nettoyer) vs code interne (OK)
-  - Script Python de scan automatique
-  - Liste du nettoyage P1 restant (i18n locales JSON)
+  - Script Python de scan automatique pré-déploiement
+  - Statut nettoyage global + checklist
 
 ### Session 2025-04-20
 - [x] **Chatbot IA Support** : page /support avec assistant GPT-4.1-mini

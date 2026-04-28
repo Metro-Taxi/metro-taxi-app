@@ -92,7 +92,7 @@
       "remove": "Fjern",
       "optimalRoute": "Optimal rute",
       "totalDistance": "km totalt",
-      "transfers": "overganger",
+      "transfers": "ruter",
       "minutes": "minutter",
       "efficiency": "Ruteeffektivitet",
       "segments": "Rutesegmenter",
@@ -103,10 +103,10 @@
       "eta": "ETA",
       "min": "min",
       "score": "Poengsum",
-      "transferSuggestions": "Overgangsforslag",
-      "showTransfers": "Vis overganger",
+      "transferSuggestions": "Ruteforslag",
+      "showTransfers": "Vis alternativer",
       "hideTransfers": "Skjul",
-      "transfer": "Overgang",
+      "transfer": "Rute",
       "emailNotVerified": "E-post ikke verifisert",
       "verifyEmail": "Verifiser e-posten min",
       "subscriptionRequired": "Abonnement kreves",
@@ -234,7 +234,7 @@
         "period": "dag",
         "feature1": "Ubegrensede turer i 24t",
         "feature2": "Tilgang til alle kjøretøy",
-        "feature3": "Optimaliserte bytter"
+        "feature3": "Smarte ruter"
       },
       "week": {
         "name": "1 UKE",
@@ -243,7 +243,7 @@
         "period": "uke",
         "feature1": "Ubegrensede turer i 7 dager",
         "feature2": "Prioritert tilgang",
-        "feature3": "Optimaliserte bytter",
+        "feature3": "Smarte ruter",
         "feature4": "Prioritert støtte"
       },
       "month": {
@@ -254,7 +254,7 @@
         "period": "måned",
         "feature1": "Ubegrensede turer i 30 dager",
         "feature2": "Prioritert tilgang",
-        "feature3": "Optimaliserte bytter",
+        "feature3": "Smarte ruter",
         "feature4": "Prioritert støtte",
         "feature5": "Maksimal besparelse"
       }
@@ -469,8 +469,8 @@
       "requestsDesc": "I sanntid",
       "routes": "Ruter",
       "routesDesc": "Optimaliserte",
-      "transfers": "Forbindelser",
-      "transfersDesc": "Smart system"
+      "transfers": "Foreslåtte ruter",
+      "transfersDesc": "Smart optimalisert nettverk"
     },
     "cta": "BLI MED NÅ",
     "ctaSubtext": "Gratis • Ingen binding"
@@ -663,7 +663,7 @@
     "service2": "Se reiseretningen deres",
     "service3": "Vite antall tilgjengelige plasser",
     "service4": "Få tilgang til et dynamisk samkjøringssystem",
-    "service5": "Bytte mellom kjøretøy",
+    "service5": "Reise fritt gjennom byen",
     "userRulesTitle": "Regler for brukere",
     "userRule1": "Ha et aktivt abonnement",
     "userRule2": "Være klar på hentepunktet",

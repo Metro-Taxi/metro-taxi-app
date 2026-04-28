@@ -229,27 +229,24 @@ print(f'\\n{\"❌ \" + str(issues) + \" fuite(s) IP détectée(s)\" if issues el
 | 2026-02 | Validation Python : 0 fuite TTS sur 40+ termes | Charly |
 | 2026-02 | **🚨 Fuite critique détectée et corrigée** : system prompt du chatbot IA `/api/support/chat` contenait "transbordement" et "changer de véhicule en route" → réécrit + directive d'interdiction renforcée | Charly |
 | 2026-02 | Test live : chatbot répond désormais "réseau intelligent qui vous emmène partout" sans révéler le mécanisme | Charly |
+| 2026-02 | **Nettoyage chirurgical de 13 chemins UI dans les 16 fichiers i18n locales** : 182 valeurs remplacées (common.transfers, dashboard.user.transferSuggestions, drivers.app.transfersDesc, cgu.service5, subscription.plans.{day,week,month}.feature3, etc.) | Charly |
+| 2026-02 | Validation : 16 JSON parsent OK, 0 fuite résiduelle hors `driverEarnings.*` (légitime virements bancaires Stripe) | Charly |
 
 ---
 
-## 9. 🟠 NETTOYAGE RESTANT À PLANIFIER (P1)
+## 9. ✅ STATUT NETTOYAGE GLOBAL
 
-Le scan a détecté **~290 occurrences résiduelles** dans :
-
-### À nettoyer dans une session future :
-- **`/app/frontend/src/i18n/locales/*.json`** — les VALEURS des clés de traduction UI sont visibles dans le Dashboard usager (ex: bouton "Voir les correspondances", "Ver conexiones", "Show transfers")
-  - 16 fichiers, ~10-15 chaînes par fichier
-  - Recommandation : remplacer par "Voir les itinéraires", "Voir les options de trajet"
-- **Champ `transfersDesc` dans la Landing chauffeurs** — texte marketing visible
-
-### À NE PAS toucher (code interne, invisible publiquement) :
-- Variables JS (`transferIcon`, `setTransfers`, `transfer.first_driver`)
-- Endpoints API (`/api/matching/transfers`, `/api/admin/payouts/transferred`)
-- Clés JSON (`"transfer": "..."`, `"transferPoint": "..."`) — seules les VALEURS comptent
-- `payout.status === 'transferred'` (statut interne Stripe)
-- Champs MongoDB (`transfer_points`, `total_transfers`)
-
-⚠️ **Quand on attaquera ce nettoyage, refactoriser sans casser** : ne renommer que les VALEURS de strings, jamais les CLÉS ni les variables.
+| Zone | Statut | Note |
+|---|---|---|
+| Scripts vocaux TTS (`tts.py`) | ✅ Propre | 16 langues, Option 4 |
+| System prompt chatbot IA (`support_chat.py`) | ✅ Propre | + directive d'interdiction multilingue |
+| Fichiers i18n locales JSON (UI) | ✅ Propre | 13 chemins, 182 valeurs nettoyées |
+| Code interne JS (variables `transferIcon`, `setTransfers`) | 🟢 OK | Non visible publiquement |
+| Endpoints API (`/api/matching/transfers`) | 🟢 OK | Non visible publiquement |
+| Champs MongoDB (`transfer_points`) | 🟢 OK | Non visible publiquement |
+| `driverEarnings.transferred/payoutDate` (Stripe) | 🟢 OK | Virement bancaire légitime, pas le mécanisme breveté |
+| Vidéos Sora `.mp4` déjà publiées | ⚠️ À vérifier | Si la voix off contient les anciens scripts, à dépublier/régénérer |
+| Posts réseaux sociaux passés | ⚠️ À auditer | Manuellement par Judée |
 
 ---
 

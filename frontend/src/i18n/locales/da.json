@@ -92,7 +92,7 @@
       "remove": "Fjern",
       "optimalRoute": "Optimal rute",
       "totalDistance": "km totalt",
-      "transfers": "overganger",
+      "transfers": "ruter",
       "minutes": "minutter",
       "efficiency": "Ruteeffektivitet",
       "segments": "Rutesegmenter",
@@ -103,10 +103,10 @@
       "eta": "ETA",
       "min": "min",
       "score": "Poengsum",
-      "transferSuggestions": "Overgangsforslag",
-      "showTransfers": "Vis overganger",
+      "transferSuggestions": "Ruteforslag",
+      "showTransfers": "Vis muligheder",
       "hideTransfers": "Skjul",
-      "transfer": "Overgang",
+      "transfer": "Rute",
       "emailNotVerified": "E-post ikke verifisert",
       "verifyEmail": "Verifiser e-posten min",
       "subscriptionRequired": "Abonnement kreves",
@@ -234,7 +234,7 @@
         "period": "dag",
         "feature1": "Ubegrænsede ture i 24t",
         "feature2": "Adgang til alle køretøjer",
-        "feature3": "Optimerede skift"
+        "feature3": "Smarte ruter"
       },
       "week": {
         "name": "1 UGE",
@@ -243,7 +243,7 @@
         "period": "uge",
         "feature1": "Ubegrænsede ture i 7 dage",
         "feature2": "Prioriteret adgang",
-        "feature3": "Optimerede skift",
+        "feature3": "Smarte ruter",
         "feature4": "Prioriteret support"
       },
       "month": {
@@ -254,7 +254,7 @@
         "period": "måned",
         "feature1": "Ubegrænsede ture i 30 dage",
         "feature2": "Prioriteret adgang",
-        "feature3": "Optimerede skift",
+        "feature3": "Smarte ruter",
         "feature4": "Prioriteret support",
         "feature5": "Maksimal besparelse"
       }
@@ -469,8 +469,8 @@
       "requestsDesc": "I realtid",
       "routes": "Ruter",
       "routesDesc": "Optimerede",
-      "transfers": "Forbindelser",
-      "transfersDesc": "Smart system"
+      "transfers": "Foreslåede ruter",
+      "transfersDesc": "Smart optimeret netværk"
     },
     "cta": "TILMELD DIG NU",
     "ctaSubtext": "Gratis • Ingen binding"
@@ -663,7 +663,7 @@
     "service2": "Se deres kørselsretning",
     "service3": "Kende antallet af ledige pladser",
     "service4": "Få adgang til et dynamisk samkørselssystem",
-    "service5": "Skifte mellem køretøjer",
+    "service5": "Rejse frit gennem byen",
     "userRulesTitle": "Regler for brugere",
     "userRule1": "Have et aktivt abonnement",
     "userRule2": "Være klar ved afhentningsstedet",

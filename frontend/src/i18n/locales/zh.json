@@ -92,7 +92,7 @@
       "remove": "删除",
       "optimalRoute": "最优路线",
       "totalDistance": "公里总计",
-      "transfers": "换乘",
+      "transfers": "线路",
       "minutes": "分钟",
       "efficiency": "路线效率",
       "segments": "路线段",
@@ -103,10 +103,10 @@
       "eta": "预计到达",
       "min": "分钟",
       "score": "评分",
-      "transferSuggestions": "换乘建议",
-      "showTransfers": "显示换乘",
+      "transferSuggestions": "路线建议",
+      "showTransfers": "显示选项",
       "hideTransfers": "隐藏",
-      "transfer": "换乘",
+      "transfer": "路线",
       "emailNotVerified": "邮箱未验证",
       "verifyEmail": "验证我的邮箱",
       "subscriptionRequired": "需要订阅",
@@ -235,7 +235,7 @@
         "period": "天",
         "feature1": "24小时无限行程",
         "feature2": "使用所有车辆",
-        "feature3": "优化换乘"
+        "feature3": "智能路线"
       },
       "week": {
         "name": "1周",
@@ -245,7 +245,7 @@
         "period": "周",
         "feature1": "7天无限行程",
         "feature2": "优先使用",
-        "feature3": "优化换乘",
+        "feature3": "智能路线",
         "feature4": "优先支持"
       },
       "month": {
@@ -257,7 +257,7 @@
         "period": "月",
         "feature1": "30天无限行程",
         "feature2": "优先使用",
-        "feature3": "优化换乘",
+        "feature3": "智能路线",
         "feature4": "优先支持",
         "feature5": "最大节省"
       }
@@ -473,8 +473,8 @@
       "requestsDesc": "实时",
       "routes": "路线",
       "routesDesc": "优化",
-      "transfers": "换乘",
-      "transfersDesc": "智能系统"
+      "transfers": "推荐路线",
+      "transfersDesc": "智能优化网络"
     },
     "cta": "立即加入",
     "ctaSubtext": "免费 • 无承诺"
@@ -667,7 +667,7 @@
     "service2": "查看行驶方向",
     "service3": "了解可用座位数量",
     "service4": "访问动态拼车系统",
-    "service5": "在车辆之间换乘",
+    "service5": "在城市自由出行",
     "userRulesTitle": "用户规则",
     "userRule1": "拥有有效订阅",
     "userRule2": "在上车点准备好",

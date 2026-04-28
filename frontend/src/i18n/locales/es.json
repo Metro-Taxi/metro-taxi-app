@@ -102,7 +102,7 @@
       "remove": "Eliminar",
       "optimalRoute": "Ruta óptima",
       "totalDistance": "km total",
-      "transfers": "conexiones",
+      "transfers": "rutas",
       "minutes": "minutos",
       "efficiency": "Eficiencia de ruta",
       "segments": "Segmentos de ruta",
@@ -114,9 +114,9 @@
       "min": "min",
       "score": "Puntuación",
       "transferSuggestions": "Sugerencias de ruta",
-      "showTransfers": "Ver conexiones",
+      "showTransfers": "Ver opciones",
       "hideTransfers": "Ocultar",
-      "transfer": "Conexión",
+      "transfer": "Ruta",
       "emailNotVerified": "Email no verificado",
       "verifyEmail": "Verificar mi email",
       "subscriptionRequired": "Suscripción requerida",
@@ -245,7 +245,7 @@
         "period": "día",
         "feature1": "Viajes ilimitados por 24h",
         "feature2": "Acceso a todos los vehículos",
-        "feature3": "Rutas optimizadas"
+        "feature3": "Rutas inteligentes"
       },
       "week": {
         "name": "1 SEMANA",
@@ -255,7 +255,7 @@
         "period": "semana",
         "feature1": "Viajes ilimitados por 7 días",
         "feature2": "Acceso prioritario",
-        "feature3": "Rutas optimizadas",
+        "feature3": "Rutas inteligentes",
         "feature4": "Soporte prioritario"
       },
       "month": {
@@ -267,7 +267,7 @@
         "period": "mes",
         "feature1": "Viajes ilimitados por 30 días",
         "feature2": "Acceso prioritario",
-        "feature3": "Rutas optimizadas",
+        "feature3": "Rutas inteligentes",
         "feature4": "Soporte prioritario",
         "feature5": "Máximo ahorro"
       }
@@ -484,8 +484,8 @@
       "requestsDesc": "En tiempo real",
       "routes": "Rutas",
       "routesDesc": "Optimizadas",
-      "transfers": "Conexiones",
-      "transfersDesc": "Rutas optimizadas multipunto"
+      "transfers": "Rutas sugeridas",
+      "transfersDesc": "Red inteligente optimizada"
     },
     "cta": "ÚNETE AHORA",
     "ctaSubtext": "Gratis • Sin compromiso"
@@ -678,7 +678,7 @@
     "service2": "Visualizar su dirección de viaje",
     "service3": "Conocer el número de asientos disponibles",
     "service4": "Acceder a un sistema de viajes compartidos dinámico",
-    "service5": "Realizar conexiones entre vehículos",
+    "service5": "Viajar libremente por la ciudad",
     "userRulesTitle": "Reglas para usuarios",
     "userRule1": "Tener una suscripción activa",
     "userRule2": "Estar listo en el punto de recogida",

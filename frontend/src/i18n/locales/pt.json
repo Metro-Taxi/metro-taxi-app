@@ -92,7 +92,7 @@
       "remove": "Remover",
       "optimalRoute": "Rota ideal",
       "totalDistance": "km total",
-      "transfers": "conexões",
+      "transfers": "rotas",
       "minutes": "minutos",
       "efficiency": "Eficiência da rota",
       "segments": "Segmentos da rota",
@@ -104,9 +104,9 @@
       "min": "min",
       "score": "Pontuação",
       "transferSuggestions": "Sugestões de rota",
-      "showTransfers": "Ver conexões",
+      "showTransfers": "Ver opções",
       "hideTransfers": "Ocultar",
-      "transfer": "Conexão",
+      "transfer": "Rota",
       "emailNotVerified": "Email não verificado",
       "verifyEmail": "Verificar o meu email",
       "subscriptionRequired": "Assinatura necessária",
@@ -234,7 +234,7 @@
         "period": "dia",
         "feature1": "Viagens ilimitadas por 24h",
         "feature2": "Acesso a todos os veículos",
-        "feature3": "Transferências otimizadas"
+        "feature3": "Rotas inteligentes"
       },
       "week": {
         "name": "1 SEMANA",
@@ -243,7 +243,7 @@
         "period": "semana",
         "feature1": "Viagens ilimitadas por 7 dias",
         "feature2": "Acesso prioritário",
-        "feature3": "Transferências otimizadas",
+        "feature3": "Rotas inteligentes",
         "feature4": "Suporte prioritário"
       },
       "month": {
@@ -254,7 +254,7 @@
         "period": "mês",
         "feature1": "Viagens ilimitadas por 30 dias",
         "feature2": "Acesso prioritário",
-        "feature3": "Transferências otimizadas",
+        "feature3": "Rotas inteligentes",
         "feature4": "Suporte prioritário",
         "feature5": "Economia máxima"
       }
@@ -469,8 +469,8 @@
       "requestsDesc": "Em tempo real",
       "routes": "Rotas",
       "routesDesc": "Otimizadas",
-      "transfers": "Conexões",
-      "transfersDesc": "Rotas otimizadas multiponto"
+      "transfers": "Rotas sugeridas",
+      "transfersDesc": "Rede inteligente otimizada"
     },
     "cta": "JUNTE-SE AGORA",
     "ctaSubtext": "Grátis • Sem compromisso"
@@ -663,7 +663,7 @@
     "service2": "Ver a direção de viagem",
     "service3": "Saber o número de lugares disponíveis",
     "service4": "Acessar um sistema de caronas dinâmico",
-    "service5": "Fazer transferências entre veículos",
+    "service5": "Viajar livremente pela cidade",
     "userRulesTitle": "Regras para usuários",
     "userRule1": "Ter uma assinatura ativa",
     "userRule2": "Estar pronto no ponto de embarque",

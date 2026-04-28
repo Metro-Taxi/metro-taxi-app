@@ -92,7 +92,7 @@
       "remove": "Entfernen",
       "optimalRoute": "Optimale Route",
       "totalDistance": "km gesamt",
-      "transfers": "Umstiege",
+      "transfers": "Strecken",
       "minutes": "Minuten",
       "efficiency": "Fahrteffizienz",
       "segments": "Fahrtsegmente",
@@ -103,10 +103,10 @@
       "eta": "ETA",
       "min": "Min",
       "score": "Punktzahl",
-      "transferSuggestions": "Umstiegsvorschläge",
-      "showTransfers": "Umstiege anzeigen",
+      "transferSuggestions": "Routenvorschläge",
+      "showTransfers": "Optionen anzeigen",
       "hideTransfers": "Ausblenden",
-      "transfer": "Umstieg",
+      "transfer": "Route",
       "emailNotVerified": "E-Mail nicht verifiziert",
       "verifyEmail": "E-Mail verifizieren",
       "subscriptionRequired": "Abonnement erforderlich",
@@ -234,7 +234,7 @@
         "period": "Tag",
         "feature1": "Unbegrenzte Fahrten für 24h",
         "feature2": "Zugang zu allen Fahrzeugen",
-        "feature3": "Optimierte Transfers"
+        "feature3": "Intelligente Routen"
       },
       "week": {
         "name": "1 WOCHE",
@@ -243,7 +243,7 @@
         "period": "Woche",
         "feature1": "Unbegrenzte Fahrten für 7 Tage",
         "feature2": "Prioritätszugang",
-        "feature3": "Optimierte Transfers",
+        "feature3": "Intelligente Routen",
         "feature4": "Prioritäts-Support"
       },
       "month": {
@@ -254,7 +254,7 @@
         "period": "Monat",
         "feature1": "Unbegrenzte Fahrten für 30 Tage",
         "feature2": "Prioritätszugang",
-        "feature3": "Optimierte Transfers",
+        "feature3": "Intelligente Routen",
         "feature4": "Prioritäts-Support",
         "feature5": "Maximale Ersparnis"
       }
@@ -469,8 +469,8 @@
       "requestsDesc": "Erhalten Sie Anfragen in Echtzeit in Ihrer Zone",
       "routes": "Optimierte Routen",
       "routesDesc": "Berechnete Routen zur Maximierung Ihrer Fahrten",
-      "transfers": "Vorgeschlagene Umstiege",
-      "transfersDesc": "Optimierte Mehrpunkt-Routen"
+      "transfers": "Vorgeschlagene Routen",
+      "transfersDesc": "Intelligentes optimiertes Netzwerk"
     },
     "cta": "JETZT DEM NETZWERK BEITRETEN",
     "ctaSubtext": "Kostenlose Registrierung • Keine Bindung"
@@ -663,7 +663,7 @@
     "service2": "Ihre Fahrtrichtung zu sehen",
     "service3": "Die Anzahl der verfügbaren Plätze zu erfahren",
     "service4": "Zugang zu einem dynamischen Mitfahrsystem",
-    "service5": "Zwischen Fahrzeugen zu wechseln",
+    "service5": "Frei durch die Stadt reisen",
     "userRulesTitle": "Regeln für Nutzer",
     "userRule1": "Ein aktives Abonnement haben",
     "userRule2": "Am Abholpunkt bereit sein",

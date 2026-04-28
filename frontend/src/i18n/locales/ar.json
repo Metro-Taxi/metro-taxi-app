@@ -92,7 +92,7 @@
       "remove": "إزالة",
       "optimalRoute": "المسار الأمثل",
       "totalDistance": "كم إجمالي",
-      "transfers": "تحويلات",
+      "transfers": "مسارات",
       "minutes": "دقائق",
       "efficiency": "كفاءة المسار",
       "segments": "أجزاء المسار",
@@ -103,10 +103,10 @@
       "eta": "الوقت المتوقع",
       "min": "دقيقة",
       "score": "النتيجة",
-      "transferSuggestions": "اقتراحات التحويل",
-      "showTransfers": "عرض التحويلات",
+      "transferSuggestions": "اقتراحات المسار",
+      "showTransfers": "عرض الخيارات",
       "hideTransfers": "إخفاء",
-      "transfer": "تحويل",
+      "transfer": "مسار",
       "emailNotVerified": "البريد غير مفعل",
       "verifyEmail": "تفعيل البريد",
       "subscriptionRequired": "يتطلب اشتراك",
@@ -242,7 +242,7 @@
     "enRoute": "في الطريق",
     "arrived": "وصل",
     "requestRide": "طلب رحلة",
-    "transferPoint": "نقطة التحويل",
+    "transferPoint": "محطة",
     "changeVehicle": "غير المركبة هنا",
     "destinationSet": "تم تحديد الوجهة!",
     "subscriptionRequired": "يتطلب اشتراك لطلب رحلة",
@@ -251,7 +251,7 @@
     "places": "مقاعد فارغة",
     "optimalRoute": "المسار الأمثل",
     "kmTotal": "كم إجمالي",
-    "transfers": "تحويلات",
+    "transfers": "مسارات",
     "routeEfficiency": "كفاءة المسار",
     "routeSegments": "أجزاء المسار",
     "requestThisRide": "طلب هذه الرحلة",
@@ -284,7 +284,7 @@
         "period": "يوم",
         "feature1": "رحلات غير محدودة لمدة 24 ساعة",
         "feature2": "الوصول إلى جميع المركبات",
-        "feature3": "تحويلات محسنة"
+        "feature3": "مسارات ذكية"
       },
       "week": {
         "name": "أسبوع واحد",
@@ -293,7 +293,7 @@
         "period": "أسبوع",
         "feature1": "رحلات غير محدودة لمدة 7 أيام",
         "feature2": "وصول ذو أولوية",
-        "feature3": "تحويلات محسنة",
+        "feature3": "مسارات ذكية",
         "feature4": "دعم ذو أولوية"
       },
       "month": {
@@ -304,7 +304,7 @@
         "period": "شهر",
         "feature1": "رحلات غير محدودة لمدة 30 يوم",
         "feature2": "وصول ذو أولوية",
-        "feature3": "تحويلات محسنة",
+        "feature3": "مسارات ذكية",
         "feature4": "دعم ذو أولوية",
         "feature5": "أقصى توفير"
       }
@@ -518,8 +518,8 @@
       "requestsDesc": "استقبل الطلبات في الوقت الفعلي في منطقتك",
       "routes": "مسارات محسنة",
       "routesDesc": "طرق محسوبة لزيادة رحلاتك",
-      "transfers": "تحويلات مقترحة",
-      "transfersDesc": "نظام توجيه محسّن"
+      "transfers": "مسارات مقترحة",
+      "transfersDesc": "شبكة ذكية محسّنة"
     },
     "cta": "انضم للشبكة الآن",
     "ctaSubtext": "تسجيل مجاني • بدون التزام"
@@ -685,7 +685,7 @@
     "service2": "رؤية اتجاه سفرهم",
     "service3": "معرفة عدد المقاعد المتاحة",
     "service4": "الوصول إلى نظام مشاركة الرحلات الديناميكي",
-    "service5": "التنقل بين المركبات",
+    "service5": "السفر بحرية في المدينة",
     "userRulesTitle": "قواعد للمستخدمين",
     "userRule1": "امتلاك اشتراك نشط",
     "userRule2": "الاستعداد في نقطة الالتقاط",

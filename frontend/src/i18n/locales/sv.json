@@ -92,7 +92,7 @@
       "remove": "Fjern",
       "optimalRoute": "Optimal rute",
       "totalDistance": "km totalt",
-      "transfers": "overganger",
+      "transfers": "rutter",
       "minutes": "minutter",
       "efficiency": "Ruteeffektivitet",
       "segments": "Rutesegmenter",
@@ -103,10 +103,10 @@
       "eta": "ETA",
       "min": "min",
       "score": "Poengsum",
-      "transferSuggestions": "Overgangsforslag",
-      "showTransfers": "Vis overganger",
-      "hideTransfers": "Skjul",
-      "transfer": "Overgang",
+      "transferSuggestions": "Ruteförslag",
+      "showTransfers": "Visa alternativ",
+      "hideTransfers": "Dölj",
+      "transfer": "Rutt",
       "emailNotVerified": "E-post ikke verifisert",
       "verifyEmail": "Verifiser e-posten min",
       "subscriptionRequired": "Abonnement kreves",
@@ -234,7 +234,7 @@
         "period": "dag",
         "feature1": "Obegränsade resor i 24h",
         "feature2": "Tillgång till alla fordon",
-        "feature3": "Optimerade byten"
+        "feature3": "Smarta rutter"
       },
       "week": {
         "name": "1 VECKA",
@@ -243,7 +243,7 @@
         "period": "vecka",
         "feature1": "Obegränsade resor i 7 dagar",
         "feature2": "Prioriterad åtkomst",
-        "feature3": "Optimerade byten",
+        "feature3": "Smarta rutter",
         "feature4": "Prioriterad support"
       },
       "month": {
@@ -254,7 +254,7 @@
         "period": "månad",
         "feature1": "Obegränsade resor i 30 dagar",
         "feature2": "Prioriterad åtkomst",
-        "feature3": "Optimerade byten",
+        "feature3": "Smarta rutter",
         "feature4": "Prioriterad support",
         "feature5": "Maximal besparing"
       }
@@ -469,8 +469,8 @@
       "requestsDesc": "I realtid",
       "routes": "Rutter",
       "routesDesc": "Optimerade",
-      "transfers": "Anslutningar",
-      "transfersDesc": "Smart system"
+      "transfers": "Föreslagna rutter",
+      "transfersDesc": "Smart optimerat nätverk"
     },
     "cta": "GÅ MED NU",
     "ctaSubtext": "Gratis • Ingen bindning"
@@ -663,7 +663,7 @@
     "service2": "Se deras resriktning",
     "service3": "Veta antalet tillgängliga platser",
     "service4": "Få tillgång till ett dynamiskt samåkningssystem",
-    "service5": "Byta mellan fordon",
+    "service5": "Resa fritt genom staden",
     "userRulesTitle": "Regler för användare",
     "userRule1": "Ha en aktiv prenumeration",
     "userRule2": "Vara redo vid upphämtningspunkten",

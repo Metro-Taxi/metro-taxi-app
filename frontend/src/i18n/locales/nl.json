@@ -92,7 +92,7 @@
       "remove": "Verwijderen",
       "optimalRoute": "Optimale route",
       "totalDistance": "km totaal",
-      "transfers": "overstappen",
+      "transfers": "ritten",
       "minutes": "minuten",
       "efficiency": "Route-efficiëntie",
       "segments": "Routesegmenten",
@@ -103,10 +103,10 @@
       "eta": "ETA",
       "min": "min",
       "score": "Score",
-      "transferSuggestions": "Overstapvoorstellen",
-      "showTransfers": "Overstappen tonen",
+      "transferSuggestions": "Routevoorstellen",
+      "showTransfers": "Opties tonen",
       "hideTransfers": "Verbergen",
-      "transfer": "Overstap",
+      "transfer": "Route",
       "emailNotVerified": "E-mail niet geverifieerd",
       "verifyEmail": "E-mail verifiëren",
       "subscriptionRequired": "Abonnement vereist",
@@ -234,7 +234,7 @@
         "period": "dag",
         "feature1": "Onbeperkte ritten voor 24u",
         "feature2": "Toegang tot alle voertuigen",
-        "feature3": "Geoptimaliseerde transfers"
+        "feature3": "Slimme routes"
       },
       "week": {
         "name": "1 WEEK",
@@ -243,7 +243,7 @@
         "period": "week",
         "feature1": "Onbeperkte ritten voor 7 dagen",
         "feature2": "Prioriteitstoegang",
-        "feature3": "Geoptimaliseerde transfers",
+        "feature3": "Slimme routes",
         "feature4": "Prioriteitsondersteuning"
       },
       "month": {
@@ -254,7 +254,7 @@
         "period": "maand",
         "feature1": "Onbeperkte ritten voor 30 dagen",
         "feature2": "Prioriteitstoegang",
-        "feature3": "Geoptimaliseerde transfers",
+        "feature3": "Slimme routes",
         "feature4": "Prioriteitsondersteuning",
         "feature5": "Maximale besparing"
       }
@@ -469,8 +469,8 @@
       "requestsDesc": "Ontvang aanvragen in realtime in uw zone",
       "routes": "Geoptimaliseerde routes",
       "routesDesc": "Routes berekend om uw ritten te maximaliseren",
-      "transfers": "Voorgestelde overstappen",
-      "transfersDesc": "Geoptimaliseerde routes"
+      "transfers": "Voorgestelde routes",
+      "transfersDesc": "Slim geoptimaliseerd netwerk"
     },
     "cta": "NU LID WORDEN",
     "ctaSubtext": "Gratis registratie • Geen verplichtingen"
@@ -663,7 +663,7 @@
     "service2": "Hun reisrichting te zien",
     "service3": "Het aantal beschikbare plaatsen te kennen",
     "service4": "Toegang te krijgen tot een dynamisch ritdeelsysteem",
-    "service5": "Over te stappen tussen voertuigen",
+    "service5": "Vrij door de stad reizen",
     "userRulesTitle": "Regels voor gebruikers",
     "userRule1": "Een actief abonnement hebben",
     "userRule2": "Klaar zijn op het ophaalPunt",

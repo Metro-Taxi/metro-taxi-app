@@ -92,7 +92,7 @@
       "remove": "ਹਟਾਓ",
       "optimalRoute": "ਵਧੀਆ ਰਸਤਾ",
       "totalDistance": "ਕੁੱਲ ਕਿ.ਮੀ.",
-      "transfers": "ਟ੍ਰਾਂਸਫਰ",
+      "transfers": "ਮਾਰਗ",
       "minutes": "ਮਿੰਟ",
       "efficiency": "ਕੁਸ਼ਲਤਾ",
       "segments": "ਭਾਗ",
@@ -103,10 +103,10 @@
       "eta": "ETA",
       "min": "ਮਿੰਟ",
       "score": "ਸਕੋਰ",
-      "transferSuggestions": "ਟ੍ਰਾਂਸਫਰ ਸੁਝਾਅ",
-      "showTransfers": "ਟ੍ਰਾਂਸਫਰ ਦਿਖਾਓ",
+      "transferSuggestions": "ਮਾਰਗ ਸੁਝਾਅ",
+      "showTransfers": "ਵਿਕਲਪ ਦਿਖਾਓ",
       "hideTransfers": "ਲੁਕਾਓ",
-      "transfer": "ਟ੍ਰਾਂਸਫਰ",
+      "transfer": "ਮਾਰਗ",
       "emailNotVerified": "ਈਮੇਲ ਤਸਦੀਕ ਨਹੀਂ",
       "verifyEmail": "ਈਮੇਲ ਤਸਦੀਕ ਕਰੋ",
       "subscriptionRequired": "ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਲੋੜੀਂਦੀ",
@@ -234,7 +234,7 @@
         "period": "ਦਿਨ",
         "feature1": "24 ਘੰਟੇ ਅਸੀਮਤ ਯਾਤਰਾਵਾਂ",
         "feature2": "ਸਾਰੇ ਵਾਹਨਾਂ ਤੱਕ ਪਹੁੰਚ",
-        "feature3": "ਅਨੁਕੂਲਿਤ ਟ੍ਰਾਂਸਫਰ"
+        "feature3": "ਸਮਾਰਟ ਮਾਰਗ"
       },
       "week": {
         "name": "1 ਹਫ਼ਤਾ",
@@ -243,7 +243,7 @@
         "period": "ਹਫ਼ਤਾ",
         "feature1": "7 ਦਿਨ ਅਸੀਮਤ ਯਾਤਰਾਵਾਂ",
         "feature2": "ਤਰਜੀਹੀ ਪਹੁੰਚ",
-        "feature3": "ਅਨੁਕੂਲਿਤ ਟ੍ਰਾਂਸਫਰ",
+        "feature3": "ਸਮਾਰਟ ਮਾਰਗ",
         "feature4": "ਤਰਜੀਹੀ ਸਹਾਇਤਾ"
       },
       "month": {
@@ -254,7 +254,7 @@
         "period": "ਮਹੀਨਾ",
         "feature1": "30 ਦਿਨ ਅਸੀਮਤ ਯਾਤਰਾਵਾਂ",
         "feature2": "ਤਰਜੀਹੀ ਪਹੁੰਚ",
-        "feature3": "ਅਨੁਕੂਲਿਤ ਟ੍ਰਾਂਸਫਰ",
+        "feature3": "ਸਮਾਰਟ ਮਾਰਗ",
         "feature4": "ਤਰਜੀਹੀ ਸਹਾਇਤਾ",
         "feature5": "ਵੱਧ ਤੋਂ ਵੱਧ ਬੱਚਤ"
       }
@@ -469,8 +469,8 @@
       "requestsDesc": "ਰੀਅਲ ਟਾਈਮ",
       "routes": "ਰਸਤੇ",
       "routesDesc": "ਅਨੁਕੂਲਿਤ",
-      "transfers": "ਟ੍ਰਾਂਸਫਰ",
-      "transfersDesc": "ਸਮਾਰਟ ਸਿਸਟਮ"
+      "transfers": "ਸੁਝਾਏ ਮਾਰਗ",
+      "transfersDesc": "ਸਮਾਰਟ ਅਨੁਕੂਲਿਤ ਨੈੱਟਵਰਕ"
     },
     "cta": "ਹੁਣੇ ਸ਼ਾਮਲ ਹੋਵੋ",
     "ctaSubtext": "ਮੁਫ਼ਤ • ਕੋਈ ਵਚਨਬੱਧਤਾ ਨਹੀਂ"
@@ -663,7 +663,7 @@
     "service2": "ਉਹਨਾਂ ਦੀ ਯਾਤਰਾ ਦੀ ਦਿਸ਼ਾ ਦੇਖੋ",
     "service3": "ਉਪਲਬਧ ਸੀਟਾਂ ਦੀ ਗਿਣਤੀ ਜਾਣੋ",
     "service4": "ਡਾਇਨਾਮਿਕ ਰਾਈਡਸ਼ੇਅਰਿੰਗ ਸਿਸਟਮ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ",
-    "service5": "ਵਾਹਨਾਂ ਵਿਚਕਾਰ ਤਬਾਦਲਾ ਕਰੋ",
+    "service5": "ਸ਼ਹਿਰ ਵਿੱਚ ਆਜ਼ਾਦੀ ਨਾਲ ਯਾਤਰਾ ਕਰੋ",
     "userRulesTitle": "ਉਪਭੋਗਤਾਵਾਂ ਲਈ ਨਿਯਮ",
     "userRule1": "ਇੱਕ ਐਕਟਿਵ ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਰੱਖੋ",
     "userRule2": "ਪਿਕਅੱਪ ਪੁਆਇੰਟ 'ਤੇ ਤਿਆਰ ਰਹੋ",

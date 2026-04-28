@@ -185,7 +185,7 @@
       "remove": "Remove",
       "optimalRoute": "Optimal route",
       "totalDistance": "km total",
-      "transfers": "transfers",
+      "transfers": "routes",
       "minutes": "minutes",
       "efficiency": "Route efficiency",
       "segments": "Route segments",
@@ -197,9 +197,9 @@
       "min": "min",
       "score": "Score",
       "transferSuggestions": "Route suggestions",
-      "showTransfers": "Show connections",
+      "showTransfers": "Show options",
       "hideTransfers": "Hide",
-      "transfer": "Connection",
+      "transfer": "Route",
       "emailNotVerified": "Email not verified",
       "verifyEmail": "Verify my email",
       "subscriptionRequired": "Subscription required",
@@ -340,7 +340,7 @@
         "period": "day",
         "feature1": "Unlimited rides for 24h",
         "feature2": "Access to all vehicles",
-        "feature3": "Optimized routes"
+        "feature3": "Smart routes"
       },
       "week": {
         "name": "1 WEEK",
@@ -349,7 +349,7 @@
         "period": "week",
         "feature1": "Unlimited rides for 7 days",
         "feature2": "Priority access",
-        "feature3": "Optimized routes",
+        "feature3": "Smart routes",
         "feature4": "Priority support"
       },
       "month": {
@@ -360,7 +360,7 @@
         "period": "month",
         "feature1": "Unlimited rides for 30 days",
         "feature2": "Priority access",
-        "feature3": "Optimized routes",
+        "feature3": "Smart routes",
         "feature4": "Priority support",
         "feature5": "Maximum savings"
       }
@@ -571,8 +571,8 @@
       "requestsDesc": "Receive real-time requests in your area",
       "routes": "Optimized routes",
       "routesDesc": "Routes calculated to maximize your trips",
-      "transfers": "Suggested connections",
-      "transfersDesc": "Optimized multi-point routing"
+      "transfers": "Suggested routes",
+      "transfersDesc": "Smart optimized network"
     },
     "cta": "JOIN THE NETWORK NOW",
     "ctaSubtext": "Free registration • No commitment"
@@ -762,7 +762,7 @@
     "service2": "See their direction of travel",
     "service3": "Know the number of available seats",
     "service4": "Access a dynamic ridesharing system",
-    "service5": "Connect between vehicles",
+    "service5": "Travel freely across the city",
     "userRulesTitle": "Rules for users",
     "userRule1": "Have an active subscription",
     "userRule2": "Be ready at the pickup point",

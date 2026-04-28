@@ -92,7 +92,7 @@
       "remove": "Rimuovi",
       "optimalRoute": "Percorso ottimale",
       "totalDistance": "km totali",
-      "transfers": "trasferimenti",
+      "transfers": "percorsi",
       "minutes": "minuti",
       "efficiency": "Efficienza percorso",
       "segments": "Segmenti del percorso",
@@ -103,10 +103,10 @@
       "eta": "ETA",
       "min": "min",
       "score": "Punteggio",
-      "transferSuggestions": "Suggerimenti trasferimento",
-      "showTransfers": "Mostra trasferimenti",
+      "transferSuggestions": "Suggerimenti di percorso",
+      "showTransfers": "Mostra opzioni",
       "hideTransfers": "Nascondi",
-      "transfer": "Trasferimento",
+      "transfer": "Percorso",
       "emailNotVerified": "Email non verificata",
       "verifyEmail": "Verifica email",
       "subscriptionRequired": "Abbonamento richiesto",
@@ -242,7 +242,7 @@
     "enRoute": "In viaggio",
     "arrived": "Arrivato",
     "requestRide": "Richiedi viaggio",
-    "transferPoint": "Punto di trasferimento",
+    "transferPoint": "Tappa",
     "changeVehicle": "Cambia veicolo qui",
     "destinationSet": "Destinazione impostata!",
     "subscriptionRequired": "Abbonamento richiesto per richiedere un viaggio",
@@ -251,7 +251,7 @@
     "places": "posti liberi",
     "optimalRoute": "Percorso ottimale",
     "kmTotal": "km totali",
-    "transfers": "trasferimenti",
+    "transfers": "percorsi",
     "routeEfficiency": "Efficienza percorso",
     "routeSegments": "Segmenti del percorso",
     "requestThisRide": "Richiedi questo viaggio",
@@ -284,7 +284,7 @@
         "period": "giorno",
         "feature1": "Corse illimitate per 24h",
         "feature2": "Accesso a tutti i veicoli",
-        "feature3": "Trasferimenti ottimizzati"
+        "feature3": "Percorsi intelligenti"
       },
       "week": {
         "name": "1 SETTIMANA",
@@ -293,7 +293,7 @@
         "period": "settimana",
         "feature1": "Corse illimitate per 7 giorni",
         "feature2": "Accesso prioritario",
-        "feature3": "Trasferimenti ottimizzati",
+        "feature3": "Percorsi intelligenti",
         "feature4": "Supporto prioritario"
       },
       "month": {
@@ -304,7 +304,7 @@
         "period": "mese",
         "feature1": "Corse illimitate per 30 giorni",
         "feature2": "Accesso prioritario",
-        "feature3": "Trasferimenti ottimizzati",
+        "feature3": "Percorsi intelligenti",
         "feature4": "Supporto prioritario",
         "feature5": "Massimo risparmio"
       }
@@ -518,8 +518,8 @@
       "requestsDesc": "Ricevi richieste in tempo reale nella tua zona",
       "routes": "Percorsi ottimizzati",
       "routesDesc": "Percorsi calcolati per massimizzare i viaggi",
-      "transfers": "Trasferimenti suggeriti",
-      "transfersDesc": "Sistema di routing ottimizzato"
+      "transfers": "Percorsi suggeriti",
+      "transfersDesc": "Rete intelligente ottimizzata"
     },
     "cta": "UNISCITI ALLA RETE ORA",
     "ctaSubtext": "Registrazione gratuita • Senza impegno"
@@ -685,7 +685,7 @@
     "service2": "Vedere la loro direzione di viaggio",
     "service3": "Conoscere il numero di posti disponibili",
     "service4": "Accedere a un sistema di condivisione corse dinamico",
-    "service5": "Effettuare trasbordi tra veicoli",
+    "service5": "Viaggiare liberamente per la città",
     "userRulesTitle": "Regole per gli utenti",
     "userRule1": "Avere un abbonamento attivo",
     "userRule2": "Essere pronti al punto di ritiro",
