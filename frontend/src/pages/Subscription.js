@@ -263,7 +263,7 @@ const Subscription = () => {
       features: [
         t('subscription.plans.day.feature1', 'Trajets illimités pendant 24h'), 
         t('subscription.plans.day.feature2', 'Accès à tous les véhicules'), 
-        t('subscription.plans.day.feature3', 'Transbordements optimisés')
+        t('subscription.plans.day.feature3', 'Trajets optimisés')
       ]
     },
     { 
@@ -275,7 +275,7 @@ const Subscription = () => {
       features: [
         t('subscription.plans.week.feature1', 'Trajets illimités pendant 7 jours'), 
         t('subscription.plans.week.feature2', 'Accès prioritaire'), 
-        t('subscription.plans.week.feature3', 'Transbordements optimisés'), 
+        t('subscription.plans.week.feature3', 'Trajets optimisés'), 
         t('subscription.plans.week.feature4', 'Support prioritaire')
       ]
     },
@@ -287,7 +287,7 @@ const Subscription = () => {
       features: [
         t('subscription.plans.month.feature1', 'Trajets illimités pendant 30 jours'), 
         t('subscription.plans.month.feature2', 'Accès prioritaire'), 
-        t('subscription.plans.month.feature3', 'Transbordements optimisés'), 
+        t('subscription.plans.month.feature3', 'Trajets optimisés'), 
         t('subscription.plans.month.feature4', 'Support prioritaire'), 
         t('subscription.plans.month.feature5', 'Économie maximale')
       ]

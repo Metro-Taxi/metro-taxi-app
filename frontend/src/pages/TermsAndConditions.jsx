@@ -96,7 +96,7 @@ const TermsAndConditions = () => {
                 { icon: ArrowLeftRight, text: t('cgu.service2', 'De visualiser leur direction') },
                 { icon: Users, text: t('cgu.service3', 'De connaître le nombre de places disponibles') },
                 { icon: Car, text: t('cgu.service4', 'D\'accéder à un système de covoiturage dynamique') },
-                { icon: ArrowLeftRight, text: t('cgu.service5', 'D\'effectuer des transbordements entre véhicules') }
+                { icon: ArrowLeftRight, text: t('cgu.service5', 'D\'effectuer des correspondances entre véhicules') }
               ].map((item, index) => (
                 <li key={index} className="flex items-start gap-4">
                   <div className="w-10 h-10 bg-[#FFD60A]/10 rounded-lg flex items-center justify-center flex-shrink-0">

@@ -102,7 +102,7 @@
       "remove": "Eliminar",
       "optimalRoute": "Ruta óptima",
       "totalDistance": "km total",
-      "transfers": "transbordos",
+      "transfers": "conexiones",
       "minutes": "minutos",
       "efficiency": "Eficiencia de ruta",
       "segments": "Segmentos de ruta",
@@ -113,10 +113,10 @@
       "eta": "ETA",
       "min": "min",
       "score": "Puntuación",
-      "transferSuggestions": "Sugerencias de transbordo",
-      "showTransfers": "Ver transbordos",
+      "transferSuggestions": "Sugerencias de ruta",
+      "showTransfers": "Ver conexiones",
       "hideTransfers": "Ocultar",
-      "transfer": "Transbordo",
+      "transfer": "Conexión",
       "emailNotVerified": "Email no verificado",
       "verifyEmail": "Verificar mi email",
       "subscriptionRequired": "Suscripción requerida",
@@ -245,7 +245,7 @@
         "period": "día",
         "feature1": "Viajes ilimitados por 24h",
         "feature2": "Acceso a todos los vehículos",
-        "feature3": "Transbordos optimizados"
+        "feature3": "Rutas optimizadas"
       },
       "week": {
         "name": "1 SEMANA",
@@ -255,7 +255,7 @@
         "period": "semana",
         "feature1": "Viajes ilimitados por 7 días",
         "feature2": "Acceso prioritario",
-        "feature3": "Transbordos optimizados",
+        "feature3": "Rutas optimizadas",
         "feature4": "Soporte prioritario"
       },
       "month": {
@@ -267,7 +267,7 @@
         "period": "mes",
         "feature1": "Viajes ilimitados por 30 días",
         "feature2": "Acceso prioritario",
-        "feature3": "Transbordos optimizados",
+        "feature3": "Rutas optimizadas",
         "feature4": "Soporte prioritario",
         "feature5": "Máximo ahorro"
       }
@@ -678,7 +678,7 @@
     "service2": "Visualizar su dirección de viaje",
     "service3": "Conocer el número de asientos disponibles",
     "service4": "Acceder a un sistema de viajes compartidos dinámico",
-    "service5": "Realizar transbordos entre vehículos",
+    "service5": "Realizar conexiones entre vehículos",
     "userRulesTitle": "Reglas para usuarios",
     "userRule1": "Tener una suscripción activa",
     "userRule2": "Estar listo en el punto de recogida",

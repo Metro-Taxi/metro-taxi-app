@@ -188,7 +188,7 @@
       "remove": "Remove",
       "optimalRoute": "Optimal route",
       "totalDistance": "km total",
-      "transfers": "transfers",
+      "transfers": "connections",
       "minutes": "minutes",
       "efficiency": "Route efficiency",
       "segments": "Route segments",
@@ -202,7 +202,7 @@
       "transferSuggestions": "Transfer suggestions",
       "showTransfers": "Show transfers",
       "hideTransfers": "Hide",
-      "transfer": "Transfer",
+      "transfer": "Connection",
       "emailNotVerified": "Email not verified",
       "verifyEmail": "Verify email",
       "subscriptionRequired": "Subscription required",
@@ -560,7 +560,7 @@
       "routes": "Optimised routes",
       "routesDesc": "Routes calculated to maximise your trips",
       "transfers": "Suggested connections",
-      "transfersDesc": "Intelligent transfer system"
+      "transfersDesc": "Intelligent routing system"
     },
     "cta": "JOIN THE NETWORK NOW",
     "ctaSubtext": "Free registration • No commitment"
@@ -750,7 +750,7 @@
     "service2": "See their direction of travel",
     "service3": "Know the number of available seats",
     "service4": "Access a dynamic ridesharing system",
-    "service5": "Transfer between vehicles",
+    "service5": "Connect between vehicles",
     "userRulesTitle": "Rules for users",
     "userRule1": "Have an active subscription",
     "userRule2": "Be ready at the pickup point",

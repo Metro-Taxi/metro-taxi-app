@@ -196,10 +196,10 @@
       "eta": "ETA",
       "min": "min",
       "score": "Score",
-      "transferSuggestions": "Transfer suggestions",
-      "showTransfers": "Show transfers",
+      "transferSuggestions": "Route suggestions",
+      "showTransfers": "Show connections",
       "hideTransfers": "Hide",
-      "transfer": "Transfer",
+      "transfer": "Connection",
       "emailNotVerified": "Email not verified",
       "verifyEmail": "Verify my email",
       "subscriptionRequired": "Subscription required",
@@ -340,7 +340,7 @@
         "period": "day",
         "feature1": "Unlimited rides for 24h",
         "feature2": "Access to all vehicles",
-        "feature3": "Optimized transfers"
+        "feature3": "Optimized routes"
       },
       "week": {
         "name": "1 WEEK",
@@ -349,7 +349,7 @@
         "period": "week",
         "feature1": "Unlimited rides for 7 days",
         "feature2": "Priority access",
-        "feature3": "Optimized transfers",
+        "feature3": "Optimized routes",
         "feature4": "Priority support"
       },
       "month": {
@@ -360,7 +360,7 @@
         "period": "month",
         "feature1": "Unlimited rides for 30 days",
         "feature2": "Priority access",
-        "feature3": "Optimized transfers",
+        "feature3": "Optimized routes",
         "feature4": "Priority support",
         "feature5": "Maximum savings"
       }
@@ -572,7 +572,7 @@
       "routes": "Optimized routes",
       "routesDesc": "Routes calculated to maximize your trips",
       "transfers": "Suggested connections",
-      "transfersDesc": "Intelligent transfer system"
+      "transfersDesc": "Intelligent routing system"
     },
     "cta": "JOIN THE NETWORK NOW",
     "ctaSubtext": "Free registration • No commitment"
@@ -762,7 +762,7 @@
     "service2": "See their direction of travel",
     "service3": "Know the number of available seats",
     "service4": "Access a dynamic ridesharing system",
-    "service5": "Transfer between vehicles",
+    "service5": "Connect between vehicles",
     "userRulesTitle": "Rules for users",
     "userRule1": "Have an active subscription",
     "userRule2": "Be ready at the pickup point",

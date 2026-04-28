@@ -20,7 +20,7 @@
     "or": "ou",
     "login": "Se connecter",
     "optimalRoute": "Trajet optimal",
-    "transfers": "transferts",
+    "transfers": "correspondances",
     "routeSegments": "Détails du trajet",
     "requestOptimalRide": "Demander le trajet optimal",
     "cardLoadError": "Erreur lors du chargement des cartes",
@@ -218,7 +218,7 @@
       "remove": "Supprimer",
       "optimalRoute": "Itinéraire optimal",
       "totalDistance": "km total",
-      "transfers": "transbordements",
+      "transfers": "correspondances",
       "minutes": "minutes",
       "efficiency": "Efficacité du trajet",
       "segments": "Segments du trajet",
@@ -229,10 +229,10 @@
       "eta": "ETA",
       "min": "min",
       "score": "Score",
-      "transferSuggestions": "Suggestions de transbordement",
-      "showTransfers": "Voir les transbordements",
+      "transferSuggestions": "Suggestions d'itinéraire",
+      "showTransfers": "Voir les correspondances",
       "hideTransfers": "Masquer",
-      "transfer": "Transbordement",
+      "transfer": "Correspondance",
       "emailNotVerified": "Email non vérifié",
       "verifyEmail": "Vérifier mon email",
       "subscriptionRequired": "Abonnement requis",
@@ -407,7 +407,7 @@
         "period": "jour",
         "feature1": "Trajets illimités pendant 24h",
         "feature2": "Accès à tous les véhicules",
-        "feature3": "Transbordements optimisés"
+        "feature3": "Trajets optimisés"
       },
       "week": {
         "name": "1 SEMAINE",
@@ -416,7 +416,7 @@
         "period": "semaine",
         "feature1": "Trajets illimités pendant 7 jours",
         "feature2": "Accès prioritaire",
-        "feature3": "Transbordements optimisés",
+        "feature3": "Trajets optimisés",
         "feature4": "Support prioritaire"
       },
       "month": {
@@ -427,7 +427,7 @@
         "period": "mois",
         "feature1": "Trajets illimités pendant 30 jours",
         "feature2": "Accès prioritaire",
-        "feature3": "Transbordements optimisés",
+        "feature3": "Trajets optimisés",
         "feature4": "Support prioritaire",
         "feature5": "Économie maximale"
       }
@@ -638,7 +638,7 @@
       "routes": "Itinéraires optimisés",
       "routesDesc": "Routes calculées pour maximiser vos trajets",
       "transfers": "Correspondances proposées",
-      "transfersDesc": "Système de transbordement intelligent"
+      "transfersDesc": "Système de correspondances intelligent"
     },
     "cta": "REJOINDRE LE RÉSEAU MAINTENANT",
     "ctaSubtext": "Inscription gratuite • Aucun engagement"
@@ -831,7 +831,7 @@
     "service2": "De visualiser leur direction",
     "service3": "De connaître le nombre de places disponibles",
     "service4": "D'accéder à un système de covoiturage dynamique",
-    "service5": "D'effectuer des transbordements entre véhicules",
+    "service5": "D'effectuer des correspondances entre véhicules",
     "userRulesTitle": "Règles pour les usagers",
     "userRule1": "Disposer d'un abonnement actif",
     "userRule2": "Être prêt au point de prise en charge",
