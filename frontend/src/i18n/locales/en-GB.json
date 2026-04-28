@@ -560,7 +560,7 @@
       "routes": "Optimised routes",
       "routesDesc": "Routes calculated to maximise your trips",
       "transfers": "Suggested connections",
-      "transfersDesc": "Intelligent routing system"
+      "transfersDesc": "Optimized multi-point routing"
     },
     "cta": "JOIN THE NETWORK NOW",
     "ctaSubtext": "Free registration • No commitment"
