@@ -1,8 +1,9 @@
 {
   "name": "Métro-Taxi",
   "short_name": "Métro-Taxi",
+  "id": "/?source=pwa",
   "description": "Système de covoiturage intelligent par abonnement. Trajets illimités, transport éco-responsable.",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#F7C600",
