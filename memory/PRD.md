@@ -23,7 +23,12 @@ Plateforme web + mobile "Métro-Taxi" pour mettre en relation des usagers abonn�
 
 ## What's Been Implemented
 
-### Session 2026-02 (urgence sécurité brevet)
+### Session 2026-02 (urgence sécurité brevet + bug voix multilingue)
+- [x] **🔴 BUG CRITIQUE (1000+ vues impactées) corrigé : voix Landing Page bloquée en anglais**
+  - Cause : `Landing.js` chargeait des fichiers MP3 statiques `/audio/voiceover/voiceover_*.mp3` depuis `frontend/build/` mais ces fichiers ne sont pas garantis présents après `yarn build` sur le VPS (le backend les écrit dans `frontend/public/` après le build)
+  - Fix : `playVoiceover()` appelle maintenant directement `POST /api/tts/voiceover` avec le langCode → backend retourne MP3 en streaming (cache backend ou regénération à la volée)
+  - Service Worker bumpé à v15 (audio-cache v7) pour invalider les anciens MP3 cachés
+  - Validation : test 3 langues (FR/ES/DE) → 200 OK audio/mpeg ✅
 - [x] **Reformulation TOTALE des 16 scripts vocaux TTS** (`/app/backend/routes/tts.py`)
   - Phrase technique "changez de véhicule en route" remplacée par **"Voyagez librement à travers toute la ville, sans contrainte, sans limite, jusqu'où vous voulez"** (Option 4) dans les 16 langues
   - 3 voix critiques (fr, en, es) régénérées et validées (HTTP 200)

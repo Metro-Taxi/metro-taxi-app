@@ -42,8 +42,8 @@ const Landing = () => {
     setLanguageMenuOpen(false);
   };
 
-  // SIMPLE audio player - no preloading, just load and play on click
-  const playVoiceover = () => {
+  // Audio player - calls backend API directly (resilient to missing static files)
+  const playVoiceover = async () => {
     // If already playing, stop
     if (audioPlaying && audioRef.current) {
       audioRef.current.pause();
@@ -55,41 +55,61 @@ const Landing = () => {
     // Show loading state
     setAudioLoading(true);
 
-    // Build audio URL
-    const langCode = i18n.language.split('-')[0];
-    const audioUrl = `/audio/voiceover/voiceover_${langCode}.mp3`;
+    // Determine language code (preserve en-GB if active)
+    const rawLang = i18n.language || 'fr';
+    const langCode = languages.find(l => l.code === rawLang) ? rawLang : rawLang.split('-')[0];
 
-    // Create and play audio directly
-    const audio = new Audio(audioUrl);
-    audioRef.current = audio;
+    try {
+      // Call backend API directly - it returns the MP3 stream (or generates it on the fly)
+      const response = await fetch(`${API}/api/tts/voiceover`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ language: langCode, voice: 'nova' })
+      });
 
-    audio.oncanplaythrough = () => {
+      if (!response.ok) {
+        throw new Error(`TTS API returned ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const audioUrl = URL.createObjectURL(blob);
+
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+
+      audio.oncanplaythrough = () => {
+        setAudioLoading(false);
+        audio.play()
+          .then(() => {
+            setAudioPlaying(true);
+          })
+          .catch((err) => {
+            console.warn('Play failed:', err);
+            setAudioLoading(false);
+            setAudioPlaying(false);
+          });
+      };
+
+      audio.onended = () => {
+        setAudioPlaying(false);
+        audioRef.current = null;
+        URL.revokeObjectURL(audioUrl);
+      };
+
+      audio.onerror = () => {
+        console.error('Audio playback error');
+        setAudioLoading(false);
+        setAudioPlaying(false);
+        audioRef.current = null;
+        URL.revokeObjectURL(audioUrl);
+      };
+
+      audio.load();
+    } catch (err) {
+      console.error('Voiceover fetch error:', err);
       setAudioLoading(false);
-      audio.play()
-        .then(() => {
-          setAudioPlaying(true);
-        })
-        .catch((err) => {
-          console.warn('Play failed:', err);
-          setAudioLoading(false);
-          setAudioPlaying(false);
-        });
-    };
-
-    audio.onended = () => {
       setAudioPlaying(false);
-      audioRef.current = null;
-    };
-
-    audio.onerror = () => {
-      console.error('Audio load error');
-      setAudioLoading(false);
-      setAudioPlaying(false);
-      audioRef.current = null;
-    };
-
-    // Start loading
-    audio.load();
+    }
   };
 
   // Cleanup on unmount
