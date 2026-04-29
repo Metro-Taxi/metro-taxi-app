@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Métro-Taxi 16 langues</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1080px;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: white;
+    overflow: hidden;
+    position: relative;
+  }
+  /* Subtle yellow glow */
+  body::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(247, 198, 0, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  body::after {
+    content: '';
+    position: absolute;
+    bottom: -200px;
+    left: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(247, 198, 0, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .container {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 80px 70px;
+    z-index: 2;
+  }
+
+  /* Logo */
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 60px;
+  }
+  .logo-icon {
+    width: 70px;
+    height: 70px;
+    background: #F7C600;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+  }
+  .logo-text {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+  }
+
+  /* Hero */
+  .hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(247, 198, 0, 0.15);
+    border: 1px solid rgba(247, 198, 0, 0.4);
+    color: #F7C600;
+    padding: 12px 24px;
+    border-radius: 100px;
+    font-size: 18px;
+    font-weight: 600;
+    width: fit-content;
+    margin-bottom: 30px;
+  }
+  h1 {
+    font-size: 88px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -3px;
+    margin-bottom: 24px;
+  }
+  h1 .yellow {
+    color: #F7C600;
+  }
+  .subtitle {
+    font-size: 26px;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 50px;
+    max-width: 850px;
+  }
+
+  /* Flags grid */
+  .flags {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 14px;
+    margin-bottom: 50px;
+  }
+  .flag {
+    aspect-ratio: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    transition: transform 0.3s;
+  }
+
+  /* CTA */
+  .cta {
+    background: #F7C600;
+    color: black;
+    padding: 30px 50px;
+    border-radius: 100px;
+    font-size: 32px;
+    font-weight: 800;
+    width: fit-content;
+    letter-spacing: -0.5px;
+    box-shadow: 0 20px 60px rgba(247, 198, 0, 0.3);
+  }
+  .cta-arrow {
+    margin-left: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">
+    <div class="logo-icon">🚖</div>
+    <div class="logo-text">MÉTRO-TAXI</div>
+  </div>
+
+  <div class="hero">
+    <span class="badge">🌍 16 LANGUES DISPONIBLES</span>
+    <h1>Voyagez<br/><span class="yellow">librement</span></h1>
+    <p class="subtitle">Choisissez votre langue, écoutez l'expérience Métro-Taxi, et voyagez sans contrainte, sans limite.</p>
+
+    <div class="flags">
+      <div class="flag">🇫🇷</div>
+      <div class="flag">🇬🇧</div>
+      <div class="flag">🇪🇸</div>
+      <div class="flag">🇵🇹</div>
+      <div class="flag">🇩🇪</div>
+      <div class="flag">🇮🇹</div>
+      <div class="flag">🇳🇱</div>
+      <div class="flag">🇳🇴</div>
+      <div class="flag">🇸🇪</div>
+      <div class="flag">🇩🇰</div>
+      <div class="flag">🇷🇺</div>
+      <div class="flag">🇸🇦</div>
+      <div class="flag">🇮🇳</div>
+      <div class="flag">🇨🇳</div>
+      <div class="flag">🇺🇸</div>
+      <div class="flag">🚖</div>
+    </div>
+
+    <div class="cta">metro-taxi.com<span class="cta-arrow">→</span></div>
+  </div>
+</div>
+</body>
+</html>
