@@ -772,26 +772,29 @@ const Landing = () => {
             <h3 className="text-3xl md:text-4xl font-black text-black mb-3">
               {t('drivers.contact.title', 'Une question ? Contactez-nous !')}
             </h3>
-            <p className="text-black/80 text-lg mb-8 max-w-2xl mx-auto">
+            <p className="text-black/80 text-lg mb-2 max-w-2xl mx-auto">
               {t('drivers.contact.subtitle', 'Notre équipe répond à toutes les questions des chauffeurs VTC intéressés par Métro-Taxi.')}
             </p>
+            <p className="text-black font-bold text-base mb-8 max-w-2xl mx-auto">
+              {t('drivers.contact.recommendation', "👉 Le plus rapide : inscrivez-vous directement en 3 minutes")}
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <a
-                href="mailto:contact@metro-taxi.com?subject=Candidature%20Chauffeur%20VTC&body=Bonjour%2C%0A%0AJe%20suis%20chauffeur%20VTC%20et%20je%20souhaite%20rejoindre%20M%C3%A9tro-Taxi.%0A%0AMes%20coordonn%C3%A9es%20%3A%0A-%20Nom%20%3A%20%0A-%20T%C3%A9l%C3%A9phone%20%3A%20%0A-%20Ville%20%3A%20%0A%0AMerci%20de%20me%20recontacter%20pour%20plus%20d%27informations.%0A%0ACordialement"
-                className="inline-flex items-center gap-3 bg-black text-white font-bold text-base sm:text-lg px-8 py-4 rounded-full hover:bg-zinc-800 transition-colors btn-press"
-                data-testid="driver-email-btn"
-              >
-                <span className="text-2xl">📧</span>
-                <span>contact@metro-taxi.com</span>
-              </a>
               <Link 
                 to="/register/driver"
-                className="inline-flex items-center gap-3 bg-white text-black font-bold text-base sm:text-lg px-8 py-4 rounded-full hover:bg-zinc-100 transition-colors btn-press"
+                className="inline-flex items-center gap-3 bg-black text-white font-bold text-base sm:text-lg px-8 py-4 rounded-full hover:bg-zinc-800 transition-colors btn-press shadow-lg"
                 data-testid="driver-register-inline-btn"
               >
                 <span className="text-2xl">📝</span>
                 <span>{t('drivers.contact.register', "S'inscrire en 3 min")}</span>
               </Link>
+              <a
+                href="mailto:contact@metro-taxi.com?subject=Question%20-%20Chauffeur%20VTC%20M%C3%A9tro-Taxi&body=Bonjour%2C%0A%0AJe%20suis%20chauffeur%20VTC%20et%20j%27ai%20une%20question%20avant%20de%20m%27inscrire%20sur%20Métro-Taxi%20%3A%0A%0A%5BPosez%20votre%20question%20ici%5D%0A%0A%F0%9F%91%89%20Pour%20vous%20inscrire%20directement%20%28recommand%C3%A9%29%20%3A%20https%3A%2F%2Fmetro-taxi.com%2Fregister%2Fdriver%0A%0ACordialement"
+                className="inline-flex items-center gap-3 bg-white/90 text-black font-semibold text-base sm:text-lg px-8 py-4 rounded-full hover:bg-white transition-colors btn-press"
+                data-testid="driver-email-btn"
+              >
+                <span className="text-2xl">📧</span>
+                <span>{t('drivers.contact.question', 'Poser une question')}</span>
+              </a>
             </div>
             <p className="text-black/60 text-sm mt-6">
               {t('drivers.contact.response', 'Réponse garantie sous 24h')} · {t('drivers.contact.free', 'Inscription 100% gratuite')}
