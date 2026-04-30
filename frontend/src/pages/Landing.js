@@ -759,6 +759,44 @@ const Landing = () => {
             </Link>
             <p className="text-zinc-500 mt-4 text-sm">{t('drivers.ctaSubtext')}</p>
           </motion.div>
+
+          {/* Recrutement Chauffeurs — Contact direct */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="mt-16 bg-gradient-to-br from-[#FFD60A] to-[#E6C209] rounded-2xl p-8 md:p-10 text-center"
+            data-testid="driver-contact-section"
+          >
+            <h3 className="text-3xl md:text-4xl font-black text-black mb-3">
+              {t('drivers.contact.title', 'Une question ? Contactez-nous !')}
+            </h3>
+            <p className="text-black/80 text-lg mb-8 max-w-2xl mx-auto">
+              {t('drivers.contact.subtitle', 'Notre équipe répond à toutes les questions des chauffeurs VTC intéressés par Métro-Taxi.')}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <a
+                href="mailto:contact@metro-taxi.com?subject=Candidature%20Chauffeur%20VTC&body=Bonjour%2C%0A%0AJe%20suis%20chauffeur%20VTC%20et%20je%20souhaite%20rejoindre%20M%C3%A9tro-Taxi.%0A%0AMes%20coordonn%C3%A9es%20%3A%0A-%20Nom%20%3A%20%0A-%20T%C3%A9l%C3%A9phone%20%3A%20%0A-%20Ville%20%3A%20%0A%0AMerci%20de%20me%20recontacter%20pour%20plus%20d%27informations.%0A%0ACordialement"
+                className="inline-flex items-center gap-3 bg-black text-white font-bold text-base sm:text-lg px-8 py-4 rounded-full hover:bg-zinc-800 transition-colors btn-press"
+                data-testid="driver-email-btn"
+              >
+                <span className="text-2xl">📧</span>
+                <span>contact@metro-taxi.com</span>
+              </a>
+              <Link 
+                to="/register/driver"
+                className="inline-flex items-center gap-3 bg-white text-black font-bold text-base sm:text-lg px-8 py-4 rounded-full hover:bg-zinc-100 transition-colors btn-press"
+                data-testid="driver-register-inline-btn"
+              >
+                <span className="text-2xl">📝</span>
+                <span>{t('drivers.contact.register', "S'inscrire en 3 min")}</span>
+              </Link>
+            </div>
+            <p className="text-black/60 text-sm mt-6">
+              {t('drivers.contact.response', 'Réponse garantie sous 24h')} · {t('drivers.contact.free', 'Inscription 100% gratuite')}
+            </p>
+          </motion.div>
         </div>
       </section>
       
@@ -770,12 +808,19 @@ const Landing = () => {
               <Car className="w-6 h-6 text-[#FFD60A]" />
               <span className="text-xl font-black text-white">MÉTRO-TAXI</span>
             </div>
-            <div className="flex gap-8 text-zinc-400">
+            <div className="flex flex-wrap gap-6 md:gap-8 text-zinc-400 justify-center">
               <Link to="/login" className="hover:text-white transition-colors">{t('nav.login')}</Link>
               <Link to="/register/user" className="hover:text-white transition-colors">{t('nav.register')}</Link>
               <Link to="/register/driver" className="hover:text-white transition-colors">{t('nav.drivers')}</Link>
               <Link to="/cgu" className="hover:text-white transition-colors">{t('footer.cgu', 'CGU')}</Link>
               <Link to="/cgv" className="hover:text-white transition-colors">{t('footer.cgv', 'CGV')}</Link>
+              <a 
+                href="mailto:contact@metro-taxi.com" 
+                className="hover:text-[#FFD60A] transition-colors font-semibold"
+                data-testid="footer-contact-email"
+              >
+                📧 contact@metro-taxi.com
+              </a>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-zinc-800 text-center text-zinc-500">
