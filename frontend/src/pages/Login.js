@@ -140,15 +140,6 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Admin Login Info */}
-        <div className="mt-4 p-4 bg-zinc-900/50 border border-zinc-800 rounded-sm">
-          <p className="text-zinc-500 text-sm text-center mb-2">
-            Admin: admin@metrotaxi.fr / admin123
-          </p>
-          <p className="text-zinc-600 text-xs text-center">
-            💡 <a href="/admin" className="text-[#FFD60A] hover:underline">Admin Dashboard</a>
-          </p>
-        </div>
       </motion.div>
     </div>
   );

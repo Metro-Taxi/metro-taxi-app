@@ -2050,20 +2050,38 @@ async def create_test_expiry_notification(current_user: dict = Depends(get_curre
 
 # ============================================
 # Ride history routes extracted to routes/ride_history.py
-# Create default admin
+# Create / update default admin from environment variables
 @app.on_event("startup")
 async def create_default_admin():
-    admin = await db.admins.find_one({"email": "admin@metrotaxi.fr"})
-    if not admin:
+    admin_email = os.environ.get("ADMIN_EMAIL")
+    admin_password = os.environ.get("ADMIN_PASSWORD")
+    if not admin_email or not admin_password:
+        logging.warning("ADMIN_EMAIL / ADMIN_PASSWORD non configurés dans .env — admin non créé")
+        return
+
+    existing = await db.admins.find_one({"email": admin_email})
+    if not existing:
         admin_doc = {
             "id": str(uuid.uuid4()),
-            "email": "admin@metrotaxi.fr",
-            "password": hash_password("admin123"),
+            "email": admin_email,
+            "password": hash_password(admin_password),
             "role": "admin",
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         await db.admins.insert_one(admin_doc)
-        logging.info("Default admin created: admin@metrotaxi.fr / admin123")
+        logging.info(f"Default admin created: {admin_email}")
+    else:
+        # Always sync the password to match .env (allows rotation)
+        await db.admins.update_one(
+            {"email": admin_email},
+            {"$set": {"password": hash_password(admin_password)}}
+        )
+        logging.info(f"Admin password synced from .env for {admin_email}")
+
+    # Remove any legacy insecure admin account if a different admin_email is used
+    if admin_email != "admin@metrotaxi.fr":
+        await db.admins.delete_many({"email": "admin@metrotaxi.fr"})
+        logging.info("Legacy admin account admin@metrotaxi.fr removed")
 
 # ============================================
 # AUTOMATIC SUBSCRIPTION EXPIRATION CHECK
