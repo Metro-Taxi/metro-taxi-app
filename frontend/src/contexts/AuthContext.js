@@ -35,6 +35,12 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const response = await axios.post(`${API}/auth/login`, { email, password });
+    
+    // Admin 2FA: stop here, OTP required (no token issued yet)
+    if (response.data.otp_required) {
+      return response.data;
+    }
+    
     const { token: newToken, user: userData, driver: driverData, admin: adminData } = response.data;
     
     localStorage.setItem('token', newToken);
@@ -42,6 +48,17 @@ export const AuthProvider = ({ children }) => {
     
     if (userData) setUser(userData);
     if (driverData) setDriver(driverData);
+    if (adminData) setAdmin(adminData);
+    
+    return response.data;
+  };
+
+  const verifyAdminOtp = async (email, code) => {
+    const response = await axios.post(`${API}/auth/admin/verify-otp`, { email, code });
+    const { token: newToken, admin: adminData } = response.data;
+    
+    localStorage.setItem('token', newToken);
+    setToken(newToken);
     if (adminData) setAdmin(adminData);
     
     return response.data;
@@ -99,6 +116,7 @@ export const AuthProvider = ({ children }) => {
     token,
     loading,
     login,
+    verifyAdminOtp,
     registerUser,
     registerDriver,
     logout,

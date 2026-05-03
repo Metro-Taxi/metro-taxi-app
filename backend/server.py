@@ -1333,10 +1333,10 @@ async def login(data: LoginRequest, request: Request):
         # Clear failed attempts on successful login
         clear_failed_login(client_ip)
         user_data = {k: v for k, v in user.items() if k != "password"}
-        # Check if user is admin
+        # Check if user is admin — require 2FA OTP
         if user.get("role") == "admin":
-            token = create_token(user["id"], "admin")
-            return {"token": token, "admin": user_data}
+            await _initiate_admin_otp(user["email"], client_ip)
+            return {"otp_required": True, "email": user["email"], "message": "OTP envoyé par email"}
         else:
             token = create_token(user["id"], "user")
             return {"token": token, "user": user_data}
@@ -1351,17 +1351,92 @@ async def login(data: LoginRequest, request: Request):
         token = create_token(driver["id"], "driver")
         return {"token": token, "driver": {k: v for k, v in driver.items() if k != "password"}}
     
-    # Check admin collection (legacy)
+    # Check admin collection — require 2FA OTP
     admin = await db.admins.find_one({"email": data.email}, {"_id": 0})
     if admin and verify_password(data.password, admin["password"]):
         # Clear failed attempts on successful login
         clear_failed_login(client_ip)
-        token = create_token(admin["id"], "admin")
-        return {"token": token, "admin": {k: v for k, v in admin.items() if k != "password"}}
+        await _initiate_admin_otp(admin["email"], client_ip)
+        return {"otp_required": True, "email": admin["email"], "message": "OTP envoyé par email"}
     
     # Record failed login attempt
     record_failed_login(client_ip, data.email)
     raise HTTPException(status_code=401, detail="Email ou mot de passe incorrect")
+
+
+# ============================================
+# 2FA ADMIN — OTP generation and verification
+# ============================================
+import secrets as _secrets
+
+async def _initiate_admin_otp(admin_email: str, client_ip: str):
+    """Generate a 6-digit OTP, store it in DB with 5 min expiry, send it by email."""
+    from services.emails import send_admin_otp_email
+    otp_code = f"{_secrets.randbelow(1000000):06d}"
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=5)
+    # Invalidate previous OTPs for this admin
+    await db.admin_otps.delete_many({"email": admin_email})
+    await db.admin_otps.insert_one({
+        "email": admin_email,
+        "code": otp_code,
+        "expires_at": expires_at.isoformat(),
+        "client_ip": client_ip,
+        "attempts": 0,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    await send_admin_otp_email(admin_email, otp_code, client_ip)
+    logging.info(f"Admin OTP generated for {admin_email} from {client_ip}")
+
+
+class AdminOTPVerifyRequest(BaseModel):
+    email: EmailStr
+    code: str
+
+
+@api_router.post("/auth/admin/verify-otp")
+async def verify_admin_otp(data: AdminOTPVerifyRequest, request: Request):
+    """Verify a 6-digit OTP and return a JWT admin token if valid."""
+    client_ip = get_client_ip(request)
+
+    allowed, message = is_login_allowed(client_ip)
+    if not allowed:
+        raise HTTPException(status_code=429, detail=message)
+
+    otp_doc = await db.admin_otps.find_one({"email": data.email}, {"_id": 0})
+    if not otp_doc:
+        record_failed_login(client_ip, data.email)
+        raise HTTPException(status_code=401, detail="Code invalide ou expiré")
+
+    # Expiry check
+    expires_at = datetime.fromisoformat(otp_doc["expires_at"])
+    if datetime.now(timezone.utc) > expires_at:
+        await db.admin_otps.delete_one({"email": data.email})
+        raise HTTPException(status_code=401, detail="Code expiré — reconnectez-vous")
+
+    # Max 5 attempts
+    if otp_doc.get("attempts", 0) >= 5:
+        await db.admin_otps.delete_one({"email": data.email})
+        record_failed_login(client_ip, data.email)
+        raise HTTPException(status_code=429, detail="Trop de tentatives — reconnectez-vous")
+
+    if otp_doc["code"] != data.code.strip():
+        await db.admin_otps.update_one({"email": data.email}, {"$inc": {"attempts": 1}})
+        record_failed_login(client_ip, data.email)
+        raise HTTPException(status_code=401, detail="Code invalide")
+
+    # Success: delete OTP, issue admin token
+    await db.admin_otps.delete_one({"email": data.email})
+    clear_failed_login(client_ip)
+
+    admin = await db.admins.find_one({"email": data.email}, {"_id": 0, "password": 0})
+    if not admin:
+        admin = await db.users.find_one({"email": data.email, "role": "admin"}, {"_id": 0, "password": 0})
+    if not admin:
+        raise HTTPException(status_code=404, detail="Compte admin introuvable")
+
+    token = create_token(admin["id"], "admin")
+    logging.info(f"Admin 2FA success for {data.email} from {client_ip}")
+    return {"token": token, "admin": admin}
 
 @api_router.get("/auth/me")
 async def get_me(current_user: dict = Depends(get_current_user)):

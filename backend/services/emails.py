@@ -417,3 +417,60 @@ async def send_gift_subscription_email(email: str, name: str, plan_name: str, ex
     except Exception as e:
         logging.error(f"Failed to send gift email to {email}: {str(e)}")
         return False
+
+
+
+async def send_admin_otp_email(email: str, otp_code: str, client_ip: str = "N/A"):
+    """Send a 6-digit OTP to admin email for 2FA login."""
+    if not RESEND_API_KEY:
+        logging.warning("RESEND_API_KEY not configured, admin OTP email NOT sent")
+        return False
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html><head><meta charset="UTF-8"></head>
+    <body style="font-family:Helvetica,Arial,sans-serif;background:#0a0a0a;margin:0;padding:40px 20px;color:#ffffff;">
+      <div style="max-width:540px;margin:0 auto;background:#1a1a1a;border-radius:12px;padding:40px;border-top:4px solid #F7C600;">
+        <div style="text-align:center;margin-bottom:30px;">
+          <div style="display:inline-block;background:#F7C600;width:60px;height:60px;border-radius:14px;line-height:60px;font-size:34px;">🚖</div>
+          <h1 style="color:#F7C600;margin:16px 0 4px 0;font-size:22px;letter-spacing:-0.5px;">MÉTRO-TAXI</h1>
+          <p style="color:#888;margin:0;font-size:13px;letter-spacing:1px;">ADMINISTRATION — 2FA</p>
+        </div>
+        <h2 style="color:#ffffff;font-size:20px;margin:20px 0 10px 0;">Code de connexion sécurisé</h2>
+        <p style="color:#cccccc;line-height:1.6;margin-bottom:24px;">
+          Utilisez ce code pour finaliser votre connexion au dashboard administrateur&nbsp;:
+        </p>
+        <div style="background:#0a0a0a;border:2px dashed #F7C600;border-radius:10px;padding:24px;text-align:center;margin:20px 0;">
+          <div style="color:#F7C600;font-size:42px;font-weight:900;letter-spacing:12px;font-family:'Courier New',monospace;">
+            {otp_code}
+          </div>
+        </div>
+        <p style="color:#999;font-size:13px;line-height:1.6;">
+          ⏱️ Ce code expire dans <strong style="color:#F7C600;">5 minutes</strong>.<br>
+          🌍 Tentative depuis l'adresse IP&nbsp;: <code style="background:#0a0a0a;padding:2px 6px;border-radius:3px;">{client_ip}</code>
+        </p>
+        <hr style="border:none;border-top:1px solid #333;margin:30px 0;">
+        <p style="color:#ff6b6b;font-size:13px;line-height:1.5;">
+          <strong>⚠️ Vous n'êtes pas à l'origine de cette demande&nbsp;?</strong><br>
+          Ignorez ce message et changez immédiatement votre mot de passe administrateur.
+        </p>
+        <p style="color:#555;font-size:11px;text-align:center;margin-top:30px;">
+          Métro-Taxi © 2026 — Email automatique, ne pas répondre.
+        </p>
+      </div>
+    </body></html>
+    """
+
+    try:
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [email],
+            "subject": "🔐 Code de connexion Admin Métro-Taxi",
+            "html": html_content
+        }
+        result = await asyncio.to_thread(resend.Emails.send, params)
+        logging.info(f"Admin OTP email sent to {email}, ID: {result.get('id')}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send admin OTP email to {email}: {str(e)}")
+        return False
