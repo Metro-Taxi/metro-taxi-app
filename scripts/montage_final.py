@@ -38,46 +38,46 @@ def create_outro_image(output_path: str):
     # Format vertical 720x1280 (Sora output)
     W, H = 720, 1280
     
-    # Background bleu Métro-Taxi
-    img = Image.new("RGB", (W, H), (15, 35, 90))  # Bleu nuit profond
+    # Background NOIR (pour matcher le fond noir du logo officiel)
+    img = Image.new("RGB", (W, H), (0, 0, 0))  # Noir pur
     draw = ImageDraw.Draw(img)
     
     # Logo au centre haut
     logo = Image.open(LOGO_PATH).convert("RGBA")
     
-    # Resize logo (max 400px wide)
-    logo_target_w = 480
+    # Resize logo (plus grand car c'est le logo officiel - max 600px wide)
+    logo_target_w = 620
     aspect = logo.height / logo.width
     logo_target_h = int(logo_target_w * aspect)
     logo = logo.resize((logo_target_w, logo_target_h), Image.LANCZOS)
     
-    # Center logo (positioned slightly above middle)
+    # Centrer le logo verticalement haut-milieu
     logo_x = (W - logo_target_w) // 2
-    logo_y = (H - logo_target_h) // 2 - 150
+    logo_y = (H - logo_target_h) // 2 - 100
     img.paste(logo, (logo_x, logo_y), logo)
     
-    # Try to load a nice font, fallback to default
+    # Fonts
     try:
-        font_url = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 64)
-        font_sub = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 36)
+        font_url = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 68)
+        font_sub = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 38)
     except Exception:
         font_url = ImageFont.load_default()
         font_sub = ImageFont.load_default()
     
-    # URL principale - centred
+    # URL principale - jaune comme le logo
     url_text = "metro-taxi.com"
     url_bbox = draw.textbbox((0, 0), url_text, font=font_url)
     url_w = url_bbox[2] - url_bbox[0]
     url_x = (W - url_w) // 2
     url_y = logo_y + logo_target_h + 80
-    draw.text((url_x, url_y), url_text, fill=(255, 215, 0), font=font_url)  # Or
+    draw.text((url_x, url_y), url_text, fill=(255, 213, 0), font=font_url)  # Jaune logo
     
-    # Sous-titre
+    # Sous-titre en blanc
     sub_text = "Inscription gratuite"
     sub_bbox = draw.textbbox((0, 0), sub_text, font=font_sub)
     sub_w = sub_bbox[2] - sub_bbox[0]
     sub_x = (W - sub_w) // 2
-    sub_y = url_y + 90
+    sub_y = url_y + 100
     draw.text((sub_x, sub_y), sub_text, fill=(255, 255, 255), font=font_sub)
     
     img.save(output_path, quality=95)
