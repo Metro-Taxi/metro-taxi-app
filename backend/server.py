@@ -2853,6 +2853,10 @@ app.include_router(admin_router)
 app.include_router(ride_history_router)
 app.include_router(support_chat_router)
 
+# Marketing assets download endpoint (forces download, bypasses PWA scope)
+from routes.marketing import router as marketing_router
+app.include_router(marketing_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
