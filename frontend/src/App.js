@@ -106,6 +106,9 @@ function AppRoutes() {
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
       <Route path="/register/user" element={<PublicRoute><RegisterUser /></PublicRoute>} />
       <Route path="/register/driver" element={<PublicRoute><RegisterDriver /></PublicRoute>} />
+      {/* Marketing-friendly short URLs for social media campaigns */}
+      <Route path="/chauffeur" element={<Navigate to="/register/driver" replace />} />
+      <Route path="/usager" element={<Navigate to="/register/user" replace />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
       <Route path="/terms" element={<TermsAndConditions />} />
       <Route path="/cgu" element={<TermsAndConditions />} />

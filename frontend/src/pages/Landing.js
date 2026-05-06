@@ -231,11 +231,10 @@ const Landing = () => {
               <Link to="/register/driver">
                 <Button 
                   size="lg" 
-                  variant="outline"
-                  className="border-2 border-white text-white font-bold text-lg px-8 py-6 hover:bg-white hover:text-black btn-press"
+                  className="bg-white text-black font-bold text-lg px-8 py-6 hover:bg-zinc-200 btn-press"
                   data-testid="signup-driver-btn"
                 >
-                  {t('drivers.cta').split(' ').slice(0, 3).join(' ')}
+                  🚖 {t('drivers.cta')}
                 </Button>
               </Link>
             </div>
