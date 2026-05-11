@@ -290,3 +290,6 @@ class DriverRegisterWithRegion(BaseModel):
     region_id: str  # Required for drivers
     iban: Optional[str] = None
     bic: Optional[str] = None
+    tax_id: Optional[str] = None  # SIRET (FR), NIF (PT/ES), etc.
+    # Tracking acquisition source (CDG, Gare du Nord, Facebook, TikTok, etc.)
+    source_inscription: Optional[str] = None

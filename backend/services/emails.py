@@ -474,3 +474,169 @@ async def send_admin_otp_email(email: str, otp_code: str, client_ip: str = "N/A"
     except Exception as e:
         logging.error(f"Failed to send admin OTP email to {email}: {str(e)}")
         return False
+
+
+
+
+async def send_pioneer_welcome_email(email: str, name: str, pioneer_number: int, source: str = None):
+    """Send 'Welcome Pioneer #X' email to newly registered driver (after email verification)."""
+    if not RESEND_API_KEY:
+        logging.warning("RESEND_API_KEY not configured, pioneer welcome email NOT sent")
+        return False
+
+    source_line = f"<p style='color:#999;font-size:13px;margin:0 0 18px 0;'>Source d'inscription : <strong style='color:#FFD60A;'>{source}</strong></p>" if source else ""
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html><head><meta charset="UTF-8"></head>
+    <body style="font-family:Helvetica,Arial,sans-serif;background:#0a0a0a;margin:0;padding:40px 20px;color:#ffffff;">
+      <div style="max-width:600px;margin:0 auto;background:#1a1a1a;border-radius:12px;overflow:hidden;border-top:6px solid #FFD60A;">
+
+        <div style="background:#FFD60A;padding:30px;text-align:center;">
+          <h1 style="margin:0;color:#000;font-size:30px;letter-spacing:-1px;">MÉTRO-TAXI</h1>
+          <p style="margin:8px 0 0 0;color:#000;font-size:14px;font-weight:bold;">CHAUFFEUR PIONNIER #{pioneer_number}</p>
+        </div>
+
+        <div style="padding:36px 30px;">
+          <h2 style="color:#FFD60A;font-size:22px;margin:0 0 18px 0;">Bonjour {name} 👋</h2>
+
+          <p style="color:#e4e4e7;line-height:1.7;font-size:15px;margin:0 0 16px 0;">
+            Bienvenue chez <strong style="color:#FFD60A;">Métro-Taxi</strong> 🇫🇷. Tu es désormais notre <strong style="color:#FFD60A;">chauffeur pionnier #{pioneer_number}</strong> — un statut que personne ne pourra te prendre.
+          </p>
+          {source_line}
+
+          <h3 style="color:#FFD60A;font-size:16px;margin:28px 0 12px 0;">📋 La stratégie en transparence</h3>
+          <p style="color:#cccccc;line-height:1.7;font-size:14px;margin:0 0 16px 0;">
+            On a fait un choix volontaire : <strong>ne pas vendre d'abonnements clients tant qu'on n'a pas atteint une couverture chauffeurs suffisante</strong> en zone pilote (Paris + petite couronne 92/93/94). Pourquoi ? Pour éviter qu'un client paie et attende sans chauffeur dispo dans sa zone — ça tuerait la réputation de Métro-Taxi avant qu'on décolle.
+          </p>
+          <p style="color:#cccccc;line-height:1.7;font-size:14px;margin:0 0 16px 0;">
+            Donc concrètement :
+          </p>
+          <ul style="color:#cccccc;line-height:1.8;font-size:14px;margin:0 0 18px 0;padding-left:20px;">
+            <li>🚖 On recrute à fond les chauffeurs (<strong>objectif 150 inscrits</strong> pour lancer la zone pilote payante)</li>
+            <li>🚖 Pendant cette période, <strong>continue ton activité actuelle</strong> (Uber/Bolt/Heetch) en parallèle</li>
+            <li>🚖 Dès qu'on franchit le cap, tu commences à recevoir des courses</li>
+          </ul>
+
+          <h3 style="color:#FFD60A;font-size:16px;margin:28px 0 12px 0;">💰 Ton modèle Métro-Taxi</h3>
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;border-radius:8px;border-left:4px solid #FFD60A;margin:0 0 18px 0;">
+            <tr><td style="padding:18px 20px;">
+              <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>1,50 € / km parcouru</strong> avec au moins un abonné Métro-Taxi à bord</p>
+              <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>0 % de commission</strong>, à vie</p>
+              <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>Versement chaque 10 du mois</strong>, ponctuel</p>
+              <p style="color:#fff;margin:0;font-size:14px;">✅ <strong>Aucun engagement</strong>, compatible avec tes autres plateformes</p>
+            </tr></td>
+          </table>
+
+          <h3 style="color:#FFD60A;font-size:16px;margin:28px 0 12px 0;">🎁 Ton statut de pionnier</h3>
+          <p style="color:#cccccc;line-height:1.7;font-size:14px;margin:0 0 18px 0;">
+            En tant que <strong>chauffeur pionnier #{pioneer_number}</strong>, tu auras la <strong>priorité</strong> sur les premières courses dans ta zone et un statut de référent dans la communauté Métro-Taxi quand on grandira. Ta place dans l'histoire de la plateforme est gravée.
+          </p>
+
+          <hr style="border:none;border-top:1px solid #333;margin:28px 0;">
+
+          <p style="color:#a1a1aa;font-size:14px;line-height:1.6;margin:0 0 18px 0;">
+            Si tu as la moindre question, écris-moi directement sur WhatsApp ou réponds à cet email — je m'en occupe personnellement.
+          </p>
+
+          <p style="color:#FFD60A;font-size:15px;margin:24px 0 0 0;">
+            Bonne route 🚖🇫🇷<br>
+            <strong>— Judée, fondateur Métro-Taxi</strong>
+          </p>
+        </div>
+
+        <div style="background:#09090b;padding:20px;text-align:center;border-top:1px solid #27272a;">
+          <p style="color:#52525b;margin:0;font-size:12px;">© 2026 Métro-Taxi — Plateforme française de covoiturage à maillage intelligent</p>
+        </div>
+      </div>
+    </body></html>
+    """
+
+    try:
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [email],
+            "subject": f"🚖 Bienvenue chauffeur pionnier #{pioneer_number} chez Métro-Taxi",
+            "html": html_content
+        }
+        result = await asyncio.to_thread(resend.Emails.send, params)
+        logging.info(f"Pioneer welcome email sent to {email} (#{pioneer_number}), ID: {result.get('id')}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send pioneer welcome email to {email}: {str(e)}")
+        return False
+
+
+async def send_founder_alert_new_driver(driver_data: dict):
+    """Send instant alert to founder when a new driver signs up.
+
+    driver_data must contain: first_name, last_name, email, phone, pioneer_number,
+    region_id (optional), vehicle_type, source_inscription (optional)
+    """
+    founder_email = os.environ.get('FOUNDER_ALERT_EMAIL')
+    if not founder_email:
+        logging.warning("FOUNDER_ALERT_EMAIL not configured, founder alert email NOT sent")
+        return False
+    if not RESEND_API_KEY:
+        logging.warning("RESEND_API_KEY not configured, founder alert email NOT sent")
+        return False
+
+    name = f"{driver_data.get('first_name', '')} {driver_data.get('last_name', '')}".strip()
+    email = driver_data.get('email', 'N/A')
+    phone = driver_data.get('phone', 'N/A')
+    pioneer_number = driver_data.get('pioneer_number', '?')
+    vehicle_type = driver_data.get('vehicle_type', 'N/A')
+    source = driver_data.get('source_inscription') or 'Non précisée'
+    region_id = driver_data.get('region_id', 'N/A')
+    now = datetime.now().strftime("%d/%m/%Y à %H:%M")
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html><head><meta charset="UTF-8"></head>
+    <body style="font-family:Helvetica,Arial,sans-serif;background:#0a0a0a;margin:0;padding:30px 20px;color:#ffffff;">
+      <div style="max-width:560px;margin:0 auto;background:#1a1a1a;border-radius:10px;overflow:hidden;border-top:4px solid #22c55e;">
+        <div style="background:#22c55e;padding:24px;text-align:center;">
+          <h1 style="margin:0;color:#fff;font-size:22px;">🚖 NOUVEAU CHAUFFEUR PIONNIER #{pioneer_number}</h1>
+        </div>
+        <div style="padding:28px 26px;">
+          <p style="color:#a1a1aa;margin:0 0 18px 0;font-size:14px;">Inscrit le {now}</p>
+
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px 0;">
+            <tr><td style="padding:10px 0;border-bottom:1px solid #27272a;width:35%;"><span style="color:#71717a;font-size:13px;">Nom complet</span></td>
+                <td style="padding:10px 0;border-bottom:1px solid #27272a;text-align:right;"><span style="color:#fff;font-size:14px;font-weight:bold;">{name}</span></td></tr>
+            <tr><td style="padding:10px 0;border-bottom:1px solid #27272a;"><span style="color:#71717a;font-size:13px;">Email</span></td>
+                <td style="padding:10px 0;border-bottom:1px solid #27272a;text-align:right;"><span style="color:#fff;font-size:13px;">{email}</span></td></tr>
+            <tr><td style="padding:10px 0;border-bottom:1px solid #27272a;"><span style="color:#71717a;font-size:13px;">Téléphone</span></td>
+                <td style="padding:10px 0;border-bottom:1px solid #27272a;text-align:right;"><span style="color:#fff;font-size:14px;font-weight:bold;">{phone}</span></td></tr>
+            <tr><td style="padding:10px 0;border-bottom:1px solid #27272a;"><span style="color:#71717a;font-size:13px;">Véhicule</span></td>
+                <td style="padding:10px 0;border-bottom:1px solid #27272a;text-align:right;"><span style="color:#fff;font-size:13px;">{vehicle_type}</span></td></tr>
+            <tr><td style="padding:10px 0;border-bottom:1px solid #27272a;"><span style="color:#71717a;font-size:13px;">Région</span></td>
+                <td style="padding:10px 0;border-bottom:1px solid #27272a;text-align:right;"><span style="color:#fff;font-size:13px;">{region_id}</span></td></tr>
+            <tr><td style="padding:10px 0;"><span style="color:#71717a;font-size:13px;">Source</span></td>
+                <td style="padding:10px 0;text-align:right;"><span style="color:#FFD60A;font-size:14px;font-weight:bold;">{source}</span></td></tr>
+          </table>
+
+          <p style="color:#cccccc;font-size:13px;line-height:1.6;margin:24px 0 0 0;text-align:center;">
+            📊 <a href="https://metro-taxi.com/admin" style="color:#FFD60A;text-decoration:none;font-weight:bold;">Voir dans le dashboard admin</a>
+          </p>
+        </div>
+        <div style="background:#09090b;padding:14px;text-align:center;">
+          <p style="color:#52525b;margin:0;font-size:11px;">Alerte automatique fondateur — Métro-Taxi © 2026</p>
+        </div>
+      </div>
+    </body></html>
+    """
+
+    try:
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [founder_email],
+            "subject": f"🚖 Nouveau chauffeur pionnier #{pioneer_number} — {name}",
+            "html": html_content
+        }
+        result = await asyncio.to_thread(resend.Emails.send, params)
+        logging.info(f"Founder alert email sent for new driver #{pioneer_number} to {founder_email}, ID: {result.get('id')}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send founder alert email: {str(e)}")
+        return False

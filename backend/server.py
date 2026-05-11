@@ -1140,6 +1140,10 @@ async def register_driver(data: DriverRegisterWithRegion, request: Request):
     driver_id = str(uuid.uuid4())
     verification_token = generate_verification_token()
     
+    # Compute pioneer number = current driver count + 1 (founder pioneer status)
+    current_drivers_count = await db.drivers.count_documents({})
+    pioneer_number = current_drivers_count + 1
+    
     driver_doc = {
         "id": driver_id,
         "first_name": data.first_name,
@@ -1155,6 +1159,8 @@ async def register_driver(data: DriverRegisterWithRegion, request: Request):
         "iban": data.iban,
         "bic": data.bic,
         "region_id": data.region_id,  # Associate driver with region
+        "source_inscription": data.source_inscription,  # CDG, Gare du Nord, Facebook, TikTok, etc.
+        "pioneer_number": pioneer_number,  # Founder pioneer status (immutable)
         "is_active": False,
         "is_validated": True,  # Auto-validated at registration
         "email_verified": False,
@@ -1189,13 +1195,34 @@ async def register_driver(data: DriverRegisterWithRegion, request: Request):
     accept_lang = request.headers.get("accept-language", "fr")
     lang = accept_lang.split(",")[0].split("-")[0] if accept_lang else "fr"
     
-    # Send verification email (async, non-blocking)
+    # 1) Send verification email (async, non-blocking)
     asyncio.create_task(send_verification_email(
         email=data.email,
         name=data.first_name,
         verification_url=verification_url,
         lang=lang
     ))
+    
+    # 2) Send "Welcome Pioneer #X" strategic email from Judée (async, non-blocking)
+    from services.emails import send_pioneer_welcome_email, send_founder_alert_new_driver
+    asyncio.create_task(send_pioneer_welcome_email(
+        email=data.email,
+        name=data.first_name,
+        pioneer_number=pioneer_number,
+        source=data.source_inscription
+    ))
+    
+    # 3) Send instant alert to founder (async, non-blocking)
+    asyncio.create_task(send_founder_alert_new_driver({
+        "first_name": data.first_name,
+        "last_name": data.last_name,
+        "email": data.email,
+        "phone": data.phone,
+        "pioneer_number": pioneer_number,
+        "region_id": data.region_id,
+        "vehicle_type": data.vehicle_type,
+        "source_inscription": data.source_inscription
+    }))
     
     token = create_token(driver_id, "driver")
     return {
