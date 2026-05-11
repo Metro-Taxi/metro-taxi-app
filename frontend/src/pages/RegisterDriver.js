@@ -70,7 +70,8 @@ const RegisterDriver = () => {
     tax_id: '',
     iban: '',
     bic: '',
-    region_id: ''
+    region_id: '',
+    source_inscription: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -497,6 +498,42 @@ const RegisterDriver = () => {
                     />
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Source d'inscription — Tracking acquisition */}
+            <div className="pt-4 border-t border-zinc-800">
+              <div className="space-y-2">
+                <Label htmlFor="source_inscription" className="text-zinc-300">
+                  Comment nous avez-vous connus ? <span className="text-zinc-500 text-sm">(optionnel)</span>
+                </Label>
+                <select
+                  id="source_inscription"
+                  name="source_inscription"
+                  value={formData.source_inscription}
+                  onChange={handleChange}
+                  className="w-full bg-zinc-900 border border-zinc-700 text-white h-12 px-3 rounded-md focus:border-[#FFD60A] focus:outline-none"
+                  data-testid="driver-source-select"
+                >
+                  <option value="">— Choisir une option —</option>
+                  <option value="Aéroport CDG">Aéroport CDG</option>
+                  <option value="Aéroport Orly">Aéroport Orly</option>
+                  <option value="Gare du Nord">Gare du Nord</option>
+                  <option value="Gare de Lyon">Gare de Lyon</option>
+                  <option value="Gare Saint-Lazare">Gare Saint-Lazare</option>
+                  <option value="Gare Montparnasse">Gare Montparnasse</option>
+                  <option value="Gare de l'Est">Gare de l'Est</option>
+                  <option value="Gare d'Austerlitz">Gare d'Austerlitz</option>
+                  <option value="Recommandation d'un collègue">Recommandation d'un collègue</option>
+                  <option value="Facebook">Facebook</option>
+                  <option value="TikTok">TikTok</option>
+                  <option value="Instagram">Instagram</option>
+                  <option value="Recherche Google">Recherche Google</option>
+                  <option value="Autre">Autre</option>
+                </select>
+                <p className="text-xs text-zinc-500 mt-1">
+                  Cela nous aide à mieux comprendre où nos chauffeurs nous découvrent 🚖
+                </p>
               </div>
             </div>
 
