@@ -959,6 +959,8 @@ class DriverRegisterWithRegion(BaseModel):
     region_id: str  # Required for drivers
     iban: Optional[str] = None
     bic: Optional[str] = None
+    # Tracking acquisition source (CDG, Gare du Nord, Facebook, TikTok, etc.)
+    source_inscription: Optional[str] = None
 
 class CheckoutRequestWithRegion(BaseModel):
     plan_id: str
