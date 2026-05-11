@@ -65,6 +65,36 @@ Marché en or pour Métro-Taxi : jeunes 20-35 ans, sortie boîte/bar 1h-5h du ma
 
 ---
 
+## 🎯 V1.5 — SYSTÈME DE RELAIS DORMANT 🔥 (Juillet-Septembre 2026)
+
+**Concept** (idée Judée 11 mai 2026) : résoudre la pénurie de chauffeurs en banlieue / heures creuses / nuit en **réveillant des chauffeurs Métro-Taxi qui dorment chez eux** à proximité d'un point de transbordement à venir.
+
+### Cas d'usage type
+- 3h du matin, Léa rentre de soirée Châtelet → Sevran (covoiturage Métro-Taxi)
+- Marc la dépose à Aulnay (point de transbordement)
+- ⚠️ Aucun chauffeur actif Métro-Taxi à 5 km
+- 🔔 L'algo réveille Karim (1,8 km, mode relais ON) avec un **bip distinctif Métro-Taxi**
+- Karim clique "J'ACCEPTE" → sort en 3 min → conduit Léa à Sevran
+- Karim touche **1,80 €/km** (bonus relais nocturne)
+
+### Modules techniques à coder
+- [ ] 🔔 **Notification "Wake Up Driver"** : push + son distinctif (= "bip Métro-Taxi" évoqué par Johny dans vidéo 3/4)
+- [ ] 📍 **Géolocalisation persistante** (avec consentement explicite) — chauffeur en "Mode Relais ON"
+- [ ] 🧠 **Algorithme prédictif** : 5-7 min avant transbordement, détecte chauffeurs dormants à 2-3 km
+- [ ] ⏱️ **Bouton "J'ACCEPTE" valable 30 secondes** → premier arrivé, premier servi
+- [ ] 💎 **Bonus financier "Relais Nocturne"** : +0,30€/km (1,80€/km total) pour récompenser l'effort
+- [ ] 📊 **Toggle "Disponible pour relais"** dans dashboard chauffeur (respect vie privée)
+- [ ] 🛏️ **Limite anti-burn-out** : max 2 réveils/nuit par chauffeur
+- [ ] 🎵 **Production du "Bip Métro-Taxi"** son distinctif via ElevenLabs (~50€ budget)
+
+### Bénéfices stratégiques
+- 🛡️ Garantit la satisfaction abonné (jamais bloqué nuit/banlieue)
+- 💰 Revenu opportuniste pour chauffeurs dormants → loyauté + ambassadorat
+- 🌐 Couverture réseau étendue sans recruter plus de chauffeurs (densité virtuelle)
+- 🎯 Différenciation Uber/Bolt absolue (aucun concurrent ne fait ça)
+
+---
+
 ## 🎯 V2.0 — Densification & B2B (Septembre 2026 - 2027)
 
 - [ ] 🤝 **Partenariat B2B "Patrons VTC"** : tarif flotte 1,55€/km pour 5+ véhicules + onboarding accéléré 24-48h
