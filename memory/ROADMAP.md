@@ -70,19 +70,19 @@ Marché en or pour Métro-Taxi : jeunes 20-35 ans, sortie boîte/bar 1h-5h du ma
 **Concept** (idée Judée 11 mai 2026) : résoudre la pénurie de chauffeurs en banlieue / heures creuses / nuit en **réveillant des chauffeurs Métro-Taxi qui dorment chez eux** à proximité d'un point de transbordement à venir.
 
 ### Cas d'usage type
-- 3h du matin, Léa rentre de soirée Châtelet → Sevran (covoiturage Métro-Taxi)
-- Marc la dépose à Aulnay (point de transbordement)
-- ⚠️ Aucun chauffeur actif Métro-Taxi à 5 km
+- 2h45, Léa, Sylvie, André et Robert (4 abonnés groupés en nocturne) montent dans Métro-Taxi de Marc à Châtelet → direction Sevran
+- 2h58, Marc dépose Léa + Sylvie à Aulnay (point de transbordement)
+- ⚠️ Aucun chauffeur actif Métro-Taxi à 5 km pour prendre André + Robert sur le segment suivant
 - 🔔 L'algo réveille Karim (1,8 km, mode relais ON) avec un **bip distinctif Métro-Taxi**
-- Karim clique "J'ACCEPTE" → sort en 3 min → conduit Léa à Sevran
-- Karim touche **1,80 €/km** (bonus relais nocturne)
+- Karim clique "J'ACCEPTE" → sort en 3 min → prend André + Robert et les conduit à Sevran
+- Karim touche **1,80 €/km** (1,50€/km standard + supplément Relais Nocturne 0,30€/km)
 
 ### Modules techniques à coder
 - [ ] 🔔 **Notification "Wake Up Driver"** : push + son distinctif (= "bip Métro-Taxi" évoqué par Johny dans vidéo 3/4)
 - [ ] 📍 **Géolocalisation persistante** (avec consentement explicite) — chauffeur en "Mode Relais ON"
 - [ ] 🧠 **Algorithme prédictif** : 5-7 min avant transbordement, détecte chauffeurs dormants à 2-3 km
 - [ ] ⏱️ **Bouton "J'ACCEPTE" valable 30 secondes** → premier arrivé, premier servi
-- [ ] 💎 **Bonus financier "Relais Nocturne"** : +0,30€/km (1,80€/km total) pour récompenser l'effort
+- [ ] 💎 **Supplément Relais Nocturne** : +0,30 €/km (soit 1,80€/km total) — communiqué comme SUPPLÉMENT (pas bonus) pour éviter confusion chauffeurs
 - [ ] 📊 **Toggle "Disponible pour relais"** dans dashboard chauffeur (respect vie privée)
 - [ ] 🛏️ **Limite anti-burn-out** : max 2 réveils/nuit par chauffeur
 - [ ] 🎵 **Production du "Bip Métro-Taxi"** son distinctif via ElevenLabs (~50€ budget)
@@ -116,8 +116,15 @@ Marché en or pour Métro-Taxi : jeunes 20-35 ans, sortie boîte/bar 1h-5h du ma
 
 ## 🛒 ACHATS & LOGISTIQUE — Mai 2026
 
-- [ ] 🖨️ **Vistaprint** — Commande **500 flyers A5 170g** recto-verso quadrichromie
-- [ ] 📇 **Cartes de visite** Métro-Taxi (250 ex) — pour conversations terrain post-flyer
+- [x] ✅ **Vistaprint commande #1** — 1000 flyers **A6** quadrichromie (commande VP_84JC3JFG, 57,46€, livraison mercredi 13 mai 2026)
+   - ⚠️ Ces 1000 flyers utilisent l'**URL standard** `metro-taxi.com/chauffeur` (sans `?src=`) — pas de tracking par QR code
+- [ ] 📇 **Cartes de visite** Métro-Taxi (250 ex) — pour conversations terrain post-flyer (en attente numéro pro Bouygues)
+- [ ] 🖨️ **Vistaprint commande #2 (future)** — Tracker la source d'inscription via QR codes différenciés :
+   - CDG : `metro-taxi.com/chauffeur?src=cdg`
+   - Orly : `metro-taxi.com/chauffeur?src=orly`
+   - Gare du Nord : `metro-taxi.com/chauffeur?src=garedunord`
+   - Gare de Lyon : `metro-taxi.com/chauffeur?src=garedelyon`
+   - Etc. (Saint-Lazare, Montparnasse, Est, Austerlitz)
 - [ ] 📍 **Tournée terrain** :
    - ✅ CDG T1 (9 mai 2026 — 73 flyers, 6 inscriptions liées)
    - [ ] CDG T2 (samedi 16 mai)
@@ -147,6 +154,7 @@ Marché en or pour Métro-Taxi : jeunes 20-35 ans, sortie boîte/bar 1h-5h du ma
 6. ✅ **"Transbordement"** = mot interdit en public tant que dépôt INPI pas validé. Utiliser "covoiturage à maillage intelligent"
 7. ✅ **Numéro perso Judée** pour les 9 premiers chauffeurs WhatsApp — basculer pro à 50-80 chauffeurs
 8. ✅ **Tarif fondateur 53,99€/mois** verrouillé à vie pour les 9 premiers usagers (Membres Fondateurs)
+9. ✅ **"Supplément" ≠ "Bonus"** : un supplément (relais nocturne, prime banlieue) est un **tarif différent** appliqué dans un cas spécifique, pas un additif au standard. Toujours dire "Supplément Relais Nocturne : 1,80€/km" — JAMAIS "Bonus de 0,30€ en plus du 1,50€"
 
 ---
 
