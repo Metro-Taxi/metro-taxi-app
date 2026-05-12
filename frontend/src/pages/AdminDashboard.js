@@ -7,7 +7,7 @@ import {
   TrendingUp, Activity, Mail, Phone, Calendar, IdCard,
   Clock, AlertTriangle, RefreshCw, Trash2, Globe, Plus,
   Power, PowerOff, Edit, Save, Loader2, Banknote, Send,
-  FileText, Download, History, Shield, Info, Gift
+  FileText, Download, History, Shield, Info, Gift, Brain
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,6 +20,8 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/LanguageSelector';
 import jsPDF from 'jspdf';
+import AlgorithmConfigTab from '@/components/admin/AlgorithmConfigTab';
+import DriverCardDialog from '@/components/admin/DriverCardDialog';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -78,6 +80,10 @@ const AdminDashboard = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [userDetailOpen, setUserDetailOpen] = useState(false);
   const [userRideHistory, setUserRideHistory] = useState([]);
+
+  // Driver detail states
+  const [selectedDriverId, setSelectedDriverId] = useState(null);
+  const [driverDialogOpen, setDriverDialogOpen] = useState(false);
   const [loadingUserHistory, setLoadingUserHistory] = useState(false);
   const [rgpdDialogOpen, setRgpdDialogOpen] = useState(false);
   
@@ -707,6 +713,14 @@ const AdminDashboard = () => {
               <Shield className="w-4 h-4 mr-2" />
               {t('dashboard.admin.tabs.security', 'Sécurité')}
             </TabsTrigger>
+            <TabsTrigger 
+              value="algorithm"
+              className="data-[state=active]:bg-[#FFD60A] data-[state=active]:text-black"
+              data-testid="algorithm-tab"
+            >
+              <Brain className="w-4 h-4 mr-2" />
+              Algorithme
+            </TabsTrigger>
           </TabsList>
 
           {/* Drivers Tab */}
@@ -781,7 +795,18 @@ const AdminDashboard = () => {
                             </div>
                           </td>
                           <td>
-                            <div className="flex gap-1">
+                            <div className="flex gap-1 items-center">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => { setSelectedDriverId(driver.id); setDriverDialogOpen(true); }}
+                                className="border-zinc-600 text-zinc-300 hover:bg-zinc-800 text-xs px-2 py-1 h-auto"
+                                data-testid={`view-driver-${driver.id}`}
+                                title="Voir la fiche complète"
+                              >
+                                <Eye className="w-3 h-3 mr-1" />
+                                <span className="hidden lg:inline">Fiche</span>
+                              </Button>
                               {!driver.is_validated ? (
                                 <Button
                                   size="sm"
@@ -1617,7 +1642,21 @@ const AdminDashboard = () => {
               </div>
             </div>
           </TabsContent>
+
+          {/* Algorithm Config Tab */}
+          <TabsContent value="algorithm">
+            <AlgorithmConfigTab token={token} />
+          </TabsContent>
         </Tabs>
+
+        {/* Driver Card Dialog */}
+        <DriverCardDialog
+          driverId={selectedDriverId}
+          open={driverDialogOpen}
+          onClose={() => setDriverDialogOpen(false)}
+          token={token}
+          onChanged={fetchData}
+        />
 
         {/* Card Detail Dialog */}
         <Dialog open={cardDialogOpen} onOpenChange={setCardDialogOpen}>

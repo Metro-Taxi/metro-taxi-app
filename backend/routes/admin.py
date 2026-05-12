@@ -1413,6 +1413,84 @@ async def get_admin_user_card(user_id: str, current_user: dict = Depends(get_cur
     
     return {"card": card}
 
+# Admin - Get driver detailed card (symetric to /admin/cards/{user_id})
+@router.get("/admin/drivers/{driver_id}/card")
+async def get_admin_driver_card(driver_id: str, current_user: dict = Depends(get_current_user)):
+    """Get detailed driver card with rides and earnings (admin view)"""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0, "password": 0, "verification_token": 0})
+    if not driver:
+        raise HTTPException(status_code=404, detail="Chauffeur non trouvé")
+
+    # Recent rides
+    rides = await db.ride_requests.find(
+        {"driver_id": driver_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(10)
+
+    # Total completed rides
+    total_completed = await db.ride_requests.count_documents({
+        "driver_id": driver_id,
+        "status": "completed",
+    })
+
+    # Earnings summary (current month + pending total)
+    now = datetime.now(timezone.utc)
+    current_month = now.strftime("%Y-%m")
+    month_earning = await db.driver_earnings.find_one(
+        {"driver_id": driver_id, "month": current_month},
+        {"_id": 0}
+    )
+    pending_earnings = await db.driver_earnings.find(
+        {"driver_id": driver_id, "payout_status": "pending"},
+        {"_id": 0}
+    ).to_list(length=100)
+    total_pending = sum(e.get("total_revenue", 0) for e in pending_earnings)
+
+    # Pioneer info
+    pioneer_number = driver.get("pioneer_number")
+
+    card = {
+        "id": driver["id"],
+        "driver_number": f"MT-D-{driver['id'][:8].upper()}",
+        "pioneer_number": pioneer_number,
+        "name": f"{driver['first_name']} {driver['last_name']}",
+        "first_name": driver["first_name"],
+        "last_name": driver["last_name"],
+        "email": driver["email"],
+        "phone": driver["phone"],
+        "email_verified": driver.get("email_verified", False),
+        "vehicle_plate": driver.get("vehicle_plate"),
+        "vehicle_type": driver.get("vehicle_type"),
+        "seats": driver.get("seats"),
+        "vtc_license": driver.get("vtc_license"),
+        "is_active": driver.get("is_active", False),
+        "is_validated": driver.get("is_validated", False),
+        "iban": driver.get("iban"),
+        "bic": driver.get("bic"),
+        "region_id": driver.get("region_id"),
+        "source_inscription": driver.get("source_inscription"),
+        "created_at": driver.get("created_at"),
+        "stripe_account_id": driver.get("stripe_account_id"),
+        "stripe_onboarding_complete": driver.get("stripe_onboarding_complete", False),
+        "recent_rides": rides[:5],
+        "total_rides": len(rides),
+        "total_completed_rides": total_completed,
+        "current_month_earnings": {
+            "month": current_month,
+            "total_km": month_earning.get("total_km", 0) if month_earning else 0,
+            "total_revenue": month_earning.get("total_revenue", 0) if month_earning else 0,
+            "rides_count": month_earning.get("rides_count", 0) if month_earning else 0,
+        },
+        "pending_payout_amount": round(total_pending, 2),
+    }
+
+    return {"card": card}
+
+
+
 # Virtual Card Route
 @router.get("/users/{user_id}/card")
 async def get_user_card(user_id: str, current_user: dict = Depends(get_current_user)):

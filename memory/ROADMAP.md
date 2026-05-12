@@ -25,17 +25,16 @@
 - [x] 🚦 Plafond invisible **abonnement 24h** = 5 trajets max ✅
 - [x] 🧪 Tests pytest (27/27 passent) ✅
 
-### Sprint Mardi-Jeudi 13-15 mai 2026 (P1 - prochaine session)
-- [ ] 🖥️ **UI admin** pour ajuster les seuils zone via interface (page `/admin/algorithm`)
+### Sprint Mardi soir 12 mai 2026 (Lot 1 P1) ✅ TERMINÉ
+- [x] 🖥️ **UI admin `/admin` → onglet "Algorithme"** — formulaire complet par zone, sauvegarde et reset, badge "modifié" sur les champs édités
+- [x] 👤 **Fiche détaillée chauffeur** (`Eye` icon sur chaque ligne du tab Chauffeurs) — symétrie avec usagers : identité, vehicle, IBAN/BIC, revenus mois en cours, virements pending, trajets récents, validation/désactivation depuis la fiche
+- [x] 📄 **Script DB nettoyage pionniers** livré dans `/app/memory/DB_CLEANUP_PIONEERS.md` (commandes mongosh prêtes-à-coller, avec backup + réassignation chronologique 1→N + restauration en cas d'erreur)
+
+### Sprint Mercredi-Vendredi 13-15 mai 2026 (Lot 2 P1)
 - [ ] 📋 Liste d'attente VIP usagers — page dédiée + email "Membre Fondateur" tarif 53,99€ verrouillé à vie
 - [ ] 🔔 **Bippage d'alerte chauffeur** (clic abonné → notification distinctive) — coordonner avec Mode Relais V1.5
-- [ ] ⚖️ **Consultation avocat** (voir section JURIDIQUE ci-dessous)
-
-### Sprint Jeudi-Vendredi 14-15 mai 2026 (P1)
-- [ ] 🗺️ Zones pilote sur dashboard admin (Paris + 92/93/94 vs hors zone)
-- [ ] 🎁 Bonus pionnier **temporaire** 1,55€/km zone pilote (pour les 100 premiers chauffeurs zone pilote uniquement) — communiqué clairement comme TEMPORAIRE
-- [ ] 🔢 Compteur public chauffeurs sur landing page chauffeur ("X chauffeurs nous ont déjà rejoints")
-- [ ] 🏢 Page "Patron VTC" — formulaire dédié partenariat flotte (5+ véhicules)
+- [ ] 🏢 Page "Patron VTC" — formulaire dédié partenariat flotte
+- [ ] ⚖️ **Consultation avocat** (voir section JURIDIQUE ci-dessous) (5+ véhicules)
 
 ### Sprint moyen terme (Mai-Juin 2026, P1)
 - [ ] 📱 Intégration **Twilio WhatsApp Business** (alertes inscriptions vers numéro Bouygues Pro Judée une fois SIM activée)
