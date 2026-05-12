@@ -23,6 +23,28 @@ Plateforme web + mobile "Métro-Taxi" pour mettre en relation des usagers abonn�
 
 ## What's Been Implemented
 
+### Session 2026-05-12 (Algorithme transbordement adaptatif + Plafond 24h)
+- [x] **🧠 Algorithme transbordement adaptatif par zone** (segments dynamiques)
+  - Module `backend/utils/zone_detector.py` : détection hybride code postal + GPS fallback (paris_intra / banlieue / grande_couronne / hors_zone)
+  - Module `backend/utils/algorithm_config.py` : config par zone (Paris 3-4km / Banlieue 5-7km / GC 8-12km / Nuit 10-15km)
+  - `calculate_multi_transfer_route()` dans `server.py` mis à jour — utilise désormais la config adaptive selon la zone du point de départ + l'heure (jour/nuit Europe/Paris avec DST)
+- [x] **🖥️ API panneau admin algorithme** (`/api/admin/algorithm-config`)
+  - `GET` — récupère defaults + overrides + effective config
+  - `PUT` — override per-zone + per-key avec validation stricte des clés
+  - `POST /reset` — réinitialise aux valeurs par défaut
+  - Cache mémoire 30s pour éviter de spammer MongoDB
+- [x] **🚦 Plafond abonnement 24h = 5 trajets max** (`/api/rides/request`)
+  - Retourne 429 quand le plafond est atteint
+  - Compte les trajets sur la période courante de l'abonnement (rejected/cancelled exclus)
+  - Champ `max_rides_per_period` ajouté à `SUBSCRIPTION_PLANS["24h"]`
+- [x] **🧪 Tests pytest 27/27 PASSED**
+  - `tests/test_adaptive_algorithm.py` — 23 tests (CP, GPS, hybride, nuit DST, config)
+  - `tests/test_subscription_24h_cap.py` — 4 tests d'intégration (blocage, allow, rejected non-comptés, 1month no-cap)
+  - `tests/conftest.py` + `pytest.ini` — fix event loop pour Motor/async
+- [x] **🐛 Bug pré-existant fixé** : `create_ride_request` retournait `_id` ObjectId non-sérialisable
+- [x] **⚖️ Short list avocats** consolidée dans ROADMAP.md (Parallel Avocats, INFLUXIO, Mochon, Goldwin, Hashtag, Swim Legal)
+
+
 ### Session 2026-05-07 jour 3 (Validation marché chauffeurs + Premier engagement organique massif)
 - [x] **🔥 13 chauffeurs VTC pros répondent** à une question soft sur la Page Métro-Taxi (265 vues / 80 commentaires)
   - Médiane confirmée : 220 km/jour pour vivre du métier

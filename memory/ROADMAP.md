@@ -1,6 +1,6 @@
 # 🚖 ROADMAP MÉTRO-TAXI — Plan de route stratégique
 
-**Dernière mise à jour** : 10 mai 2026
+**Dernière mise à jour** : 12 mai 2026
 **Status global** : 9 chauffeurs pionniers inscrits, 9 usagers en attente, 0 abonnement vendu
 **Stratégie** : Pas de vente d'abonnements avant 150 chauffeurs zone pilote (Paris + 92/93/94)
 
@@ -8,22 +8,28 @@
 
 ## 🎯 PHASE EN COURS — Recrutement chauffeurs (Mai-Septembre 2026)
 
-### Sprint Lundi 11 mai 2026 (P0 critique)
-- [ ] 🔔 Alerte EMAIL fondateur à chaque inscription chauffeur (Resend)
-- [ ] 📩 Email auto "Bienvenue Pionnier #X" avec stratégie Johny expliquée + numéro de pionnier
-- [ ] 📊 Champ "source d'inscription" sur form chauffeur (CDG / Gare du Nord / Gare de Lyon / Orly / Facebook / TikTok / Bouche-à-oreille / Autre)
+### Sprint Lundi 11 mai 2026 (P0 critique) ✅ TERMINÉ
+- [x] 🔔 Alerte EMAIL fondateur à chaque inscription chauffeur (Resend)
+- [x] 📩 Email auto "Bienvenue Pionnier #X" avec stratégie Johny expliquée + numéro de pionnier
+- [x] 📊 Champ "source d'inscription" via URL `?src=` invisible
 
-### Sprint Mardi-Mercredi 12-13 mai 2026 (P0)
-- [ ] 🧠 **Algorithme transbordement adaptatif** — segments dynamiques :
-   - Paris intra-muros : 3-4 km
-   - Banlieue (92/93/94) : 5-7 km
-   - Grande couronne : 8-12 km
-   - Nuit (22h-5h) : 10-15 km
-   - Capacité 4 abonnés max
-   - Fenêtre aéroport 30 min
-   - Panneau admin pour ajuster les seuils
-- [ ] 🚦 Plafond invisible **abonnement 24h** = 5 trajets max
+### Sprint Mardi 12 mai 2026 (P0) ✅ TERMINÉ
+- [x] 🧠 **Algorithme transbordement adaptatif** — segments dynamiques :
+   - Paris intra-muros : 3-4 km ✅
+   - Banlieue (92/93/94) : 5-7 km ✅
+   - Grande couronne : 8-12 km ✅
+   - Nuit (22h-5h) : 10-15 km ✅
+   - Capacité 4 abonnés max ✅
+   - Détection hybride code postal + GPS fallback ✅
+   - Panneau admin API (`GET/PUT/POST /api/admin/algorithm-config`) ✅
+- [x] 🚦 Plafond invisible **abonnement 24h** = 5 trajets max ✅
+- [x] 🧪 Tests pytest (27/27 passent) ✅
+
+### Sprint Mardi-Jeudi 13-15 mai 2026 (P1 - prochaine session)
+- [ ] 🖥️ **UI admin** pour ajuster les seuils zone via interface (page `/admin/algorithm`)
 - [ ] 📋 Liste d'attente VIP usagers — page dédiée + email "Membre Fondateur" tarif 53,99€ verrouillé à vie
+- [ ] 🔔 **Bippage d'alerte chauffeur** (clic abonné → notification distinctive) — coordonner avec Mode Relais V1.5
+- [ ] ⚖️ **Consultation avocat** (voir section JURIDIQUE ci-dessous)
 
 ### Sprint Jeudi-Vendredi 14-15 mai 2026 (P1)
 - [ ] 🗺️ Zones pilote sur dashboard admin (Paris + 92/93/94 vs hors zone)
@@ -35,6 +41,37 @@
 - [ ] 📱 Intégration **Twilio WhatsApp Business** (alertes inscriptions vers numéro Bouygues Pro Judée une fois SIM activée)
 - [ ] 🔄 Migration paiement Stripe → **Crédit Agricole e-Transactions** (HMAC SHA256) — bloqué attente identifiants bancaires Judée
 - [ ] 🌐 Traduction instantanée chat usager↔chauffeur via OpenAI LLM (WebSockets)
+
+---
+
+## ⚖️ JURIDIQUE — Avocats à consulter avant rencontre INPI
+
+**Recherchés et validés 12 mai 2026 (Charly)**. À contacter dans l'ordre de priorité.
+
+### Priorité 1 — Propriété intellectuelle (algorithme + marque INPI)
+| Cabinet | Spécialité | Pourquoi | Site |
+|---------|------------|----------|------|
+| **INFLUXIO** (Paris/Bruxelles) | PI startups tech/SaaS/IA, brevets, INPI/EUIPO/OMPI | +400 startups accompagnées. Réponse <24h. Audit portefeuille PI + protection code/algorithmes | [influxio-avocat.com](https://www.influxio-avocat.com/avocat-propriete-intellectuelle) |
+| **Mochon Avocat** (Paris) | PI tech, droit d'auteur algorithmes/SaaS | Stratégie hybride brevet+droit d'auteur pour algorithmes (notre cas) | [mochon-avocat.com](https://www.mochon-avocat.com/expertises/avocat-propriete-intellectuelle-start-up-tech) |
+
+### Priorité 1 — Droit des plateformes VTC/covoiturage 🔥 (LE PLUS IMPORTANT)
+| Cabinet | Spécialité | Pourquoi | Site |
+|---------|------------|----------|------|
+| **Parallel Avocats** (Paris) | Plateformes covoiturage/VTC | **A GAGNÉ pour Citygo contre Heetch** sur le modèle covoiturage (jugement validé). Référence absolue pour notre cas | [parallel.law/casestudy/modele-juridique-covoiturage](https://parallel.law/casestudy/modele-juridique-covoiturage/) |
+| **Goldwin Avocats** (Maître Jonathan Bellaiche, Paris) | Droit des plateformes (Uber/Airbnb), concurrence | Référence en droit émergent des plateformes | [goldwin-avocats.com](https://goldwin-avocats.com/fr/nos-competences-categorie/avocat-droit-des-plateformes-paris/) |
+
+### Priorité 2 — CGV/CGU/RGPD/Mentions légales (startup généraliste)
+| Cabinet | Site |
+|---------|------|
+| **Hashtag Avocats** (51 av. Franklin D. Roosevelt, 75008 Paris) | [hashtagavocats.com](https://hashtagavocats.com) |
+| **Swim Legal** (réseau, RDV en 48h, 100% remote possible) | [swim.legal](https://www.swim.legal/avocat/technologie-et-numerique) |
+
+### ⚠️ Note technique sur le brevet INPI
+- En France, les algorithmes purs **NE SONT PAS** brevetables (art. L611-10 CPI)
+- **MAIS** une innovation technique (optimisation mobilité via IA embarquée dans plateforme) **L'EST**
+- Stratégie hybride recommandée : **Brevet** (innovation technique) + **Droit d'auteur** (code source, auto-protégé) + **Marque INPI** (nom "Métro-Taxi", logo)
+- Coût indicatif : ~350€/classe pour dépôt INPI, devis avocat à demander
+- **Conseil de Charly** : Commence par Parallel Avocats (modèle juridique covoiturage) AVANT INPI. Si modèle validé juridiquement, le dépôt INPI est plus facile à défendre.
 
 ---
 

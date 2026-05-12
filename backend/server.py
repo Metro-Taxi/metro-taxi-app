@@ -66,7 +66,7 @@ if RESEND_API_KEY:
 # Subscription Plans (prices in cents to avoid floating point issues)
 # Default plans (France/EUR)
 SUBSCRIPTION_PLANS = {
-    "24h": {"name": "24 heures", "price": 6.99, "price_cents": 699, "duration_hours": 24},
+    "24h": {"name": "24 heures", "price": 6.99, "price_cents": 699, "duration_hours": 24, "max_rides_per_period": 5},
     "1week": {"name": "1 semaine", "price": 16.99, "price_cents": 1699, "duration_hours": 168},
     "1month": {"name": "1 mois", "price": 53.99, "price_cents": 5399, "duration_hours": 720}
 }
@@ -219,12 +219,18 @@ from routes.support_chat import router as support_chat_router
 # 5. Segments optimisés entre 1.5km et 3km
 # ============================================
 
-# Constants for algorithm
-SEGMENT_MIN_KM = 1.5  # Minimum segment distance
-SEGMENT_MAX_KM = 3.0  # Maximum segment distance (suggest transfer after)
-MAX_PICKUP_DISTANCE_KM = 2.0  # Maximum pickup distance
-MAX_TRANSFERS = 2  # Maximum number of transfers allowed
-DIRECTION_THRESHOLD = 60  # Minimum direction score for compatibility (0-100)
+# Constants for algorithm (LEGACY / DEFAULT — used as fallback)
+# The real config is now ADAPTIVE per zone (see utils/algorithm_config.py).
+# These values match the Paris intra-muros profile.
+SEGMENT_MIN_KM = 3.0
+SEGMENT_MAX_KM = 4.0
+MAX_PICKUP_DISTANCE_KM = 2.0
+MAX_TRANSFERS = 2
+DIRECTION_THRESHOLD = 60
+
+# Adaptive zone-based algorithm
+from utils.zone_detector import detect_zone, is_night_time
+from utils.algorithm_config import get_zone_config, MAX_PASSENGERS_PER_VEHICLE
 
 def calculate_distance(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
     """Calculate distance between two points in km using Haversine formula"""
@@ -414,13 +420,25 @@ async def find_drivers_for_segment(start_lat: float, start_lng: float,
     return compatible_drivers
 
 async def calculate_multi_transfer_route(user_lat: float, user_lng: float,
-                                          dest_lat: float, dest_lng: float) -> dict:
+                                          dest_lat: float, dest_lng: float,
+                                          postal_code: Optional[str] = None) -> dict:
     """
-    Calculate optimal route with up to 2 transfers
-    Returns complete route plan with segments and transfer points
+    Calculate optimal route with up to 2 transfers — ADAPTIVE per zone & time.
+    Segments dynamiques selon la zone (paris_intra/banlieue/grande_couronne) et la nuit.
     """
     total_distance = calculate_distance(user_lat, user_lng, dest_lat, dest_lng)
-    
+
+    # Detect zone + night based on pickup location
+    zone = detect_zone(lat=user_lat, lng=user_lng, postal_code=postal_code)
+    night = is_night_time()
+    cfg = await get_zone_config(db, zone, is_night=night)
+
+    seg_min = cfg["segment_min_km"]
+    seg_max = cfg["segment_max_km"]
+    max_pickup = cfg["max_pickup_distance_km"]
+    max_transfers = cfg["max_transfers"]
+    direction_threshold = cfg["direction_threshold"]
+
     result = {
         "total_distance_km": round(total_distance, 2),
         "direct_route_possible": False,
@@ -428,12 +446,21 @@ async def calculate_multi_transfer_route(user_lat: float, user_lng: float,
         "transfer_points": [],
         "total_transfers": 0,
         "estimated_total_time_minutes": 0,
-        "route_efficiency": 0
+        "route_efficiency": 0,
+        "zone": zone,
+        "is_night": night,
+        "config_used": {
+            "segment_min_km": seg_min,
+            "segment_max_km": seg_max,
+            "max_pickup_distance_km": max_pickup,
+            "max_transfers": max_transfers,
+            "direction_threshold": direction_threshold,
+        },
     }
-    
+
     # Try to find direct route first
     direct_drivers = await find_drivers_for_segment(user_lat, user_lng, dest_lat, dest_lng)
-    
+
     if direct_drivers:
         best_direct = direct_drivers[0]
         # Check if driver can cover most of the journey
@@ -450,29 +477,29 @@ async def calculate_multi_transfer_route(user_lat: float, user_lng: float,
             result["estimated_total_time_minutes"] = result["segments"][0]["eta_minutes"]
             result["route_efficiency"] = 100
             return result
-    
-    # Need transfers - calculate optimal segments
-    if total_distance <= SEGMENT_MAX_KM * 2:
+
+    # Need transfers - calculate optimal segments based on adaptive seg_max
+    if total_distance <= seg_max * 2:
         # One transfer should suffice
         num_segments = 2
     else:
-        # May need 2 transfers
-        num_segments = min(3, max(2, int(total_distance / SEGMENT_MAX_KM) + 1))
-    
+        # May need more transfers, bounded by max_transfers+1
+        num_segments = min(max_transfers + 1, max(2, int(total_distance / seg_max) + 1))
+
     segment_distance = total_distance / num_segments
     segments = []
     transfer_points = []
     current_lat, current_lng = user_lat, user_lng
     used_driver_ids = []
     total_time = 0
-    
+
     for i in range(num_segments):
         is_last_segment = (i == num_segments - 1)
-        
+
         if is_last_segment:
             segment_end_lat, segment_end_lng = dest_lat, dest_lng
         else:
-            # Calculate transfer point
+            # Calculate transfer point using adaptive segment_distance
             transfer = find_optimal_transfer_point(
                 current_lat, current_lng, dest_lat, dest_lng, segment_distance
             )
@@ -483,14 +510,14 @@ async def calculate_multi_transfer_route(user_lat: float, user_lng: float,
                 "location": {"lat": segment_end_lat, "lng": segment_end_lng},
                 "type": "transbordement"
             })
-        
+
         # Find driver for this segment
         segment_drivers = await find_drivers_for_segment(
-            current_lat, current_lng, 
+            current_lat, current_lng,
             segment_end_lat, segment_end_lng,
             used_driver_ids
         )
-        
+
         segment_data = {
             "index": i + 1,
             "start": {"lat": round(current_lat, 6), "lng": round(current_lng, 6)},
@@ -499,7 +526,7 @@ async def calculate_multi_transfer_route(user_lat: float, user_lng: float,
             "driver": segment_drivers[0] if segment_drivers else None,
             "alternative_drivers": segment_drivers[1:4] if len(segment_drivers) > 1 else []
         }
-        
+
         if segment_drivers:
             used_driver_ids.append(segment_drivers[0]['id'])
             segment_data["eta_minutes"] = segment_drivers[0]['eta_minutes'] + calculate_eta_minutes(segment_data["distance_km"])
@@ -507,19 +534,19 @@ async def calculate_multi_transfer_route(user_lat: float, user_lng: float,
         else:
             segment_data["eta_minutes"] = calculate_eta_minutes(segment_data["distance_km"]) + 5  # Add wait time
             total_time += segment_data["eta_minutes"]
-        
+
         segments.append(segment_data)
         current_lat, current_lng = segment_end_lat, segment_end_lng
-    
+
     result["segments"] = segments
     result["transfer_points"] = transfer_points
     result["total_transfers"] = len(transfer_points)
     result["estimated_total_time_minutes"] = total_time
-    
+
     # Calculate efficiency (100% = optimal, lower = less efficient)
     actual_distance = sum(s["distance_km"] for s in segments)
     result["route_efficiency"] = round((total_distance / actual_distance) * 100, 1) if actual_distance > 0 else 0
-    
+
     return result
 
 async def find_compatible_passengers_for_driver(driver_id: str) -> List[dict]:

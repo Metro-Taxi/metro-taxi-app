@@ -591,6 +591,38 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
         if expires < datetime.now(timezone.utc):
             await db.users.update_one({"id": user_id}, {"$set": {"subscription_active": False}})
             raise HTTPException(status_code=403, detail="Abonnement expiré")
+
+    # ============================================
+    # PLAFOND ABONNEMENT 24h = 5 trajets max (anti-abus)
+    # ============================================
+    if user.get("subscription_plan") == "24h":
+        now = datetime.now(timezone.utc)
+        plan_24h_max = SUBSCRIPTION_PLANS["24h"].get("max_rides_per_period", 5)
+        # Compteur lié à la période d'abonnement courante (24h glissant depuis activation)
+        # On compte les trajets demandés (pending/accepted/in_progress/completed) depuis le début de l'abonnement
+        sub_started = user.get("subscription_started_at") or user.get("subscription_expires")
+        if sub_started:
+            try:
+                # Si on n'a que expires, on remonte 24h en arrière
+                if "subscription_started_at" not in user and expires_str:
+                    period_start = datetime.fromisoformat(expires_str) - timedelta(hours=24)
+                else:
+                    period_start = datetime.fromisoformat(sub_started)
+            except (ValueError, TypeError):
+                period_start = now - timedelta(hours=24)
+        else:
+            period_start = now - timedelta(hours=24)
+
+        rides_count = await db.ride_requests.count_documents({
+            "user_id": user_id,
+            "created_at": {"$gte": period_start.isoformat()},
+            "status": {"$nin": ["rejected", "cancelled"]},
+        })
+        if rides_count >= plan_24h_max:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Plafond atteint : abonnement 24h limité à {plan_24h_max} trajets. Passez à l'abonnement 1 semaine ou 1 mois pour des trajets illimités."
+            )
     
     ride_id = str(uuid.uuid4())
     ride_doc = {
@@ -610,10 +642,10 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
     # Notify driver
     await _get_manager().send_personal_message({
         "type": "ride_request",
-        "ride": {k: v for k, v in ride_doc.items()}
+        "ride": {k: v for k, v in ride_doc.items() if k != "_id"}
     }, data.driver_id)
     
-    return {"ride": {k: v for k, v in ride_doc.items()}}
+    return {"ride": {k: v for k, v in ride_doc.items() if k != "_id"}}
 
 @router.get("/rides/pending")
 async def get_pending_rides(current_user: dict = Depends(get_current_user)):
@@ -1402,3 +1434,111 @@ async def get_user_card(user_id: str, current_user: dict = Depends(get_current_u
     
     return {"card": card}
 
+
+
+# ============================================
+# ADMIN — ALGORITHME DE TRANSBORDEMENT ADAPTATIF
+# ============================================
+from utils.algorithm_config import (
+    DEFAULT_ZONE_SEGMENT_CONFIG,
+    invalidate_config_cache,
+)
+
+
+@router.get("/admin/algorithm-config")
+async def get_algorithm_config(current_user: dict = Depends(get_current_user)):
+    """Get current adaptive algorithm configuration (defaults + admin overrides)."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    admin_doc = await db.algorithm_config.find_one({"id": "default"}, {"_id": 0})
+    overrides = admin_doc.get("zones", {}) if admin_doc else {}
+
+    # Merge defaults + overrides for the response
+    effective = {k: dict(v) for k, v in DEFAULT_ZONE_SEGMENT_CONFIG.items()}
+    for zone_name, zone_overrides in overrides.items():
+        if zone_name in effective and isinstance(zone_overrides, dict):
+            effective[zone_name].update(zone_overrides)
+
+    return {
+        "defaults": DEFAULT_ZONE_SEGMENT_CONFIG,
+        "overrides": overrides,
+        "effective": effective,
+        "last_updated": admin_doc.get("updated_at") if admin_doc else None,
+    }
+
+
+class AlgorithmConfigUpdate(BaseModel):
+    """Admin payload to override zone segment config. Only provided keys are overridden."""
+    zones: dict  # e.g. {"paris_intra": {"segment_max_km": 3.5}, "night": {...}}
+
+
+@router.put("/admin/algorithm-config")
+async def update_algorithm_config(
+    data: AlgorithmConfigUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Override one or more zone configs. Only valid keys are accepted."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    allowed_zones = set(DEFAULT_ZONE_SEGMENT_CONFIG.keys())
+    allowed_keys = {
+        "segment_min_km", "segment_max_km", "max_pickup_distance_km",
+        "max_transfers", "direction_threshold",
+    }
+
+    sanitized = {}
+    for zone_name, overrides in (data.zones or {}).items():
+        if zone_name not in allowed_zones:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Zone inconnue : '{zone_name}'. Zones valides : {sorted(allowed_zones)}"
+            )
+        if not isinstance(overrides, dict):
+            raise HTTPException(status_code=400, detail=f"Overrides pour '{zone_name}' doit être un dict")
+        clean_overrides = {}
+        for k, v in overrides.items():
+            if k not in allowed_keys:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Clé inconnue '{k}' pour la zone '{zone_name}'. Clés valides : {sorted(allowed_keys)}"
+                )
+            if not isinstance(v, (int, float)) or v <= 0:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Valeur invalide pour {zone_name}.{k} : doit être un nombre positif"
+                )
+            clean_overrides[k] = float(v) if k.endswith("_km") else int(v) if k in ("max_transfers", "direction_threshold") else v
+        if clean_overrides:
+            sanitized[zone_name] = clean_overrides
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    await db.algorithm_config.update_one(
+        {"id": "default"},
+        {
+            "$set": {
+                "zones": sanitized,
+                "updated_at": now_iso,
+                "updated_by": current_user["user_id"],
+            },
+            "$setOnInsert": {"id": "default", "created_at": now_iso},
+        },
+        upsert=True,
+    )
+
+    # Force cache reload so the change takes effect immediately
+    invalidate_config_cache()
+
+    return {"status": "updated", "zones": sanitized, "updated_at": now_iso}
+
+
+@router.post("/admin/algorithm-config/reset")
+async def reset_algorithm_config(current_user: dict = Depends(get_current_user)):
+    """Reset all admin overrides → algorithm reverts to hardcoded defaults."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    await db.algorithm_config.delete_one({"id": "default"})
+    invalidate_config_cache()
+    return {"status": "reset", "message": "Configuration revenue aux valeurs par défaut"}
