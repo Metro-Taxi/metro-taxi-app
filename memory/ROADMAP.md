@@ -74,6 +74,39 @@
 
 ---
 
+## 🧮 EN ATTENTE — Système "Maillage Premium" (€/km variable selon remplissage)
+
+**Soulevé par Judée le 12 mai 2026** : un chauffeur a un van 7 places. Il mériterait potentiellement un €/km supérieur quand il transporte 4-7 abonnés vs un véhicule 4 places.
+
+### Proposition Charly (à débattre avec Johny + valider par Parallel Avocats)
+Pas de prime sur le **véhicule** (risque inéquité berlines) mais sur le **résultat** (taux de remplissage réel) :
+
+| Abonnés à bord simultané | €/km versé |
+|--------------------------|------------|
+| 1 abonné | 1,50 € (base) |
+| 2 abonnés | 1,65 € |
+| 3 abonnés | 1,80 € |
+| 4 abonnés | 1,95 € |
+| 5+ abonnés (vans only) | 2,10 € |
+
+### ✅ Avantages
+- Équitable : récompense la valeur livrée (maillage réel), pas la taille du véhicule
+- Aligne le slogan : *"Plus tu mutualises, plus tu gagnes"*
+- Le van est naturellement avantagé (seul à pouvoir atteindre palier 5+)
+
+### ⚠️ Risques identifiés
+- Course aux gros véhicules / iniquité berlines
+- Casse-tête juridique vs règle d'or n°9 (supplément ≠ bonus)
+- Optimisation cynique (van peu rempli = perte modèle)
+
+### 🚦 Statut : **GELÉ — DÉCISION JUDÉE 12 MAI 2026**
+- ⏸️ Attente avis Johny (macro-stratégie)
+- ⏸️ Attente validation juridique Parallel Avocats
+- ⏸️ Attente densité 30-50 chauffeurs (échantillon représentatif)
+- 📩 **Message à donner au chauffeur de van en attendant** : *"Tu as raison, ton van mérite un traitement particulier. Pour l'instant 1,50€/km uniforme pour tous, mais quand on atteindra 50 chauffeurs, on lance le système 'Maillage Premium' : plus tu charges d'abonnés simultanément, plus tu gagnes/km. Toi avec ton van, tu seras le seul à pouvoir atteindre le palier max. Tu seras récompensé sur ta valeur unique, garanti."*
+
+---
+
 ## 🎯 V1.5 — Mode Nocturne Métro-Taxi (Juillet-Septembre 2026)
 
 **Décision** : Validé sur le principe, à reprendre en discussion **dans 2 mois (juillet 2026)**.
