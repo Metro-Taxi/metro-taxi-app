@@ -137,6 +137,10 @@ Nous avons promis aux 9 premiers usagers un **tarif 53,99€/mois "verrouillé �
 - Activation par notification push avec son distinctif ("bip Métro-Taxi")
 **→ Conformité RGPD + droit du travail des chauffeurs indépendants ?**
 
+#### Q10. Stratégie multi-statuts chauffeurs (soulevée par Judée 13 mai 2026)
+Métro-Taxi peut-il, en respectant le droit français, ouvrir sa plateforme à des chauffeurs sous statut **LOTI (transport collectif de personnes)** en plus des chauffeurs VTC ? Cela élargirait notre vivier (LOTI plus nombreux et moins coûteux à équiper que VTC en grande couronne) et serait cohérent avec notre maillage 2+ abonnés/véhicule.
+**→ Conditions juridiques d'un modèle "double étage" : Partenaire Premium VTC (1,50€/km) + Partenaire Capacitaire LOTI (≥2 abonnés, 1,30€/km) ?**
+
 ---
 
 ### 🟡 P2 — Pour mémoire (V2.0 fin 2026 / 2027)
