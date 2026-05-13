@@ -2913,6 +2913,10 @@ app.include_router(support_chat_router)
 from routes.marketing import router as marketing_router
 app.include_router(marketing_router)
 
+# Founding members VIP waitlist (tarif fondateur 53,99€/mois verrouillé à vie)
+from routes.founding_members import router as founding_members_router
+app.include_router(founding_members_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,

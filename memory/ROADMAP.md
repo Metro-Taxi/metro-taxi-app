@@ -30,11 +30,22 @@
 - [x] 👤 **Fiche détaillée chauffeur** (`Eye` icon sur chaque ligne du tab Chauffeurs) — symétrie avec usagers : identité, vehicle, IBAN/BIC, revenus mois en cours, virements pending, trajets récents, validation/désactivation depuis la fiche
 - [x] 📄 **Script DB nettoyage pionniers** livré dans `/app/memory/DB_CLEANUP_PIONEERS.md` (commandes mongosh prêtes-à-coller, avec backup + réassignation chronologique 1→N + restauration en cas d'erreur)
 
-### Sprint Mercredi-Vendredi 13-15 mai 2026 (Lot 2 P1)
-- [ ] 📋 Liste d'attente VIP usagers — page dédiée + email "Membre Fondateur" tarif 53,99€ verrouillé à vie
-- [ ] 🔔 **Bippage d'alerte chauffeur** (clic abonné → notification distinctive) — coordonner avec Mode Relais V1.5
-- [ ] 🏢 Page "Patron VTC" — formulaire dédié partenariat flotte
-- [ ] ⚖️ **Consultation avocat** (voir section JURIDIQUE ci-dessous) (5+ véhicules)
+### Sprint Mercredi 13 mai 2026 — soir (Charly solo pendant que Judée se repose)
+- [x] 📋 **Page Liste d'attente VIP "Membre Fondateur"** TERMINÉE
+  - Backend : 4 endpoints `/api/founding-members/{stats,join,me}` + `/api/admin/founding-members`
+  - Frontend : page `/membre-fondateur` (hero, barre progression chauffeurs vers 150, 4 privilèges, CTA, status banner si déjà membre)
+  - Email automatique "Bienvenue Membre Fondateur #X" via Resend (tarif 53,99€/mois verrouillé à vie)
+  - Champs DB : `is_founding_member`, `founding_member_number`, `founding_member_joined_at`, `founding_member_locked_price_cents`
+  - Testé end-to-end via curl ✅
+
+### Sprint Vendredi 15 mai 2026 — PRÉVU
+- [ ] 🛡️ **DÉPLOIEMENT FIX NGINX** sur VPS (warning Chrome Android "app obsolète") — bloqué ce soir 13 mai par box SFR de dépannage qui filtre le port 1117
+- [ ] 🚀 Déploiement page `/membre-fondateur` en production
+- [ ] 🔔 Bippage d'alerte chauffeur (à coordonner avec V1.5)
+- [ ] 🏢 Page "Patron VTC"
+- [ ] 💌 Bouton "Envoyer email perso" depuis fiche chauffeur admin
+
+### Sprint Mardi-Jeudi 13-15 mai 2026 (P1 - prochaine session) (5+ véhicules)
 
 ### Sprint moyen terme (Mai-Juin 2026, P1)
 - [ ] 📱 Intégration **Twilio WhatsApp Business** (alertes inscriptions vers numéro Bouygues Pro Judée une fois SIM activée)

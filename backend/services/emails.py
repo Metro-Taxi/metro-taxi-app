@@ -640,3 +640,95 @@ async def send_founder_alert_new_driver(driver_data: dict):
     except Exception as e:
         logging.error(f"Failed to send founder alert email: {str(e)}")
         return False
+
+
+
+async def send_founding_member_welcome(email: str, name: str, founding_number: int, total_drivers: int = 9, target_drivers: int = 150):
+    """Send welcome email to a new Membre Fondateur (founding member).
+
+    Tells them they're locked in at 53,99€/mois for life when subscriptions open.
+    """
+    if not RESEND_API_KEY:
+        logging.warning("RESEND_API_KEY not configured, skipping founding member email")
+        return False
+
+    progress_pct = round((total_drivers / target_drivers) * 100, 1)
+
+    html_content = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:#0A0A0B; color:#E4E4E7; padding:0; margin:0; }}
+  .wrap {{ max-width:600px; margin:0 auto; background:#0A0A0B; padding:32px 24px; }}
+  .badge {{ display:inline-block; background:#FFD60A; color:#000; padding:8px 16px; border-radius:999px; font-weight:bold; font-size:14px; letter-spacing:0.5px; }}
+  h1 {{ color:#FFD60A; font-size:28px; margin:24px 0 8px; }}
+  h2 {{ color:#FFD60A; font-size:18px; margin:32px 0 12px; }}
+  p {{ line-height:1.6; color:#D4D4D8; }}
+  .card {{ background:#18181B; border:1px solid #27272A; border-radius:8px; padding:20px; margin:20px 0; }}
+  .price {{ font-size:36px; font-weight:bold; color:#FFD60A; }}
+  .price small {{ font-size:14px; color:#A1A1AA; font-weight:normal; }}
+  .strike {{ text-decoration:line-through; color:#71717A; font-size:18px; margin-left:8px; }}
+  .bar {{ background:#27272A; border-radius:999px; height:10px; overflow:hidden; margin:8px 0; }}
+  .bar-fill {{ background:linear-gradient(90deg,#FFD60A,#F59E0B); height:100%; width:{progress_pct}%; }}
+  .perks li {{ margin:8px 0; color:#E4E4E7; }}
+  .perks li::marker {{ color:#FFD60A; }}
+  .footer {{ color:#71717A; font-size:12px; text-align:center; margin-top:32px; padding-top:24px; border-top:1px solid #27272A; }}
+  a {{ color:#FFD60A; }}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="badge">🏆 MEMBRE FONDATEUR #{founding_number}</div>
+  <h1>Bienvenue dans le cercle Judée, {name} !</h1>
+  <p>Tu fais désormais partie des <strong style="color:#FFD60A">membres fondateurs Métro-Taxi</strong> — les visionnaires qui nous ont fait confiance avant tout le monde.</p>
+
+  <div class="card">
+    <h2 style="margin-top:0">🔒 Ton tarif verrouillé À VIE</h2>
+    <p class="price">53,99€<small>/mois</small><span class="strike">79€/mois (tarif futur)</span></p>
+    <p style="color:#A1A1AA; font-size:14px">Ce tarif te sera réservé pour <strong>toute la durée de ton abonnement</strong>, peu importe les hausses futures. Une promesse de fondateur à fondateur.</p>
+  </div>
+
+  <h2>🎁 Tes 4 privilèges exclusifs</h2>
+  <ul class="perks">
+    <li><strong>Tarif fondateur 53,99€/mois verrouillé à vie</strong> (vs ~79€/mois en tarif standard)</li>
+    <li><strong>Accès prioritaire 48h avant l'ouverture publique</strong> des abonnements</li>
+    <li><strong>Badge "Membre Fondateur"</strong> visible dans l'application</li>
+    <li><strong>Newsletter privée</strong> avec les coulisses du projet et nos décisions stratégiques</li>
+  </ul>
+
+  <div class="card">
+    <h2 style="margin-top:0">📍 Où on en est aujourd'hui</h2>
+    <p>{total_drivers} chauffeurs VTC pionniers / {target_drivers} pour l'ouverture officielle</p>
+    <div class="bar"><div class="bar-fill"></div></div>
+    <p style="color:#A1A1AA; font-size:14px">Tu seras notifié·e par email dès qu'on atteint les 150 chauffeurs zone pilote (Paris + petite couronne).</p>
+  </div>
+
+  <h2>🤝 Pourquoi cette attente ?</h2>
+  <p>On a fait le choix difficile mais juste : <strong>ne pas vendre d'abonnement avant d'avoir assez de chauffeurs</strong> pour te transporter. Pas de vent vendu, pas de promesse en l'air. Quand on ouvre, tout fonctionne.</p>
+
+  <p style="margin-top:32px">À très vite,<br><strong style="color:#FFD60A">Judée Mané</strong><br>Fondateur — Métro-Taxi</p>
+
+  <div class="footer">
+    Métro-Taxi · <a href="https://metro-taxi.com">metro-taxi.com</a><br>
+    Cet email a été envoyé à {email}. Tu reçois cet email car tu as rejoint la liste des Membres Fondateurs.
+  </div>
+</div>
+</body>
+</html>
+"""
+
+    try:
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [email],
+            "subject": f"🏆 Bienvenue Membre Fondateur #{founding_number} — Tarif 53,99€/mois verrouillé à vie",
+            "html": html_content,
+        }
+        result = await asyncio.to_thread(resend.Emails.send, params)
+        logging.info(f"Founding member welcome email sent to {email} (member #{founding_number}), ID: {result.get('id')}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send founding member email: {str(e)}")
+        return False
