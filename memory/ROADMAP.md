@@ -224,6 +224,11 @@ Marché en or pour Métro-Taxi : jeunes 20-35 ans, sortie boîte/bar 1h-5h du ma
 7. ✅ **Numéro perso Judée** pour les 9 premiers chauffeurs WhatsApp — basculer pro à 50-80 chauffeurs
 8. ✅ **Tarif fondateur 53,99€/mois** verrouillé à vie pour les 9 premiers usagers (Membres Fondateurs)
 9. ✅ **"Supplément" ≠ "Bonus"** : un supplément (relais nocturne, prime banlieue) est un **tarif différent** appliqué dans un cas spécifique, pas un additif au standard. Toujours dire "Supplément Relais Nocturne : 1,80€/km" — JAMAIS "Bonus de 0,30€ en plus du 1,50€"
+10. ✅ **"Contrat chauffeur" = mot INTERDIT** (risque requalification salariat type Uber/Deliveroo). Utiliser :
+    - **"Conditions Générales de Partenariat (CGP)"** (juridique/formel)
+    - **"Protocole d'accord"** (commercial/marketing)
+    - **"Charte du chauffeur partenaire"** (interne)
+    - Les chauffeurs VTC sont des PARTENAIRES INDÉPENDANTS, déjà en activité sous leur propre statut (auto-entrepreneur, SASU, EURL...). Métro-Taxi ne fixe ni leurs horaires, ni leurs zones, ni leur volume d'activité.
 
 ---
 
