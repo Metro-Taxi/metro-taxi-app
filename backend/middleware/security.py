@@ -267,10 +267,14 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         
         # Security headers
         response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-Frame-Options"] = "SAMEORIGIN"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        response.headers["Permissions-Policy"] = "geolocation=(self), microphone=()"
+        response.headers["Permissions-Policy"] = "geolocation=(self), microphone=(), camera=(), payment=(self), usb=(), interest-cohort=()"
+        # HSTS — force HTTPS pendant 2 ans (résout warning Chrome Android "app obsolète")
+        response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
+        # COOP — isole la PWA (résout warning WebAPK obsolète)
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin-allow-popups"
         
         # Cache control for sensitive endpoints
         if "/api/admin" in request.url.path or "/api/payments" in request.url.path:

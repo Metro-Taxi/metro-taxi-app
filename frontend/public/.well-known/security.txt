@@ -1,0 +1,10 @@
+Contact: mailto:judeemane@hotmail.com
+Contact: mailto:contact@metro-taxi.com
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: fr, en
+Canonical: https://metro-taxi.com/.well-known/security.txt
+Policy: https://metro-taxi.com/legal/security-policy
+
+# Métro-Taxi — Plateforme de covoiturage par abonnement
+# Si tu trouves une faille de sécurité, contacte-nous EN PRIORITÉ par email.
+# Merci de ne pas exploiter ni divulguer publiquement la faille avant correction.
