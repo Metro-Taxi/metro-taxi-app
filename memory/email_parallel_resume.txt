@@ -1,0 +1,98 @@
+À : Cabinet Parallel Avocats
+De : Judée Mané — Fondateur Métro-Taxi
+Objet : Présentation Métro-Taxi — demande d'orientation vers l'avocat adéquat
+Date : 13 mai 2026
+
+
+Bonjour,
+
+Suite à notre échange téléphonique de ce jour, voici un résumé concis de mon activité pour vous permettre de m'orienter vers l'avocat le plus adapté à mon dossier.
+
+----------------------------------------------------------------
+QUI NOUS SOMMES
+----------------------------------------------------------------
+
+Métro-Taxi est une plateforme de mise en relation entre :
+- des USAGERS abonnés (qui paient un forfait mensuel pour des trajets illimités)
+- des CHAUFFEURS VTC professionnels DÉJÀ EN ACTIVITÉ (rémunérés au kilomètre)
+
+L'innovation centrale : un système de COVOITURAGE À MAILLAGE INTELLIGENT (transbordements adaptatifs) qui permet à un véhicule de transporter jusqu'à 4 abonnés simultanément, avec changement de véhicule au besoin sur le trajet (max 2 transbordements).
+
+État actuel :
+- Plateforme en production : https://metro-taxi.com
+- 9 chauffeurs VTC pionniers inscrits (Paris + petite couronne 92/93/94)
+- 9 usagers en liste d'attente ("Membres Fondateurs")
+- Aucun abonnement vendu à ce jour (volontaire — attente de 150 chauffeurs)
+- Stack technique : React + FastAPI + MongoDB + PWA + paiements Stripe (migration vers SG e-Transactions en cours)
+
+----------------------------------------------------------------
+POURQUOI PARALLEL AVOCATS ?
+----------------------------------------------------------------
+
+Nous vous avons choisis spécifiquement parce que vous avez défendu et fait valider juridiquement le modèle de Citygo contre Heetch en matière de concurrence déloyale. Notre modèle est conceptuellement similaire, mais introduit une couche d'innovation algorithmique (le maillage adaptatif par zone).
+
+----------------------------------------------------------------
+MODÈLE ÉCONOMIQUE
+----------------------------------------------------------------
+
+- Usagers : abonnement par carte (24h à 6,99€ / 1 semaine à 16,99€ / 1 mois à 53,99€)
+- Chauffeurs : 1,50 €/km parcouru AVEC au moins un abonné à bord, payé en SEPA le 10 du mois
+- Métro-Taxi : 0% de commission (point central de notre proposition de valeur)
+
+----------------------------------------------------------------
+NOS BESOINS JURIDIQUES PRIORITAIRES
+----------------------------------------------------------------
+
+1. VALIDATION DU MODÈLE COVOITURAGE
+   Sécuriser que notre statut n'est pas requalifié en travail dissimulé,
+   VTC déguisé, ou plateforme de transport public.
+
+2. RÉDACTION DES CGV / CGU / RGPD
+   Conditions complètes pour les usagers ET les chauffeurs.
+
+3. CLAUSE "MEMBRE FONDATEUR"
+   Sécuriser l'engagement "tarif 53,99€/mois verrouillé à vie" pour
+   nos 9 premiers usagers.
+
+4. STRATÉGIE DE PROTECTION DE LA PROPRIÉTÉ INTELLECTUELLE
+   Notre algorithme de maillage adaptatif est-il brevetable en tant
+   qu'innovation technique ? Ou doit-on combiner brevet + droit d'auteur
+   + dépôt INPI de la marque ? Nous aimerions votre éclairage AVANT de
+   solliciter un cabinet PI/INPI spécialisé.
+
+5. ACCOMPAGNEMENT LONG TERME
+   Évolutions du modèle (V1.5 mode nocturne en juillet 2026, V2.0
+   partenariats B2B en fin 2026).
+
+----------------------------------------------------------------
+PROFIL D'AVOCAT RECHERCHÉ
+----------------------------------------------------------------
+
+Idéalement, un avocat ayant :
+- une expertise droit des plateformes numériques
+- une connaissance du droit des transports (LOTI, VTC, Grandguillaume)
+- une sensibilité à la propriété intellectuelle (au moins pour nous
+  orienter vers le bon cabinet PI dans un second temps)
+- une approche pragmatique startup (devis transparent, budget maîtrisé)
+
+----------------------------------------------------------------
+DISPONIBILITÉ
+----------------------------------------------------------------
+
+Je suis disponible en visio ou présentiel à Paris, de préférence en
+fin de journée (à partir de 17h-18h) ou en soirée. Je peux fournir
+sur demande :
+- l'architecture technique détaillée
+- la roadmap stratégique 2026-2027
+- les contrats actuels chauffeurs (à valider/améliorer)
+- le code source en lecture seule
+
+Dans l'attente de votre retour, et avec mes remerciements pour votre
+réactivité.
+
+Cordialement,
+
+Judée Mané
+Fondateur — Métro-Taxi
+contact@metro-taxi.com
+https://metro-taxi.com
