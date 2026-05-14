@@ -247,6 +247,20 @@ Marché en or pour Métro-Taxi : jeunes 20-35 ans, sortie boîte/bar 1h-5h du ma
     - ✅ TOUJOURS dire : *"L'algorithme te remplit, tu fais ta route"* (transfert charge mentale sur la plateforme)
     - Le maillage multi-abonnés est garanti par l'ALGORITHME, pas par une consigne au chauffeur (anti-requalification)
 
+12. ✅ **"Bonus pionnier" = TERME RÉSERVÉ aux 100 premiers chauffeurs zone pilote** (1,55€/km temporaire). NE JAMAIS l'utiliser pour le parrainage ni pour le maillage. Risque de confusion sémantique + risque schéma pyramidal.
+    - Pour parrainage chauffeur→chauffeur : utiliser **reconnaissance non-monétaire** (badge, mention publique sur page pionniers, "Membre du Conseil des Pionniers", etc.)
+    - Si parrainage monétaire un jour : terme **"Prime de Coparrainage Réseau"** distinct, après validation Parallel
+
+13. ✅ **Vocabulaire stratégique consolidé (mai 2026)** :
+    - "Réseau de mobilité mutualisée" > "plateforme" / "startup"
+    - "Chauffeur partenaire" > "chauffeur" / "conducteur"
+    - "Abonné Métro-Taxi" > "client" / "usager" / "passager"
+    - "Conditions Générales de Partenariat (CGP)" > "contrat chauffeur"
+    - "Modèle covoiturage à maillage intelligent" > "VTC nouvelle génération"
+    - "Cercle des Membres Fondateurs" > "liste d'attente VIP"
+    - Approche patrons VTC : **"canal complémentaire d'activité, pas exclusif"** (idée Johny 14 mai)
+    - Approche syndicats : **"nous réfléchissons à un modèle plus soutenable pour les chauffeurs"** (jamais "rejoignez notre startup")
+
 ---
 
 ## 📊 KPIs DE TRACKING
