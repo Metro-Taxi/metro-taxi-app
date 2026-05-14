@@ -89,42 +89,44 @@
 
 **Soulevé par Judée le 12 mai 2026** : un chauffeur a un van 7 places. Il mériterait potentiellement un €/km supérieur quand il transporte 4-7 abonnés vs un véhicule 4 places.
 
-**🔄 Mise à jour Judée le 14 mai 2026** : élargir la capacité aux **monospaces/vans jusqu'à 7 places**. Johny doit fournir les chiffres prévisionnels.
+**🔄 Mise à jour 14 mai 2026** : élargir la capacité aux **monospaces/vans jusqu'à 7 places**.
 
-### Proposition Charly (à débattre avec Johny + valider par Parallel Avocats)
-Pas de prime sur le **véhicule** (risque inéquité berlines) mais sur le **résultat** (taux de remplissage réel) :
+### 💡 RECOMMANDATION CONSOLIDÉE Johny + Charly (14 mai 2026)
 
-| Abonnés à bord simultané | €/km versé |
-|--------------------------|------------|
-| 1 abonné | 1,50 € (base) |
-| 2 abonnés | 1,65 € |
-| 3 abonnés | 1,80 € |
-| 4 abonnés | 1,95 € |
-| 5+ abonnés (vans only) | 2,10 € |
+Abandon de l'approche "paliers selon remplissage" (trop complexe juridiquement) au profit d'une approche **simple : tarif par catégorie de véhicule**.
 
-### 📋 TODOS techniques (Charly — à coder APRÈS validation chiffres + Parallel)
+| Catégorie | Capacité max | €/km versé chauffeur |
+|-----------|--------------|----------------------|
+| 🚘 **Berline** (Classe E, Model 3, Série 5, Audi A6...) | 3 abonnés | **1,50 €/km** (base) |
+| 🚐 **Monospace** (Espace, Sharan, Touran, Picasso...) | 5 abonnés | **1,70 €/km** |
+| 🚐 **Van** (Vito, Trafic, V-Class, Caravelle...) | 7 abonnés | **1,90 €/km** |
+
+### Pourquoi cette grille ?
+- ✅ **Simple et lisible** (3 catégories, 3 tarifs fixes)
+- ✅ **Pas de variabilité dynamique** (anti-requalification salariat)
+- ✅ **Cohérente avec coûts réels** : van consomme +30-40% qu'une berline, amortissement +25%
+- ✅ **Plafond 1,90€/km** soutenable pour la marge Métro-Taxi
+- ✅ **Présentation marketing** : *"Optimisation réseau"* et **JAMAIS** *"plus gros véhicule = plus gros salaire"*
+
+### 📋 TODOS techniques (Charly — à coder APRÈS validation Parallel)
 - [ ] Ajouter champ `vehicle_category` au profil chauffeur (`berline` / `monospace` / `van`)
-- [ ] Remplacer constante `MAX_PASSENGERS_PER_VEHICLE = 4` par détection dynamique selon `seats`
-- [ ] Adapter `algorithm_config.py` pour supporter tarif paliers (1, 2, 3, 4, 5+)
-- [ ] Adapter `calculate_multi_transfer_route` pour proposer max 7 abonnés sur véhicules adaptés
-- [ ] Ajouter dans le panneau admin l'override des tarifs paliers
-- [ ] Tests pytest pour chaque palier
+- [ ] Migration DB : auto-classifier les 9 chauffeurs existants selon leur `vehicle_type` actuel
+- [ ] Remplacer constante `MAX_PASSENGERS_PER_VEHICLE = 4` par lookup dynamique selon `vehicle_category` (3/5/7)
+- [ ] Adapter `calculate_multi_transfer_route` pour proposer jusqu'à 7 abonnés sur véhicules adaptés
+- [ ] Adapter le calcul `driver_revenue` pour multiplier par `tarif_par_categorie[vehicle_category]`
+- [ ] Ajouter dans le panneau admin l'override des tarifs par catégorie
+- [ ] Tests pytest pour chaque catégorie
+- [ ] UI : sur le formulaire d'inscription chauffeur, demander la catégorie (radio buttons avec exemples)
 
-### ✅ Avantages
-- Équitable : récompense la valeur livrée (maillage réel), pas la taille du véhicule
-- Aligne le slogan : *"L'algorithme te remplit, tu fais ta route"*
-- Le van est naturellement avantagé (seul à pouvoir atteindre palier 5+)
+### ❌ IDÉES À NE PAS IMPLÉMENTER V1 (gelées à V2.0)
+- ❌ Bonus dynamique heure de pointe (proposé par Johny) → trop proche surge pricing Uber, risque requalification
+- ❌ Bonus zone tendue → idem
+- ❌ Paliers selon nombre d'abonnés simultanés (1, 2, 3, 4, 5+) → trop complexe juridiquement et complique le calcul des virements mensuels
 
-### ⚠️ Risques identifiés
-- Course aux gros véhicules / iniquité berlines
-- Casse-tête juridique vs règle d'or n°9 (supplément ≠ bonus)
-- Optimisation cynique (van peu rempli = perte modèle)
-
-### 🚦 Statut : **GELÉ — DÉCISION JUDÉE 12 MAI 2026**
-- ⏸️ Attente **chiffres prévisionnels Johny** (capacité van 7 places + tarif palier)
-- ⏸️ Attente validation juridique Parallel Avocats
-- ⏸️ Attente densité 30-50 chauffeurs (échantillon représentatif)
-- 📩 **Message à donner au chauffeur de van en attendant** : *"Tu as raison, ton van mérite un traitement particulier. Pour l'instant 1,50€/km uniforme pour tous, mais quand on aura validé juridiquement, on lance le système 'Maillage Premium' : plus tu charges d'abonnés simultanément, plus tu gagnes/km. Toi avec ton van, tu seras le seul à pouvoir atteindre le palier max. Tu seras récompensé sur ta valeur unique, garanti."*
+### 🚦 Statut : **GELÉ — DÉCISION JUDÉE 12 + 14 MAI 2026**
+- ⏸️ Attente validation juridique **Parallel Avocats** (priorité absolue)
+- ⏸️ Attente densité **30-50 chauffeurs** (échantillon représentatif)
+- 📩 **Message à donner au chauffeur de van en attendant** : *"Tu as raison, ton van mérite un traitement particulier. Pour l'instant 1,50€/km uniforme pour tous, mais notre cabinet d'avocats valide actuellement notre grille différenciée par catégorie de véhicule. Toi avec ton van, tu seras à 1,90€/km. Tu seras récompensé sur la valeur réseau que tu apportes, garanti."*
 
 ---
 
