@@ -1,7 +1,8 @@
 # 🚖 ROADMAP MÉTRO-TAXI — Plan de route stratégique
 
-**Dernière mise à jour** : 12 mai 2026
-**Status global** : 9 chauffeurs pionniers inscrits, 9 usagers en attente, 0 abonnement vendu
+**Dernière mise à jour** : 14 mai 2026
+**Fondateur** : Judée Souleymane Nazim Mané (nom officiel pour documents juridiques) — alias "Judée Mané" en usage courant
+**Status global** : 11 chauffeurs pionniers inscrits (dont 2 le 14 mai à la Gare de Lyon), 9 usagers en attente, 0 abonnement vendu
 **Stratégie** : Pas de vente d'abonnements avant 150 chauffeurs zone pilote (Paris + 92/93/94)
 
 ---
