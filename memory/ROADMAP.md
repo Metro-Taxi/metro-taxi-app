@@ -89,6 +89,8 @@
 
 **Soulevé par Judée le 12 mai 2026** : un chauffeur a un van 7 places. Il mériterait potentiellement un €/km supérieur quand il transporte 4-7 abonnés vs un véhicule 4 places.
 
+**🔄 Mise à jour Judée le 14 mai 2026** : élargir la capacité aux **monospaces/vans jusqu'à 7 places**. Johny doit fournir les chiffres prévisionnels.
+
 ### Proposition Charly (à débattre avec Johny + valider par Parallel Avocats)
 Pas de prime sur le **véhicule** (risque inéquité berlines) mais sur le **résultat** (taux de remplissage réel) :
 
@@ -100,9 +102,17 @@ Pas de prime sur le **véhicule** (risque inéquité berlines) mais sur le **ré
 | 4 abonnés | 1,95 € |
 | 5+ abonnés (vans only) | 2,10 € |
 
+### 📋 TODOS techniques (Charly — à coder APRÈS validation chiffres + Parallel)
+- [ ] Ajouter champ `vehicle_category` au profil chauffeur (`berline` / `monospace` / `van`)
+- [ ] Remplacer constante `MAX_PASSENGERS_PER_VEHICLE = 4` par détection dynamique selon `seats`
+- [ ] Adapter `algorithm_config.py` pour supporter tarif paliers (1, 2, 3, 4, 5+)
+- [ ] Adapter `calculate_multi_transfer_route` pour proposer max 7 abonnés sur véhicules adaptés
+- [ ] Ajouter dans le panneau admin l'override des tarifs paliers
+- [ ] Tests pytest pour chaque palier
+
 ### ✅ Avantages
 - Équitable : récompense la valeur livrée (maillage réel), pas la taille du véhicule
-- Aligne le slogan : *"Plus tu mutualises, plus tu gagnes"*
+- Aligne le slogan : *"L'algorithme te remplit, tu fais ta route"*
 - Le van est naturellement avantagé (seul à pouvoir atteindre palier 5+)
 
 ### ⚠️ Risques identifiés
@@ -111,10 +121,10 @@ Pas de prime sur le **véhicule** (risque inéquité berlines) mais sur le **ré
 - Optimisation cynique (van peu rempli = perte modèle)
 
 ### 🚦 Statut : **GELÉ — DÉCISION JUDÉE 12 MAI 2026**
-- ⏸️ Attente avis Johny (macro-stratégie)
+- ⏸️ Attente **chiffres prévisionnels Johny** (capacité van 7 places + tarif palier)
 - ⏸️ Attente validation juridique Parallel Avocats
 - ⏸️ Attente densité 30-50 chauffeurs (échantillon représentatif)
-- 📩 **Message à donner au chauffeur de van en attendant** : *"Tu as raison, ton van mérite un traitement particulier. Pour l'instant 1,50€/km uniforme pour tous, mais quand on atteindra 50 chauffeurs, on lance le système 'Maillage Premium' : plus tu charges d'abonnés simultanément, plus tu gagnes/km. Toi avec ton van, tu seras le seul à pouvoir atteindre le palier max. Tu seras récompensé sur ta valeur unique, garanti."*
+- 📩 **Message à donner au chauffeur de van en attendant** : *"Tu as raison, ton van mérite un traitement particulier. Pour l'instant 1,50€/km uniforme pour tous, mais quand on aura validé juridiquement, on lance le système 'Maillage Premium' : plus tu charges d'abonnés simultanément, plus tu gagnes/km. Toi avec ton van, tu seras le seul à pouvoir atteindre le palier max. Tu seras récompensé sur ta valeur unique, garanti."*
 
 ---
 
