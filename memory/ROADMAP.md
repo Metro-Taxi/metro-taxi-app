@@ -240,6 +240,12 @@ Marché en or pour Métro-Taxi : jeunes 20-35 ans, sortie boîte/bar 1h-5h du ma
     - **"Protocole d'accord"** (commercial/marketing)
     - **"Charte du chauffeur partenaire"** (interne)
     - Les chauffeurs VTC sont des PARTENAIRES INDÉPENDANTS, déjà en activité sous leur propre statut (auto-entrepreneur, SASU, EURL...). Métro-Taxi ne fixe ni leurs horaires, ni leurs zones, ni leur volume d'activité.
+11. 🚨 **"Au moins un abonné à bord" = formulation INTERDITE** (faille business + faille juridique). Soulevée par Judée le 14 mai 2026.
+    - ❌ NE JAMAIS dire : *"avec au moins un abonné à bord"* — un chauffeur peut interpréter "1 seul abonné A→B" = modèle de faillite
+    - ❌ NE JAMAIS dire : *"plus tu remplis, plus tu gagnes"* — risque requalification (incitation à la productivité) + contradiction tarif fixe
+    - ✅ TOUJOURS dire : *"1,50€/km AVEC DES ABONNÉS MÉTRO-TAXI à bord"* (sous-entendu pluriel = maillage)
+    - ✅ TOUJOURS dire : *"L'algorithme te remplit, tu fais ta route"* (transfert charge mentale sur la plateforme)
+    - Le maillage multi-abonnés est garanti par l'ALGORITHME, pas par une consigne au chauffeur (anti-requalification)
 
 ---
 
