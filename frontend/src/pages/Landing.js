@@ -825,7 +825,7 @@ const Landing = () => {
                 className="bg-[#FFD60A] text-black hover:bg-[#FFD60A]/90 px-6 h-12 font-bold whitespace-nowrap"
                 data-testid="landing-patron-vtc-btn"
               >
-                Voir l'offre Patron VTC →
+                Partenariat Patron VTC →
               </Button>
             </Link>
           </motion.div>
