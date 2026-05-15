@@ -65,6 +65,112 @@ MAX_PASSENGERS_PER_VEHICLE = 4
 
 
 # ============================================
+# SEUILS DE RENTABILITÉ PAR TYPE DE VÉHICULE
+# ============================================
+# Règle Métro-Taxi : un véhicule ne part QUE si un nombre minimum d'abonnés
+# (déjà à bord + en attente compatibles) peut être assuré. Sinon → file d'attente.
+# Le but : maximiser la marge (1,50€/km dépensés ÷ nombre d'abonnés payants).
+#
+# `min_fill`   = nombre d'abonnés MINIMUM pour autoriser le dispatch
+# `target_fill` = remplissage cible / idéal (utilisé pour le score & l'admin)
+# `capacity`   = capacité physique max d'abonnés simultanés
+DEFAULT_VEHICLE_FILL_THRESHOLDS = {
+    "berline":   {"min_fill": 3, "target_fill": 4, "capacity": 4},
+    "monospace": {"min_fill": 4, "target_fill": 5, "capacity": 5},
+    "van":       {"min_fill": 5, "target_fill": 7, "capacity": 7},
+}
+
+# Délai max en file d'attente avant dispatch forcé (anti-frustration abonné)
+# Si un abonné attend depuis plus longtemps, on dispatch même si seuil pas atteint.
+DEFAULT_QUEUE_TIMEOUT_MINUTES = 12
+
+# Mapping libre des types de véhicule de la base vers nos clés normalisées
+_VEHICLE_TYPE_ALIASES = {
+    "berline": "berline",
+    "sedan": "berline",
+    "monospace": "monospace",
+    "minivan": "monospace",
+    "van": "van",
+    "minibus": "van",
+}
+
+
+def normalize_vehicle_type(vehicle_type: Optional[str]) -> str:
+    """Map any vehicle_type variation to canonical key (berline/monospace/van)."""
+    if not vehicle_type:
+        return "berline"
+    key = vehicle_type.strip().lower()
+    return _VEHICLE_TYPE_ALIASES.get(key, "berline")
+
+
+def assess_dispatch_profitability(
+    vehicle_type: str,
+    current_passengers: int,
+    pending_compatible_passengers: int,
+    waiting_minutes: float = 0.0,
+    thresholds: Optional[dict] = None,
+    queue_timeout_minutes: float = DEFAULT_QUEUE_TIMEOUT_MINUTES,
+) -> dict:
+    """
+    Décide si un trajet est rentable à dispatcher MAINTENANT ou doit attendre.
+
+    Returns dict:
+      - can_dispatch (bool): True si on peut envoyer le véhicule
+      - reason (str): code lisible ("threshold_met", "force_after_timeout", "wait_for_fill")
+      - projected_fill (int): remplissage projeté (current + compatibles)
+      - min_fill (int): seuil minimum exigé
+      - target_fill (int): cible idéale
+      - fill_ratio (float): projected_fill / target_fill (0.0 à 1.0+)
+    """
+    thresholds = thresholds or DEFAULT_VEHICLE_FILL_THRESHOLDS
+    canon = normalize_vehicle_type(vehicle_type)
+    cfg = thresholds.get(canon, DEFAULT_VEHICLE_FILL_THRESHOLDS["berline"])
+
+    min_fill = int(cfg.get("min_fill", 1))
+    target_fill = int(cfg.get("target_fill", min_fill))
+    capacity = int(cfg.get("capacity", target_fill))
+
+    # Le remplissage projeté est borné par la capacité physique du véhicule
+    projected_fill = min(current_passengers + max(0, pending_compatible_passengers), capacity)
+
+    # Cas 1 : seuil minimum atteint → dispatch OK
+    if projected_fill >= min_fill:
+        return {
+            "can_dispatch": True,
+            "reason": "threshold_met",
+            "projected_fill": projected_fill,
+            "min_fill": min_fill,
+            "target_fill": target_fill,
+            "capacity": capacity,
+            "fill_ratio": round(projected_fill / target_fill, 2) if target_fill else 1.0,
+        }
+
+    # Cas 2 : timeout dépassé → dispatch forcé (on ne fait pas attendre l'abonné indéfiniment)
+    if waiting_minutes >= queue_timeout_minutes and current_passengers >= 1:
+        return {
+            "can_dispatch": True,
+            "reason": "force_after_timeout",
+            "projected_fill": projected_fill,
+            "min_fill": min_fill,
+            "target_fill": target_fill,
+            "capacity": capacity,
+            "fill_ratio": round(projected_fill / target_fill, 2) if target_fill else 1.0,
+        }
+
+    # Cas 3 : on attend que d'autres abonnés rejoignent → file d'attente
+    return {
+        "can_dispatch": False,
+        "reason": "wait_for_fill",
+        "projected_fill": projected_fill,
+        "min_fill": min_fill,
+        "target_fill": target_fill,
+        "capacity": capacity,
+        "fill_ratio": round(projected_fill / target_fill, 2) if target_fill else 0.0,
+        "missing_passengers": min_fill - projected_fill,
+    }
+
+
+# ============================================
 # CACHE EN MÉMOIRE pour éviter de spammer Mongo
 # ============================================
 _config_cache: Optional[dict] = None
@@ -108,3 +214,39 @@ def invalidate_config_cache():
     global _config_cache, _cache_timestamp
     _config_cache = None
     _cache_timestamp = 0
+
+
+# ============================================
+# SEUILS VÉHICULES — cache et accès Mongo
+# ============================================
+_vehicle_thresholds_cache: Optional[dict] = None
+_vehicle_thresholds_ts: float = 0
+
+
+async def get_vehicle_thresholds(db) -> dict:
+    """
+    Récupère les seuils de remplissage par type de véhicule.
+    Fusionne DEFAULT_VEHICLE_FILL_THRESHOLDS + overrides admin Mongo.
+    """
+    global _vehicle_thresholds_cache, _vehicle_thresholds_ts
+    import time
+
+    now_ts = time.time()
+    if _vehicle_thresholds_cache is None or (now_ts - _vehicle_thresholds_ts) > _CACHE_TTL_SECONDS:
+        admin_doc = await db.algorithm_config.find_one({"id": "default"}, {"_id": 0})
+        merged = {k: dict(v) for k, v in DEFAULT_VEHICLE_FILL_THRESHOLDS.items()}
+        if admin_doc and "vehicle_thresholds" in admin_doc:
+            for vt, overrides in (admin_doc.get("vehicle_thresholds") or {}).items():
+                canon = normalize_vehicle_type(vt)
+                if canon in merged and isinstance(overrides, dict):
+                    merged[canon].update({k: v for k, v in overrides.items() if isinstance(v, (int, float))})
+        _vehicle_thresholds_cache = merged
+        _vehicle_thresholds_ts = now_ts
+
+    return {k: dict(v) for k, v in _vehicle_thresholds_cache.items()}
+
+
+def invalidate_vehicle_thresholds_cache():
+    global _vehicle_thresholds_cache, _vehicle_thresholds_ts
+    _vehicle_thresholds_cache = None
+    _vehicle_thresholds_ts = 0

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Loader2, Save, RotateCcw, Brain, MapPin, Moon, AlertCircle } from 'lucide-react';
+import { Loader2, Save, RotateCcw, Brain, MapPin, Moon, AlertCircle, Car, Banknote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import axios from 'axios';
+import FleetFillPanel from './FleetFillPanel';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -27,6 +28,18 @@ const FIELD_META = {
 
 const ZONE_ORDER = ['paris_intra', 'banlieue', 'grande_couronne', 'night', 'hors_zone'];
 
+const VEHICLE_META = {
+  berline:   { label: 'Berline',   icon: Car, color: 'text-blue-300',    desc: 'Sedan classique — capacité 4 places abonnés max' },
+  monospace: { label: 'Monospace', icon: Car, color: 'text-purple-300',  desc: 'Espace, Scénic, etc. — capacité 5 places' },
+  van:       { label: 'Van',       icon: Car, color: 'text-emerald-300', desc: 'Vito, Trafic, etc. — capacité 7 places' },
+};
+const VEHICLE_ORDER = ['berline', 'monospace', 'van'];
+const VEHICLE_FIELD_META = {
+  min_fill:    { label: 'Seuil minimum',   step: 1, min: 1, max: 10, hint: 'Dispatch refusé en dessous' },
+  target_fill: { label: 'Cible idéale',    step: 1, min: 1, max: 10, hint: 'Objectif de remplissage' },
+  capacity:    { label: 'Capacité max',    step: 1, min: 1, max: 10, hint: 'Sièges abonnés physiques' },
+};
+
 const AlgorithmConfigTab = ({ token }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -35,6 +48,12 @@ const AlgorithmConfigTab = ({ token }) => {
   const [effective, setEffective] = useState({});
   const [lastUpdated, setLastUpdated] = useState(null);
   const [draft, setDraft] = useState({});
+  // Vehicle thresholds (rentabilité)
+  const [vehicleDefaults, setVehicleDefaults] = useState({});
+  const [vehicleDraft, setVehicleDraft] = useState({});
+  // Queue timeout
+  const [queueTimeoutDefault, setQueueTimeoutDefault] = useState(12);
+  const [queueTimeoutDraft, setQueueTimeoutDraft] = useState(12);
 
   const fetchConfig = async () => {
     try {
@@ -46,6 +65,14 @@ const AlgorithmConfigTab = ({ token }) => {
       setEffective(data.effective || {});
       setDraft(JSON.parse(JSON.stringify(data.effective || {})));
       setLastUpdated(data.last_updated);
+      // Vehicle thresholds
+      const vt = data.vehicle_thresholds || {};
+      setVehicleDefaults(vt.defaults || {});
+      setVehicleDraft(JSON.parse(JSON.stringify(vt.effective || {})));
+      // Queue timeout
+      const qt = data.queue_timeout_minutes ?? 12;
+      setQueueTimeoutDefault(qt);
+      setQueueTimeoutDraft(qt);
     } catch (e) {
       toast.error('Impossible de charger la config algorithme');
     } finally {
@@ -65,6 +92,14 @@ const AlgorithmConfigTab = ({ token }) => {
     }));
   };
 
+  const handleVehicleChange = (vt, field, value) => {
+    const numeric = parseInt(value, 10);
+    setVehicleDraft((prev) => ({
+      ...prev,
+      [vt]: { ...prev[vt], [field]: isNaN(numeric) ? '' : numeric },
+    }));
+  };
+
   const computeDiff = () => {
     const overrides = {};
     Object.keys(defaults).forEach((zone) => {
@@ -81,15 +116,42 @@ const AlgorithmConfigTab = ({ token }) => {
     return overrides;
   };
 
+  const computeVehicleDiff = () => {
+    const overrides = {};
+    Object.keys(vehicleDefaults).forEach((vt) => {
+      const diff = {};
+      Object.keys(vehicleDefaults[vt] || {}).forEach((field) => {
+        const draftVal = vehicleDraft[vt]?.[field];
+        const defaultVal = vehicleDefaults[vt][field];
+        if (draftVal !== undefined && draftVal !== '' && draftVal !== defaultVal) {
+          diff[field] = draftVal;
+        }
+      });
+      if (Object.keys(diff).length > 0) overrides[vt] = diff;
+    });
+    return overrides;
+  };
+
+  const queueTimeoutChanged = () =>
+    queueTimeoutDraft !== '' && Number(queueTimeoutDraft) !== Number(queueTimeoutDefault);
+
   const handleSave = async () => {
     const overrides = computeDiff();
-    if (Object.keys(overrides).length === 0) {
+    const vehicleOverrides = computeVehicleDiff();
+    const queueChanged = queueTimeoutChanged();
+    if (
+      Object.keys(overrides).length === 0 &&
+      Object.keys(vehicleOverrides).length === 0 &&
+      !queueChanged
+    ) {
       toast.info('Aucune modification à enregistrer');
       return;
     }
     try {
       setSaving(true);
-      await axios.put(`${API}/admin/algorithm-config`, { zones: overrides }, {
+      const payload = { zones: overrides, vehicle_thresholds: vehicleOverrides };
+      if (queueChanged) payload.queue_timeout_minutes = Number(queueTimeoutDraft);
+      await axios.put(`${API}/admin/algorithm-config`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Configuration sauvegardée ✅ — appliquée immédiatement');
@@ -126,7 +188,10 @@ const AlgorithmConfigTab = ({ token }) => {
     );
   }
 
-  const hasChanges = Object.keys(computeDiff()).length > 0;
+  const hasChanges =
+    Object.keys(computeDiff()).length > 0 ||
+    Object.keys(computeVehicleDiff()).length > 0 ||
+    queueTimeoutChanged();
 
   return (
     <div className="space-y-6" data-testid="algorithm-config-tab">
@@ -238,6 +303,91 @@ const AlgorithmConfigTab = ({ token }) => {
         <p>• Entre 22h et 05h (heure de Paris), le profil <strong className="text-indigo-300">Nuit</strong> remplace la zone.</p>
         <p>• Plus la zone est dense (Paris intra) → plus les segments sont courts et les transbordements fréquents.</p>
         <p>• Plus la zone est étendue (grande couronne, nuit) → segments longs, moins de transbordements.</p>
+      </div>
+
+      {/* === SEUILS DE RENTABILITÉ PAR VÉHICULE === */}
+      <div className="bg-[#18181B] border border-zinc-800 rounded p-6" data-testid="vehicle-thresholds-section">
+        <div className="flex items-center gap-3 mb-2">
+          <Banknote className="w-6 h-6 text-emerald-400" />
+          <h2 className="text-xl font-bold text-white">Seuils de rentabilité — par type de véhicule</h2>
+        </div>
+        <p className="text-zinc-400 text-sm max-w-3xl mb-5">
+          Un véhicule ne part QUE si le nombre minimum d'abonnés est atteint (ou que le délai d'attente max est dépassé).
+          Évite de dispatcher un van pour 1 seul abonné <strong className="text-emerald-300">→ protège la marge</strong>.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {VEHICLE_ORDER.map((vt) => {
+            const meta = VEHICLE_META[vt];
+            if (!meta || !vehicleDraft[vt]) return null;
+            const Icon = meta.icon;
+            return (
+              <motion.div
+                key={vt}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-zinc-900/40 border border-zinc-800 rounded p-4"
+                data-testid={`vehicle-card-${vt}`}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <Icon className={`w-5 h-5 ${meta.color}`} />
+                  <h3 className={`text-base font-bold ${meta.color}`}>{meta.label}</h3>
+                </div>
+                <p className="text-zinc-500 text-xs mb-3">{meta.desc}</p>
+                <div className="space-y-3">
+                  {Object.keys(VEHICLE_FIELD_META).map((field) => {
+                    const fmeta = VEHICLE_FIELD_META[field];
+                    const value = vehicleDraft[vt]?.[field] ?? '';
+                    const defaultVal = vehicleDefaults[vt]?.[field];
+                    const isModified = value !== '' && value !== defaultVal;
+                    return (
+                      <div key={field}>
+                        <Label className="text-zinc-400 text-xs flex items-center justify-between">
+                          <span>{fmeta.label}</span>
+                          {isModified && <span className="text-amber-400 text-[10px]">●</span>}
+                        </Label>
+                        <Input
+                          type="number"
+                          step={fmeta.step}
+                          min={fmeta.min}
+                          max={fmeta.max}
+                          value={value}
+                          onChange={(e) => handleVehicleChange(vt, field, e.target.value)}
+                          className={`bg-zinc-950 border-zinc-700 text-white mt-1 ${isModified ? 'border-amber-500' : ''}`}
+                          data-testid={`vehicle-${vt}-field-${field}`}
+                        />
+                        <p className="text-zinc-600 text-[10px] mt-0.5">{fmeta.hint} · défaut : {defaultVal}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Queue timeout */}
+        <div className="mt-5 bg-zinc-900/40 border border-zinc-800 rounded p-4 max-w-md">
+          <Label className="text-zinc-300 text-sm">Délai d'attente max avant dispatch forcé (minutes)</Label>
+          <Input
+            type="number"
+            min={1}
+            max={60}
+            step={1}
+            value={queueTimeoutDraft}
+            onChange={(e) => setQueueTimeoutDraft(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
+            className={`bg-zinc-950 border-zinc-700 text-white mt-2 ${queueTimeoutChanged() ? 'border-amber-500' : ''}`}
+            data-testid="queue-timeout-input"
+          />
+          <p className="text-zinc-500 text-xs mt-1">
+            Au-delà de ce délai, on dispatch même si le seuil minimum n'est pas atteint (anti-frustration abonné). Défaut : {queueTimeoutDefault}.
+          </p>
+        </div>
+      </div>
+
+      {/* === PANEL PERFORMANCE FLOTTE === */}
+      <div className="bg-[#18181B] border border-zinc-800 rounded p-6">
+        <FleetFillPanel token={token} />
       </div>
     </div>
   );

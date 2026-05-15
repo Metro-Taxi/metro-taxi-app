@@ -2917,6 +2917,9 @@ app.include_router(marketing_router)
 from routes.founding_members import router as founding_members_router
 app.include_router(founding_members_router)
 
+from routes.fleet_partnerships import router as fleet_partnerships_router
+app.include_router(fleet_partnerships_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,

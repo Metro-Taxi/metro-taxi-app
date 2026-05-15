@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
   Loader2, X, Car, Phone, Mail, MapPin, IdCard, Calendar,
-  Banknote, CheckCircle, XCircle, TrendingUp, Star, Award,
+  Banknote, CheckCircle, XCircle, TrendingUp, Star, Award, Send,
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import axios from 'axios';
 
@@ -14,6 +17,12 @@ const DriverCardDialog = ({ driverId, open, onClose, token, onChanged }) => {
   const [loading, setLoading] = useState(true);
   const [card, setCard] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
+  // Email perso state
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailBody, setEmailBody] = useState('');
+  const [emailSenderLabel, setEmailSenderLabel] = useState('Judée — Métro-Taxi');
+  const [emailSending, setEmailSending] = useState(false);
 
   const fetchCard = async () => {
     if (!driverId) return;
@@ -64,6 +73,29 @@ const DriverCardDialog = ({ driverId, open, onClose, token, onChanged }) => {
       toast.error('Erreur lors de la désactivation');
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (emailSubject.trim().length < 2 || emailBody.trim().length < 5) {
+      toast.error('Sujet et message requis');
+      return;
+    }
+    try {
+      setEmailSending(true);
+      await axios.post(
+        `${API}/admin/drivers/${driverId}/send-email`,
+        { subject: emailSubject.trim(), body: emailBody.trim(), sender_label: emailSenderLabel.trim() || 'Métro-Taxi' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success('Email envoyé ✅');
+      setEmailOpen(false);
+      setEmailSubject('');
+      setEmailBody('');
+    } catch (e) {
+      toast.error(e.response?.data?.detail || 'Erreur lors de l\'envoi');
+    } finally {
+      setEmailSending(false);
     }
   };
 
@@ -130,6 +162,16 @@ const DriverCardDialog = ({ driverId, open, onClose, token, onChanged }) => {
                 >
                   {actionLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <XCircle className="w-4 h-4 mr-2" />}
                   Désactiver
+                </Button>
+              )}
+              {card.email && (
+                <Button
+                  onClick={() => setEmailOpen(true)}
+                  className="bg-[#FFD60A] text-black hover:bg-[#FFD60A]/90"
+                  data-testid="driver-send-email-btn"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Envoyer email perso
                 </Button>
               )}
             </div>
@@ -224,6 +266,81 @@ const DriverCardDialog = ({ driverId, open, onClose, token, onChanged }) => {
           </div>
         )}
       </DialogContent>
+
+      {/* === DIALOG IMBRIQUÉ — EMAIL PERSO === */}
+      <Dialog open={emailOpen} onOpenChange={(v) => !emailSending && setEmailOpen(v)}>
+        <DialogContent className="bg-[#0A0A0B] border-zinc-800 text-white max-w-xl" data-testid="driver-email-dialog">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-[#FFD60A] flex items-center gap-2">
+              <Send className="w-5 h-5" /> Email perso à {card?.first_name || 'ce chauffeur'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-zinc-300 text-sm">Destinataire</Label>
+              <p className="text-sm text-zinc-400 mt-1 bg-zinc-900 px-3 py-2 rounded">
+                {card?.email} — <span className="text-white">{card?.name}</span>
+              </p>
+            </div>
+            <div>
+              <Label className="text-zinc-300 text-sm">Signature</Label>
+              <Input
+                value={emailSenderLabel}
+                onChange={(e) => setEmailSenderLabel(e.target.value)}
+                placeholder="Judée — Métro-Taxi"
+                className="bg-zinc-950 border-zinc-700 text-white mt-1"
+                data-testid="driver-email-sender-input"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-300 text-sm">Sujet <span className="text-red-400">*</span></Label>
+              <Input
+                value={emailSubject}
+                onChange={(e) => setEmailSubject(e.target.value)}
+                placeholder="Ex: Suite à notre échange de Gare de Lyon"
+                className="bg-zinc-950 border-zinc-700 text-white mt-1"
+                data-testid="driver-email-subject-input"
+                maxLength={200}
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-300 text-sm">Message <span className="text-red-400">*</span></Label>
+              <Textarea
+                value={emailBody}
+                onChange={(e) => setEmailBody(e.target.value)}
+                placeholder="Bonjour,&#10;&#10;Suite à notre rencontre…"
+                className="bg-zinc-950 border-zinc-700 text-white mt-1 min-h-[180px]"
+                data-testid="driver-email-body-input"
+                maxLength={10000}
+              />
+              <p className="text-xs text-zinc-600 mt-1">{emailBody.length} / 10 000 caractères</p>
+            </div>
+            <div className="flex gap-2 justify-end pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setEmailOpen(false)}
+                disabled={emailSending}
+                className="border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                data-testid="driver-email-cancel-btn"
+              >
+                Annuler
+              </Button>
+              <Button
+                onClick={handleSendEmail}
+                disabled={emailSending || emailSubject.trim().length < 2 || emailBody.trim().length < 5}
+                className="bg-[#FFD60A] text-black hover:bg-[#FFD60A]/90 disabled:opacity-50"
+                data-testid="driver-email-send-btn"
+              >
+                {emailSending ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Envoi…</>
+                ) : (
+                  <><Send className="w-4 h-4 mr-2" /> Envoyer</>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 };

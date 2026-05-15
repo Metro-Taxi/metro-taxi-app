@@ -33,6 +33,7 @@ import TermsAndConditions from "@/pages/TermsAndConditions";
 import SalesTerms from "@/pages/SalesTerms";
 import Support from "@/pages/Support";
 import FoundingMember from "@/pages/FoundingMember";
+import PatronVTC from "@/pages/PatronVTC";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -117,6 +118,9 @@ function AppRoutes() {
       <Route path="/support" element={<Support />} />
       <Route path="/membre-fondateur" element={<FoundingMember />} />
       <Route path="/founding-member" element={<Navigate to="/membre-fondateur" replace />} />
+      <Route path="/patron-vtc" element={<PatronVTC />} />
+      <Route path="/patron" element={<Navigate to="/patron-vtc" replace />} />
+      <Route path="/b2b" element={<Navigate to="/patron-vtc" replace />} />
       
       {/* User Routes - Also allow admin for testing */}
       <Route path="/dashboard" element={

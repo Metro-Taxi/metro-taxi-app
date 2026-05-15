@@ -14,7 +14,7 @@ import stripe
 from database import db
 from models.schemas import RideRequestCreate, RideProgressUpdate, LocationUpdate, NotificationPayload
 from services.auth import get_current_user
-from services.emails import send_subscription_confirmation_email, send_gift_subscription_email, send_payout_notification_email
+from services.emails import send_subscription_confirmation_email, send_gift_subscription_email, send_payout_notification_email, send_admin_personal_email
 
 # Security middleware
 from middleware.security import get_security_stats, manual_block_ip, manual_unblock_ip, get_client_ip
@@ -1519,7 +1519,11 @@ async def get_user_card(user_id: str, current_user: dict = Depends(get_current_u
 # ============================================
 from utils.algorithm_config import (
     DEFAULT_ZONE_SEGMENT_CONFIG,
+    DEFAULT_VEHICLE_FILL_THRESHOLDS,
+    DEFAULT_QUEUE_TIMEOUT_MINUTES,
     invalidate_config_cache,
+    invalidate_vehicle_thresholds_cache,
+    normalize_vehicle_type,
 )
 
 
@@ -1531,6 +1535,8 @@ async def get_algorithm_config(current_user: dict = Depends(get_current_user)):
 
     admin_doc = await db.algorithm_config.find_one({"id": "default"}, {"_id": 0})
     overrides = admin_doc.get("zones", {}) if admin_doc else {}
+    vehicle_overrides = admin_doc.get("vehicle_thresholds", {}) if admin_doc else {}
+    queue_timeout = (admin_doc or {}).get("queue_timeout_minutes", DEFAULT_QUEUE_TIMEOUT_MINUTES)
 
     # Merge defaults + overrides for the response
     effective = {k: dict(v) for k, v in DEFAULT_ZONE_SEGMENT_CONFIG.items()}
@@ -1538,17 +1544,32 @@ async def get_algorithm_config(current_user: dict = Depends(get_current_user)):
         if zone_name in effective and isinstance(zone_overrides, dict):
             effective[zone_name].update(zone_overrides)
 
+    # Same for vehicle thresholds
+    effective_vehicles = {k: dict(v) for k, v in DEFAULT_VEHICLE_FILL_THRESHOLDS.items()}
+    for vt, vt_overrides in (vehicle_overrides or {}).items():
+        canon = normalize_vehicle_type(vt)
+        if canon in effective_vehicles and isinstance(vt_overrides, dict):
+            effective_vehicles[canon].update(vt_overrides)
+
     return {
         "defaults": DEFAULT_ZONE_SEGMENT_CONFIG,
         "overrides": overrides,
         "effective": effective,
+        "vehicle_thresholds": {
+            "defaults": DEFAULT_VEHICLE_FILL_THRESHOLDS,
+            "overrides": vehicle_overrides,
+            "effective": effective_vehicles,
+        },
+        "queue_timeout_minutes": queue_timeout,
         "last_updated": admin_doc.get("updated_at") if admin_doc else None,
     }
 
 
 class AlgorithmConfigUpdate(BaseModel):
     """Admin payload to override zone segment config. Only provided keys are overridden."""
-    zones: dict  # e.g. {"paris_intra": {"segment_max_km": 3.5}, "night": {...}}
+    zones: Optional[dict] = None  # e.g. {"paris_intra": {"segment_max_km": 3.5}, "night": {...}}
+    vehicle_thresholds: Optional[dict] = None  # e.g. {"berline": {"min_fill": 3, "target_fill": 4}}
+    queue_timeout_minutes: Optional[float] = None
 
 
 @router.put("/admin/algorithm-config")
@@ -1591,15 +1612,65 @@ async def update_algorithm_config(
         if clean_overrides:
             sanitized[zone_name] = clean_overrides
 
+    # === Vehicle thresholds (rentabilité) ===
+    allowed_vehicles = set(DEFAULT_VEHICLE_FILL_THRESHOLDS.keys())
+    allowed_vehicle_keys = {"min_fill", "target_fill", "capacity"}
+    sanitized_vehicles = {}
+    for vt, overrides in (data.vehicle_thresholds or {}).items():
+        canon = normalize_vehicle_type(vt)
+        if canon not in allowed_vehicles:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Type véhicule inconnu : '{vt}'. Valides : {sorted(allowed_vehicles)}"
+            )
+        if not isinstance(overrides, dict):
+            raise HTTPException(status_code=400, detail=f"Overrides pour '{vt}' doit être un dict")
+        clean_overrides = {}
+        for k, v in overrides.items():
+            if k not in allowed_vehicle_keys:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Clé inconnue '{k}' pour véhicule '{vt}'. Valides : {sorted(allowed_vehicle_keys)}"
+                )
+            if not isinstance(v, (int, float)) or v < 1:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Valeur invalide pour {vt}.{k} : doit être un entier ≥ 1"
+                )
+            clean_overrides[k] = int(v)
+        # Cohérence : min_fill <= target_fill <= capacity
+        merged = dict(DEFAULT_VEHICLE_FILL_THRESHOLDS[canon])
+        merged.update(clean_overrides)
+        if merged["min_fill"] > merged["target_fill"]:
+            raise HTTPException(status_code=400, detail=f"{vt} : min_fill ({merged['min_fill']}) > target_fill ({merged['target_fill']})")
+        if merged["target_fill"] > merged["capacity"]:
+            raise HTTPException(status_code=400, detail=f"{vt} : target_fill ({merged['target_fill']}) > capacity ({merged['capacity']})")
+        if clean_overrides:
+            sanitized_vehicles[canon] = clean_overrides
+
+    # === Queue timeout ===
+    queue_timeout = None
+    if data.queue_timeout_minutes is not None:
+        if not isinstance(data.queue_timeout_minutes, (int, float)) or data.queue_timeout_minutes < 1:
+            raise HTTPException(status_code=400, detail="queue_timeout_minutes doit être ≥ 1")
+        queue_timeout = float(data.queue_timeout_minutes)
+
     now_iso = datetime.now(timezone.utc).isoformat()
+    set_payload = {
+        "updated_at": now_iso,
+        "updated_by": current_user["user_id"],
+    }
+    if sanitized or data.zones is not None:
+        set_payload["zones"] = sanitized
+    if sanitized_vehicles or data.vehicle_thresholds is not None:
+        set_payload["vehicle_thresholds"] = sanitized_vehicles
+    if queue_timeout is not None:
+        set_payload["queue_timeout_minutes"] = queue_timeout
+
     await db.algorithm_config.update_one(
         {"id": "default"},
         {
-            "$set": {
-                "zones": sanitized,
-                "updated_at": now_iso,
-                "updated_by": current_user["user_id"],
-            },
+            "$set": set_payload,
             "$setOnInsert": {"id": "default", "created_at": now_iso},
         },
         upsert=True,
@@ -1607,8 +1678,15 @@ async def update_algorithm_config(
 
     # Force cache reload so the change takes effect immediately
     invalidate_config_cache()
+    invalidate_vehicle_thresholds_cache()
 
-    return {"status": "updated", "zones": sanitized, "updated_at": now_iso}
+    return {
+        "status": "updated",
+        "zones": sanitized,
+        "vehicle_thresholds": sanitized_vehicles,
+        "queue_timeout_minutes": queue_timeout,
+        "updated_at": now_iso,
+    }
 
 
 @router.post("/admin/algorithm-config/reset")
@@ -1619,4 +1697,272 @@ async def reset_algorithm_config(current_user: dict = Depends(get_current_user))
 
     await db.algorithm_config.delete_one({"id": "default"})
     invalidate_config_cache()
+    invalidate_vehicle_thresholds_cache()
     return {"status": "reset", "message": "Configuration revenue aux valeurs par défaut"}
+
+
+# ============================================
+# ADMIN — MONITORING RENTABILITÉ / REMPLISSAGE
+# ============================================
+@router.get("/admin/algorithm/avg-fill")
+async def get_average_fill_per_driver(
+    days: int = 7,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Retourne le taux de remplissage moyen par chauffeur sur les N derniers jours.
+
+    Calcul (best-effort sur le schéma actuel) :
+    - On compte les rides "completed" sur la période par chauffeur
+    - On agrège les abonnés transportés simultanément (champ `shared_passenger_count`
+      ou défaut = 1 si non présent)
+    - avg_passengers_per_ride = total_passenger_seats_used / rides_count
+    - target_fill du véhicule du chauffeur → fill_ratio
+    """
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    if days < 1 or days > 90:
+        raise HTTPException(status_code=400, detail="days doit être entre 1 et 90")
+
+    now = datetime.now(timezone.utc)
+    since = (now - timedelta(days=days)).isoformat()
+
+    # Charge les seuils en vigueur
+    from utils.algorithm_config import get_vehicle_thresholds
+    thresholds = await get_vehicle_thresholds(db)
+
+    drivers = await db.drivers.find(
+        {"is_active": True, "is_validated": True},
+        {"_id": 0, "id": 1, "first_name": 1, "last_name": 1, "vehicle_type": 1, "vehicle_plate": 1, "pioneer_number": 1}
+    ).to_list(1000)
+
+    rows = []
+    fleet_total_passengers = 0
+    fleet_total_rides = 0
+
+    for d in drivers:
+        rides = await db.ride_requests.find(
+            {
+                "driver_id": d["id"],
+                "status": "completed",
+                "completed_at": {"$gte": since},
+            },
+            {"_id": 0, "shared_passenger_count": 1, "id": 1}
+        ).to_list(2000)
+
+        rides_count = len(rides)
+        # Si pas de tracking shared_passenger_count → on suppose 1 abonné par ride
+        total_pax = sum(int(r.get("shared_passenger_count") or 1) for r in rides)
+
+        canon = normalize_vehicle_type(d.get("vehicle_type"))
+        cfg = thresholds.get(canon, DEFAULT_VEHICLE_FILL_THRESHOLDS["berline"])
+        target = cfg["target_fill"]
+        min_fill = cfg["min_fill"]
+
+        avg = round(total_pax / rides_count, 2) if rides_count > 0 else 0.0
+        fill_ratio = round(avg / target, 2) if target else 0.0
+
+        # Statut santé : bon / moyen / critique
+        if rides_count == 0:
+            health = "no_data"
+        elif avg >= target:
+            health = "excellent"
+        elif avg >= min_fill:
+            health = "ok"
+        else:
+            health = "below_threshold"
+
+        rows.append({
+            "driver_id": d["id"],
+            "driver_name": f"{d.get('first_name', '')} {d.get('last_name', '')}".strip(),
+            "pioneer_number": d.get("pioneer_number"),
+            "vehicle_type": canon,
+            "vehicle_plate": d.get("vehicle_plate"),
+            "rides_count": rides_count,
+            "total_passengers_transported": total_pax,
+            "avg_passengers_per_ride": avg,
+            "min_fill_required": min_fill,
+            "target_fill": target,
+            "fill_ratio": fill_ratio,
+            "health": health,
+        })
+
+        fleet_total_passengers += total_pax
+        fleet_total_rides += rides_count
+
+    rows.sort(key=lambda r: (r["health"] == "no_data", -r["avg_passengers_per_ride"]))
+
+    fleet_avg = round(fleet_total_passengers / fleet_total_rides, 2) if fleet_total_rides else 0.0
+
+    return {
+        "period_days": days,
+        "since": since,
+        "drivers": rows,
+        "fleet_summary": {
+            "total_drivers": len(rows),
+            "active_drivers": sum(1 for r in rows if r["rides_count"] > 0),
+            "total_rides": fleet_total_rides,
+            "total_passengers": fleet_total_passengers,
+            "avg_passengers_per_ride": fleet_avg,
+            "below_threshold_count": sum(1 for r in rows if r["health"] == "below_threshold"),
+            "excellent_count": sum(1 for r in rows if r["health"] == "excellent"),
+        },
+    }
+
+
+class ProfitabilityCheckRequest(BaseModel):
+    """Check if a given dispatch context is profitable."""
+    driver_id: str
+    pending_compatible_passengers: Optional[int] = 0
+    waiting_minutes: Optional[float] = 0.0
+
+
+@router.post("/admin/algorithm/check-profitability")
+async def admin_check_profitability(
+    data: ProfitabilityCheckRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Évalue si un dispatch serait rentable pour un chauffeur donné.
+    Outil de simulation/debug pour l'admin.
+    """
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    driver = await db.drivers.find_one({"id": data.driver_id}, {"_id": 0})
+    if not driver:
+        raise HTTPException(status_code=404, detail="Chauffeur non trouvé")
+
+    from utils.algorithm_config import get_vehicle_thresholds, assess_dispatch_profitability
+
+    thresholds = await get_vehicle_thresholds(db)
+    cfg_doc = await db.algorithm_config.find_one({"id": "default"}, {"_id": 0}) or {}
+    queue_timeout = float(cfg_doc.get("queue_timeout_minutes", DEFAULT_QUEUE_TIMEOUT_MINUTES))
+
+    # Estimation des abonnés actuellement à bord :
+    # capacity - available_seats - 1 (le siège conducteur n'est PAS compté car available_seats
+    # représente déjà les sièges abonnés dispos)
+    canon = normalize_vehicle_type(driver.get("vehicle_type"))
+    capacity = thresholds.get(canon, {}).get("capacity", 4)
+    available_seats = driver.get("available_seats")
+    if available_seats is None:
+        current_passengers = 0
+    else:
+        current_passengers = max(0, capacity - int(available_seats))
+
+    result = assess_dispatch_profitability(
+        vehicle_type=canon,
+        current_passengers=current_passengers,
+        pending_compatible_passengers=int(data.pending_compatible_passengers or 0),
+        waiting_minutes=float(data.waiting_minutes or 0.0),
+        thresholds=thresholds,
+        queue_timeout_minutes=queue_timeout,
+    )
+
+    return {
+        "driver_id": data.driver_id,
+        "vehicle_type": canon,
+        "current_passengers_estimated": current_passengers,
+        "available_seats": available_seats,
+        "queue_timeout_minutes": queue_timeout,
+        **result,
+    }
+
+
+# ============================================
+# ADMIN — EMAIL PERSONNALISÉ AUX CHAUFFEURS
+# ============================================
+class AdminPersonalEmailRequest(BaseModel):
+    subject: str
+    body: str
+    sender_label: Optional[str] = None  # ex: "Charly" ou "Judée Souleymane Nazim"
+
+
+@router.post("/admin/drivers/{driver_id}/send-email")
+async def admin_send_personal_email_to_driver(
+    driver_id: str,
+    data: AdminPersonalEmailRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Envoie un email personnalisé (texte libre) à un chauffeur depuis le panel Admin.
+    Trace l'envoi dans `admin_email_logs` pour audit.
+    """
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    subject = (data.subject or "").strip()
+    body = (data.body or "").strip()
+    if len(subject) < 2 or len(subject) > 200:
+        raise HTTPException(status_code=400, detail="Le sujet doit faire entre 2 et 200 caractères")
+    if len(body) < 5 or len(body) > 10000:
+        raise HTTPException(status_code=400, detail="Le message doit faire entre 5 et 10 000 caractères")
+
+    driver = await db.drivers.find_one(
+        {"id": driver_id},
+        {"_id": 0, "id": 1, "first_name": 1, "last_name": 1, "email": 1}
+    )
+    if not driver:
+        raise HTTPException(status_code=404, detail="Chauffeur non trouvé")
+    if not driver.get("email"):
+        raise HTTPException(status_code=400, detail="Ce chauffeur n'a pas d'email enregistré")
+
+    recipient_name = f"{driver.get('first_name','')} {driver.get('last_name','')}".strip() or "Chauffeur"
+    sender_label = (data.sender_label or "L'équipe Métro-Taxi").strip()[:80]
+
+    sent = await send_admin_personal_email(
+        to_email=driver["email"],
+        recipient_name=recipient_name,
+        subject=subject,
+        body=body,
+        admin_name=sender_label,
+    )
+
+    # Audit log (qu'il y ait succès ou échec, on garde une trace)
+    now_iso = datetime.now(timezone.utc).isoformat()
+    await db.admin_email_logs.insert_one({
+        "id": str(uuid.uuid4()),
+        "recipient_type": "driver",
+        "recipient_id": driver_id,
+        "recipient_email": driver["email"],
+        "recipient_name": recipient_name,
+        "subject": subject,
+        "body_preview": body[:500],
+        "sender_label": sender_label,
+        "sent_by": current_user["user_id"],
+        "sent_at": now_iso,
+        "success": bool(sent),
+    })
+
+    if not sent:
+        raise HTTPException(
+            status_code=500,
+            detail="Échec d'envoi (RESEND_API_KEY manquante ou erreur Resend). Réessaie ou vérifie les logs."
+        )
+
+    return {
+        "status": "sent",
+        "recipient_email": driver["email"],
+        "recipient_name": recipient_name,
+        "subject": subject,
+        "sent_at": now_iso,
+    }
+
+
+@router.get("/admin/email-logs")
+async def admin_get_email_logs(
+    limit: int = 50,
+    current_user: dict = Depends(get_current_user),
+):
+    """Retourne les derniers emails personnels envoyés par l'admin."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    limit = max(1, min(int(limit or 50), 200))
+    logs = await db.admin_email_logs.find(
+        {}, {"_id": 0}
+    ).sort("sent_at", -1).to_list(length=limit)
+
+    return {"logs": logs, "count": len(logs)}
+

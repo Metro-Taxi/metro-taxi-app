@@ -732,3 +732,175 @@ async def send_founding_member_welcome(email: str, name: str, founding_number: i
     except Exception as e:
         logging.error(f"Failed to send founding member email: {str(e)}")
         return False
+
+
+
+# ============================================
+# PARTENARIAT PATRON VTC (B2B flotte)
+# ============================================
+async def send_fleet_partnership_alert(application: dict):
+    """Alerte fondateur quand un patron VTC soumet une demande de partenariat flotte."""
+    founder_email = os.environ.get('FOUNDER_ALERT_EMAIL')
+    if not founder_email or not RESEND_API_KEY:
+        logging.warning("FOUNDER_ALERT_EMAIL or RESEND_API_KEY missing — fleet partnership alert skipped")
+        return False
+
+    name = application.get('full_name', 'N/A')
+    company = application.get('company_name', '')
+    email = application.get('email', 'N/A')
+    phone = application.get('phone', 'N/A')
+    fleet_size = application.get('fleet_size', 0)
+    city = application.get('city', 'N/A')
+    message = (application.get('message') or '').replace('\n', '<br>')
+    now = datetime.now().strftime("%d/%m/%Y à %H:%M")
+
+    html = f"""
+    <!DOCTYPE html>
+    <html><head><meta charset="UTF-8"></head>
+    <body style="font-family:Helvetica,Arial,sans-serif;background:#0a0a0a;margin:0;padding:30px 20px;color:#fff;">
+      <div style="max-width:560px;margin:0 auto;background:#1a1a1a;border-radius:10px;overflow:hidden;border-top:4px solid #FFD60A;">
+        <div style="background:#FFD60A;padding:24px;text-align:center;">
+          <h1 style="margin:0;color:#000;font-size:22px;">🏢 NOUVEAU PATRON VTC — DEMANDE B2B</h1>
+        </div>
+        <div style="padding:28px 26px;">
+          <p style="color:#a1a1aa;margin:0 0 18px 0;font-size:14px;">Reçue le {now}</p>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr><td style="padding:10px 0;border-bottom:1px solid #27272a;width:38%;color:#71717a;font-size:13px;">Contact</td>
+                <td style="padding:10px 0;border-bottom:1px solid #27272a;text-align:right;color:#fff;font-weight:bold;">{name}</td></tr>
+            <tr><td style="padding:10px 0;border-bottom:1px solid #27272a;color:#71717a;font-size:13px;">Société</td>
+                <td style="padding:10px 0;border-bottom:1px solid #27272a;text-align:right;color:#fff;">{company or '—'}</td></tr>
+            <tr><td style="padding:10px 0;border-bottom:1px solid #27272a;color:#71717a;font-size:13px;">Email</td>
+                <td style="padding:10px 0;border-bottom:1px solid #27272a;text-align:right;color:#fff;font-size:13px;">{email}</td></tr>
+            <tr><td style="padding:10px 0;border-bottom:1px solid #27272a;color:#71717a;font-size:13px;">Téléphone</td>
+                <td style="padding:10px 0;border-bottom:1px solid #27272a;text-align:right;color:#fff;font-weight:bold;">{phone}</td></tr>
+            <tr><td style="padding:10px 0;border-bottom:1px solid #27272a;color:#71717a;font-size:13px;">Taille flotte</td>
+                <td style="padding:10px 0;border-bottom:1px solid #27272a;text-align:right;color:#FFD60A;font-size:18px;font-weight:bold;">{fleet_size} véhicules</td></tr>
+            <tr><td style="padding:10px 0;color:#71717a;font-size:13px;">Ville</td>
+                <td style="padding:10px 0;text-align:right;color:#fff;">{city}</td></tr>
+          </table>
+          {f'<div style="margin-top:20px;padding:14px;background:#0a0a0a;border-radius:6px;border-left:3px solid #FFD60A;"><p style="color:#a1a1aa;font-size:12px;margin:0 0 6px 0;text-transform:uppercase;">Message</p><p style="color:#fff;font-size:14px;line-height:1.6;margin:0;">{message}</p></div>' if message else ''}
+          <p style="color:#cccccc;font-size:13px;text-align:center;margin:24px 0 0 0;">
+            📊 <a href="https://metro-taxi.com/admin" style="color:#FFD60A;text-decoration:none;font-weight:bold;">Voir dans le dashboard admin</a>
+          </p>
+        </div>
+        <div style="background:#09090b;padding:14px;text-align:center;">
+          <p style="color:#52525b;margin:0;font-size:11px;">Alerte B2B — Métro-Taxi © 2026</p>
+        </div>
+      </div>
+    </body></html>
+    """
+    try:
+        result = await asyncio.to_thread(resend.Emails.send, {
+            "from": SENDER_EMAIL,
+            "to": [founder_email],
+            "subject": f"🏢 Patron VTC — {name} ({fleet_size} véhicules)",
+            "html": html,
+        })
+        logging.info(f"Fleet partnership alert sent to {founder_email}, ID: {result.get('id')}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send fleet partnership alert: {str(e)}")
+        return False
+
+
+async def send_fleet_partnership_confirmation(email: str, name: str, fleet_size: int):
+    """Confirme à un patron VTC que sa demande a bien été reçue."""
+    if not RESEND_API_KEY:
+        return False
+    html = f"""
+    <!DOCTYPE html>
+    <html><head><meta charset="UTF-8"></head>
+    <body style="font-family:Helvetica,Arial,sans-serif;background:#0a0a0a;margin:0;padding:30px 20px;color:#fff;">
+      <div style="max-width:560px;margin:0 auto;background:#1a1a1a;border-radius:10px;overflow:hidden;border-top:4px solid #FFD60A;">
+        <div style="background:#FFD60A;padding:24px;text-align:center;">
+          <h1 style="margin:0;color:#000;font-size:22px;">Demande reçue ✅</h1>
+        </div>
+        <div style="padding:28px 26px;">
+          <p style="color:#fff;font-size:15px;line-height:1.6;">Bonjour {name},</p>
+          <p style="color:#cccccc;font-size:14px;line-height:1.6;">
+            Merci pour votre intérêt — nous avons bien reçu votre demande de partenariat pour votre flotte de
+            <strong style="color:#FFD60A;">{fleet_size} véhicules</strong>.
+          </p>
+          <p style="color:#cccccc;font-size:14px;line-height:1.6;">
+            Judée Souleymane Nazim, fondateur de Métro-Taxi, vous contactera personnellement sous <strong style="color:#FFD60A;">48h</strong>
+            pour étudier les modalités de votre partenariat B2B.
+          </p>
+          <div style="margin:24px 0;padding:16px;background:#0a0a0a;border-radius:8px;">
+            <p style="color:#FFD60A;font-size:14px;margin:0 0 8px 0;font-weight:bold;">Modèle Métro-Taxi pour votre flotte :</p>
+            <ul style="color:#cccccc;font-size:13px;line-height:1.7;padding-left:20px;margin:0;">
+              <li>0% de commission sur vos chauffeurs</li>
+              <li>1,50€/km versés à vos chauffeurs avec abonnés à bord</li>
+              <li>Paiement le 10 de chaque mois</li>
+              <li>Algorithme de mutualisation = revenus optimisés</li>
+            </ul>
+          </div>
+          <p style="color:#71717a;font-size:13px;text-align:center;margin:20px 0 0 0;">À très vite,<br><strong style="color:#FFD60A;">L'équipe Métro-Taxi</strong></p>
+        </div>
+        <div style="background:#09090b;padding:14px;text-align:center;">
+          <p style="color:#52525b;margin:0;font-size:11px;">Métro-Taxi © 2026 — Le covoiturage VTC à 0% de commission</p>
+        </div>
+      </div>
+    </body></html>
+    """
+    try:
+        await asyncio.to_thread(resend.Emails.send, {
+            "from": SENDER_EMAIL,
+            "to": [email],
+            "subject": "✅ Demande de partenariat reçue — Métro-Taxi",
+            "html": html,
+        })
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send fleet partnership confirmation: {str(e)}")
+        return False
+
+
+# ============================================
+# EMAIL PERSO ADMIN → CHAUFFEUR
+# ============================================
+async def send_admin_personal_email(to_email: str, recipient_name: str, subject: str, body: str, admin_name: str = "Métro-Taxi"):
+    """
+    Envoie un email personnalisé depuis l'admin vers un chauffeur (ou usager).
+    Le `body` peut contenir des sauts de ligne — ils sont convertis en <br>.
+    """
+    if not RESEND_API_KEY:
+        return False
+
+    safe_body = (body or '').replace('\n', '<br>')
+    html = f"""
+    <!DOCTYPE html>
+    <html><head><meta charset="UTF-8"></head>
+    <body style="font-family:Helvetica,Arial,sans-serif;background:#0a0a0a;margin:0;padding:30px 20px;color:#fff;">
+      <div style="max-width:560px;margin:0 auto;background:#1a1a1a;border-radius:10px;overflow:hidden;border-top:4px solid #FFD60A;">
+        <div style="background:#FFD60A;padding:18px 24px;">
+          <h1 style="margin:0;color:#000;font-size:18px;">Métro-Taxi</h1>
+        </div>
+        <div style="padding:28px 26px;">
+          <p style="color:#fff;font-size:15px;line-height:1.6;">Bonjour {recipient_name},</p>
+          <div style="color:#cccccc;font-size:14px;line-height:1.7;margin:16px 0;">
+            {safe_body}
+          </div>
+          <p style="color:#71717a;font-size:13px;margin:24px 0 0 0;">
+            Cordialement,<br>
+            <strong style="color:#FFD60A;">{admin_name}</strong><br>
+            <span style="color:#52525b;font-size:11px;">Métro-Taxi</span>
+          </p>
+        </div>
+        <div style="background:#09090b;padding:14px;text-align:center;">
+          <p style="color:#52525b;margin:0;font-size:11px;">Cet email a été envoyé personnellement par l'équipe Métro-Taxi.</p>
+        </div>
+      </div>
+    </body></html>
+    """
+    try:
+        result = await asyncio.to_thread(resend.Emails.send, {
+            "from": SENDER_EMAIL,
+            "to": [to_email],
+            "subject": subject,
+            "html": html,
+        })
+        logging.info(f"Admin personal email sent to {to_email} (subject: {subject}), ID: {result.get('id')}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send admin personal email to {to_email}: {str(e)}")
+        return False
