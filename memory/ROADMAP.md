@@ -26,6 +26,14 @@
 - [x] 🚦 Plafond invisible **abonnement 24h** = 5 trajets max ✅
 - [x] 🧪 Tests pytest (27/27 passent) ✅
 
+### Sprint Jeudi 14 mai 2026 (jour férié + grève VTC nationale) ✅
+- [x] Distribution 33 flyers Gare de Lyon (14h-19h)
+- [x] 2 inscriptions immédiates : Karamba Salim Diaby (Pionnier #10) + Adama Meïte (Pionnier #11)
+- [x] Contact qualifié patron flotte : **Salim (Maghrébin) - 20 véhicules** (à recontacter)
+- [x] 0 objection sur 33 flyers - signal marché ULTRA favorable (grève VTC)
+- [x] Brief Parallel Avocats envoyé + rectifié (terminologie partenaires vs contrats)
+- [x] Décision V1 grille tarifaire : Berline 1,50€/km · Monospace 1,70€/km · Van 1,90€/km (GELÉE attente Parallel)
+
 ### Sprint Mardi soir 12 mai 2026 (Lot 1 P1) ✅ TERMINÉ
 - [x] 🖥️ **UI admin `/admin` → onglet "Algorithme"** — formulaire complet par zone, sauvegarde et reset, badge "modifié" sur les champs édités
 - [x] 👤 **Fiche détaillée chauffeur** (`Eye` icon sur chaque ligne du tab Chauffeurs) — symétrie avec usagers : identité, vehicle, IBAN/BIC, revenus mois en cours, virements pending, trajets récents, validation/désactivation depuis la fiche
