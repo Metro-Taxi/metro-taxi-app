@@ -1,7 +1,7 @@
 """
 Routes Partenariat Patron VTC (B2B) — Métro-Taxi
 
-Permet à un patron de flotte VTC (ex: Salim, 20 véhicules) de soumettre une demande
+Permet à un patron de flotte VTC de soumettre une demande
 de partenariat B2B depuis la page publique /patron-vtc.
 
 - POST /api/fleet-partnerships/apply : Soumet une demande (public, sans auth)

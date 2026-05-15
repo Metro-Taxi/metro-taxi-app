@@ -154,7 +154,7 @@ const PatronVTC = () => {
                   required
                   value={form.full_name}
                   onChange={handleChange('full_name')}
-                  placeholder="Salim El Hadi"
+                  placeholder="Jean Dupont"
                   className="bg-zinc-950 border-zinc-700 text-white mt-1"
                   data-testid="patron-vtc-input-name"
                 />
@@ -181,7 +181,7 @@ const PatronVTC = () => {
                   type="email"
                   value={form.email}
                   onChange={handleChange('email')}
-                  placeholder="salim@cabpremium.com"
+                  placeholder="jean@maflotte.com"
                   className="bg-zinc-950 border-zinc-700 text-white mt-1"
                   data-testid="patron-vtc-input-email"
                 />

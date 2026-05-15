@@ -123,7 +123,7 @@ const FleetPartnershipsTab = ({ token }) => {
           <div className="text-center py-12 px-6">
             <Building2 className="w-12 h-12 text-zinc-600 mx-auto mb-3" />
             <p className="text-zinc-400 font-medium">Aucune demande pour l'instant</p>
-            <p className="text-zinc-600 text-xs mt-1">Distribue la page /patron-vtc à Salim et aux autres patrons rencontrés.</p>
+            <p className="text-zinc-600 text-xs mt-1">Distribue la page /patron-vtc aux patrons VTC que tu rencontres.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
