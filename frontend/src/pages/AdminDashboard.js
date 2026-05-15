@@ -7,7 +7,7 @@ import {
   TrendingUp, Activity, Mail, Phone, Calendar, IdCard,
   Clock, AlertTriangle, RefreshCw, Trash2, Globe, Plus,
   Power, PowerOff, Edit, Save, Loader2, Banknote, Send,
-  FileText, Download, History, Shield, Info, Gift, Brain
+  FileText, Download, History, Shield, Info, Gift, Brain, Building2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -22,6 +22,7 @@ import LanguageSelector from '@/components/LanguageSelector';
 import jsPDF from 'jspdf';
 import AlgorithmConfigTab from '@/components/admin/AlgorithmConfigTab';
 import DriverCardDialog from '@/components/admin/DriverCardDialog';
+import FleetPartnershipsTab from '@/components/admin/FleetPartnershipsTab';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -720,6 +721,14 @@ const AdminDashboard = () => {
             >
               <Brain className="w-4 h-4 mr-2" />
               Algorithme
+            </TabsTrigger>
+            <TabsTrigger 
+              value="partnerships"
+              className="data-[state=active]:bg-[#FFD60A] data-[state=active]:text-black"
+              data-testid="partnerships-tab"
+            >
+              <Building2 className="w-4 h-4 mr-2" />
+              Partenariats
             </TabsTrigger>
           </TabsList>
 
@@ -1646,6 +1655,11 @@ const AdminDashboard = () => {
           {/* Algorithm Config Tab */}
           <TabsContent value="algorithm">
             <AlgorithmConfigTab token={token} />
+          </TabsContent>
+
+          {/* Fleet Partnerships Tab */}
+          <TabsContent value="partnerships">
+            <FleetPartnershipsTab token={token} />
           </TabsContent>
         </Tabs>
 

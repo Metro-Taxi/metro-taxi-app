@@ -802,6 +802,36 @@ const Landing = () => {
         </div>
       </section>
       
+      {/* CTA Patron VTC - B2B fleet partnerships */}
+      <section className="py-12 px-6 border-t border-zinc-800 bg-gradient-to-b from-[#0A0A0B] to-[#09090B]" data-testid="landing-patron-vtc-cta">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-gradient-to-br from-[#FFD60A]/10 via-[#18181B] to-[#18181B] border border-[#FFD60A]/30 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
+          >
+            <div className="flex-1 min-w-0">
+              <p className="text-[#FFD60A] text-xs uppercase tracking-widest font-bold mb-2">Programme B2B</p>
+              <h3 className="text-xl sm:text-2xl font-black text-white leading-tight mb-2">
+                Tu diriges une <span className="text-[#FFD60A]">flotte VTC</span> ?
+              </h3>
+              <p className="text-zinc-400 text-sm">
+                Partenariat <strong className="text-white">0 % commission</strong> · 1,50 € / km à tes chauffeurs · Paiement le 10 du mois. Discutons.
+              </p>
+            </div>
+            <Link to="/patron-vtc">
+              <Button
+                className="bg-[#FFD60A] text-black hover:bg-[#FFD60A]/90 px-6 h-12 font-bold whitespace-nowrap"
+                data-testid="landing-patron-vtc-btn"
+              >
+                Voir l'offre Patron VTC →
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="py-12 px-6 bg-[#09090B] border-t border-zinc-800">
         <div className="max-w-7xl mx-auto">
@@ -814,6 +844,7 @@ const Landing = () => {
               <Link to="/login" className="hover:text-white transition-colors">{t('nav.login')}</Link>
               <Link to="/register/user" className="hover:text-white transition-colors">{t('nav.register')}</Link>
               <Link to="/register/driver" className="hover:text-white transition-colors">{t('nav.drivers')}</Link>
+              <Link to="/patron-vtc" className="hover:text-[#FFD60A] transition-colors" data-testid="footer-patron-vtc-link">Patron VTC (B2B)</Link>
               <Link to="/cgu" className="hover:text-white transition-colors">{t('footer.cgu', 'CGU')}</Link>
               <Link to="/cgv" className="hover:text-white transition-colors">{t('footer.cgv', 'CGV')}</Link>
               <a 
