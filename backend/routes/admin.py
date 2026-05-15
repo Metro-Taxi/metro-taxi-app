@@ -1617,12 +1617,15 @@ async def update_algorithm_config(
     allowed_vehicle_keys = {"min_fill", "target_fill", "capacity"}
     sanitized_vehicles = {}
     for vt, overrides in (data.vehicle_thresholds or {}).items():
-        canon = normalize_vehicle_type(vt)
-        if canon not in allowed_vehicles:
+        # Validation stricte (typo détectée → 400) : on ne passe pas par normalize_vehicle_type
+        # qui retomberait silencieusement sur 'berline' en cas de clé inconnue.
+        vt_key = (vt or "").strip().lower()
+        if vt_key not in allowed_vehicles:
             raise HTTPException(
                 status_code=400,
                 detail=f"Type véhicule inconnu : '{vt}'. Valides : {sorted(allowed_vehicles)}"
             )
+        canon = vt_key
         if not isinstance(overrides, dict):
             raise HTTPException(status_code=400, detail=f"Overrides pour '{vt}' doit être un dict")
         clean_overrides = {}
