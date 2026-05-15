@@ -103,7 +103,7 @@ const PatronVTC = () => {
               Métro-Taxi, c'est <strong className="text-white">0 % de commission</strong>, <strong className="text-white">1,50 € / km</strong> garantis à tes chauffeurs avec des abonnés à bord, et un algorithme qui maximise leur remplissage.
             </p>
             <p className="text-sm text-zinc-500">
-              Discutons partenariat : ta flotte connectée, tes chauffeurs payés le 10 du mois, ta marge protégée.
+              Discutons partenariat : ta flotte connectée, tes chauffeurs payés le 10 du mois, ton CA optimisé.
             </p>
           </motion.div>
         </div>
@@ -115,7 +115,7 @@ const PatronVTC = () => {
           {[
             { icon: Wallet,       title: '0 % commission',       desc: 'Tes chauffeurs gardent 100 % de leurs km. On vit du forfait abonné, pas de leur travail.', color: 'text-emerald-400' },
             { icon: Users,        title: 'Algorithme mutualisé', title2: 'Algorithme mutualisé', desc: 'Plusieurs abonnés par trajet = revenus optimisés pour tes chauffeurs.', color: 'text-blue-400' },
-            { icon: ShieldCheck,  title: 'Modèle anti-requalif', desc: 'CGP rigoureuses validées par Parallel Avocats. Tes chauffeurs restent indépendants.', color: 'text-[#FFD60A]' },
+            { icon: ShieldCheck,  title: 'Modèle anti-requalif', desc: 'CGP rigoureuses préservant l\'indépendance de tes chauffeurs.', color: 'text-[#FFD60A]' },
           ].map((b, i) => {
             const Icon = b.icon;
             return (
