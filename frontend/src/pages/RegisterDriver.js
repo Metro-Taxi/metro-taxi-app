@@ -538,6 +538,29 @@ const RegisterDriver = () => {
               </div>
             </div>
 
+            {/* Comment as-tu connu Métro-Taxi ? */}
+            <div className="pt-4 border-t border-zinc-800">
+              <div className="space-y-2">
+                <Label htmlFor="source_inscription" className="text-zinc-300">
+                  Comment as-tu connu Métro-Taxi ? <span className="text-zinc-500 text-xs">(facultatif)</span>
+                </Label>
+                <div className="relative">
+                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                  <Input
+                    id="source_inscription"
+                    name="source_inscription"
+                    type="text"
+                    value={formData.source_inscription}
+                    onChange={handleChange}
+                    placeholder="Ex: Flyer à CDG, ami chauffeur, recherche Google…"
+                    maxLength={200}
+                    className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
+                    data-testid="driver-source-input"
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Password */}
             <div className="pt-4 border-t border-zinc-800">
               <div className="space-y-2">

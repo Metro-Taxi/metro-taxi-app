@@ -185,7 +185,7 @@ const DriverCardDialog = ({ driverId, open, onClose, token, onChanged }) => {
               <InfoRow icon={MapPin} label="Région" value={card.region_id || '—'} />
               <InfoRow icon={Calendar} label="Inscrit le" value={card.created_at ? new Date(card.created_at).toLocaleDateString('fr-FR') : '—'} />
               {card.source_inscription && (
-                <InfoRow icon={MapPin} label="Source d'inscription" value={card.source_inscription} />
+                <InfoRow icon={MapPin} label="Comment a-t-il connu Métro-Taxi ?" value={card.source_inscription} />
               )}
               <InfoRow icon={Car} label="Places véhicule" value={card.seats} />
             </div>
