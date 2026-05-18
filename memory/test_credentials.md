@@ -2,7 +2,7 @@
 
 ## Admin Métro-Taxi
 - Email: contact@metro-taxi.com
-- Password: o9BUf5atwQIPCYCl3t6YK1N6
+- Password: z83EHES&Lyl@eY1dd9o1
 - Login URL: https://metro-taxi.com/login
 - 2FA: code OTP envoyé par email (5 min validity)
 
