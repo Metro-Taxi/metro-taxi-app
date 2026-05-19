@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Carte Visite Métro-Taxi — Recto</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+  html, body { width: 1063px; height: 705px; overflow: hidden; background: #fff; }
+  .card {
+    width: 1063px; height: 705px;
+    background: #09090B;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  /* Bleed marks (zone fond perdu = 3mm = ~35px) */
+  .bleed-line {
+    position: absolute;
+    border: 1px dashed rgba(255, 214, 10, 0.0);  /* invisible à l'impression, juste pour le design */
+  }
+  /* Décor jaune en haut à droite (forme géométrique) */
+  .geo-deco {
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 240px; height: 240px;
+    background: #FFD60A;
+    transform: rotate(45deg);
+    opacity: 0.95;
+  }
+  .geo-deco-small {
+    position: absolute;
+    bottom: -40px; left: -40px;
+    width: 120px; height: 120px;
+    background: #FFD60A;
+    transform: rotate(45deg);
+    opacity: 0.18;
+  }
+  /* Logo en haut à gauche */
+  .logo-row {
+    position: absolute;
+    top: 90px; left: 80px;
+    display: flex; align-items: center; gap: 18px;
+  }
+  .logo-icon {
+    width: 70px; height: 70px;
+    background: #FFD60A;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon svg { width: 44px; height: 44px; }
+  .logo-text {
+    color: #FFD60A;
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    line-height: 1;
+  }
+  /* Nom et titre */
+  .name-block {
+    position: absolute;
+    top: 250px; left: 80px;
+    color: white;
+  }
+  .name {
+    font-size: 52px;
+    font-weight: 900;
+    color: #FFFFFF;
+    line-height: 1.05;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .role {
+    font-size: 22px;
+    font-weight: 400;
+    color: #FFD60A;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  /* Tagline en bas */
+  .tagline {
+    position: absolute;
+    bottom: 80px; left: 80px; right: 80px;
+    color: #a1a1aa;
+    font-size: 22px;
+    font-weight: 300;
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+  }
+  .tagline strong {
+    color: #FFD60A;
+    font-weight: 700;
+  }
+  /* Ligne décorative jaune horizontale */
+  .accent-line {
+    position: absolute;
+    bottom: 180px; left: 80px;
+    width: 80px;
+    height: 4px;
+    background: #FFD60A;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="geo-deco"></div>
+    <div class="geo-deco-small"></div>
+
+    <div class="logo-row">
+      <div class="logo-icon">
+        <!-- Icône voiture style "lucide" -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="#09090B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/>
+          <circle cx="6.5" cy="16.5" r="2.5"/>
+          <circle cx="16.5" cy="16.5" r="2.5"/>
+        </svg>
+      </div>
+      <div class="logo-text">MÉTRO-TAXI</div>
+    </div>
+
+    <div class="name-block">
+      <div class="name">Judée Souleymane<br>Nazim</div>
+      <div class="role">Fondateur</div>
+    </div>
+
+    <div class="accent-line"></div>
+
+    <div class="tagline">
+      Le covoiturage VTC à <strong>0&nbsp;% commission</strong>.<br>
+      Trajets illimités par abonnement, chauffeurs indépendants payés au kilomètre.
+    </div>
+  </div>
+</body>
+</html>
