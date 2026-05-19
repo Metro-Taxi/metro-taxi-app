@@ -2800,6 +2800,17 @@ async def download_business_card():
     )
 
 
+@app.get("/api/assets/business-card-preview-{face}.png")
+async def preview_business_card(face: str):
+    """Previews PNG (recto / verso) pour visualisation rapide avant téléchargement PDF."""
+    if face not in ("recto", "verso"):
+        raise HTTPException(status_code=404, detail="face must be 'recto' or 'verso'")
+    png_path = ROOT_DIR.parent / "frontend" / "public" / "cards" / f"preview-{face}.png"
+    if not png_path.exists():
+        raise HTTPException(status_code=404, detail="Preview introuvable")
+    return FileResponse(path=str(png_path), media_type="image/png")
+
+
 # ============================================
 # AI HELP CHATBOT
 # ============================================
