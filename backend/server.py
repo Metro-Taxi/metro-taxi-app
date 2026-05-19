@@ -2782,6 +2782,24 @@ async def serve_voiceover_audio(filename: str):
         }
     )
 
+
+# ============================================
+# CARTE DE VISITE PDF — Téléchargement direct
+# ============================================
+@app.get("/api/assets/business-card.pdf")
+async def download_business_card():
+    """Force le téléchargement du PDF Vistaprint-ready (contourne le routing React)."""
+    pdf_path = ROOT_DIR.parent / "frontend" / "public" / "cards" / "Carte-Visite-Metro-Taxi-Vistaprint.pdf"
+    if not pdf_path.exists():
+        raise HTTPException(status_code=404, detail="Carte de visite introuvable")
+    return FileResponse(
+        path=str(pdf_path),
+        media_type="application/pdf",
+        filename="Carte-Visite-Metro-Taxi-Vistaprint.pdf",
+        headers={"Content-Disposition": 'attachment; filename="Carte-Visite-Metro-Taxi-Vistaprint.pdf"'}
+    )
+
+
 # ============================================
 # AI HELP CHATBOT
 # ============================================

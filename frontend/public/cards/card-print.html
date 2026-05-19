@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: 89mm 59mm;   /* Format Vistaprint avec bleed (85x55 + 2mm de chaque côté) */
+    margin: 0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica', 'Arial', sans-serif; }
+
+  /* ============ RECTO ============ */
+  .page-recto {
+    width: 89mm; height: 59mm;
+    background: #09090B;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+  }
+  .geo-deco {
+    position: absolute;
+    top: -7mm; right: -7mm;
+    width: 20mm; height: 20mm;
+    background: #FFD60A;
+    transform: rotate(45deg);
+  }
+  .geo-deco-small {
+    position: absolute;
+    bottom: -3mm; left: -3mm;
+    width: 10mm; height: 10mm;
+    background: #FFD60A;
+    opacity: 0.18;
+    transform: rotate(45deg);
+  }
+  .logo-row {
+    position: absolute;
+    top: 7mm; left: 7mm;
+    display: flex; align-items: center; gap: 2mm;
+  }
+  .logo-icon {
+    width: 6mm; height: 6mm;
+    background: #FFD60A;
+    border-radius: 1.2mm;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon svg { width: 3.8mm; height: 3.8mm; }
+  .logo-text {
+    color: #FFD60A;
+    font-size: 11pt;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+  }
+  .name-block {
+    position: absolute;
+    top: 21mm; left: 7mm;
+    color: white;
+  }
+  .name {
+    font-size: 16pt;
+    font-weight: 900;
+    color: #FFFFFF;
+    line-height: 1.1;
+    letter-spacing: -0.3px;
+  }
+  .role {
+    font-size: 7pt;
+    font-weight: 400;
+    color: #FFD60A;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 1mm;
+  }
+  .accent-line {
+    position: absolute;
+    bottom: 16mm; left: 7mm;
+    width: 8mm;
+    height: 0.5mm;
+    background: #FFD60A;
+  }
+  .tagline {
+    position: absolute;
+    bottom: 5mm; left: 7mm; right: 7mm;
+    color: #a1a1aa;
+    font-size: 6.5pt;
+    line-height: 1.4;
+  }
+  .tagline strong { color: #FFD60A; font-weight: 700; }
+
+  /* ============ VERSO ============ */
+  .page-verso {
+    width: 89mm; height: 59mm;
+    background: #FFD60A;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+  }
+  .left-band {
+    width: 33mm; height: 59mm;
+    background: #09090B;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .icon-big {
+    width: 12mm; height: 12mm;
+    background: #FFD60A;
+    border-radius: 2mm;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 2.5mm;
+  }
+  .icon-big svg { width: 7.5mm; height: 7.5mm; }
+  .brand-v {
+    color: #FFD60A;
+    font-size: 9pt;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-align: center;
+  }
+  .baseline {
+    color: #FFFFFF;
+    font-size: 5pt;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: 1mm;
+  }
+  .contacts {
+    flex: 1;
+    padding: 7mm 6mm;
+    color: #09090B;
+  }
+  .contact-title {
+    font-size: 5.5pt;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 4mm;
+  }
+  .contact-row {
+    display: flex; align-items: center; gap: 2.5mm;
+    margin-bottom: 3.5mm;
+  }
+  .ico-c {
+    width: 5.5mm; height: 5.5mm;
+    background: #09090B;
+    border-radius: 1.2mm;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ico-c svg { width: 3mm; height: 3mm; }
+  .info-label {
+    font-size: 4.5pt;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #09090B;
+    opacity: 0.55;
+  }
+  .info-value {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #09090B;
+    letter-spacing: -0.2px;
+    margin-top: 0.3mm;
+  }
+  .footer-v {
+    position: absolute;
+    bottom: 2.5mm; right: 3mm; left: 36mm;
+    font-size: 4.2pt;
+    color: #09090B;
+    opacity: 0.55;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+
+  <!-- RECTO -->
+  <div class="page-recto">
+    <div class="geo-deco"></div>
+    <div class="geo-deco-small"></div>
+    <div class="logo-row">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#09090B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/>
+          <circle cx="6.5" cy="16.5" r="2.5"/>
+          <circle cx="16.5" cy="16.5" r="2.5"/>
+        </svg>
+      </div>
+      <div class="logo-text">MÉTRO-TAXI</div>
+    </div>
+    <div class="name-block">
+      <div class="name">Judée Souleymane<br>Nazim</div>
+      <div class="role">Fondateur</div>
+    </div>
+    <div class="accent-line"></div>
+    <div class="tagline">
+      Le covoiturage VTC à <strong>0&nbsp;% commission</strong>.<br>
+      Trajets illimités par abonnement, chauffeurs indépendants payés au kilomètre.
+    </div>
+  </div>
+
+  <!-- VERSO -->
+  <div class="page-verso">
+    <div class="left-band">
+      <div class="icon-big">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#09090B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/>
+          <circle cx="6.5" cy="16.5" r="2.5"/>
+          <circle cx="16.5" cy="16.5" r="2.5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-v">MÉTRO-TAXI</div>
+        <div class="baseline">VTC · 0&nbsp;% COMMISSION</div>
+      </div>
+    </div>
+    <div class="contacts">
+      <div class="contact-title">Contact direct</div>
+      <div class="contact-row">
+        <div class="ico-c">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FFD60A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="info-label">Téléphone</div>
+          <div class="info-value">06 68 55 00 19</div>
+        </div>
+      </div>
+      <div class="contact-row">
+        <div class="ico-c">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FFD60A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <div>
+          <div class="info-label">Email</div>
+          <div class="info-value">contact@metro-taxi.com</div>
+        </div>
+      </div>
+      <div class="contact-row">
+        <div class="ico-c">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FFD60A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="info-label">Site Web</div>
+          <div class="info-value">metro-taxi.com</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-v">Inscription chauffeur · Programme partenariat flotte VTC</div>
+  </div>
+
+</body>
+</html>
