@@ -6,10 +6,28 @@
   @page { size: A4; margin: 18mm 20mm 18mm 20mm; }
   body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 10.5pt; line-height: 1.4; color: #09090B; }
 
-  .header { text-align: center; margin-bottom: 4mm; }
-  .brand { font-size: 22pt; font-weight: 900; letter-spacing: 2px; }
-  .subtitle { font-size: 13pt; color: #3F3F3F; margin-top: 1mm; }
-  .ref { font-size: 9.5pt; color: #6B6B6B; font-style: italic; margin-top: 1mm; }
+  .header-row {
+    display: flex;
+    align-items: center;
+    gap: 4mm;
+    margin-bottom: 5mm;
+    padding-bottom: 4mm;
+    border-bottom: 1.5pt solid #C8A608;
+  }
+  .logo-block {
+    width: 14mm; height: 14mm;
+    background: #FFD60A;
+    border-radius: 2.5mm;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-block svg { width: 9mm; height: 9mm; }
+  .header-text { flex: 1; }
+  .brand-title { font-size: 20pt; font-weight: 900; letter-spacing: 1.5px; color: #09090B; line-height: 1; }
+  .doc-title { font-size: 11pt; color: #3F3F3F; margin-top: 1.5mm; }
+  .doc-ref { font-size: 9pt; color: #6B6B6B; font-style: italic; margin-top: 0.5mm; }
 
   .hr-yellow { border: none; border-top: 2px solid #C8A608; margin: 4mm 0 3mm 0; }
 
@@ -34,13 +52,20 @@
 </head>
 <body>
 
-<div class="header">
-  <div class="brand">MÉTRO-TAXI</div>
-  <div class="subtitle">Note de synthèse</div>
-  <div class="ref">Préparation du call — Jeudi 21 mai 2026</div>
+<div class="header-row">
+  <div class="logo-block">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#09090B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/>
+      <circle cx="6.5" cy="16.5" r="2.5"/>
+      <circle cx="16.5" cy="16.5" r="2.5"/>
+    </svg>
+  </div>
+  <div class="header-text">
+    <div class="brand-title">MÉTRO-TAXI</div>
+    <div class="doc-title">Note de synthèse</div>
+    <div class="doc-ref">Préparation du call — Jeudi 21 mai 2026</div>
+  </div>
 </div>
-
-<hr class="hr-yellow"/>
 
 <div class="contact">
   <div class="name">Judée Souleymane Nazim — Fondateur</div>
@@ -57,7 +82,7 @@
 
 <div class="lead">Modèle économique</div>
 <ul>
-  <li>Abonnés Métro-Taxi : forfait <strong>6,99 €</strong> pour 24 h (5 trajets maximum), <strong>16,99 €</strong> par semaine ou <strong>53,99 €</strong> par mois (trajets illimités).</li>
+  <li>Abonnés Métro-Taxi : forfait <strong>6,99 €</strong> pour 24 h (5 trajets maximum) ou <strong>53,99 €</strong> par mois (trajets illimités).</li>
   <li>Chauffeurs partenaires : rémunérés <strong>1,50 €/km</strong> dès qu'au moins un abonné est à bord. Aucune commission prélevée par la plateforme (modèle <strong>0 %</strong>).</li>
   <li>Versements chauffeurs : virement SEPA mensuel, <strong>le 10 de chaque mois</strong>.</li>
   <li>Algorithme propriétaire de mutualisation (jusqu'à 4 abonnés/berline, 5/monospace, 7/van) garantissant la rentabilité par trajet.</li>
