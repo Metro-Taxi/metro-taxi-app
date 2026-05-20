@@ -2811,6 +2811,34 @@ async def preview_business_card(face: str):
     return FileResponse(path=str(png_path), media_type="image/png")
 
 
+@app.get("/api/assets/note-synthese-parallel.pdf")
+async def download_note_synthese_pdf():
+    """PDF de la note de synthèse Parallel (1 page A4, prêt à envoyer aux avocats)."""
+    pdf_path = ROOT_DIR.parent / "frontend" / "public" / "cards" / "Metro-Taxi-Note-Synthese-Parallel.pdf"
+    if not pdf_path.exists():
+        raise HTTPException(status_code=404, detail="Note de synthèse PDF introuvable")
+    return FileResponse(
+        path=str(pdf_path),
+        media_type="application/pdf",
+        filename="Metro-Taxi-Note-Synthese-Parallel.pdf",
+        headers={"Content-Disposition": 'attachment; filename="Metro-Taxi-Note-Synthese-Parallel.pdf"'}
+    )
+
+
+@app.get("/api/assets/note-synthese-parallel.docx")
+async def download_note_synthese_docx():
+    """DOCX éditable de la note de synthèse Parallel (modifiable avant envoi)."""
+    docx_path = ROOT_DIR.parent / "frontend" / "public" / "cards" / "Metro-Taxi-Note-Synthese-Parallel.docx"
+    if not docx_path.exists():
+        raise HTTPException(status_code=404, detail="Note de synthèse DOCX introuvable")
+    return FileResponse(
+        path=str(docx_path),
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        filename="Metro-Taxi-Note-Synthese-Parallel.docx",
+        headers={"Content-Disposition": 'attachment; filename="Metro-Taxi-Note-Synthese-Parallel.docx"'}
+    )
+
+
 # ============================================
 # AI HELP CHATBOT
 # ============================================
