@@ -1425,8 +1425,37 @@ async def login(data: LoginRequest, request: Request):
 # ============================================
 import secrets as _secrets
 
+# In-memory throttle: max OTP emails per IP per window
+_otp_email_throttle: dict[str, list[datetime]] = {}
+OTP_MAX_PER_IP_PER_WINDOW = 3
+OTP_THROTTLE_WINDOW_MINUTES = 15
+
+
+def _otp_email_allowed(client_ip: str) -> tuple[bool, int]:
+    """Check if this IP can trigger another OTP email. Returns (allowed, retry_after_seconds)."""
+    now = datetime.now(timezone.utc)
+    window_start = now - timedelta(minutes=OTP_THROTTLE_WINDOW_MINUTES)
+    history = [t for t in _otp_email_throttle.get(client_ip, []) if t > window_start]
+    _otp_email_throttle[client_ip] = history
+    if len(history) >= OTP_MAX_PER_IP_PER_WINDOW:
+        retry_after = int((history[0] + timedelta(minutes=OTP_THROTTLE_WINDOW_MINUTES) - now).total_seconds())
+        return False, max(retry_after, 1)
+    return True, 0
+
+
 async def _initiate_admin_otp(admin_email: str, client_ip: str):
-    """Generate a 6-digit OTP, store it in DB with 5 min expiry, send it by email."""
+    """Generate a 6-digit OTP, store it in DB with 5 min expiry, send it by email.
+
+    Anti-bombing: max 3 OTPs per IP per 15 min. Raises HTTPException 429 if exceeded.
+    """
+    allowed, retry_after = _otp_email_allowed(client_ip)
+    if not allowed:
+        logging.warning(f"🛡️ OTP email throttled for IP {client_ip} (retry in {retry_after}s)")
+        raise HTTPException(
+            status_code=429,
+            detail=f"Trop de demandes de code. Réessayez dans {retry_after // 60 + 1} min.",
+        )
+
     from services.emails import send_admin_otp_email
     otp_code = f"{_secrets.randbelow(1000000):06d}"
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=5)
@@ -1440,6 +1469,8 @@ async def _initiate_admin_otp(admin_email: str, client_ip: str):
         "attempts": 0,
         "created_at": datetime.now(timezone.utc).isoformat()
     })
+    # Record OTP email sent for throttling
+    _otp_email_throttle.setdefault(client_ip, []).append(datetime.now(timezone.utc))
     await send_admin_otp_email(admin_email, otp_code, client_ip)
     logging.info(f"Admin OTP generated for {admin_email} from {client_ip}")
 
@@ -2213,6 +2244,30 @@ async def create_default_admin():
     if admin_email != "admin@metrotaxi.fr":
         await db.admins.delete_many({"email": "admin@metrotaxi.fr"})
         logging.info("Legacy admin account admin@metrotaxi.fr removed")
+
+    # 🛡️ SECURITY HARDENING (2026-05-20) :
+    # Auto-purge of all admin accounts (in db.admins and db.users) whose email
+    # is NOT the canonical ADMIN_EMAIL from .env. Closes the "zombie admin" backdoor
+    # where a test/legacy admin account keeps an old bcrypt hash unsynced.
+    purged_admins = await db.admins.delete_many({"email": {"$ne": admin_email}})
+    if purged_admins.deleted_count > 0:
+        logging.warning(
+            f"🛡️ Purged {purged_admins.deleted_count} non-canonical admin account(s) "
+            f"from db.admins (kept only {admin_email})"
+        )
+    purged_users_admin = await db.users.delete_many({
+        "role": "admin",
+        "email": {"$ne": admin_email}
+    })
+    if purged_users_admin.deleted_count > 0:
+        logging.warning(
+            f"🛡️ Purged {purged_users_admin.deleted_count} non-canonical admin account(s) "
+            f"from db.users"
+        )
+
+    # Always invalidate any pending OTP at startup (force re-auth after restart)
+    await db.admin_otps.delete_many({})
+    logging.info("All pending admin OTPs invalidated at startup")
 
 # ============================================
 # AUTOMATIC SUBSCRIPTION EXPIRATION CHECK
