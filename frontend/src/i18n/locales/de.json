@@ -232,7 +232,7 @@
         "price": "6,99 €",
         "description": "Perfekt für gelegentliche Nutzung",
         "period": "Tag",
-        "feature1": "Unbegrenzte Fahrten für 24h",
+        "feature1": "Max. 5 Fahrten in 24 Std.",
         "feature2": "Zugang zu allen Fahrzeugen",
         "feature3": "Intelligente Routen"
       },
@@ -393,6 +393,11 @@
         "month": "1 Monat",
         "week": "1 Wo."
       }
+    },
+    "limits": {
+      "day": "Max. 5 Fahrten in 24 Std.",
+      "week": "15 Fahrten in 7 Tagen (3/Tag)",
+      "month": "Unbegrenzte Fahrten"
     }
   },
   "howItWorks": {

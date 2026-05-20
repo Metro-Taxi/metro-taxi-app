@@ -232,7 +232,7 @@
         "price": "6,99 €",
         "description": "Perfeito para uso ocasional",
         "period": "dia",
-        "feature1": "Viagens ilimitadas por 24h",
+        "feature1": "Máx 5 viagens em 24h",
         "feature2": "Acesso a todos os veículos",
         "feature3": "Rotas inteligentes"
       },
@@ -393,6 +393,11 @@
         "month": "1 Mês",
         "week": "1 Sem."
       }
+    },
+    "limits": {
+      "day": "Máx 5 viagens em 24h",
+      "week": "15 viagens em 7 dias (3/dia)",
+      "month": "Viagens ilimitadas"
     }
   },
   "howItWorks": {

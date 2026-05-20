@@ -405,7 +405,7 @@
         "price": "6,99 €",
         "description": "Parfait pour un usage ponctuel",
         "period": "jour",
-        "feature1": "Trajets illimités pendant 24h",
+        "feature1": "5 trajets max sur 24h",
         "feature2": "Accès à tous les véhicules",
         "feature3": "Itinéraires intelligents"
       },
@@ -562,6 +562,11 @@
         "month": "1 Mois",
         "week": "1 Sem."
       }
+    },
+    "limits": {
+      "day": "5 trajets max sur 24h",
+      "week": "15 trajets sur 7j (3/jour)",
+      "month": "Trajets illimités"
     }
   },
   "howItWorks": {

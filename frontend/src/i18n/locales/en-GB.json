@@ -339,7 +339,8 @@
       "day": {
         "name": "24 Hours",
         "price": "£9.99",
-        "priceLocal": "£9.99"
+        "priceLocal": "£9.99",
+        "feature1": "5 rides max within 24h"
       },
       "month": {
         "name": "1 Month",
@@ -488,6 +489,11 @@
         "month": "1 Month",
         "week": "1 Week"
       }
+    },
+    "limits": {
+      "day": "5 rides max within 24h",
+      "week": "15 rides over 7 days (3/day)",
+      "month": "Unlimited rides"
     }
   },
   "howItWorks": {

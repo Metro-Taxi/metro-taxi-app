@@ -282,7 +282,7 @@
         "price": "6,99 €",
         "description": "Perfetto per uso occasionale",
         "period": "giorno",
-        "feature1": "Corse illimitate per 24h",
+        "feature1": "Max 5 corse in 24h",
         "feature2": "Accesso a tutti i veicoli",
         "feature3": "Percorsi intelligenti"
       },
@@ -442,6 +442,11 @@
         "month": "1 Mese",
         "week": "1 Sett."
       }
+    },
+    "limits": {
+      "day": "Max 5 corse in 24h",
+      "week": "15 corse in 7 giorni (3/giorno)",
+      "month": "Corse illimitate"
     }
   },
   "howItWorks": {

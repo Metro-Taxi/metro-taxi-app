@@ -338,7 +338,7 @@
         "price": "$7.49",
         "description": "Perfect for occasional use",
         "period": "day",
-        "feature1": "Unlimited rides for 24h",
+        "feature1": "5 rides max within 24h",
         "feature2": "Access to all vehicles",
         "feature3": "Smart routes"
       },
@@ -496,6 +496,11 @@
         "month": "1 Month",
         "week": "1 Week"
       }
+    },
+    "limits": {
+      "day": "5 rides max within 24h",
+      "week": "15 rides over 7 days (3/day)",
+      "month": "Unlimited rides"
     }
   },
   "howItWorks": {

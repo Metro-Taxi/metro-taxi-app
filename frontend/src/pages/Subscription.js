@@ -261,7 +261,7 @@ const Subscription = () => {
       price: t('subscription.plans.day.price', '6,99 €'), 
       period: t('subscription.plans.day.period', 'jour'),
       features: [
-        t('subscription.plans.day.feature1', 'Trajets illimités pendant 24h'), 
+        t('subscription.plans.day.feature1', '5 trajets max sur 24h'), 
         t('subscription.plans.day.feature2', 'Accès à tous les véhicules'), 
         t('subscription.plans.day.feature3', 'Trajets optimisés')
       ]

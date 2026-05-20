@@ -243,7 +243,7 @@
         "priceLocal": "4,99 €",
         "description": "Perfecto para uso ocasional",
         "period": "día",
-        "feature1": "Viajes ilimitados por 24h",
+        "feature1": "5 viajes máx. en 24h",
         "feature2": "Acceso a todos los vehículos",
         "feature3": "Rutas inteligentes"
       },
@@ -407,6 +407,11 @@
         "month": "1 Mes",
         "week": "1 Sem."
       }
+    },
+    "limits": {
+      "day": "5 viajes máx. en 24h",
+      "week": "15 viajes en 7 días (3/día)",
+      "month": "Viajes ilimitados"
     }
   },
   "howItWorks": {

@@ -415,9 +415,9 @@ const Landing = () => {
           {/* France Pricing (Active) */}
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-16">
             {[
-              { name: t('pricing.plans.day.name'), price: t('pricing.plans.day.priceLocal'), period: t('subscription.perDay') },
-              { name: t('pricing.plans.week.name'), price: t('pricing.plans.week.priceLocal'), period: t('subscription.perWeek') },
-              { name: t('pricing.plans.month.name'), price: t('pricing.plans.month.priceLocal'), period: t('subscription.perMonth'), popular: true }
+              { name: t('pricing.plans.day.name'), price: t('pricing.plans.day.priceLocal'), period: t('subscription.perDay'), limit: t('pricing.limits.day', '5 trajets max sur 24h') },
+              { name: t('pricing.plans.week.name'), price: t('pricing.plans.week.priceLocal'), period: t('subscription.perWeek'), limit: t('pricing.limits.week', '15 trajets sur 7j (3/jour)') },
+              { name: t('pricing.plans.month.name'), price: t('pricing.plans.month.priceLocal'), period: t('subscription.perMonth'), popular: true, limit: t('pricing.limits.month', 'Trajets illimités') }
             ].map((plan, index) => (
               <motion.div
                 key={index}
@@ -438,7 +438,7 @@ const Landing = () => {
                 <ul className="space-y-3 text-zinc-300 mb-8">
                   <li className="flex items-center gap-2">
                     <Shield className="w-4 h-4 text-[#FFD60A]" />
-                    {t('pricing.features.unlimited')}
+                    {plan.limit}
                   </li>
                   <li className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-[#FFD60A]" />

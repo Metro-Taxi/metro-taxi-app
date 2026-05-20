@@ -232,7 +232,7 @@
         "price": "€6,99",
         "description": "Perfect voor incidenteel gebruik",
         "period": "dag",
-        "feature1": "Onbeperkte ritten voor 24u",
+        "feature1": "Max 5 ritten in 24u",
         "feature2": "Toegang tot alle voertuigen",
         "feature3": "Slimme routes"
       },
@@ -393,6 +393,11 @@
         "month": "1 Maand",
         "week": "1 Week"
       }
+    },
+    "limits": {
+      "day": "Max 5 ritten in 24u",
+      "week": "15 ritten in 7 dagen (3/dag)",
+      "month": "Onbeperkte ritten"
     }
   },
   "howItWorks": {
