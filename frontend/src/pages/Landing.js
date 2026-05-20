@@ -416,8 +416,7 @@ const Landing = () => {
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-16">
             {[
               { name: t('pricing.plans.day.name'), price: t('pricing.plans.day.priceLocal'), period: t('subscription.perDay') },
-              { name: t('pricing.plans.week.name'), price: t('pricing.plans.week.priceLocal'), period: t('subscription.perWeek'), popular: true },
-              { name: t('pricing.plans.month.name'), price: t('pricing.plans.month.priceLocal'), period: t('subscription.perMonth') }
+              { name: t('pricing.plans.month.name'), price: t('pricing.plans.month.priceLocal'), period: t('subscription.perMonth'), popular: true }
             ].map((plan, index) => (
               <motion.div
                 key={index}
