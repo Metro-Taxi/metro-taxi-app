@@ -247,6 +247,15 @@
         "feature3": "Slimme routes",
         "feature4": "Prioriteitsondersteuning",
         "feature5": "Maximale besparing"
+      },
+      "week": {
+        "name": "1 Week",
+        "price": "€19,99",
+        "period": "week",
+        "description": "Voor regelmatig gebruik",
+        "feature1": "15 ritten in 7 dagen",
+        "feature2": "Tot 3 ritten/dag",
+        "feature3": "Toegang tot alle voertuigen"
       }
     },
     "features": {
@@ -322,6 +331,12 @@
         "price": "53,99 €",
         "priceLocal": "53,99 €",
         "description": "Beste prijs-kwaliteit"
+      },
+      "week": {
+        "name": "1 Week",
+        "price": "€19,99",
+        "priceLocal": "€19,99",
+        "description": "Perfect voor regelmatig gebruik"
       }
     },
     "features": {
@@ -375,7 +390,8 @@
       },
       "duration": {
         "day": "24u",
-        "month": "1 Maand"
+        "month": "1 Maand",
+        "week": "1 Week"
       }
     }
   },
@@ -617,7 +633,8 @@
     "pricingTitle": "Prijzen",
     "pricing": {
       "day": "24 uur",
-      "month": "1 maand"
+      "month": "1 maand",
+      "week": "1 week"
     },
     "conditionsTitle": "Voorwaarden",
     "condition1": "Een actief abonnement is vereist om de service te gebruiken",

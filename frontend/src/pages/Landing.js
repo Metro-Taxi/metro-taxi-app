@@ -416,6 +416,7 @@ const Landing = () => {
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-16">
             {[
               { name: t('pricing.plans.day.name'), price: t('pricing.plans.day.priceLocal'), period: t('subscription.perDay') },
+              { name: t('pricing.plans.week.name'), price: t('pricing.plans.week.priceLocal'), period: t('subscription.perWeek') },
               { name: t('pricing.plans.month.name'), price: t('pricing.plans.month.priceLocal'), period: t('subscription.perMonth'), popular: true }
             ].map((plan, index) => (
               <motion.div
@@ -489,6 +490,9 @@ const Landing = () => {
                       <span>{t('pricing.zones.duration.day', '24h')}</span><span className="font-bold text-[#FFD60A]">€4.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
+                      <span>{t('pricing.zones.duration.week', '1 Sem.')}</span><span className="font-bold text-[#FFD60A]">€14.99</span>
+                    </div>
+                    <div className="flex justify-between text-zinc-300">
                       <span>{t('pricing.zones.duration.month', '1 Mois')}</span><span className="font-bold text-[#FFD60A]">€34.99</span>
                     </div>
                   </div>
@@ -502,6 +506,9 @@ const Landing = () => {
                       <span>{t('pricing.zones.duration.day', '24h')}</span><span className="font-bold text-[#FFD60A]">€5.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
+                      <span>{t('pricing.zones.duration.week', '1 Sem.')}</span><span className="font-bold text-[#FFD60A]">€17.99</span>
+                    </div>
+                    <div className="flex justify-between text-zinc-300">
                       <span>{t('pricing.zones.duration.month', '1 Mois')}</span><span className="font-bold text-[#FFD60A]">€44.99</span>
                     </div>
                   </div>
@@ -513,6 +520,9 @@ const Landing = () => {
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between text-zinc-300">
                       <span>{t('pricing.zones.duration.day', '24h')}</span><span className="font-bold text-[#FFD60A]">€6.99</span>
+                    </div>
+                    <div className="flex justify-between text-zinc-300">
+                      <span>{t('pricing.zones.duration.week', '1 Sem.')}</span><span className="font-bold text-[#FFD60A]">€20.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
                       <span>{t('pricing.zones.duration.month', '1 Mois')}</span><span className="font-bold text-[#FFD60A]">€54.99</span>
@@ -539,6 +549,9 @@ const Landing = () => {
                       <span>{t('pricing.zones.duration.day', '24h')}</span><span className="font-bold text-[#FFD60A]">£9.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
+                      <span>{t('pricing.zones.duration.week', '1 Week')}</span><span className="font-bold text-[#FFD60A]">£34.99</span>
+                    </div>
+                    <div className="flex justify-between text-zinc-300">
                       <span>{t('pricing.zones.duration.month', '1 Month')}</span><span className="font-bold text-[#FFD60A]">£79.99</span>
                     </div>
                   </div>
@@ -552,6 +565,9 @@ const Landing = () => {
                       <span>{t('pricing.zones.duration.day', '24h')}</span><span className="font-bold text-[#FFD60A]">£14.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
+                      <span>{t('pricing.zones.duration.week', '1 Week')}</span><span className="font-bold text-[#FFD60A]">£49.99</span>
+                    </div>
+                    <div className="flex justify-between text-zinc-300">
                       <span>{t('pricing.zones.duration.month', '1 Month')}</span><span className="font-bold text-[#FFD60A]">£129.99</span>
                     </div>
                   </div>
@@ -563,6 +579,9 @@ const Landing = () => {
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between text-zinc-300">
                       <span>{t('pricing.zones.duration.day', '24h')}</span><span className="font-bold text-[#FFD60A]">£19.99</span>
+                    </div>
+                    <div className="flex justify-between text-zinc-300">
+                      <span>{t('pricing.zones.duration.week', '1 Week')}</span><span className="font-bold text-[#FFD60A]">£69.99</span>
                     </div>
                     <div className="flex justify-between text-zinc-300">
                       <span>{t('pricing.zones.duration.month', '1 Month')}</span><span className="font-bold text-[#FFD60A]">£149</span>

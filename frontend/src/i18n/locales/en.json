@@ -353,6 +353,17 @@
         "feature3": "Smart routes",
         "feature4": "Priority support",
         "feature5": "Maximum savings"
+      },
+      "week": {
+        "name": "1 Week",
+        "price": "€19.99",
+        "period": "week",
+        "description": "For regular use",
+        "feature1": "15 rides over 7 days",
+        "feature2": "Up to 3 rides/day",
+        "feature3": "Access to all vehicles",
+        "feature4": "38% cheaper than weekly transit pass",
+        "badge": "-38% vs Transit"
       }
     },
     "features": {
@@ -423,6 +434,12 @@
         "price": "$59.99",
         "priceLocal": "$59.99",
         "description": "Best value for money"
+      },
+      "week": {
+        "name": "1 Week",
+        "price": "€19.99",
+        "priceLocal": "€19.99",
+        "description": "Perfect for regular use"
       }
     },
     "features": {
@@ -476,7 +493,8 @@
       },
       "duration": {
         "day": "24h",
-        "month": "1 Month"
+        "month": "1 Month",
+        "week": "1 Week"
       }
     }
   },
@@ -769,7 +787,8 @@
     "pricingTitle": "Pricing",
     "pricing": {
       "day": "24 hours",
-      "month": "1 month"
+      "month": "1 month",
+      "week": "1 week"
     },
     "conditionsTitle": "Terms",
     "condition1": "An active subscription is required to access the service",

@@ -259,6 +259,16 @@
         "feature3": "Rutas inteligentes",
         "feature4": "Soporte prioritario",
         "feature5": "Máximo ahorro"
+      },
+      "week": {
+        "name": "1 Semana",
+        "price": "14,99 €",
+        "period": "semana",
+        "description": "Para uso regular",
+        "feature1": "15 viajes en 7 días",
+        "feature2": "Hasta 3 viajes/día",
+        "feature3": "Acceso a todos los vehículos",
+        "feature4": "38% más barato que el abono semanal"
       }
     },
     "features": {
@@ -335,6 +345,12 @@
         "price": "34,99 €",
         "priceLocal": "34,99 €",
         "description": "La mejor relación calidad-precio"
+      },
+      "week": {
+        "name": "1 Semana",
+        "price": "14,99 €",
+        "priceLocal": "14,99 €",
+        "description": "Perfecto para uso regular"
       }
     },
     "features": {
@@ -388,7 +404,8 @@
       },
       "duration": {
         "day": "24h",
-        "month": "1 Mes"
+        "month": "1 Mes",
+        "week": "1 Sem."
       }
     }
   },
@@ -631,7 +648,8 @@
     "pricingTitle": "Precios",
     "pricing": {
       "day": "24 horas",
-      "month": "1 mes"
+      "month": "1 mes",
+      "week": "1 semana"
     },
     "conditionsTitle": "Condiciones",
     "condition1": "Se requiere una suscripción activa para acceder al servicio",

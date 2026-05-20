@@ -247,6 +247,15 @@
         "feature3": "Rotas inteligentes",
         "feature4": "Suporte prioritário",
         "feature5": "Economia máxima"
+      },
+      "week": {
+        "name": "1 Semana",
+        "price": "€19,99",
+        "period": "semana",
+        "description": "Para uso regular",
+        "feature1": "15 viagens em 7 dias",
+        "feature2": "Até 3 viagens/dia",
+        "feature3": "Acesso a todos os veículos"
       }
     },
     "features": {
@@ -322,6 +331,12 @@
         "price": "53,99 €",
         "priceLocal": "53,99 €",
         "description": "Melhor custo-benefício"
+      },
+      "week": {
+        "name": "1 Semana",
+        "price": "€19,99",
+        "priceLocal": "€19,99",
+        "description": "Perfeito para uso regular"
       }
     },
     "features": {
@@ -375,7 +390,8 @@
       },
       "duration": {
         "day": "24h",
-        "month": "1 Mês"
+        "month": "1 Mês",
+        "week": "1 Sem."
       }
     }
   },
@@ -617,7 +633,8 @@
     "pricingTitle": "Preços",
     "pricing": {
       "day": "24 horas",
-      "month": "1 mês"
+      "month": "1 mês",
+      "week": "1 semana"
     },
     "conditionsTitle": "Condições",
     "condition1": "É necessária uma assinatura ativa para acessar o serviço",

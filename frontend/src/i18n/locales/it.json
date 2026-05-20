@@ -297,6 +297,15 @@
         "feature3": "Percorsi intelligenti",
         "feature4": "Supporto prioritario",
         "feature5": "Massimo risparmio"
+      },
+      "week": {
+        "name": "1 Settimana",
+        "price": "€19,99",
+        "period": "settimana",
+        "description": "Per uso regolare",
+        "feature1": "15 corse in 7 giorni",
+        "feature2": "Fino a 3 corse/giorno",
+        "feature3": "Accesso a tutti i veicoli"
       }
     },
     "features": {
@@ -371,6 +380,12 @@
         "price": "53,99 €",
         "priceLocal": "53,99 €",
         "description": "Miglior rapporto qualità-prezzo"
+      },
+      "week": {
+        "name": "1 Settimana",
+        "price": "€19,99",
+        "priceLocal": "€19,99",
+        "description": "Perfetto per uso regolare"
       }
     },
     "features": {
@@ -424,7 +439,8 @@
       },
       "duration": {
         "day": "24h",
-        "month": "1 Mese"
+        "month": "1 Mese",
+        "week": "1 Sett."
       }
     }
   },
@@ -639,7 +655,8 @@
     "pricingTitle": "Prezzi",
     "pricing": {
       "day": "24 ore",
-      "month": "1 mese"
+      "month": "1 mese",
+      "week": "1 settimana"
     },
     "conditionsTitle": "Condizioni",
     "condition1": "È richiesto un abbonamento attivo per accedere al servizio",

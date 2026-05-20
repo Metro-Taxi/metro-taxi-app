@@ -420,6 +420,17 @@
         "feature3": "Itinéraires intelligents",
         "feature4": "Support prioritaire",
         "feature5": "Économie maximale"
+      },
+      "week": {
+        "name": "1 Semaine",
+        "price": "19,99 €",
+        "period": "semaine",
+        "description": "Pour un usage régulier",
+        "feature1": "15 trajets sur 7 jours",
+        "feature2": "Jusqu'à 3 trajets/jour",
+        "feature3": "Accès à tous les véhicules",
+        "feature4": "38% moins cher que le Navigo Semaine",
+        "badge": "-38% vs RATP"
       }
     },
     "features": {
@@ -498,6 +509,12 @@
         "price": "53,99 €",
         "priceLocal": "53,99 €",
         "description": "Le meilleur rapport qualité-prix"
+      },
+      "week": {
+        "name": "1 Semaine",
+        "price": "19,99 €",
+        "priceLocal": "19,99 €",
+        "description": "Idéal pour un usage régulier"
       }
     },
     "features": {
@@ -542,7 +559,8 @@
       },
       "duration": {
         "day": "24h",
-        "month": "1 Mois"
+        "month": "1 Mois",
+        "week": "1 Sem."
       }
     }
   },
@@ -838,7 +856,8 @@
     "pricingTitle": "Tarifs",
     "pricing": {
       "day": "24 heures",
-      "month": "1 mois"
+      "month": "1 mois",
+      "week": "1 semaine"
     },
     "conditionsTitle": "Conditions",
     "condition1": "L'abonnement doit être actif pour accéder au service",

@@ -247,6 +247,15 @@
         "feature3": "Intelligente Routen",
         "feature4": "Prioritäts-Support",
         "feature5": "Maximale Ersparnis"
+      },
+      "week": {
+        "name": "1 Woche",
+        "price": "€19,99",
+        "period": "Woche",
+        "description": "Für regelmäßige Nutzung",
+        "feature1": "15 Fahrten in 7 Tagen",
+        "feature2": "Bis zu 3 Fahrten/Tag",
+        "feature3": "Zugang zu allen Fahrzeugen"
       }
     },
     "features": {
@@ -322,6 +331,12 @@
         "price": "53,99 €",
         "priceLocal": "53,99 €",
         "description": "Bestes Preis-Leistungs-Verhältnis"
+      },
+      "week": {
+        "name": "1 Woche",
+        "price": "€19,99",
+        "priceLocal": "€19,99",
+        "description": "Perfekt für regelmäßige Nutzung"
       }
     },
     "features": {
@@ -375,7 +390,8 @@
       },
       "duration": {
         "day": "24h",
-        "month": "1 Monat"
+        "month": "1 Monat",
+        "week": "1 Wo."
       }
     }
   },
@@ -617,7 +633,8 @@
     "pricingTitle": "Preise",
     "pricing": {
       "day": "24 Stunden",
-      "month": "1 Monat"
+      "month": "1 Monat",
+      "week": "1 Woche"
     },
     "conditionsTitle": "Bedingungen",
     "condition1": "Ein aktives Abonnement ist erforderlich",

@@ -267,6 +267,19 @@ const Subscription = () => {
       ]
     },
     { 
+      id: '1week', 
+      name: t('subscription.plans.week.name', '1 SEMAINE'), 
+      price: t('subscription.plans.week.price', '19,99 €'), 
+      period: t('subscription.plans.week.period', 'semaine'),
+      badge: t('subscription.plans.week.badge', '-38% vs RATP'),
+      features: [
+        t('subscription.plans.week.feature1', '15 trajets sur 7 jours'),
+        t('subscription.plans.week.feature2', 'Jusqu\'à 3 trajets/jour'),
+        t('subscription.plans.week.feature3', 'Accès à tous les véhicules'),
+        t('subscription.plans.week.feature4', '38% moins cher que le Navigo Semaine')
+      ]
+    },
+    { 
       id: '1month', 
       name: t('subscription.plans.month.name', '1 MOIS'), 
       price: t('subscription.plans.month.price', '53,99 €'), 

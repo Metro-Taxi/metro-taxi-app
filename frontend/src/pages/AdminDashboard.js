@@ -278,7 +278,7 @@ const AdminDashboard = () => {
   // Gift subscription functions
   const openGiftDialog = (user) => {
     setSelectedUserForGift(user);
-    setGiftPlan('1month');
+    setGiftPlan('1week');
     setGiftReason('promo_lancement');
     setGiftDialogOpen(true);
   };
@@ -1095,7 +1095,7 @@ const AdminDashboard = () => {
                               <td>
                                 <span className="text-[#FFD60A] font-bold">
                                   {sub.plan === '24h' ? t('subscription.plans.day.name') :
-                                   sub.plan === '1week' ? '1 Semaine (archivé)' :
+                                   sub.plan === '1week' ? t('subscription.plans.week.name') :
                                    sub.plan === '1month' ? t('subscription.plans.month.name') : sub.plan || '-'}
                                 </span>
                               </td>
@@ -1156,7 +1156,7 @@ const AdminDashboard = () => {
                             <td>
                               <span className="text-zinc-400">
                                 {sub.plan === '24h' ? t('subscription.plans.day.name') :
-                                 sub.plan === '1week' ? '1 Semaine (archivé)' :
+                                 sub.plan === '1week' ? t('subscription.plans.week.name') :
                                  sub.plan === '1month' ? t('subscription.plans.month.name') : sub.plan || '-'}
                               </span>
                             </td>
@@ -1717,7 +1717,7 @@ const AdminDashboard = () => {
                           <p className="text-zinc-400 text-xs">{t('dashboard.admin.cards.subscription')}</p>
                           <p className="text-[#FFD60A] font-bold">
                             {selectedCard.subscription_plan === '24h' ? t('subscription.plans.day.name') :
-                             selectedCard.subscription_plan === '1week' ? '1 Semaine (archivé)' :
+                             selectedCard.subscription_plan === '1week' ? t('subscription.plans.week.name') :
                              selectedCard.subscription_plan === '1month' ? t('subscription.plans.month.name') : '-'}
                           </p>
                         </div>
@@ -2155,6 +2155,7 @@ const AdminDashboard = () => {
                     className="w-full bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-white"
                   >
                     <option value="24h">24 heures (6,99€)</option>
+                    <option value="1week">1 semaine (19,99€)</option>
                     <option value="1month">1 mois (53,99€)</option>
                   </select>
                 </div>

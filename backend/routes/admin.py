@@ -623,6 +623,55 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
                 status_code=429,
                 detail=f"Plafond atteint : abonnement 24h limité à {plan_24h_max} trajets. Passez à l'abonnement 1 semaine ou 1 mois pour des trajets illimités."
             )
+
+    # ============================================
+    # PLAFOND ABONNEMENT 1 SEMAINE = 15 trajets / 7j + max 3 trajets/jour
+    # ============================================
+    if user.get("subscription_plan") == "1week":
+        now = datetime.now(timezone.utc)
+        plan_week = SUBSCRIPTION_PLANS["1week"]
+        plan_week_max = plan_week.get("max_rides_per_period", 15)
+        plan_week_max_per_day = plan_week.get("max_rides_per_day", 3)
+
+        # Période d'abonnement courante (7j glissant depuis activation)
+        sub_started = user.get("subscription_started_at")
+        if sub_started:
+            try:
+                period_start = datetime.fromisoformat(sub_started)
+            except (ValueError, TypeError):
+                period_start = now - timedelta(days=7)
+        elif expires_str:
+            try:
+                period_start = datetime.fromisoformat(expires_str) - timedelta(days=7)
+            except (ValueError, TypeError):
+                period_start = now - timedelta(days=7)
+        else:
+            period_start = now - timedelta(days=7)
+
+        # Compte trajets sur la période hebdomadaire
+        rides_count_week = await db.ride_requests.count_documents({
+            "user_id": user_id,
+            "created_at": {"$gte": period_start.isoformat()},
+            "status": {"$nin": ["rejected", "cancelled"]},
+        })
+        if rides_count_week >= plan_week_max:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Plafond hebdomadaire atteint : abonnement 1 semaine limité à {plan_week_max} trajets. Passez à l'abonnement 1 mois pour des trajets illimités."
+            )
+
+        # Plafond journalier : max 3 trajets / 24h glissant
+        day_start = now - timedelta(hours=24)
+        rides_count_day = await db.ride_requests.count_documents({
+            "user_id": user_id,
+            "created_at": {"$gte": day_start.isoformat()},
+            "status": {"$nin": ["rejected", "cancelled"]},
+        })
+        if rides_count_day >= plan_week_max_per_day:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Plafond journalier atteint : abonnement 1 semaine limité à {plan_week_max_per_day} trajets par jour. Réessayez plus tard ou passez à l'abonnement 1 mois pour des trajets illimités."
+            )
     
     ride_id = str(uuid.uuid4())
     ride_doc = {
