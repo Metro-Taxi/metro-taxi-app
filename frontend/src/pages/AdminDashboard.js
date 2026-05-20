@@ -97,7 +97,7 @@ const AdminDashboard = () => {
   // Gift subscription states
   const [giftDialogOpen, setGiftDialogOpen] = useState(false);
   const [selectedUserForGift, setSelectedUserForGift] = useState(null);
-  const [giftPlan, setGiftPlan] = useState('1week');
+  const [giftPlan, setGiftPlan] = useState('1month');
   const [giftReason, setGiftReason] = useState('promo_lancement');
   const [giftingSubscription, setGiftingSubscription] = useState(false);
   const [giftHistory, setGiftHistory] = useState([]);
@@ -2155,7 +2155,6 @@ const AdminDashboard = () => {
                     className="w-full bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-white"
                   >
                     <option value="24h">24 heures (6,99€)</option>
-                    <option value="1week">1 semaine (16,99€)</option>
                     <option value="1month">1 mois (53,99€)</option>
                   </select>
                 </div>

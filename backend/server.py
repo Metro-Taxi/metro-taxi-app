@@ -67,7 +67,6 @@ if RESEND_API_KEY:
 # Default plans (France/EUR)
 SUBSCRIPTION_PLANS = {
     "24h": {"name": "24 heures", "price": 6.99, "price_cents": 699, "duration_hours": 24, "max_rides_per_period": 5},
-    "1week": {"name": "1 semaine", "price": 16.99, "price_cents": 1699, "duration_hours": 168},
     "1month": {"name": "1 mois", "price": 53.99, "price_cents": 5399, "duration_hours": 720}
 }
 
@@ -79,7 +78,6 @@ REGIONAL_PRICING = {
         "currency_symbol": "€",
         "plans": {
             "24h": {"name": "24 heures", "price": 6.99, "price_cents": 699},
-            "1week": {"name": "1 semaine", "price": 16.99, "price_cents": 1699},
             "1month": {"name": "1 mois", "price": 53.99, "price_cents": 5399}
         },
         "driver_rate_per_km": 1.50
@@ -90,7 +88,6 @@ REGIONAL_PRICING = {
         "currency_symbol": "€",
         "plans": {
             "24h": {"name": "24 heures", "price": 6.99, "price_cents": 699},
-            "1week": {"name": "1 semaine", "price": 16.99, "price_cents": 1699},
             "1month": {"name": "1 mois", "price": 53.99, "price_cents": 5399}
         },
         "driver_rate_per_km": 1.50
@@ -101,7 +98,6 @@ REGIONAL_PRICING = {
         "currency_symbol": "£",
         "plans": {
             "24h": {"name": "24 Hours", "price": 9.99, "price_cents": 999},
-            "1week": {"name": "1 Week", "price": 29.99, "price_cents": 2999},
             "1month": {"name": "1 Month", "price": 79.99, "price_cents": 7999}
         },
         "driver_rate_per_km": 2.00
@@ -112,7 +108,6 @@ REGIONAL_PRICING = {
         "currency_symbol": "£",
         "plans": {
             "24h": {"name": "24 Hours", "price": 14.99, "price_cents": 1499},
-            "1week": {"name": "1 Week", "price": 44.99, "price_cents": 4499},
             "1month": {"name": "1 Month", "price": 129.99, "price_cents": 12999}
         },
         "driver_rate_per_km": 2.00
@@ -123,7 +118,6 @@ REGIONAL_PRICING = {
         "currency_symbol": "£",
         "plans": {
             "24h": {"name": "24 Hours", "price": 19.99, "price_cents": 1999},
-            "1week": {"name": "1 Week", "price": 59.99, "price_cents": 5999},
             "1month": {"name": "1 Month", "price": 149.00, "price_cents": 14900}
         },
         "driver_rate_per_km": 2.00
@@ -134,7 +128,6 @@ REGIONAL_PRICING = {
         "currency_symbol": "€",
         "plans": {
             "24h": {"name": "24 Horas", "price": 4.99, "price_cents": 499},
-            "1week": {"name": "1 Semana", "price": 12.99, "price_cents": 1299},
             "1month": {"name": "1 Mes", "price": 34.99, "price_cents": 3499}
         },
         "driver_rate_per_km": 1.20
@@ -145,7 +138,6 @@ REGIONAL_PRICING = {
         "currency_symbol": "€",
         "plans": {
             "24h": {"name": "24 Horas", "price": 5.99, "price_cents": 599},
-            "1week": {"name": "1 Semana", "price": 14.99, "price_cents": 1499},
             "1month": {"name": "1 Mes", "price": 44.99, "price_cents": 4499}
         },
         "driver_rate_per_km": 1.30
@@ -156,7 +148,6 @@ REGIONAL_PRICING = {
         "currency_symbol": "€",
         "plans": {
             "24h": {"name": "24 Horas", "price": 6.99, "price_cents": 699},
-            "1week": {"name": "1 Semana", "price": 17.99, "price_cents": 1799},
             "1month": {"name": "1 Mes", "price": 54.99, "price_cents": 5499}
         },
         "driver_rate_per_km": 1.40

@@ -112,15 +112,10 @@ const SalesTerms = () => {
                   icon: Clock
                 },
                 { 
-                  duration: t('cgv.pricing.week', '1 semaine'), 
-                  price: t('subscription.plans.week.price', '16,99 €'),
-                  icon: Calendar,
-                  popular: true
-                },
-                { 
                   duration: t('cgv.pricing.month', '1 mois'), 
                   price: t('subscription.plans.month.price', '53,99 €'),
-                  icon: Calendar
+                  icon: Calendar,
+                  popular: true
                 }
               ].map((plan, index) => (
                 <div 

@@ -120,7 +120,6 @@ def sanitize_documents(docs: list) -> list:
 # Subscription Plans (prices in cents to avoid floating point issues)
 SUBSCRIPTION_PLANS = {
     "24h": {"name": "24 heures", "price": 6.99, "price_cents": 699, "duration_hours": 24},
-    "1week": {"name": "1 semaine", "price": 16.99, "price_cents": 1699, "duration_hours": 168},
     "1month": {"name": "1 mois", "price": 53.99, "price_cents": 5399, "duration_hours": 720}
 }
 

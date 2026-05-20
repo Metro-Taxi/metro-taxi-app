@@ -591,9 +591,11 @@ const UserDashboard = () => {
           
           <div className="flex items-center gap-2">
             {user?.subscription_active ? (
-              <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded border border-green-500/50">
-                {t('common.subscribed')}
-              </span>
+              <Link to="/subscription" data-testid="active-subscription-badge">
+                <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded border border-green-500/50 cursor-pointer hover:bg-green-500/30 transition-colors">
+                  {t('common.subscribed')}
+                </span>
+              </Link>
             ) : (
               <Link to="/subscription">
                 <span className="text-xs bg-[#FFD60A]/20 text-[#FFD60A] px-2 py-1 rounded border border-[#FFD60A]/50 cursor-pointer">

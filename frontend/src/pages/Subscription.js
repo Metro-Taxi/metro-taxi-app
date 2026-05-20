@@ -267,23 +267,11 @@ const Subscription = () => {
       ]
     },
     { 
-      id: '1week', 
-      name: t('subscription.plans.week.name', '1 SEMAINE'), 
-      price: t('subscription.plans.week.price', '16,99 €'), 
-      period: t('subscription.plans.week.period', 'semaine'),
-      popular: true,
-      features: [
-        t('subscription.plans.week.feature1', 'Trajets illimités pendant 7 jours'), 
-        t('subscription.plans.week.feature2', 'Accès prioritaire'), 
-        t('subscription.plans.week.feature3', 'Trajets optimisés'), 
-        t('subscription.plans.week.feature4', 'Support prioritaire')
-      ]
-    },
-    { 
       id: '1month', 
       name: t('subscription.plans.month.name', '1 MOIS'), 
       price: t('subscription.plans.month.price', '53,99 €'), 
       period: t('subscription.plans.month.period', 'mois'),
+      popular: true,
       features: [
         t('subscription.plans.month.feature1', 'Trajets illimités pendant 30 jours'), 
         t('subscription.plans.month.feature2', 'Accès prioritaire'), 
@@ -357,27 +345,55 @@ const Subscription = () => {
           </motion.div>
         )}
 
-        {/* Current subscription status */}
+        {/* Current subscription status with renewal info */}
         {userSubscriptions.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-8 p-6 bg-green-500/10 border border-green-500/30 rounded"
+            data-testid="current-subscription-card"
           >
             <h3 className="text-green-400 font-bold mb-3 flex items-center gap-2">
               <Check className="w-5 h-5" />
-              {t('regions.activeInRegions', 'Active subscriptions')}
+              {t('subscription.myCurrentSub', 'Mon abonnement actuel')}
             </h3>
-            <div className="flex flex-wrap gap-3">
-              {userSubscriptions.filter(s => s.is_active).map(sub => (
-                <div key={sub.region_id} className="flex items-center gap-2 bg-green-500/20 px-3 py-2 rounded">
-                  <span>{countryFlags[sub.region?.country] || '🌍'}</span>
-                  <span className="text-white font-medium">{sub.region?.name}</span>
-                  <span className="text-green-400 text-sm">
-                    ({sub.hours_remaining}h)
-                  </span>
-                </div>
-              ))}
+            <div className="flex flex-wrap gap-3 mb-3">
+              {userSubscriptions.filter(s => s.is_active).map(sub => {
+                const hours = sub.hours_remaining || 0;
+                const days = Math.floor(hours / 24);
+                const remainingHours = hours % 24;
+                const canRenewNow = hours <= 48;
+                return (
+                  <div key={sub.region_id} className="flex flex-col gap-2 bg-green-500/10 px-4 py-3 rounded-lg border border-green-500/30 w-full">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{countryFlags[sub.region?.country] || '🌍'}</span>
+                      <span className="text-white font-bold">{sub.region?.name}</span>
+                      <span className={`ml-auto text-xs px-2 py-1 rounded ${canRenewNow ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-green-500/20 text-green-300 border border-green-500/40'}`}>
+                        {canRenewNow
+                          ? t('subscription.renewSoon', 'À renouveler bientôt')
+                          : t('subscription.statusActive', 'ACTIF')}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-zinc-300 text-sm">
+                      <Clock className="w-4 h-4 text-zinc-500" />
+                      <span>
+                        {days > 0
+                          ? t('subscription.expiresInDays', { count: days, defaultValue: `Expire dans ${days} jour(s) ${remainingHours}h` })
+                          : t('subscription.expiresInHours', { count: hours, defaultValue: `Expire dans ${hours}h` })}
+                      </span>
+                    </div>
+                    {canRenewNow ? (
+                      <p className="text-xs text-amber-300 mt-1">
+                        💡 {t('subscription.renewAvailableNow', 'Tu peux renouveler maintenant pour éviter toute coupure de service. Sélectionne un forfait ci-dessous.')}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-zinc-500 mt-1">
+                        🔒 {t('subscription.renewAvailableLater', `Le renouvellement sera disponible 48h avant l'expiration. Un email te sera envoyé.`)}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </motion.div>
         )}
