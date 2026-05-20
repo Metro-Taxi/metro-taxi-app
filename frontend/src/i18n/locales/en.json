@@ -342,16 +342,6 @@
         "feature2": "Access to all vehicles",
         "feature3": "Smart routes"
       },
-      "week": {
-        "name": "1 WEEK",
-        "price": "$18.49",
-        "description": "Ideal for short stays",
-        "period": "week",
-        "feature1": "Unlimited rides for 7 days",
-        "feature2": "Priority access",
-        "feature3": "Smart routes",
-        "feature4": "Priority support"
-      },
       "month": {
         "name": "1 MONTH",
         "price": "$58.49",
@@ -428,12 +418,6 @@
         "priceLocal": "$7.99",
         "description": "Perfect for occasional use"
       },
-      "week": {
-        "name": "1 Week",
-        "price": "$18.99",
-        "priceLocal": "$18.99",
-        "description": "Ideal for short stays"
-      },
       "month": {
         "name": "1 Month",
         "price": "$59.99",
@@ -492,7 +476,6 @@
       },
       "duration": {
         "day": "24h",
-        "week": "1 Week",
         "month": "1 Month"
       }
     }
@@ -786,7 +769,6 @@
     "pricingTitle": "Pricing",
     "pricing": {
       "day": "24 hours",
-      "week": "1 week",
       "month": "1 month"
     },
     "conditionsTitle": "Terms",

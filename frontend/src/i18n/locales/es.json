@@ -247,17 +247,6 @@
         "feature2": "Acceso a todos los vehículos",
         "feature3": "Rutas inteligentes"
       },
-      "week": {
-        "name": "1 SEMANA",
-        "price": "12,99 €",
-        "priceLocal": "12,99 €",
-        "description": "Ideal para estancias cortas",
-        "period": "semana",
-        "feature1": "Viajes ilimitados por 7 días",
-        "feature2": "Acceso prioritario",
-        "feature3": "Rutas inteligentes",
-        "feature4": "Soporte prioritario"
-      },
       "month": {
         "name": "1 MES",
         "price": "34,99 €",
@@ -341,12 +330,6 @@
         "priceLocal": "4,99 €",
         "description": "Perfecto para uso ocasional"
       },
-      "week": {
-        "name": "1 Semana",
-        "price": "12,99 €",
-        "priceLocal": "12,99 €",
-        "description": "Ideal para estancias cortas"
-      },
       "month": {
         "name": "1 Mes",
         "price": "34,99 €",
@@ -405,7 +388,6 @@
       },
       "duration": {
         "day": "24h",
-        "week": "1 Sem.",
         "month": "1 Mes"
       }
     }
@@ -649,7 +631,6 @@
     "pricingTitle": "Precios",
     "pricing": {
       "day": "24 horas",
-      "week": "1 semana",
       "month": "1 mes"
     },
     "conditionsTitle": "Condiciones",

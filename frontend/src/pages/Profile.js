@@ -61,7 +61,6 @@ const Profile = () => {
   const getPlanName = (planId) => {
     const plans = {
       '24h': '24 Heures',
-      '1week': '1 Semaine',
       '1month': '1 Mois'
     };
     return plans[planId] || planId;

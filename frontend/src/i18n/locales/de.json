@@ -236,16 +236,6 @@
         "feature2": "Zugang zu allen Fahrzeugen",
         "feature3": "Intelligente Routen"
       },
-      "week": {
-        "name": "1 WOCHE",
-        "price": "16,99 €",
-        "description": "Ideal für Kurzaufenthalte",
-        "period": "Woche",
-        "feature1": "Unbegrenzte Fahrten für 7 Tage",
-        "feature2": "Prioritätszugang",
-        "feature3": "Intelligente Routen",
-        "feature4": "Prioritäts-Support"
-      },
       "month": {
         "name": "1 MONAT",
         "price": "53,99 €",
@@ -327,12 +317,6 @@
         "priceLocal": "6,99 €",
         "description": "Perfekt für gelegentliche Nutzung"
       },
-      "week": {
-        "name": "1 Woche",
-        "price": "16,99 €",
-        "priceLocal": "16,99 €",
-        "description": "Ideal für Kurzaufenthalte"
-      },
       "month": {
         "name": "1 Monat",
         "price": "53,99 €",
@@ -391,7 +375,6 @@
       },
       "duration": {
         "day": "24h",
-        "week": "1 Woche",
         "month": "1 Monat"
       }
     }
@@ -634,7 +617,6 @@
     "pricingTitle": "Preise",
     "pricing": {
       "day": "24 Stunden",
-      "week": "1 Woche",
       "month": "1 Monat"
     },
     "conditionsTitle": "Bedingungen",

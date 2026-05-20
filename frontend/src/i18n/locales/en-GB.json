@@ -341,11 +341,6 @@
         "price": "£9.99",
         "priceLocal": "£9.99"
       },
-      "week": {
-        "name": "1 Week",
-        "price": "£29.99",
-        "priceLocal": "£29.99"
-      },
       "month": {
         "name": "1 Month",
         "price": "£79.99",
@@ -416,12 +411,6 @@
         "priceLocal": "£9.99",
         "description": "Perfect for occasional use"
       },
-      "week": {
-        "name": "1 Week",
-        "price": "£29.99",
-        "priceLocal": "£29.99",
-        "description": "Ideal for short stays"
-      },
       "month": {
         "name": "1 Month",
         "price": "£79.99",
@@ -480,7 +469,6 @@
       },
       "duration": {
         "day": "24h",
-        "week": "1 Week",
         "month": "1 Month"
       }
     }
@@ -774,7 +762,6 @@
     "pricingTitle": "Pricing",
     "pricing": {
       "day": "24 hours",
-      "week": "1 week",
       "month": "1 month"
     },
     "conditionsTitle": "Terms",
