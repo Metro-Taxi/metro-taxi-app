@@ -572,6 +572,18 @@ async def admin_process_all_stripe_payouts(current_user: dict = Depends(get_curr
     }
 
 # Ride Request Routes
+def _haversine_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
+    """Compute haversine distance in km (local helper to avoid circular imports)."""
+    R = 6371.0
+    lat1_rad = math.radians(lat1)
+    lat2_rad = math.radians(lat2)
+    delta_lat = math.radians(lat2 - lat1)
+    delta_lng = math.radians(lng2 - lng1)
+    a = math.sin(delta_lat / 2) ** 2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(delta_lng / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return R * c
+
+
 @router.post("/rides/request")
 async def create_ride_request(data: RideRequestCreate, current_user: dict = Depends(get_current_user)):
     if current_user["role"] != "user":
@@ -579,23 +591,67 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
     
     user_id = current_user["user_id"]
     
-    # Check subscription
     user = await db.users.find_one({"id": user_id}, {"_id": 0})
-    if not user.get("subscription_active"):
-        raise HTTPException(status_code=403, detail="Abonnement requis")
-    
-    # Check expiration
-    expires_str = user.get("subscription_expires")
-    if expires_str:
-        expires = datetime.fromisoformat(expires_str)
-        if expires < datetime.now(timezone.utc):
-            await db.users.update_one({"id": user_id}, {"$set": {"subscription_active": False}})
-            raise HTTPException(status_code=403, detail="Abonnement expiré")
+    if not user:
+        raise HTTPException(status_code=404, detail="Usager non trouvé")
+
+    now = datetime.now(timezone.utc)
+
+    # ============================================
+    # PROMO CODE "1ère course offerte" (Saint-Denis launch)
+    # If user has a valid pending_promo and ride distance ≤ max_distance_km,
+    # the ride is free for the user (platform absorbs driver payout).
+    # Bypasses the subscription requirement.
+    # ============================================
+    pending_promo = user.get("pending_promo") or {}
+    use_promo = False
+    promo_distance_km = None
+    if pending_promo and pending_promo.get("type") == "free_first_ride":
+        # Check expiration
+        try:
+            promo_expires = datetime.fromisoformat(pending_promo["expires_at"].replace("Z", "+00:00"))
+        except (ValueError, TypeError, KeyError):
+            promo_expires = None
+        if promo_expires and promo_expires < now:
+            # Promo expired → clean it silently and require subscription as usual
+            await db.users.update_one({"id": user_id}, {"$unset": {"pending_promo": ""}})
+            pending_promo = {}
+        else:
+            # Compute distance pickup→destination
+            promo_distance_km = round(
+                _haversine_km(data.pickup_lat, data.pickup_lng, data.destination_lat, data.destination_lng), 2
+            )
+            max_km = float(pending_promo.get("max_distance_km", 10))
+            if promo_distance_km > max_km:
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        f"Course offerte plafonnée à {max_km:.0f} km — ta course estimée est de {promo_distance_km:.1f} km. "
+                        f"Tu peux prendre un abonnement (24h, 7j, 1 mois) ou choisir une destination plus proche."
+                    ),
+                )
+            use_promo = True
+
+    # Subscription is only required when no promo is being consumed
+    if not use_promo:
+        if not user.get("subscription_active"):
+            raise HTTPException(status_code=403, detail="Abonnement requis")
+
+        # Check expiration
+        expires_str = user.get("subscription_expires")
+        if expires_str:
+            expires = datetime.fromisoformat(expires_str)
+            if expires < now:
+                await db.users.update_one({"id": user_id}, {"$set": {"subscription_active": False}})
+                raise HTTPException(status_code=403, detail="Abonnement expiré")
+    else:
+        expires_str = user.get("subscription_expires")
 
     # ============================================
     # PLAFOND ABONNEMENT 24h = 5 trajets max (anti-abus)
+    # Skipped if user is consuming a free-ride promo (no subscription).
     # ============================================
-    if user.get("subscription_plan") == "24h":
+    if (not use_promo) and user.get("subscription_plan") == "24h":
         now = datetime.now(timezone.utc)
         plan_24h_max = SUBSCRIPTION_PLANS["24h"].get("max_rides_per_period", 5)
         # Compteur lié à la période d'abonnement courante (24h glissant depuis activation)
@@ -626,8 +682,9 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
 
     # ============================================
     # PLAFOND ABONNEMENT 1 SEMAINE = 15 trajets / 7j + max 3 trajets/jour
+    # Skipped if user is consuming a free-ride promo (no subscription).
     # ============================================
-    if user.get("subscription_plan") == "1week":
+    if (not use_promo) and user.get("subscription_plan") == "1week":
         now = datetime.now(timezone.utc)
         plan_week = SUBSCRIPTION_PLANS["1week"]
         plan_week_max = plan_week.get("max_rides_per_period", 15)
@@ -686,7 +743,24 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
         "status": "pending",
         "created_at": datetime.now(timezone.utc).isoformat()
     }
+    # Mark ride as promo-sponsored when applicable
+    if use_promo:
+        ride_doc["promo_code_used"] = pending_promo.get("code")
+        ride_doc["promo_campaign"] = pending_promo.get("campaign")
+        ride_doc["promo_max_distance_km"] = pending_promo.get("max_distance_km")
+        ride_doc["promo_estimated_distance_km"] = promo_distance_km
+        ride_doc["user_paid_eur"] = 0.0
+        ride_doc["platform_sponsored"] = True
+
     await db.ride_requests.insert_one(ride_doc)
+
+    # Consume the promo credit (one-shot): unset pending_promo + bind ride_id on the code
+    if use_promo:
+        await db.users.update_one({"id": user_id}, {"$unset": {"pending_promo": ""}})
+        await db.promo_codes.update_one(
+            {"code": pending_promo.get("code")},
+            {"$set": {"consumed_at": datetime.now(timezone.utc).isoformat(), "ride_id": ride_id}},
+        )
     
     # Notify driver
     await _get_manager().send_personal_message({
@@ -839,6 +913,13 @@ async def complete_ride(ride_id: str, current_user: dict = Depends(get_current_u
         },
         upsert=True
     )
+
+    # If the ride was sponsored by a promo code, track the platform cost on the code itself
+    if ride.get("platform_sponsored") and ride.get("promo_code_used"):
+        await db.promo_codes.update_one(
+            {"code": ride["promo_code_used"]},
+            {"$set": {"platform_cost_eur": revenue, "completed_at": now.isoformat()}},
+        )
     
     # Restore available seats
     await db.drivers.update_one({"id": driver_id}, {"$inc": {"available_seats": 1}})

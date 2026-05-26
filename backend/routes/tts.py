@@ -263,3 +263,144 @@ async def get_voiceover_cache_status(current_user: dict = Depends(get_current_us
 
     cached_count = sum(1 for s in status.values() if s["cached"])
     return {"cached": cached_count, "total": len(VIDEO_SCRIPTS), "languages": status}
+
+
+# =============================================================================
+# TRANSFER ALERTS (Transbordement) — Multilingual TTS alerts
+# Played in real-time when a user must change vehicle during multi-segment ride.
+# Supported langs: fr, ar, en, es (4 priority languages per Capitaine).
+# Roles:
+#   - user   : message à l'usager qui doit se préparer à descendre
+#   - driver : message au chauffeur receveur (mise en warning)
+# Voice: nova (féminine, rassurante)
+# =============================================================================
+TRANSFER_ALERTS = {
+    "user": {
+        "fr": "Attention : préparez-vous à descendre. Votre transbordement approche dans quelques instants. Merci de votre patience.",
+        "en": "Attention: please get ready to step out. Your transfer vehicle is arriving in a few moments. Thank you for your patience.",
+        "es": "Atención: prepárese para bajar. Su vehículo de transbordo llegará en unos instantes. Gracias por su paciencia.",
+        "ar": "انتباه: استعد للنزول. مركبة النقل ستصل خلال لحظات. شكراً لصبرك.",
+    },
+    "driver": {
+        "fr": "Mettez-vous en warning. Un usager Métro-Taxi va monter à bord dans quelques instants. Préparez l'accueil.",
+        "en": "Switch on your hazard lights. A Métro-Taxi passenger will board in a few moments. Prepare to welcome them.",
+        "es": "Encienda las luces de emergencia. Un pasajero de Métro-Taxi va a subir en breve. Prepare la recepción.",
+        "ar": "شغّل أضواء التحذير. سيصعد راكب مترو-تاكسي خلال لحظات. استعد لاستقباله.",
+    },
+}
+
+TRANSFER_ALERT_LANGS = ("fr", "ar", "en", "es")
+TRANSFER_ALERT_ROLES = ("user", "driver")
+
+
+@router.get("/tts/transfer-alert")
+async def get_transfer_alert(lang: str = "fr", role: str = "user"):
+    """Return MP3 audio alert for transbordement (cached).
+
+    Query params:
+      - lang: fr | en | es | ar (default fr)
+      - role: user | driver (default user)
+    """
+    if role not in TRANSFER_ALERTS:
+        raise HTTPException(status_code=400, detail=f"role must be one of {TRANSFER_ALERT_ROLES}")
+    if lang not in TRANSFER_ALERTS[role]:
+        raise HTTPException(status_code=400, detail=f"lang '{lang}' not supported (must be one of {TRANSFER_ALERT_LANGS})")
+
+    cache_dir = "/app/frontend/public/audio/transfer_alerts"
+    cache_file = f"{cache_dir}/alert_{role}_{lang}.mp3"
+
+    # Serve from cache if present
+    if os.path.exists(cache_file):
+        with open(cache_file, "rb") as f:
+            audio_bytes = f.read()
+        return Response(
+            content=audio_bytes,
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": f"inline; filename=alert_{role}_{lang}.mp3",
+                "Cache-Control": "public, max-age=31536000",
+            },
+        )
+
+    # Generate via OpenAI TTS (Emergent LLM key)
+    api_key = os.environ.get("EMERGENT_LLM_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="TTS API key not configured")
+
+    script = TRANSFER_ALERTS[role][lang]
+    try:
+        logging.info(f"Generating transfer alert role={role} lang={lang}")
+        tts = OpenAITextToSpeech(api_key=api_key)
+        audio_bytes = await tts.generate_speech(
+            text=script, model="tts-1", voice="nova", speed=1.0, response_format="mp3"
+        )
+        try:
+            os.makedirs(cache_dir, exist_ok=True)
+            with open(cache_file, "wb") as f:
+                f.write(audio_bytes)
+        except Exception as cache_error:
+            logging.warning(f"Could not cache transfer alert: {cache_error}")
+
+        return Response(
+            content=audio_bytes,
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": f"inline; filename=alert_{role}_{lang}.mp3",
+                "Cache-Control": "public, max-age=31536000",
+            },
+        )
+    except Exception as e:
+        logging.error(f"Transfer alert TTS error: {e}")
+        raise HTTPException(status_code=500, detail=f"Error generating transfer alert: {str(e)}")
+
+
+@router.post("/admin/tts/pregenerate-transfer-alerts")
+async def pregenerate_transfer_alerts(current_user: dict = Depends(get_current_user)):
+    """Pre-generate ALL transfer alerts (4 langs × 2 roles = 8 MP3 files). Admin only."""
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    api_key = os.environ.get("EMERGENT_LLM_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="TTS API key not configured")
+
+    cache_dir = "/app/frontend/public/audio/transfer_alerts"
+    os.makedirs(cache_dir, exist_ok=True)
+    tts = OpenAITextToSpeech(api_key=api_key)
+    results = {"generated": [], "skipped": [], "failed": []}
+
+    for role, by_lang in TRANSFER_ALERTS.items():
+        for lang, script in by_lang.items():
+            cache_file = f"{cache_dir}/alert_{role}_{lang}.mp3"
+            if os.path.exists(cache_file):
+                results["skipped"].append(f"{role}/{lang}")
+                continue
+            try:
+                audio_bytes = await tts.generate_speech(
+                    text=script, model="tts-1", voice="nova", speed=1.0, response_format="mp3"
+                )
+                with open(cache_file, "wb") as f:
+                    f.write(audio_bytes)
+                results["generated"].append(f"{role}/{lang}")
+            except Exception as e:
+                logging.error(f"Failed transfer alert {role}/{lang}: {e}")
+                results["failed"].append({"key": f"{role}/{lang}", "error": str(e)})
+
+    return {"status": "complete", "results": results}
+
+
+@router.get("/tts/transfer-alerts/info")
+async def get_transfer_alerts_info():
+    """Return the list of available transfer alerts (public)."""
+    cache_dir = "/app/frontend/public/audio/transfer_alerts"
+    info = {}
+    for role, by_lang in TRANSFER_ALERTS.items():
+        info[role] = {}
+        for lang, script in by_lang.items():
+            cache_file = f"{cache_dir}/alert_{role}_{lang}.mp3"
+            info[role][lang] = {
+                "text": script,
+                "cached": os.path.exists(cache_file),
+            }
+    return {"voice": "nova", "languages": list(TRANSFER_ALERT_LANGS), "roles": list(TRANSFER_ALERT_ROLES), "alerts": info}
+

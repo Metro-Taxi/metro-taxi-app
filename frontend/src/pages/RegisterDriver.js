@@ -71,7 +71,8 @@ const RegisterDriver = () => {
     iban: '',
     bic: '',
     region_id: '',
-    source_inscription: ''
+    source_inscription: '',
+    referrer_name: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -219,6 +220,11 @@ const RegisterDriver = () => {
     try {
       const { confirmPassword, ...submitData } = formData;
       submitData.seats = parseInt(submitData.seats);
+      // Compose final source label with optional referrer name
+      if (submitData.source_inscription === 'Parrainage' && submitData.referrer_name?.trim()) {
+        submitData.source_inscription = `Parrainage (${submitData.referrer_name.trim()})`;
+      }
+      delete submitData.referrer_name;
       await registerDriver(submitData);
       toast.success(t('driverRegister.successMessage'));
       navigate('/login');
@@ -538,26 +544,60 @@ const RegisterDriver = () => {
               </div>
             </div>
 
-            {/* Comment as-tu connu Métro-Taxi ? */}
+            {/* Comment as-tu connu Métro-Taxi ? (Select pour stats viables) */}
             <div className="pt-4 border-t border-zinc-800">
               <div className="space-y-2">
                 <Label htmlFor="source_inscription" className="text-zinc-300">
                   Comment as-tu connu Métro-Taxi ? <span className="text-zinc-500 text-xs">(facultatif)</span>
                 </Label>
-                <div className="relative">
-                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
-                  <Input
-                    id="source_inscription"
-                    name="source_inscription"
-                    type="text"
-                    value={formData.source_inscription}
-                    onChange={handleChange}
-                    placeholder="Ex: Flyer à CDG, ami chauffeur, recherche Google…"
-                    maxLength={200}
-                    className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
-                    data-testid="driver-source-input"
-                  />
-                </div>
+                <Select
+                  value={formData.source_inscription}
+                  onValueChange={(value) => handleSelectChange('source_inscription', value)}
+                >
+                  <SelectTrigger
+                    className="bg-zinc-900 border-zinc-700 text-white h-12"
+                    data-testid="driver-source-select"
+                  >
+                    <SelectValue placeholder="Choisis une option…" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-zinc-700 max-h-72">
+                    <SelectItem value="Flyer CDG">Flyer à l'aéroport CDG</SelectItem>
+                    <SelectItem value="Flyer Orly">Flyer à l'aéroport Orly</SelectItem>
+                    <SelectItem value="Flyer Gare du Nord">Flyer à Gare du Nord</SelectItem>
+                    <SelectItem value="Flyer Gare de Lyon">Flyer à Gare de Lyon</SelectItem>
+                    <SelectItem value="Flyer Gare Saint-Lazare">Flyer à Gare Saint-Lazare</SelectItem>
+                    <SelectItem value="Flyer Gare Montparnasse">Flyer à Gare Montparnasse</SelectItem>
+                    <SelectItem value="Flyer autre lieu">Flyer (autre lieu)</SelectItem>
+                    <SelectItem value="Parrainage">Parrainage (un collègue chauffeur)</SelectItem>
+                    <SelectItem value="TikTok">TikTok</SelectItem>
+                    <SelectItem value="Instagram">Instagram</SelectItem>
+                    <SelectItem value="Facebook">Facebook</SelectItem>
+                    <SelectItem value="Groupe Facebook VTC">Groupe Facebook VTC</SelectItem>
+                    <SelectItem value="WhatsApp">WhatsApp</SelectItem>
+                    <SelectItem value="Recherche Google">Recherche Google</SelectItem>
+                    <SelectItem value="Bouche-à-oreille">Bouche-à-oreille</SelectItem>
+                    <SelectItem value="Presse / Article">Presse / Article</SelectItem>
+                    <SelectItem value="Autre">Autre</SelectItem>
+                  </SelectContent>
+                </Select>
+                {formData.source_inscription === 'Parrainage' && (
+                  <div className="space-y-1 pt-2">
+                    <Label htmlFor="referrer_name" className="text-zinc-300 text-sm">
+                      Nom du parrain
+                    </Label>
+                    <Input
+                      id="referrer_name"
+                      name="referrer_name"
+                      type="text"
+                      value={formData.referrer_name}
+                      onChange={handleChange}
+                      placeholder="Prénom Nom du chauffeur qui t'a parlé de Métro-Taxi"
+                      maxLength={100}
+                      className="bg-zinc-900 border-zinc-700 text-white h-11 focus:border-[#FFD60A]"
+                      data-testid="driver-referrer-name-input"
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

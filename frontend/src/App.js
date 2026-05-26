@@ -34,6 +34,8 @@ import SalesTerms from "@/pages/SalesTerms";
 import Support from "@/pages/Support";
 import FoundingMember from "@/pages/FoundingMember";
 import PatronVTC from "@/pages/PatronVTC";
+import SaintDenis from "@/pages/SaintDenis";
+import PromoCodesPage from "@/pages/PromoCodesPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -121,6 +123,8 @@ function AppRoutes() {
       <Route path="/patron-vtc" element={<PatronVTC />} />
       <Route path="/patron" element={<Navigate to="/patron-vtc" replace />} />
       <Route path="/b2b" element={<Navigate to="/patron-vtc" replace />} />
+      <Route path="/saint-denis" element={<SaintDenis />} />
+      <Route path="/93" element={<Navigate to="/saint-denis" replace />} />
       
       {/* User Routes - Also allow admin for testing */}
       <Route path="/dashboard" element={
@@ -155,6 +159,11 @@ function AppRoutes() {
       <Route path="/admin" element={
         <ProtectedRoute allowedRoles={['admin']}>
           <AdminDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/promo-codes" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <PromoCodesPage />
         </ProtectedRoute>
       } />
       

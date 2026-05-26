@@ -207,6 +207,7 @@ from routes.payments import router as payments_router
 from routes.admin import router as admin_router
 from routes.ride_history import router as ride_history_router
 from routes.support_chat import router as support_chat_router
+from routes.promo_codes import router as promo_codes_router
 
 # ============================================
 # ALGORITHME CENTRAL MÉTRO-TAXI
@@ -763,6 +764,8 @@ class UserRegister(BaseModel):
     postal_code: str     # Code postal
     city: str            # Ville
     date_of_birth: str   # Date de naissance (format: YYYY-MM-DD)
+    # Optionnel: code promo passé à l'inscription (campagne Saint-Denis)
+    promo_code: Optional[str] = None
 
 class DriverRegister(BaseModel):
     first_name: str
@@ -1120,6 +1123,42 @@ async def register_user(data: UserRegister, request: Request):
     
     await db.users.insert_one(user_doc)
     
+    # Auto-redeem promo code if provided at signup (Saint-Denis launch campaign)
+    promo_attached = None
+    if data.promo_code:
+        try:
+            code = data.promo_code.strip().upper()
+            promo = await db.promo_codes.find_one({"code": code}, {"_id": 0})
+            now = datetime.now(timezone.utc)
+            if promo and not promo.get("used"):
+                try:
+                    expires_dt = datetime.fromisoformat(promo["expires_at"].replace("Z", "+00:00"))
+                except (ValueError, TypeError):
+                    expires_dt = None
+                if expires_dt and expires_dt >= now:
+                    await db.promo_codes.update_one(
+                        {"code": code, "used": False},
+                        {"$set": {
+                            "used": True,
+                            "used_by": user_id,
+                            "used_at": now.isoformat(),
+                            "redeemed_at": now.isoformat(),
+                        }},
+                    )
+                    pending_promo = {
+                        "code": code,
+                        "type": promo.get("type", "free_first_ride"),
+                        "max_distance_km": promo.get("max_distance_km", 10),
+                        "expires_at": promo["expires_at"],
+                        "region": promo.get("region"),
+                        "campaign": promo.get("campaign"),
+                        "redeemed_at": now.isoformat(),
+                    }
+                    await db.users.update_one({"id": user_id}, {"$set": {"pending_promo": pending_promo}})
+                    promo_attached = pending_promo
+        except Exception as promo_err:
+            logging.warning(f"Promo code attach failed at signup: {promo_err}")
+    
     # Store verification token separately for easy lookup
     await db.email_verifications.insert_one({
         "token": verification_token,
@@ -1151,6 +1190,7 @@ async def register_user(data: UserRegister, request: Request):
         "token": token, 
         "user": user_response,
         "verification_url": verification_url,
+        "promo_attached": promo_attached,
         "message": "Un email de vérification a été envoyé"
     }
 
@@ -3020,6 +3060,7 @@ app.include_router(payments_router)
 app.include_router(admin_router)
 app.include_router(ride_history_router)
 app.include_router(support_chat_router)
+app.include_router(promo_codes_router)
 
 # Marketing assets download endpoint (forces download, bypasses PWA scope)
 from routes.marketing import router as marketing_router
