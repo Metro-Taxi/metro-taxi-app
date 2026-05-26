@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Car, Gift, MapPin, Ticket, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import i18n from '@/i18n';
 
 /**
  * Landing dédiée campagne Saint-Denis (lancement 13 juin 2026).
@@ -11,6 +12,14 @@ import { Button } from '@/components/ui/button';
  */
 const SaintDenis = () => {
   const [code, setCode] = useState('');
+
+  // Force French on the FR pilot funnel (DGCCRF clarity argument)
+  useEffect(() => {
+    if (i18n.language !== 'fr') {
+      i18n.changeLanguage('fr');
+      try { localStorage.setItem('i18nextLng', 'fr'); } catch (_) {}
+    }
+  }, []);
 
   const ctaHref = code.trim()
     ? `/register/user?promo=${encodeURIComponent(code.trim().toUpperCase())}&src=saint-denis`
