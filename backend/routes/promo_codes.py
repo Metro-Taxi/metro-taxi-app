@@ -7,6 +7,7 @@ Mécanique : "1ère course offerte ≤ N km" (campagne Saint-Denis 13 juin 2026)
 - Au /rides/request : si pending_promo et distance ≤ max_distance_km → bypass abonnement, course offerte par la plateforme.
 """
 from fastapi import APIRouter, HTTPException, Depends
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 from datetime import datetime, timezone
 from typing import Optional
@@ -14,6 +15,10 @@ import secrets
 import string
 import uuid
 import logging
+import io
+import os
+
+import qrcode
 
 from database import db
 from services.auth import get_current_user
@@ -266,3 +271,108 @@ async def get_my_promo(current_user: dict = Depends(get_current_user)):
         {"_id": 0, "pending_promo": 1},
     )
     return {"pending_promo": (user or {}).get("pending_promo")}
+
+
+
+# -----------------------------------------------------------------------------
+# QR CODE GENERATION (one code = one flyer, per the Capitaine's strategy)
+# -----------------------------------------------------------------------------
+@router.get("/admin/promo-codes/qr")
+async def generate_promo_qr(
+    code: str,
+    base_url: Optional[str] = None,
+    current_user: dict = Depends(get_current_user),
+):
+    """Admin: génère un QR code PNG pointant vers `/saint-denis?promo=<code>`.
+
+    Idéal pour flyers physiques : 1 flyer = 1 code = 1 QR code unique → zéro friction
+    pour l'usager (scan → landing prérempli → inscription).
+    Le paramètre `base_url` permet d'override l'URL frontend (défaut: FRONTEND_URL).
+    """
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    code_norm = code.strip().upper()
+    promo = await db.promo_codes.find_one({"code": code_norm}, {"_id": 0})
+    if not promo:
+        raise HTTPException(status_code=404, detail="Code promo introuvable")
+
+    frontend_url = (base_url or os.environ.get("FRONTEND_URL") or "https://metro-taxi.com").rstrip("/")
+    target_url = f"{frontend_url}/saint-denis?promo={code_norm}&src=flyer"
+
+    qr = qrcode.QRCode(
+        version=None,
+        error_correction=qrcode.constants.ERROR_CORRECT_H,  # 30% recovery — bon pour impression
+        box_size=12,
+        border=2,
+    )
+    qr.add_data(target_url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    buf.seek(0)
+    return Response(
+        content=buf.getvalue(),
+        media_type="image/png",
+        headers={
+            "Content-Disposition": f'inline; filename="qr_{code_norm}.png"',
+            "Cache-Control": "public, max-age=3600",
+            "X-Target-Url": target_url,
+        },
+    )
+
+
+@router.post("/admin/promo-codes/qr-batch")
+async def generate_promo_qr_batch(
+    current_user: dict = Depends(get_current_user),
+    campaign: Optional[str] = None,
+    base_url: Optional[str] = None,
+):
+    """Admin: génère un ZIP contenant TOUS les QR codes PNG d'une campagne.
+
+    Permet d'imprimer 30 flyers d'un coup. Retourne `application/zip`.
+    """
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    import zipfile
+
+    q: dict = {}
+    if campaign:
+        q["campaign"] = campaign
+
+    codes = await db.promo_codes.find(q, {"_id": 0}).to_list(length=1000)
+    if not codes:
+        raise HTTPException(status_code=404, detail="Aucun code trouvé pour cette campagne")
+
+    frontend_url = (base_url or os.environ.get("FRONTEND_URL") or "https://metro-taxi.com").rstrip("/")
+
+    zip_buf = io.BytesIO()
+    with zipfile.ZipFile(zip_buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        for p in codes:
+            code_norm = p["code"]
+            target_url = f"{frontend_url}/saint-denis?promo={code_norm}&src=flyer"
+            qr = qrcode.QRCode(
+                version=None,
+                error_correction=qrcode.constants.ERROR_CORRECT_H,
+                box_size=12,
+                border=2,
+            )
+            qr.add_data(target_url)
+            qr.make(fit=True)
+            img = qr.make_image(fill_color="black", back_color="white")
+            png_buf = io.BytesIO()
+            img.save(png_buf, format="PNG")
+            zf.writestr(f"qr_{code_norm}.png", png_buf.getvalue())
+
+    zip_buf.seek(0)
+    filename = f"qrcodes_{campaign or 'all'}.zip"
+    return Response(
+        content=zip_buf.getvalue(),
+        media_type="application/zip",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+        },
+    )

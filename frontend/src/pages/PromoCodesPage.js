@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Ticket, ArrowLeft, Copy, Download, RefreshCw, CheckCircle2, Loader2 } from 'lucide-react';
+import { Ticket, ArrowLeft, Copy, Download, RefreshCw, CheckCircle2, Loader2, QrCode, Archive } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
 
@@ -100,6 +100,44 @@ const PromoCodesPage = () => {
     a.download = `promo_codes_${campaign || 'all'}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const downloadSingleQR = async (code) => {
+    try {
+      const res = await axios.get(`${API}/api/admin/promo-codes/qr?code=${encodeURIComponent(code)}`, {
+        ...authHeader(),
+        responseType: 'blob',
+      });
+      const url = URL.createObjectURL(res.data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `qr_${code}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      toast.error("Erreur lors de la génération du QR");
+    }
+  };
+
+  const downloadAllQR = async () => {
+    try {
+      toast.info('Génération du ZIP en cours…');
+      const params = filter ? `?campaign=${encodeURIComponent(filter)}` : '';
+      const res = await axios.post(
+        `${API}/api/admin/promo-codes/qr-batch${params}`,
+        {},
+        { ...authHeader(), responseType: 'blob' }
+      );
+      const url = URL.createObjectURL(res.data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `qrcodes_${filter || 'all'}.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('ZIP téléchargé');
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Erreur lors de la génération du ZIP');
+    }
   };
 
   return (
@@ -260,6 +298,16 @@ const PromoCodesPage = () => {
               >
                 <Download className="w-3.5 h-3.5 mr-1.5" /> CSV
               </Button>
+              <Button
+                onClick={downloadAllQR}
+                size="sm"
+                variant="outline"
+                disabled={!codes.length}
+                data-testid="promo-export-qr-zip-btn"
+                className="border-zinc-700"
+              >
+                <Archive className="w-3.5 h-3.5 mr-1.5" /> ZIP QR
+              </Button>
             </div>
           </div>
 
@@ -275,6 +323,7 @@ const PromoCodesPage = () => {
                     <th className="text-left py-2 px-2">État</th>
                     <th className="text-left py-2 px-2">Utilisé par</th>
                     <th className="text-left py-2 px-2">Expire</th>
+                    <th className="text-left py-2 px-2">QR</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -295,6 +344,16 @@ const PromoCodesPage = () => {
                       </td>
                       <td className="py-2 px-2 text-zinc-500 text-xs">{c.used_by || '—'}</td>
                       <td className="py-2 px-2 text-zinc-500 text-xs">{c.expires_at?.slice(0, 10) || '—'}</td>
+                      <td className="py-2 px-2">
+                        <button
+                          onClick={() => downloadSingleQR(c.code)}
+                          className="text-zinc-400 hover:text-[#FFD60A] inline-flex items-center gap-1 text-xs"
+                          title={`Télécharger le QR pour ${c.code}`}
+                          data-testid={`promo-qr-btn-${c.code}`}
+                        >
+                          <QrCode className="w-4 h-4" />
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
