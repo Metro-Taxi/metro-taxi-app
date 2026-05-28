@@ -1,12 +1,12 @@
 # CONTRAT DE PARTENARIAT CHAUFFEUR INDÉPENDANT MÉTRO-TAXI
 
-**Version du 28 mai 2026**
+**Version du 28 mai 2026 (v2)**
 
 ---
 
 ## ENTRE LES SOUSSIGNÉS
 
-**MÉTRO-TAXI**, société par actions simplifiée (SAS) au capital de [Montant] euros, dont le siège social est situé [Adresse complète], immatriculée au Registre du Commerce et des Sociétés de [Ville] sous le numéro [SIREN], représentée par [Nom du représentant légal] en qualité de Président,
+L'entreprise individuelle **MÉTRO-TAXI**, exploitée par **M. SOULEYMANE NAZIM Judee Hamadjoulde**, dont le siège social est situé **Chez M. Bedjedi, 11 Esplanade de Rambouillet, 93330 Neuilly-sur-Marne**, immatriculée au Registre du Commerce et des Sociétés de **Bobigny** sous le numéro **918 687 864**, exerçant l'activité d'apporteur d'affaires via application informatique pour la mise en relation des clients avec des chauffeurs VTC,
 
 Ci-après dénommée la "**Plateforme**" ou "**Métro-Taxi**",
 
@@ -14,7 +14,7 @@ Ci-après dénommée la "**Plateforme**" ou "**Métro-Taxi**",
 
 **ET**
 
-**[NOM] [Prénom]**, exerçant en qualité de chauffeur indépendant VTC sous le statut juridique [Auto-Entrepreneur / EURL / SASU / Autre], immatriculé(e) au Registre [SIRET], titulaire de la carte professionnelle VTC n° [Numéro de carte VTC], dont la validité expire le [Date], domicilié(e) [Adresse complète],
+**[NOM] [Prénom]**, exerçant en qualité de chauffeur indépendant VTC sous le statut juridique [Micro-Entrepreneur / EURL / SASU / Autre], immatriculé(e) au Registre [SIRET], titulaire de la carte professionnelle VTC n° [Numéro de carte VTC], dont la validité expire le [Date], domicilié(e) [Adresse complète],
 
 Ci-après dénommé(e) le "**Chauffeur Indépendant**",
 
@@ -128,8 +128,8 @@ Avant chaque course, le Chauffeur Indépendant reçoit de la Plateforme **les in
 ### 4.4 Embarquement initial : codes OTP individuels
 
 À l'arrivée du Chauffeur Initial au point de prise en charge :
-- Chaque Abonné reçoit par SMS un code à 4 chiffres unique ;
-- Le Chauffeur Initial saisit, dans son Application, **autant de codes OTP que d'Abonnés annoncés** ;
+- Chaque Abonné présent reçoit par SMS un code à 4 chiffres unique ;
+- Le Chauffeur Initial saisit, dans son Application, **autant de codes OTP que d'Abonnés validés** ;
 - La course ne peut démarrer qu'après saisie complète et correcte de tous les codes ;
 - **À défaut de codes valides, le Chauffeur Initial est protégé** : aucune course ne démarre, aucun trajet n'est effectué sans couverture financière.
 
@@ -140,38 +140,44 @@ Lors d'un transbordement en cours de trajet :
 - Le Chauffeur de Relais reçoit confirmation que la **couverture financière du segment restant est garantie** ;
 - Le Chauffeur de Relais peut alors accueillir les Abonnés transbordés en toute sécurité économique.
 
-### 4.6 Rémunération inconditionnelle de chaque Chauffeur
+### 4.6 Revenus inconditionnels de chaque Chauffeur
 
-**Chaque Chauffeur Indépendant intervenant dans la Chaîne de Prise en Charge est rémunéré par la Plateforme proportionnellement aux kilomètres effectivement parcourus avec les Abonnés à son bord**, au tarif fixé à l'article 5, **indépendamment des autres maillons de la Chaîne**.
+**Chaque Chauffeur Indépendant intervenant dans la Chaîne de Prise en Charge perçoit ses revenus, versés par la Plateforme, proportionnellement aux kilomètres effectivement parcourus avec les Abonnés à son bord**, au tarif fixé à l'article 5, **indépendamment des autres maillons de la Chaîne**.
 
-La rémunération de chaque Chauffeur est donc :
-- **Garantie** : le Chauffeur est payé même si un autre maillon de la Chaîne rencontre un problème ;
-- **Inconditionnelle** : aucune solidarité de paiement entre Chauffeurs ;
-- **Sécurisée** : pas de risque économique partagé.
+Les revenus de chaque Chauffeur sont donc :
+- **Garantis** : le Chauffeur est payé même si un autre maillon de la Chaîne rencontre un problème ;
+- **Inconditionnels** : aucune solidarité de paiement entre Chauffeurs ;
+- **Sécurisés** : pas de risque économique partagé.
 
 ---
 
-## ARTICLE 5 — RÉMUNÉRATION ET REVERSEMENT
+## ARTICLE 5 — REVENUS ET VERSEMENT
 
 ### 5.1 Tarif par kilomètre
 
-La Plateforme verse au Chauffeur Indépendant la somme de **1,50 € TTC par kilomètre** effectivement parcouru avec un ou plusieurs Abonnés à son bord.
+La Plateforme verse au Chauffeur Indépendant la somme de **1,50 € TTC par kilomètre** effectivement parcouru avec un ou plusieurs Abonnés à son bord, au titre de ses **revenus**.
+
+**Ces revenus sont versés le 10 du mois suivant** la réalisation des courses, par virement bancaire sur le compte professionnel du Chauffeur Indépendant.
 
 ### 5.2 Modèle économique 0% commission
 
-**La Plateforme ne prélève aucune commission sur la rémunération du Chauffeur Indépendant**. Le montant de 1,50 €/km est intégralement reversé.
+**La Plateforme ne prélève aucune commission sur les revenus du Chauffeur Indépendant**. Le montant de 1,50 €/km est intégralement reversé.
 
-### 5.3 Périodicité de reversement
+### 5.3 Récapitulatif mensuel
 
-Le reversement des sommes dues s'effectue **mensuellement**, le [Jour du mois à définir], par virement bancaire sur le compte professionnel du Chauffeur Indépendant.
+Au début de chaque mois, la Plateforme transmet au Chauffeur Indépendant un récapitulatif détaillé des kilomètres parcourus et des revenus dus, généré automatiquement par l'Application.
 
-### 5.4 Acomptes et avances
+### 5.4 Acomptes (à titre exceptionnel)
 
-À titre exceptionnel et pour faciliter la trésorerie des Chauffeurs Indépendants en phase de lancement, la Plateforme peut consentir des acomptes hebdomadaires, à discrétion et sans engagement de continuité.
+**Les acomptes ne constituent pas un droit et ne sont exigibles par aucune disposition légale.** À sa seule discrétion et à titre exceptionnel, la Plateforme peut consentir au Chauffeur Indépendant des acomptes hebdomadaires pour faciliter sa trésorerie en phase de lancement. Ces acomptes constituent une **faveur révocable à tout moment** et ne créent aucun droit acquis au profit du Chauffeur Indépendant.
 
-### 5.5 Factures émises par le Chauffeur
+### 5.5 Factures émises par le Chauffeur Indépendant
 
-En sa qualité d'indépendant, le Chauffeur Indépendant émet, le cas échéant, ses propres factures à la Plateforme conformément à la réglementation applicable à son statut juridique.
+En sa qualité d'indépendant, le Chauffeur Indépendant **émet, conformément à son statut juridique, ses propres factures à la Plateforme** correspondant aux revenus perçus chaque mois.
+
+Cette obligation découle directement du statut indépendant : un travailleur indépendant facture ses prestations à son donneur d'ordre. L'absence de facturation pourrait être interprétée comme un indice de salariat déguisé, ce que les Parties souhaitent expressément éviter.
+
+**Pour faciliter cette obligation**, la Plateforme génère automatiquement, chaque mois, un projet de facture pré-rempli (numéro, date, kilomètres, montant, mentions obligatoires) que le Chauffeur Indépendant valide en un clic dans son Application. La facture validée vaut facture émise par le Chauffeur Indépendant et conservée par la Plateforme conformément aux obligations comptables et fiscales.
 
 ---
 
@@ -183,7 +189,7 @@ Dans le cadre de campagnes promotionnelles (ex. campagne "Saint-Denis 13 juin 20
 
 ### 6.2 Neutralité financière pour le Chauffeur
 
-**Le caractère offert de la course n'a AUCUNE incidence financière pour le Chauffeur Indépendant**. Celui-ci est rémunéré normalement au tarif de 1,50 €/km, conformément à l'article 5, le coût étant intégralement supporté par la Plateforme.
+**Le caractère offert de la course n'a AUCUNE incidence financière pour le Chauffeur Indépendant**. Celui-ci perçoit ses revenus normalement au tarif de 1,50 €/km, conformément à l'article 5, le coût étant intégralement supporté par la Plateforme.
 
 ---
 
@@ -253,20 +259,20 @@ Le Chauffeur Indépendant s'interdit toute reproduction, modification, décompil
 
 ### 10.1 Responsable du traitement
 
-La Plateforme est responsable du traitement des données personnelles du Chauffeur Indépendant, dans le respect du Règlement Général sur la Protection des Données (RGPD).
+La Plateforme est responsable du traitement des données personnelles du Chauffeur Indépendant, dans le respect du Règlement Général sur la Protection des Données (RGPD). Les demandes relatives à la protection des données peuvent être adressées à **contact@metro-taxi.com** (mention "RGPD" en objet).
 
 ### 10.2 Données collectées
 
 - Identité et coordonnées du Chauffeur Indépendant ;
 - Numéro de carte VTC et SIRET ;
-- Coordonnées bancaires (IBAN) pour le reversement ;
+- Coordonnées bancaires (IBAN) pour le versement des revenus ;
 - Données de géolocalisation pendant les courses ;
 - Historique des courses réalisées.
 
 ### 10.3 Finalités
 
 - Exécution du présent Contrat ;
-- Reversement des sommes dues ;
+- Versement mensuel des revenus dus ;
 - Conformité réglementaire (déclarations sociales et fiscales) ;
 - Sécurité du Service.
 
@@ -276,7 +282,7 @@ Les données sont conservées pendant la durée du Contrat puis 5 ans après sa 
 
 ### 10.5 Droits du Chauffeur Indépendant
 
-Conformément aux articles 15 à 22 du RGPD, le Chauffeur Indépendant dispose des droits d'accès, rectification, effacement, limitation, portabilité et opposition, exerçables à dpo@metro-taxi.com.
+Conformément aux articles 15 à 22 du RGPD, le Chauffeur Indépendant dispose des droits d'accès, rectification, effacement, limitation, portabilité et opposition, exerçables à contact@metro-taxi.com (mention "RGPD").
 
 ---
 
@@ -288,7 +294,7 @@ Le présent Contrat est conclu pour une durée indéterminée à compter de sa s
 
 ### 11.2 Résiliation par le Chauffeur Indépendant
 
-Le Chauffeur Indépendant peut résilier le Contrat **à tout moment** et **sans préavis ni justification**, par e-mail à contact@metro-taxi.com. Toute somme due au titre des courses déjà effectuées lui sera versée à l'échéance habituelle.
+Le Chauffeur Indépendant peut résilier le Contrat **à tout moment** et **sans préavis ni justification**, par e-mail à contact@metro-taxi.com. Toute somme due au titre des courses déjà effectuées lui sera versée à l'échéance habituelle (le 10 du mois suivant).
 
 ### 11.3 Résiliation par la Plateforme
 
@@ -301,7 +307,7 @@ La Plateforme peut résilier le Contrat avec un préavis de **30 jours** :
 
 La résiliation entraîne :
 - La fin immédiate de l'accès à l'Application Chauffeur ;
-- Le règlement final des sommes dues au Chauffeur Indépendant (paiement sous 30 jours) ;
+- Le règlement final des revenus dus au Chauffeur Indépendant (versement le 10 du mois suivant la résiliation) ;
 - La conservation des données dans les limites légales et RGPD.
 
 ---
@@ -338,7 +344,7 @@ En cas de différend, les Parties s'engagent à tenter en priorité une résolut
 
 ### 13.3 Tribunal compétent
 
-À défaut, tout litige sera de la compétence exclusive du Tribunal de Commerce de [Ville à compléter].
+À défaut, tout litige sera de la compétence exclusive du Tribunal de Commerce de **Bobigny** (siège du RCS de la Plateforme).
 
 ---
 
@@ -347,8 +353,8 @@ En cas de différend, les Parties s'engagent à tenter en priorité une résolut
 **Fait en deux exemplaires originaux, à [Ville], le [Date]**
 
 **Pour la Plateforme Métro-Taxi :**
-[Nom du représentant légal]
-Président
+M. SOULEYMANE NAZIM Judee Hamadjoulde
+Entrepreneur individuel — Exploitant
 
 Signature : _______________________
 
@@ -362,13 +368,14 @@ Signature précédée de la mention manuscrite "Lu et approuvé" : _____________
 
 ## ANNEXE TECHNIQUE — RAPPEL DES CONDITIONS COMMERCIALES (au 28 mai 2026)
 
-- Tarif kilométrique reversé : **1,50 € TTC par kilomètre parcouru avec Abonné(s) à bord**
+- Tarif kilométrique versé au Chauffeur : **1,50 € TTC par kilomètre parcouru avec Abonné(s) à bord**
 - Commission Plateforme : **0%**
-- Périodicité de reversement : mensuelle (acomptes hebdomadaires possibles en phase de lancement)
+- **Périodicité de versement des revenus : mensuelle, le 10 du mois suivant**
+- Acomptes hebdomadaires : possibles à titre exceptionnel et discrétionnaire de la Plateforme en phase de lancement
 - Plafonds véhicules : Berline 4 passagers max / Monospace 5 passagers max / Van 7 passagers max
 
 ---
 
-*Document rédigé avec l'assistance de l'agent technique Charly (Métro-Taxi). À soumettre à validation finale par un Conseil juridique avant production officielle. Les mentions [À COMPLÉTER] doivent être renseignées avant signature.*
+*Document rédigé avec l'assistance de l'agent technique Charly (Métro-Taxi).*
 
-**Fin du Contrat de Partenariat Chauffeur Indépendant Métro-Taxi**
+**Fin du Contrat de Partenariat Chauffeur Indépendant Métro-Taxi v2 (28 mai 2026)**

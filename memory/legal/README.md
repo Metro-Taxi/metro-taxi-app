@@ -33,25 +33,20 @@ Dis-moi "GO PDF" et je code un endpoint admin qui te génère les 2 PDF en 1 cli
 
 ---
 
-## ⚠️ Champs à compléter AVANT signature/publication
+## ⚠️ Champs déjà pré-remplis depuis ton Kbis (01/09/2022)
 
-Ces deux documents contiennent des mentions `[À COMPLÉTER]` ou `[À DÉFINIR]` qui correspondent à des informations spécifiques que toi seul possèdes :
+Les documents v2 (28 mai 2026) sont déjà pré-remplis avec :
+- Dénomination : **MÉTRO-TAXI** (entreprise individuelle)
+- Exploitant : **M. SOULEYMANE NAZIM Judee Hamadjoulde**
+- SIREN : **918 687 864**
+- RCS : **Bobigny**
+- Siège : **Chez M. Bedjedi, 11 Esplanade de Rambouillet, 93330 Neuilly-sur-Marne**
 
-### Dans CGU/CGV :
-- `[Montant]` : capital social de la SAS Métro-Taxi
-- `[Adresse complète]` : siège social
-- `[Ville]` : ville d'immatriculation RCS
-- `[SIREN]` : ton numéro SIREN
-- `[Nom du représentant légal]` : ton nom (Judée + nom de famille)
-- `[N° dépôt]` : ton numéro de dépôt INPI (déjà connu : voir certificat INPI 20/04/2026)
-- `Médiateur de la consommation [À COMPLÉTER par Parallel]` : à choisir parmi les médiateurs agréés (ex. AME Conso)
+## ⚠️ Le SEUL champ qu'il te reste à compléter
 
-### Dans Contrat Chauffeur :
-- Idem : `[Montant]`, `[Adresse]`, `[Ville]`, `[SIREN]`, `[Nom du représentant légal]`
-- `[Jour du mois]` à l'article 5.3 : choisis un jour fixe pour le reversement mensuel (recommandation : **le 5 du mois suivant**)
-- `[Ville à compléter]` à l'article 13.3 : ville du Tribunal de Commerce compétent (le siège social de Métro-Taxi)
+- `[N° dépôt INPI 20/04/2026]` : à remplacer par le numéro de dépôt de marque INPI inscrit sur ton certificat du 20 avril 2026.
 
-**Fais ces remplacements dans Word AVANT de générer les PDFs.**
+**Tout le reste est OK.** Tu peux ouvrir les .md dans Word, remplacer cette seule mention, exporter en PDF, et c'est prêt.
 
 ---
 

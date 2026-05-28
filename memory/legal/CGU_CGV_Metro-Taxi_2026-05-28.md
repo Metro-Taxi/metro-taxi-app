@@ -2,15 +2,17 @@
 
 **MÉTRO-TAXI — Service de Covoiturage à Transbordement Intelligent**
 
-**Version du 28 mai 2026**
+**Version du 28 mai 2026 (v2)**
 
 ---
 
 ## PRÉAMBULE
 
-La société **Métro-Taxi**, société par actions simplifiée (SAS) au capital de [Montant] euros, dont le siège social est situé [Adresse complète], immatriculée au Registre du Commerce et des Sociétés de [Ville] sous le numéro [SIREN], représentée par [Nom du représentant légal] en qualité de Président (ci-après dénommée la "**Plateforme**" ou "**Métro-Taxi**"), édite et exploite un service technologique de **mise en relation entre usagers (Abonnés) et chauffeurs indépendants titulaires d'une carte professionnelle de Voiture de Transport avec Chauffeur (VTC)**.
+L'entreprise individuelle **MÉTRO-TAXI**, exploitée par M. **SOULEYMANE NAZIM Judee Hamadjoulde**, dont le siège social est situé **Chez M. Bedjedi, 11 Esplanade de Rambouillet, 93330 Neuilly-sur-Marne**, immatriculée au Registre du Commerce et des Sociétés de **Bobigny** sous le numéro **918 687 864** (immatriculation au 01/09/2022), exerçant l'activité d'**apporteur d'affaires via application informatique pour la mise en relation des clients avec des chauffeurs VTC** (ci-après dénommée la "**Plateforme**" ou "**Métro-Taxi**"),
 
-Le service Métro-Taxi est un **service de covoiturage à transbordement intelligent**, fondé sur un algorithme propriétaire (protégé par dépôt INPI Marque n°[N° dépôt] et certificat de protection logicielle Agence pour la Protection des Programmes n°1099-6824) permettant l'optimisation dynamique des trajets et la mutualisation des courses entre Abonnés.
+édite et exploite un service technologique de **mise en relation entre usagers (Abonnés) et chauffeurs indépendants titulaires d'une carte professionnelle de Voiture de Transport avec Chauffeur (VTC)**.
+
+Le service Métro-Taxi est un **service de covoiturage à transbordement intelligent**, fondé sur un algorithme propriétaire (protégé par dépôt INPI Marque n°[N° dépôt INPI 20/04/2026] et certificat de protection logicielle Agence pour la Protection des Programmes n°1099-6824) permettant l'optimisation dynamique des trajets et la mutualisation des courses entre Abonnés.
 
 Les présentes Conditions Générales d'Utilisation et de Vente (ci-après les "**CGU/CGV**") ont pour objet de définir les modalités et conditions dans lesquelles la Plateforme met son service à disposition des Utilisateurs.
 
@@ -30,8 +32,8 @@ Dans les présentes CGU/CGV, les termes commençant par une majuscule ont la sig
 - **Chaîne de Prise en Charge** : succession ordonnée du Chauffeur Initial et des Chauffeurs de Relais intervenant sur un même trajet d'un Abonné, dans le cadre du système de transbordement.
 - **Course** : trajet réalisé entre un point de départ et un point d'arrivée pour un ou plusieurs Abonnés, pouvant comporter une ou plusieurs étapes de transbordement.
 - **Crédit Course Offerte** : avantage commercial consistant en une (1) course gratuite plafonnée à 10 kilomètres, attribuée automatiquement par l'Algorithme aux N premiers Abonnés d'une campagne de lancement (ex. campagne "Saint-Denis 13 juin 2026").
-- **Plateforme** : la société Métro-Taxi, exploitante du Service.
-- **Service** : ensemble des prestations technologiques de mise en relation, géolocalisation, matching algorithmique, gestion des paiements et reversement aux Chauffeurs Indépendants.
+- **Plateforme** : l'entreprise individuelle Métro-Taxi, exploitante du Service.
+- **Service** : ensemble des prestations technologiques de mise en relation, géolocalisation, matching algorithmique, gestion des paiements et reversement des revenus aux Chauffeurs Indépendants.
 - **Transbordement** : opération consistant, en cours de trajet, à transférer un Abonné d'un véhicule (conduit par le Chauffeur Initial ou un Chauffeur de Relais antérieur) à un autre véhicule (conduit par un Chauffeur de Relais suivant), afin d'optimiser le remplissage des véhicules et de réduire les coûts globaux.
 - **Utilisateur** : toute personne physique majeure créant un compte sur la Plateforme, qu'elle soit Abonnée ou non.
 - **Validation Algorithmique Continue** : procédé technique par lequel l'Algorithme Métro-Taxi vérifie en temps réel, à chaque étape de la Chaîne de Prise en Charge, que tous les Abonnés à bord disposent d'un abonnement actif et d'une couverture financière du segment de trajet restant.
@@ -50,8 +52,10 @@ Les prestations de transport sont exclusivement exécutées par les Chauffeurs I
 
 Le Service est un service de **covoiturage** au sens de l'article L. 3132-1 du Code des transports, dans la mesure où :
 - Plusieurs Abonnés peuvent partager simultanément un même véhicule sur une partie ou la totalité de leur trajet ;
-- Les Chauffeurs Indépendants ne réalisent pas d'opération de transport pour leur seul compte, mais accueillent à bord plusieurs Abonnés non liés entre eux contractuellement avec la Plateforme ;
+- Les Chauffeurs Indépendants ne réalisent pas d'opération de transport pour leur seul compte, mais accueillent à bord plusieurs Abonnés ;
 - Le partage de véhicule et les économies générées sont mutualisés par l'Algorithme.
+
+**TOUS les déplacements proposés par Métro-Taxi s'effectuent en covoiturage, avec éventuellement un ou plusieurs transbordements en cours de trajet, sans surcoût pour l'Abonné.** L'Utilisateur reconnaît expressément accepter ce mode de transport partagé en s'abonnant à la Plateforme.
 
 ### 2.3 Service réservé aux Abonnés
 
@@ -125,13 +129,14 @@ La Plateforme peut périodiquement organiser des campagnes de lancement attribua
 Le Crédit est consommable uniquement lorsque les conditions cumulatives suivantes sont réunies :
 1. L'Abonné dispose d'un abonnement actif au moment de la course ;
 2. La distance pickup → destination est inférieure ou égale à 10 km ;
-3. La date du trajet est postérieure ou égale au 13 juin 2026 à 00h00.
+3. La date du trajet est postérieure ou égale au samedi 13 juin 2026 à 00h00 ;
+4. **L'Abonné reconnaît expressément que cette course offerte s'effectue en covoiturage Métro-Taxi, avec éventuellement un ou plusieurs transbordements en cours de trajet, sans surcoût ni rupture de prestation**.
 
 À défaut, la Plateforme refusera la course offerte et l'Abonné devra opter pour une course classique couverte par son abonnement, ou choisir une destination plus proche.
 
 ### 5.4 Financement
 
-Le coût du transport offert à l'Abonné est **intégralement supporté par la Plateforme**. Le Chauffeur Indépendant est rémunéré normalement au tarif de 1,50 €/km, sans aucune incidence financière liée au caractère offert de la course.
+Le coût du transport offert à l'Abonné est **intégralement supporté par la Plateforme**. Le Chauffeur Indépendant perçoit ses revenus normalement au tarif de 1,50 €/km, sans aucune incidence financière liée au caractère offert de la course.
 
 ---
 
@@ -143,11 +148,11 @@ Métro-Taxi est un service de **covoiturage à transbordement intelligent réser
 
 ### 6.2 Vérification préalable algorithmique
 
-Toute course de groupe nécessite que **CHAQUE passager soit un Abonné individuellement enregistré disposant d'un abonnement actif au moment de la réservation**. L'Algorithme Métro-Taxi procède à une **vérification préalable de couverture financière** : à défaut de validation de tous les passagers, la course est automatiquement refusée et n'est jamais transmise à un Chauffeur Indépendant.
+Toute course nécessite que **CHAQUE passager soit un Abonné individuellement enregistré disposant d'un abonnement actif au moment de la réservation**. L'Algorithme Métro-Taxi procède à une **vérification préalable de couverture financière** : à défaut de validation de tous les passagers, la course est automatiquement refusée et n'est jamais transmise à un Chauffeur Indépendant.
 
 ### 6.3 Embarquement initial
 
-Le **Chauffeur Initial** ne peut démarrer la course qu'après saisie du **code OTP individuel** envoyé par SMS à chaque Abonné déclaré au moment de l'arrivée du véhicule au point de prise en charge. Cette procédure technique garantit la couverture financière du trajet, **sans qu'aucune obligation de contrôle d'identité ne pèse sur le Chauffeur Indépendant**.
+Le **Chauffeur Initial** ne peut démarrer la course qu'après saisie du **code OTP individuel** envoyé par SMS à chaque Abonné présent à l'embarquement. Cette procédure technique garantit la couverture financière du trajet, **sans qu'aucune obligation de contrôle d'identité ne pèse sur le Chauffeur Indépendant**.
 
 ### 6.4 Transbordement et Validation Algorithmique Continue
 
@@ -158,11 +163,13 @@ Lors d'un transbordement en cours de trajet, l'Algorithme Métro-Taxi procède a
 
 Le Chauffeur de Relais ne peut accueillir les Abonnés transbordés qu'après cette **Validation Algorithmique de Continuité de Prise en Charge**.
 
-### 6.5 Chaîne de responsabilité et rémunération inconditionnelle des Chauffeurs
+### 6.5 Chaîne de responsabilité et revenus inconditionnels des Chauffeurs
 
-Chaque Chauffeur Indépendant intervenant dans la Chaîne de Prise en Charge (Chauffeur Initial et Chauffeurs de Relais successifs) est rémunéré par la Plateforme **proportionnellement aux kilomètres effectivement parcourus avec les Abonnés à son bord**, au tarif de 1,50 €/km, **indépendamment des autres maillons de la Chaîne**.
+Chaque Chauffeur Indépendant intervenant dans la Chaîne de Prise en Charge (Chauffeur Initial et Chauffeurs de Relais successifs) perçoit ses **revenus** versés par la Plateforme **proportionnellement aux kilomètres effectivement parcourus avec les Abonnés à son bord**, au tarif de 1,50 € TTC par kilomètre, **indépendamment des autres maillons de la Chaîne**.
 
-La rémunération de chaque Chauffeur est donc **sécurisée et inconditionnelle** vis-à-vis des autres maillons, sans solidarité de paiement ni risque économique partagé entre Chauffeurs.
+**Les revenus de chaque Chauffeur Indépendant sont versés le 10 du mois suivant**, par virement bancaire sur le compte professionnel du Chauffeur.
+
+La perception des revenus de chaque Chauffeur est donc **sécurisée et inconditionnelle** vis-à-vis des autres maillons, sans solidarité de paiement ni risque économique partagé entre Chauffeurs.
 
 ### 6.6 Information sans subordination
 
@@ -175,27 +182,32 @@ Les Chauffeurs Indépendants reçoivent de la Plateforme **uniquement les inform
 
 ---
 
-## ARTICLE 7 — RÉSERVATION GROUPÉE D'ABONNÉS
+## ARTICLE 7 — COVOITURAGE AUTOMATIQUE (REGROUPEMENT ALGORITHMIQUE)
 
-### 7.1 Principe
+### 7.1 Principe — Aucune saisie additionnelle requise
 
-Un Abonné principal (le "Réservant") peut réserver une course pour lui-même et jusqu'à trois (3) autres Abonnés (en berline), quatre (4) autres Abonnés (en monospace) ou six (6) autres Abonnés (en van).
+Le covoiturage Métro-Taxi est **entièrement automatique et transparent**. **L'Abonné n'a aucune information à saisir sur les autres passagers** : il indique simplement son point de départ et sa destination dans l'Application, comme pour une course classique.
 
-### 7.2 Saisie des co-passagers
+### 7.2 Détection automatique des groupes
 
-Le Réservant saisit, lors de la réservation, l'adresse e-mail ou le numéro de téléphone mobile de chacun des autres passagers. L'Algorithme vérifie en temps réel que **chaque co-passager dispose d'un abonnement actif**.
+L'Algorithme Métro-Taxi détecte automatiquement les Abonnés qui, dans un même intervalle temporel et géographique :
+- Saisissent une adresse de prise en charge identique ou très proche (rayon de 100 mètres) ;
+- ET indiquent une destination compatible (commune ou itinéraire similaire) ;
+- ET disposent chacun d'un abonnement actif vérifié par le système.
 
-### 7.3 Refus en cas de non-couverture
+Ces Abonnés sont **regroupés automatiquement par l'Algorithme dans un même véhicule** et procèdent, le cas échéant, à un ou plusieurs transbordements en cours de trajet, selon l'optimisation algorithmique.
 
-Si **un seul** des co-passagers déclarés ne dispose pas d'un abonnement actif, **la course est refusée** et un message clair invite le Réservant à attendre que ce co-passager s'abonne avant de relancer la réservation.
+### 7.3 Transparence et absence d'effort
 
-### 7.4 Confirmation individuelle
+**L'Abonné n'a donc rien à faire de spécifique pour bénéficier du covoiturage** : c'est l'organisation par défaut du service Métro-Taxi. Aucune confirmation, aucun SMS d'invitation, aucune saisie d'emails ou de numéros tiers ne sont nécessaires.
 
-Chaque co-passager reçoit un SMS d'invitation au covoiturage et doit confirmer sa participation via un lien sécurisé. **La course n'est créée et envoyée à un Chauffeur qu'après réception des confirmations de tous les passagers**.
+### 7.4 Cas particulier d'un groupe d'Abonnés qui se connaissent
+
+Les Abonnés appartenant à un même groupe (famille, amis, collègues) souhaitant voyager ensemble dans le même véhicule depuis un même point de départ procèdent **simplement** : chacun saisit la même adresse de départ et la même destination dans son propre compte, à quelques instants d'intervalle. L'Algorithme les regroupera automatiquement.
 
 ---
 
-## ARTICLE 8 — TARIFICATION DES COURSES ET FACTURATION
+## ARTICLE 8 — TARIFICATION DES COURSES ET RECU
 
 ### 8.1 Inclusion dans l'abonnement
 
@@ -205,9 +217,16 @@ Sauf application du Crédit Course Offerte (article 5), **toutes les courses son
 
 En cas de dépassement des plafonds d'usage, le Service est temporairement suspendu jusqu'au renouvellement de l'abonnement, sans facturation additionnelle de la course non effectuée.
 
-### 8.3 Facturation et reçu
+### 8.3 Reçu de course
 
-Un reçu électronique est généré automatiquement et envoyé à l'Abonné par e-mail à l'issue de chaque trajet, comportant les mentions légales obligatoires (distance parcourue, kilométrage, identité du Chauffeur Initial, etc.).
+À l'issue de chaque course, **un reçu détaillé est envoyé automatiquement par e-mail à l'Abonné**. Ce reçu mentionne :
+- La date et l'heure du trajet ;
+- Les points de départ et d'arrivée ;
+- La distance parcourue (en kilomètres) ;
+- Le nom du ou des Chauffeurs Indépendants intervenants ;
+- Le numéro de référence unique de la course.
+
+Ce reçu sert de justificatif de transport et d'historique pour l'Abonné. Il n'est pas une facture commerciale au sens fiscal.
 
 ---
 
@@ -215,7 +234,7 @@ Un reçu électronique est généré automatiquement et envoyé à l'Abonné par
 
 ### 9.1 Responsable du traitement
 
-La société Métro-Taxi est responsable du traitement des données personnelles collectées. Le Délégué à la Protection des Données peut être contacté à dpo@metro-taxi.com.
+L'entreprise individuelle Métro-Taxi est responsable du traitement des données personnelles collectées. Les demandes relatives à la protection des données peuvent être adressées à **contact@metro-taxi.com** (mention "RGPD" en objet).
 
 ### 9.2 Données collectées
 
@@ -226,7 +245,7 @@ La société Métro-Taxi est responsable du traitement des données personnelles
 
 ### 9.3 Finalités du traitement
 
-- Exécution du contrat (mise en relation, paiement, reversement aux Chauffeurs) ;
+- Exécution du contrat (mise en relation, paiement, versement des revenus des Chauffeurs) ;
 - Sécurité et lutte contre la fraude ;
 - Communication marketing (avec consentement préalable) ;
 - Obligations légales (facturation, conservation comptable).
@@ -239,7 +258,7 @@ La société Métro-Taxi est responsable du traitement des données personnelles
 
 ### 9.5 Droits des Utilisateurs
 
-Conformément aux articles 15 à 22 du RGPD, l'Utilisateur dispose d'un droit d'accès, de rectification, d'effacement, de limitation, de portabilité et d'opposition, exerçable par e-mail à dpo@metro-taxi.com.
+Conformément aux articles 15 à 22 du RGPD, l'Utilisateur dispose d'un droit d'accès, de rectification, d'effacement, de limitation, de portabilité et d'opposition, exerçable par e-mail à **contact@metro-taxi.com** (mention "RGPD").
 
 ### 9.6 Cookies
 
@@ -254,12 +273,14 @@ L'usage de cookies sur le site est limité aux cookies strictement nécessaires 
 La Plateforme est responsable, en sa qualité d'éditeur du Service technologique :
 - De la disponibilité raisonnable du Service (engagement de moyens) ;
 - De la sécurité technique des données traitées ;
-- Du reversement régulier des sommes dues aux Chauffeurs Indépendants.
+- Du versement régulier des revenus dus aux Chauffeurs Indépendants (le 10 du mois suivant).
 
 **La Plateforme n'est PAS responsable** :
-- Des actes des Chauffeurs Indépendants pendant l'exécution des courses (responsabilité civile du Chauffeur Indépendant en sa qualité de transporteur professionnel) ;
+- Des actes des Chauffeurs Indépendants pendant l'exécution des courses ;
 - Des comportements ou propos des autres Abonnés en covoiturage ;
-- Des pertes ou oublis d'objets dans les véhicules.
+- Des dommages indirects subis par les Abonnés.
+
+**Objets oubliés à bord** : En cas d'oubli d'un objet à bord d'un véhicule, la Plateforme s'engage à mettre en œuvre ses **meilleurs efforts** pour aider à retracer l'objet : mise en relation avec le Chauffeur concerné, géolocalisation du véhicule, transmission d'un signalement. **La Plateforme n'est toutefois pas garante de la récupération effective de l'objet, qui relève exclusivement de la diligence du Chauffeur Indépendant et du propriétaire de l'objet.**
 
 ### 10.2 Responsabilité des Chauffeurs Indépendants
 
@@ -336,12 +357,11 @@ Les présentes CGU/CGV sont régies par le droit français.
 
 ### 14.2 Médiation de la consommation
 
-En cas de litige, l'Abonné peut saisir gratuitement le médiateur de la consommation compétent :
-**Médiateur de la consommation [À COMPLÉTER par Parallel]**
+En cas de litige, l'Abonné peut saisir gratuitement un médiateur de la consommation agréé. La Plateforme communiquera les coordonnées du médiateur compétent sur demande à contact@metro-taxi.com.
 
 ### 14.3 Tribunal compétent
 
-À défaut de résolution amiable, tout litige relèvera de la compétence exclusive des tribunaux français.
+À défaut de résolution amiable, tout litige relèvera de la compétence exclusive des tribunaux français du ressort du siège social de la Plateforme.
 
 ---
 
@@ -359,13 +379,11 @@ Si une clause venait à être déclarée nulle ou inapplicable, les autres claus
 
 Toute réclamation peut être adressée à :
 - **E-mail** : contact@metro-taxi.com
-- **Adresse postale** : [Adresse complète siège social]
+- **Adresse postale** : Métro-Taxi, Chez M. Bedjedi, 11 Esplanade de Rambouillet, 93330 Neuilly-sur-Marne
 
 ---
 
 **Acceptation expresse**
 *L'Utilisateur déclare avoir lu, compris et accepté sans réserve les présentes CGU/CGV.*
 
-*Document rédigé avec l'assistance de l'agent technique Charly (Métro-Taxi). À soumettre à validation finale par un Conseil juridique avant production officielle.*
-
-**Fin du document — Conditions Générales d'Utilisation et de Vente Métro-Taxi**
+*Fin du document — Conditions Générales d'Utilisation et de Vente Métro-Taxi v2 (28 mai 2026)*
