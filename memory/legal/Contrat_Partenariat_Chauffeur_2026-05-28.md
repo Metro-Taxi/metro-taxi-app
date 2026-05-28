@@ -6,7 +6,7 @@
 
 ## ENTRE LES SOUSSIGNÉS
 
-L'entreprise individuelle **MÉTRO-TAXI**, exploitée par **M. SOULEYMANE NAZIM Judee Hamadjoulde**, dont le siège social est situé **Chez M. Bedjedi, 11 Esplanade de Rambouillet, 93330 Neuilly-sur-Marne**, immatriculée au Registre du Commerce et des Sociétés de **Bobigny** sous le numéro **918 687 864**, exerçant l'activité d'apporteur d'affaires via application informatique pour la mise en relation des clients avec des chauffeurs VTC,
+L'entreprise individuelle **MÉTRO-TAXI**, exploitée par **M. SOULEYMANE NAZIM Judee Hamadjoulde**, dont le siège social est situé **11 Esplanade de Rambouillet, 93330 Neuilly-sur-Marne**, immatriculée au Registre du Commerce et des Sociétés de **Bobigny** sous le numéro **918 687 864**, exerçant l'activité d'apporteur d'affaires via application informatique pour la mise en relation des clients avec des chauffeurs VTC,
 
 Ci-après dénommée la "**Plateforme**" ou "**Métro-Taxi**",
 

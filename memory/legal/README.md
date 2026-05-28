@@ -40,7 +40,7 @@ Les documents v2 sont **entièrement pré-remplis** avec tes vraies infos :
 - Exploitant : **M. SOULEYMANE NAZIM Judee Hamadjoulde**
 - SIREN : **918 687 864**
 - RCS : **Bobigny**
-- Siège : **Chez M. Bedjedi, 11 Esplanade de Rambouillet, 93330 Neuilly-sur-Marne**
+- Siège : **11 Esplanade de Rambouillet, 93330 Neuilly-sur-Marne**
 - Date immatriculation : 01/09/2022
 - **Marque INPI n° 5249787** (dépôt du 20/04/2026)
 - **Protection logicielle APP/Vaultinum n° 1099-6824**

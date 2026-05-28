@@ -8,7 +8,7 @@
 
 ## PRÉAMBULE
 
-L'entreprise individuelle **MÉTRO-TAXI**, exploitée par M. **SOULEYMANE NAZIM Judee Hamadjoulde**, dont le siège social est situé **Chez M. Bedjedi, 11 Esplanade de Rambouillet, 93330 Neuilly-sur-Marne**, immatriculée au Registre du Commerce et des Sociétés de **Bobigny** sous le numéro **918 687 864** (immatriculation au 01/09/2022), exerçant l'activité d'**apporteur d'affaires via application informatique pour la mise en relation des clients avec des chauffeurs VTC** (ci-après dénommée la "**Plateforme**" ou "**Métro-Taxi**"),
+L'entreprise individuelle **MÉTRO-TAXI**, exploitée par M. **SOULEYMANE NAZIM Judee Hamadjoulde**, dont le siège social est situé **11 Esplanade de Rambouillet, 93330 Neuilly-sur-Marne**, immatriculée au Registre du Commerce et des Sociétés de **Bobigny** sous le numéro **918 687 864** (immatriculation au 01/09/2022), exerçant l'activité d'**apporteur d'affaires via application informatique pour la mise en relation des clients avec des chauffeurs VTC** (ci-après dénommée la "**Plateforme**" ou "**Métro-Taxi**"),
 
 édite et exploite un service technologique de **mise en relation entre usagers (Abonnés) et chauffeurs indépendants titulaires d'une carte professionnelle de Voiture de Transport avec Chauffeur (VTC)**.
 
@@ -379,7 +379,7 @@ Si une clause venait à être déclarée nulle ou inapplicable, les autres claus
 
 Toute réclamation peut être adressée à :
 - **E-mail** : contact@metro-taxi.com
-- **Adresse postale** : Métro-Taxi, Chez M. Bedjedi, 11 Esplanade de Rambouillet, 93330 Neuilly-sur-Marne
+- **Adresse postale** : Métro-Taxi, 11 Esplanade de Rambouillet, 93330 Neuilly-sur-Marne
 
 ---
 
