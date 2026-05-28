@@ -83,28 +83,43 @@ Ces documents ont été rédigés en intégrant des **clauses inédites dans la 
 
 ---
 
-## 🚦 Workflow d'intégration recommandé
+## 🚦 Workflow d'intégration recommandé (PHASE PILOTE — 90 jours)
 
-1. **Toi** : remplace toutes les mentions `[À COMPLÉTER]` dans Word
-2. **Toi** : génère les 2 PDF (méthode A ou B)
-3. **Toi** : envoie le PDF "CGU/CGV" à Parallel Avocats avec un mot du genre :
-   > *"Bonjour Maître X, nous avons préparé un draft de CGU/CGV pour notre lancement pilote du 13 juin. Pouvez-vous en faire une revue rapide (1-2h max) sans rédaction lourde, en focus sur les Articles 6 (transbordement), 10 (responsabilité), 11 (sanctions) et 14 (médiation) ? Budget : 800-1200€ HT max. Restitution avant le 11 juin."*
-4. **Toi** : envoie le PDF "Contrat Chauffeur" à Parallel avec un mot similaire ciblé sur les Articles 2 (indépendance), 4 (Chaîne de prise en charge), 5 (rémunération) et 7 (signalements).
-5. **Toi** : après revue Parallel (estimation 1500-2500€ HT pour les deux), tu intègres les versions finales :
-   - CGU/CGV → publication sur `metro-taxi.com/cgv` + case à cocher au signup user
-   - Contrat Chauffeur → publication sur `metro-taxi.com/contrat-chauffeur` + signature électronique au signup chauffeur
-6. **Charly** : code l'intégration technique (modal d'acceptation + checkbox + stockage de la version acceptée + horodatage). ~3h.
+**Position cohérente avec le diagnostic du 27 mai 2026 : tu n'as PAS besoin de Parallel à cette phase.**
+
+Les drafts sont AUTO-SUFFISANTS pour le lancement pilote Saint-Denis (volumes <200 abonnés). Parallel devient pertinent en octobre 2026, en mode "revue de confort post-pilote", pas en mode "rédaction urgente".
+
+### Étapes recommandées
+
+1. **Toi** (1 h) : remplis toutes les mentions `[À COMPLÉTER]` dans Word (capital, SIREN, adresse, etc.)
+2. **Toi** (5 min) : exporte chacun des 2 documents en PDF
+3. **Charly** (~3 h, à ton GO) : intègre techniquement
+   - Case "J'ai lu et j'accepte les CGU/CGV" au signup Abonné
+   - Case "J'accepte le Contrat de Partenariat Chauffeur" au signup Chauffeur
+   - Stockage horodatage de la version acceptée (preuve juridique opposable)
+   - Pages publiques `/cgv` et `/contrat-chauffeur` accessibles à tout moment
+4. **Lancement Saint-Denis 13 juin 2026** : tu fonctionnes 90 jours avec ces docs
+5. **Octobre 2026** (post-pilote) : SI revenus stables + trésorerie OK, tu peux soumettre les versions ENRICHIES par les retours terrain à Parallel pour une revue de confort (~1 500-2 000 € au lieu de 9 600 € de rédaction initiale).
+
+### Pourquoi ces drafts sont suffisants à 30-200 abonnés
+
+- ✅ Volume sous le radar des contrôles URSSAF/DGCCRF
+- ✅ Triple bouclier anti-requalification salarial (références Cass. soc. 4 mars 2020 Uber)
+- ✅ Protection APP/Vaultinum sur l'algo déjà active
+- ✅ Marque INPI déposée le 20 avril 2026
+- ✅ Statut SAS + Sogecommerce parfaitement traçable
 
 ---
 
-## 💰 Économie réalisée vs proposition Parallel initiale
+## 💰 Économie cash vs proposition Parallel initiale (mai 2026)
 
-| Élément | Si Parallel rédige from scratch | Avec drafts Charly + revue Parallel |
+| Élément | Si on payait Parallel maintenant | Avec drafts Charly + revue Parallel optionnelle en octobre |
 |---|---|---|
-| Mission B (CGU/CGV) | 4 800 € TTC | ~800-1 200 € TTC (revue ciblée) |
-| Mission C (Contrat chauffeur) | 4 800 € TTC | ~1 200-1 500 € TTC (revue ciblée) |
-| **Total** | **9 600 € TTC** | **~2 000-2 700 € TTC** |
-| **Économie** | — | **~7 000 € TTC** ✨ |
+| Mission B (CGU/CGV) avant lancement | 4 800 € TTC | 0 € (drafts Charly suffisants) |
+| Mission C (Contrat chauffeur) avant lancement | 4 800 € TTC | 0 € (drafts Charly suffisants) |
+| Revue post-pilote (octobre) | — | ~1 500-2 000 € TTC (revue de confort) |
+| **TOTAL année 1** | **9 600 € TTC** | **~1 500-2 000 € TTC** |
+| **Économie réalisée** | — | **~7 600-8 100 € TTC** ✨ |
 
 ---
 
