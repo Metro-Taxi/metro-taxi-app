@@ -33,20 +33,19 @@ Dis-moi "GO PDF" et je code un endpoint admin qui te génère les 2 PDF en 1 cli
 
 ---
 
-## ⚠️ Champs déjà pré-remplis depuis ton Kbis (01/09/2022)
+## ✅ Documents 100 % FINALISÉS (28 mai 2026, version v2 finale)
 
-Les documents v2 (28 mai 2026) sont déjà pré-remplis avec :
+Les documents v2 sont **entièrement pré-remplis** avec tes vraies infos :
 - Dénomination : **MÉTRO-TAXI** (entreprise individuelle)
 - Exploitant : **M. SOULEYMANE NAZIM Judee Hamadjoulde**
 - SIREN : **918 687 864**
 - RCS : **Bobigny**
 - Siège : **Chez M. Bedjedi, 11 Esplanade de Rambouillet, 93330 Neuilly-sur-Marne**
+- Date immatriculation : 01/09/2022
+- **Marque INPI n° 5249787** (dépôt du 20/04/2026)
+- **Protection logicielle APP/Vaultinum n° 1099-6824**
 
-## ⚠️ Le SEUL champ qu'il te reste à compléter
-
-- `[N° dépôt INPI 20/04/2026]` : à remplacer par le numéro de dépôt de marque INPI inscrit sur ton certificat du 20 avril 2026.
-
-**Tout le reste est OK.** Tu peux ouvrir les .md dans Word, remplacer cette seule mention, exporter en PDF, et c'est prêt.
+**🎯 Aucun champ ne reste à compléter.** Les documents sont publiables et opposables tels quels dès aujourd'hui.
 
 ---
 

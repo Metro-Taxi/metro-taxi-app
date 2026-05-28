@@ -243,7 +243,7 @@ La Plateforme, en sa qualité d'éditeur d'un service technologique de mise en r
 
 ### 9.1 Droits de la Plateforme
 
-L'ensemble des éléments techniques et logiciels de la Plateforme (algorithme, application, interface, données, marque "Métro-Taxi" déposée à l'INPI, protection logicielle Agence pour la Protection des Programmes n°1099-6824) sont la propriété exclusive de la Plateforme.
+L'ensemble des éléments techniques et logiciels de la Plateforme (algorithme, application, interface, données, marque "Métro-Taxi" déposée à l'INPI sous le n° **5249787** le 20/04/2026, protection logicielle Agence pour la Protection des Programmes n° **1099-6824**) sont la propriété exclusive de la Plateforme.
 
 ### 9.2 Licence d'usage limitée
 
