@@ -24,8 +24,8 @@ const RegisterUser = () => {
     postal_code: '',
     city: '',
     date_of_birth: '',
-    // Optionnel: code promo (campagne Saint-Denis)
-    promo_code: ''
+    // Tracking silencieux campagne d'origine (auto-attribution à l'abonnement)
+    signup_campaign: ''
   });
   // Champs séparés pour la date de naissance
   const [birthDay, setBirthDay] = useState('');
@@ -36,11 +36,12 @@ const RegisterUser = () => {
   const { registerUser } = useAuth();
   const navigate = useNavigate();
 
-  // Prefill promo code from URL ?promo=STDENIS-2026-XXXX (Saint-Denis campaign)
+  // Tracking silencieux : prefill signup_campaign depuis ?campaign=saint-denis-2026-06-13
+  // (auto-attribution du crédit "1ère course offerte" à l'activation de l'abonnement)
   useEffect(() => {
-    const promo = searchParams.get('promo');
-    if (promo) {
-      setFormData((prev) => ({ ...prev, promo_code: promo.trim().toUpperCase() }));
+    const campaign = searchParams.get('campaign');
+    if (campaign) {
+      setFormData((prev) => ({ ...prev, signup_campaign: campaign.trim() }));
     }
   }, [searchParams]);
 
@@ -92,18 +93,14 @@ const RegisterUser = () => {
     try {
       const { confirmPassword, ...submitData } = formData;
       submitData.date_of_birth = dateOfBirth;
-      // Clean empty promo_code (so backend doesn't try to attach an empty code)
-      if (!submitData.promo_code || !submitData.promo_code.trim()) {
-        delete submitData.promo_code;
+      // Clean empty signup_campaign (tracking optional)
+      if (!submitData.signup_campaign || !submitData.signup_campaign.trim()) {
+        delete submitData.signup_campaign;
       } else {
-        submitData.promo_code = submitData.promo_code.trim().toUpperCase();
+        submitData.signup_campaign = submitData.signup_campaign.trim();
       }
-      const result = await registerUser(submitData);
-      if (result?.promo_attached) {
-        toast.success(`Code promo activé : ta 1ère course (≤ ${result.promo_attached.max_distance_km} km) est offerte.`);
-      } else {
-        toast.success(t('auth.register.success'));
-      }
+      await registerUser(submitData);
+      toast.success(t('auth.register.success'));
       navigate('/subscription');
     } catch (error) {
       const message = error.response?.data?.detail || t('auth.register.error');
@@ -324,26 +321,19 @@ const RegisterUser = () => {
               <p className="text-xs text-zinc-500">{t('auth.register.dateFormat', 'Format: JJ / MM / AAAA')}</p>
             </div>
 
-            {/* Code promo (optionnel - campagne Saint-Denis) */}
-            <div className="space-y-2">
-              <Label htmlFor="promo_code" className="text-zinc-300 flex items-center gap-2">
-                <Ticket className="w-4 h-4 text-[#FFD60A]" />
-                Code promo <span className="text-zinc-500 text-xs">(facultatif)</span>
-              </Label>
-              <Input
-                id="promo_code"
-                name="promo_code"
-                value={formData.promo_code}
-                onChange={(e) => setFormData({ ...formData, promo_code: e.target.value.toUpperCase() })}
-                placeholder="STDENIS-2026-XXXX"
-                maxLength={40}
-                className="bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A] font-mono uppercase tracking-wider"
-                data-testid="register-promo-code-input"
-              />
-              {formData.promo_code && (
-                <p className="text-xs text-[#FFD60A]">Ce code sera activé automatiquement à la création du compte.</p>
-              )}
-            </div>
+            {/* Bannière info Saint-Denis (auto-attribution silencieuse) */}
+            {formData.signup_campaign && (
+              <div className="bg-[#FFD60A]/10 border border-[#FFD60A]/30 rounded-sm p-4 flex items-start gap-3" data-testid="signup-campaign-banner">
+                <Ticket className="w-5 h-5 text-[#FFD60A] flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-zinc-300">
+                  <p className="font-semibold text-[#FFD60A]">Tu fais partie des Pionniers Saint-Denis !</p>
+                  <p className="text-zinc-400 text-xs mt-1">
+                    Dès ton abonnement actif, ta 1ère course (jusqu'à 10 km) sera offerte
+                    si tu fais partie des 30 premiers abonnés. Consommable à partir du <span className="text-white font-semibold">samedi 13 juin 2026</span>.
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="password" className="text-zinc-300">{t('auth.register.password')}</Label>

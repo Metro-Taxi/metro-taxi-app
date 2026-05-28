@@ -208,6 +208,8 @@ from routes.admin import router as admin_router
 from routes.ride_history import router as ride_history_router
 from routes.support_chat import router as support_chat_router
 from routes.promo_codes import router as promo_codes_router
+from routes.auto_campaigns import router as auto_campaigns_router
+from routes.auto_campaigns import attempt_auto_attribution
 
 # ============================================
 # ALGORITHME CENTRAL MÉTRO-TAXI
@@ -764,8 +766,10 @@ class UserRegister(BaseModel):
     postal_code: str     # Code postal
     city: str            # Ville
     date_of_birth: str   # Date de naissance (format: YYYY-MM-DD)
-    # Optionnel: code promo passé à l'inscription (campagne Saint-Denis)
+    # Optionnel: code promo passé à l'inscription (legacy campaign manuelle)
     promo_code: Optional[str] = None
+    # Optionnel: ID de campagne auto-attribution (tracking via URL ?campaign=...)
+    signup_campaign: Optional[str] = None
 
 class DriverRegister(BaseModel):
     first_name: str
@@ -1115,7 +1119,9 @@ async def register_user(data: UserRegister, request: Request):
         "street_address": data.street_address,
         "postal_code": data.postal_code,
         "city": data.city,
-        "date_of_birth": data.date_of_birth
+        "date_of_birth": data.date_of_birth,
+        # Campagne d'origine (auto-attribution à l'activation d'abonnement)
+        "signup_campaign": data.signup_campaign,
     }
     
     # Create response before inserting to avoid ObjectId contamination
@@ -3061,6 +3067,7 @@ app.include_router(admin_router)
 app.include_router(ride_history_router)
 app.include_router(support_chat_router)
 app.include_router(promo_codes_router)
+app.include_router(auto_campaigns_router)
 
 # Marketing assets download endpoint (forces download, bypasses PWA scope)
 from routes.marketing import router as marketing_router

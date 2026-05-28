@@ -607,6 +607,20 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
     use_promo = False
     promo_distance_km = None
     if pending_promo and pending_promo.get("type") == "free_first_ride":
+        # Check valid_from — la course offerte n'est consommable qu'à partir de cette date
+        valid_from_str = pending_promo.get("valid_from")
+        if valid_from_str:
+            try:
+                valid_from_dt = datetime.fromisoformat(valid_from_str.replace("Z", "+00:00"))
+            except (ValueError, TypeError):
+                valid_from_dt = None
+            if valid_from_dt and now < valid_from_dt:
+                # Refus poli — la course offerte sera consommable à partir du J-Day
+                date_human = valid_from_dt.strftime("%d/%m/%Y à %H:%M UTC")
+                raise HTTPException(
+                    status_code=403,
+                    detail=f"Ta 1ère course offerte sera activable à partir du {date_human}. Patiente encore un peu !",
+                )
         # Check expiration
         try:
             promo_expires = datetime.fromisoformat(pending_promo["expires_at"].replace("Z", "+00:00"))

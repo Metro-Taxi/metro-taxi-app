@@ -16,7 +16,29 @@ from database import db
 from models.schemas import CheckoutRequest, CheckoutRequestWithRegion
 from services.auth import get_current_user
 from services.emails import send_subscription_confirmation_email
+from routes.auto_campaigns import attempt_auto_attribution
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
+
+
+async def _activate_subscription_and_attribution(user_id: str, plan_id: str, expires_at: datetime):
+    """Helper centralisé pour activer un abonnement ET tenter une auto-attribution
+    promo si l'usager fait partie d'une campagne (Saint-Denis pionniers, etc.).
+
+    Idempotent : si l'abonnement est déjà actif, ne fait rien de spécial.
+    """
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {
+            "subscription_active": True,
+            "subscription_expires": expires_at.isoformat(),
+            "subscription_plan": plan_id,
+        }},
+    )
+    # Tentative d'auto-attribution si signup_campaign est défini sur le profil
+    user = await db.users.find_one({"id": user_id}, {"_id": 0, "signup_campaign": 1})
+    campaign_id = (user or {}).get("signup_campaign")
+    if campaign_id:
+        await attempt_auto_attribution(user_id, campaign_id)
 
 # Config from environment
 STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY')
@@ -394,13 +416,8 @@ async def get_payment_status(session_id: str, request: Request, current_user: di
                 plan = SUBSCRIPTION_PLANS.get(transaction["plan_id"])
                 if plan:
                     expires_at = datetime.now(timezone.utc) + timedelta(hours=plan["duration_hours"])
-                    await db.users.update_one(
-                        {"id": transaction["user_id"]},
-                        {"$set": {
-                            "subscription_active": True,
-                            "subscription_expires": expires_at.isoformat(),
-                            "subscription_plan": transaction["plan_id"]
-                        }}
+                    await _activate_subscription_and_attribution(
+                        transaction["user_id"], transaction["plan_id"], expires_at
                     )
                     logging.info(f"✅ Subscription activated for user {transaction['user_id']} via status check")
         
@@ -504,6 +521,10 @@ async def stripe_webhook(request: Request):
                                 "subscription_plan": transaction["plan_id"]
                             }}
                         )
+                        # Auto-attribution promo si l'usager fait partie d'une campagne Saint-Denis & co.
+                        u_camp = await db.users.find_one({"id": transaction["user_id"]}, {"_id": 0, "signup_campaign": 1})
+                        if u_camp and u_camp.get("signup_campaign"):
+                            await attempt_auto_attribution(transaction["user_id"], u_camp["signup_campaign"])
                         logging.info(f"✅ Subscription activated for user {transaction['user_id']} in region {region_id}")
                         
                         # Send confirmation email
@@ -522,13 +543,8 @@ async def stripe_webhook(request: Request):
                             )
                     else:
                         # Legacy single-region subscription
-                        await db.users.update_one(
-                            {"id": transaction["user_id"]},
-                            {"$set": {
-                                "subscription_active": True,
-                                "subscription_expires": expires_at.isoformat(),
-                                "subscription_plan": transaction["plan_id"]
-                            }}
+                        await _activate_subscription_and_attribution(
+                            transaction["user_id"], transaction["plan_id"], expires_at
                         )
                         
                         # Send confirmation email for legacy subscription
@@ -636,6 +652,10 @@ async def stripe_sepa_webhook(request: Request):
                                     "subscription_plan": transaction["plan_id"]
                                 }}
                             )
+                            # Auto-attribution promo si l'usager fait partie d'une campagne
+                            u_camp = await db.users.find_one({"id": user_id}, {"_id": 0, "signup_campaign": 1})
+                            if u_camp and u_camp.get("signup_campaign"):
+                                await attempt_auto_attribution(user_id, u_camp["signup_campaign"])
                             
                             logging.info(f"✅ SEPA Subscription activated for user {user_id} in region {region_id}")
                             
