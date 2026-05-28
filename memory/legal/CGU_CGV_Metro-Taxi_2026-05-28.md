@@ -12,7 +12,7 @@ L'entreprise individuelle **MÉTRO-TAXI**, exploitée par M. **SOULEYMANE NAZIM 
 
 édite et exploite un service technologique de **mise en relation entre usagers (Abonnés) et chauffeurs indépendants titulaires d'une carte professionnelle de Voiture de Transport avec Chauffeur (VTC)**.
 
-Le service Métro-Taxi est un **service de covoiturage à transbordement intelligent**, fondé sur un algorithme propriétaire (protégé par dépôt INPI Marque n° **5249787** du 20/04/2026 et certificat de protection logicielle Agence pour la Protection des Programmes n° **1099-6824**) permettant l'optimisation dynamique des trajets et la mutualisation des courses entre Abonnés.
+Le service Métro-Taxi est un **service de covoiturage à transbordement intelligent**, fondé sur un algorithme propriétaire **protégé par dépôt de marque enregistré à l'INPI et par certificat de protection logicielle Agence pour la Protection des Programmes**, permettant l'optimisation dynamique des trajets et la mutualisation des courses entre Abonnés.
 
 Les présentes Conditions Générales d'Utilisation et de Vente (ci-après les "**CGU/CGV**") ont pour objet de définir les modalités et conditions dans lesquelles la Plateforme met son service à disposition des Utilisateurs.
 
