@@ -218,7 +218,7 @@ const RegisterDriver = () => {
     setLoading(true);
 
     try {
-      const { confirmPassword, ...submitData } = formData;
+      const { confirmPassword, accept_contract, ...submitData } = formData;
       submitData.seats = parseInt(submitData.seats);
       // Compose final source label with optional referrer name
       if (submitData.source_inscription === 'Parrainage' && submitData.referrer_name?.trim()) {
@@ -226,6 +226,17 @@ const RegisterDriver = () => {
       }
       delete submitData.referrer_name;
       await registerDriver(submitData);
+      // Acceptation contrat horodatée côté backend
+      try {
+        const tok = localStorage.getItem('token');
+        if (tok) {
+          await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/api/legal/contract-driver/accept`,
+            {},
+            { headers: { Authorization: `Bearer ${tok}` } }
+          );
+        }
+      } catch (e) { /* non bloquant */ }
       toast.success(t('driverRegister.successMessage'));
       navigate('/login');
     } catch (error) {
@@ -653,10 +664,30 @@ const RegisterDriver = () => {
               </p>
             </div>
 
+            {/* Acceptation Contrat de Partenariat — obligatoire */}
+            <div className="flex items-start gap-3 pt-2">
+              <input
+                type="checkbox"
+                id="accept_contract"
+                checked={formData.accept_contract || false}
+                onChange={(e) => setFormData({ ...formData, accept_contract: e.target.checked })}
+                required
+                data-testid="driver-accept-contract-checkbox"
+                className="mt-1 w-4 h-4 accent-[#FFD60A] cursor-pointer flex-shrink-0"
+              />
+              <label htmlFor="accept_contract" className="text-sm text-zinc-300 cursor-pointer">
+                J'ai lu et j'accepte le{' '}
+                <Link to="/legal/contract-driver" target="_blank" rel="noopener noreferrer" className="text-[#FFD60A] hover:underline">
+                  Contrat de Partenariat Chauffeur Indépendant
+                </Link>
+                {' '}de Métro-Taxi <span className="text-red-400">*</span>
+              </label>
+            </div>
+
             <Button
               type="submit"
-              disabled={loading}
-              className="w-full bg-[#FFD60A] text-black font-bold h-12 hover:bg-[#E6C209] btn-press mt-6"
+              disabled={loading || !formData.accept_contract}
+              className="w-full bg-[#FFD60A] text-black font-bold h-12 hover:bg-[#E6C209] btn-press mt-6 disabled:opacity-50"
               data-testid="driver-submit-btn"
             >
               {loading ? (

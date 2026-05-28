@@ -183,3 +183,97 @@ code, .mono {
 .animate-slide-up {
     animation: slide-up 0.4s ease-out forwards;
 }
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+   LEGAL PAGES (CGV / Contrat Chauffeur) — Markdown rendering
+   ────────────────────────────────────────────────────────────────────────── */
+.legal-content h1 {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #FFD60A;
+    margin: 2rem 0 1rem 0;
+    line-height: 1.2;
+}
+.legal-content h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 2rem 0 0.75rem 0;
+    padding-top: 1rem;
+    border-top: 1px solid #27272a;
+}
+.legal-content h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #FFD60A;
+    margin: 1.25rem 0 0.5rem 0;
+}
+.legal-content p {
+    color: #a1a1aa;
+    line-height: 1.7;
+    margin: 0.75rem 0;
+    font-size: 0.95rem;
+}
+.legal-content strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+.legal-content em {
+    color: #d4d4d8;
+    font-style: italic;
+}
+.legal-content ul, .legal-content ol {
+    margin: 0.75rem 0 0.75rem 1.5rem;
+    color: #a1a1aa;
+    line-height: 1.7;
+}
+.legal-content ul li, .legal-content ol li {
+    margin: 0.35rem 0;
+    list-style-position: outside;
+}
+.legal-content ul li {
+    list-style-type: disc;
+}
+.legal-content ol li {
+    list-style-type: decimal;
+}
+.legal-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+}
+.legal-content table th {
+    background: #18181B;
+    color: #FFD60A;
+    text-align: left;
+    padding: 0.65rem;
+    border: 1px solid #27272a;
+    font-weight: 700;
+}
+.legal-content table td {
+    padding: 0.65rem;
+    border: 1px solid #27272a;
+    color: #d4d4d8;
+}
+.legal-content hr {
+    border: 0;
+    border-top: 1px solid #27272a;
+    margin: 2rem 0;
+}
+.legal-content code {
+    background: #18181B;
+    color: #FFD60A;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.85rem;
+}
+.legal-content blockquote {
+    border-left: 4px solid #FFD60A;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: #d4d4d8;
+    font-style: italic;
+}
+

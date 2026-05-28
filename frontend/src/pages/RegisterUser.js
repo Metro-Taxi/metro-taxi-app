@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import axios from 'axios';
 
 const RegisterUser = () => {
   const { t } = useTranslation();
@@ -91,7 +92,7 @@ const RegisterUser = () => {
     setLoading(true);
 
     try {
-      const { confirmPassword, ...submitData } = formData;
+      const { confirmPassword, accept_cgv, ...submitData } = formData;
       submitData.date_of_birth = dateOfBirth;
       // Clean empty signup_campaign (tracking optional)
       if (!submitData.signup_campaign || !submitData.signup_campaign.trim()) {
@@ -99,7 +100,18 @@ const RegisterUser = () => {
       } else {
         submitData.signup_campaign = submitData.signup_campaign.trim();
       }
-      await registerUser(submitData);
+      const result = await registerUser(submitData);
+      // Acceptation CGV horodatée côté backend
+      try {
+        const tok = localStorage.getItem('token');
+        if (tok) {
+          await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/api/legal/cgv/accept`,
+            {},
+            { headers: { Authorization: `Bearer ${tok}` } }
+          );
+        }
+      } catch (e) { /* non bloquant */ }
       toast.success(t('auth.register.success'));
       navigate('/subscription');
     } catch (error) {
@@ -378,10 +390,30 @@ const RegisterUser = () => {
               </div>
             </div>
 
+            {/* Acceptation CGU/CGV — obligatoire */}
+            <div className="flex items-start gap-3 pt-2">
+              <input
+                type="checkbox"
+                id="accept_cgv"
+                checked={formData.accept_cgv || false}
+                onChange={(e) => setFormData({ ...formData, accept_cgv: e.target.checked })}
+                required
+                data-testid="register-accept-cgv-checkbox"
+                className="mt-1 w-4 h-4 accent-[#FFD60A] cursor-pointer flex-shrink-0"
+              />
+              <label htmlFor="accept_cgv" className="text-sm text-zinc-300 cursor-pointer">
+                J'ai lu et j'accepte les{' '}
+                <Link to="/legal/cgv" target="_blank" rel="noopener noreferrer" className="text-[#FFD60A] hover:underline">
+                  Conditions Générales d'Utilisation et de Vente
+                </Link>
+                {' '}de Métro-Taxi <span className="text-red-400">*</span>
+              </label>
+            </div>
+
             <Button
               type="submit"
-              disabled={loading}
-              className="w-full bg-[#FFD60A] text-black font-bold h-12 hover:bg-[#E6C209] btn-press mt-6"
+              disabled={loading || !formData.accept_cgv}
+              className="w-full bg-[#FFD60A] text-black font-bold h-12 hover:bg-[#E6C209] btn-press mt-6 disabled:opacity-50"
               data-testid="register-submit-btn"
             >
               {loading ? (

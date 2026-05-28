@@ -36,6 +36,7 @@ import FoundingMember from "@/pages/FoundingMember";
 import PatronVTC from "@/pages/PatronVTC";
 import SaintDenis from "@/pages/SaintDenis";
 import PromoCodesPage from "@/pages/PromoCodesPage";
+import LegalPage from "@/pages/LegalPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -125,6 +126,10 @@ function AppRoutes() {
       <Route path="/b2b" element={<Navigate to="/patron-vtc" replace />} />
       <Route path="/saint-denis" element={<SaintDenis />} />
       <Route path="/93" element={<Navigate to="/saint-denis" replace />} />
+      <Route path="/legal/:docId" element={<LegalPage />} />
+      <Route path="/cgv" element={<Navigate to="/legal/cgv" replace />} />
+      <Route path="/cgu" element={<Navigate to="/legal/cgv" replace />} />
+      <Route path="/contrat-chauffeur" element={<Navigate to="/legal/contract-driver" replace />} />
       
       {/* User Routes - Also allow admin for testing */}
       <Route path="/dashboard" element={
