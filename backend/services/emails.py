@@ -856,6 +856,119 @@ async def send_fleet_partnership_confirmation(email: str, name: str, fleet_size:
 
 
 # ============================================
+# BROADCAST LANCEMENT SAINT-DENIS 13 JUIN 2026
+# ============================================
+async def send_launch_announcement_email(email: str, name: str, pioneer_number: int = None):
+    """Email d'annonce officielle du lancement Saint-Denis (13 juin 2026) aux 33 chauffeurs pionniers."""
+    if not RESEND_API_KEY:
+        logging.warning("RESEND_API_KEY not configured, launch announcement email NOT sent")
+        return False
+
+    pioneer_badge = f"PIONNIER #{pioneer_number}" if pioneer_number else "CHAUFFEUR PIONNIER"
+    pioneer_line = f"Tu es <strong style='color:#FFD60A'>chauffeur pionnier #{pioneer_number}</strong> — tu fais partie des 33 visages qui vont incarner cette ouverture." if pioneer_number else "Tu es un de nos <strong style='color:#FFD60A'>chauffeurs pionniers</strong> — tu fais partie des 33 visages qui vont incarner cette ouverture."
+
+    html_content = f"""
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"></head>
+<body style="font-family:Helvetica,Arial,sans-serif;background:#0a0a0a;margin:0;padding:30px 20px;color:#fff;">
+  <div style="max-width:620px;margin:0 auto;background:#1a1a1a;border-radius:12px;overflow:hidden;border-top:6px solid #FFD60A;">
+
+    <div style="background:#FFD60A;padding:28px 24px;text-align:center;">
+      <p style="margin:0 0 6px 0;color:#000;font-size:12px;font-weight:bold;letter-spacing:2px;">{pioneer_badge}</p>
+      <h1 style="margin:0;color:#000;font-size:26px;letter-spacing:-1px;">🚖 ZONE SAINT-DENIS</h1>
+      <p style="margin:8px 0 0 0;color:#000;font-size:14px;font-weight:bold;">OUVERTURE OFFICIELLE — VENDREDI 13 JUIN 2026</p>
+    </div>
+
+    <div style="padding:36px 30px;">
+      <h2 style="color:#FFD60A;font-size:22px;margin:0 0 18px 0;">Bonjour {name} 👋</h2>
+
+      <p style="color:#e4e4e7;line-height:1.7;font-size:15px;margin:0 0 16px 0;">
+        C'est officiel : <strong style="color:#FFD60A">vendredi 13 juin 2026</strong>, Métro-Taxi ouvre sa <strong>première zone pilote payante à Saint-Denis</strong> (93).
+      </p>
+
+      <p style="color:#e4e4e7;line-height:1.7;font-size:15px;margin:0 0 24px 0;">
+        {pioneer_line}
+      </p>
+
+      <h3 style="color:#FFD60A;font-size:16px;margin:28px 0 12px 0;border-bottom:1px solid #27272a;padding-bottom:8px;">⚡ Ce qui va se passer le 13 juin</h3>
+      <ul style="color:#cccccc;line-height:1.8;font-size:14px;margin:0 0 18px 0;padding-left:20px;">
+        <li>Ouverture des <strong>abonnements usagers</strong> pour la zone Saint-Denis</li>
+        <li>Les <strong style="color:#FFD60A">30 premiers abonnés</strong> recevront automatiquement une <strong>première course offerte (≤ 10 km)</strong></li>
+        <li><strong>Toi</strong>, tu commences à recevoir des courses dès le premier abonné actif dans ta zone</li>
+      </ul>
+
+      <h3 style="color:#FFD60A;font-size:16px;margin:28px 0 12px 0;border-bottom:1px solid #27272a;padding-bottom:8px;">💰 Ton modèle (il ne change pas)</h3>
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;border-radius:8px;border-left:4px solid #FFD60A;margin:0 0 18px 0;">
+        <tr><td style="padding:18px 20px;">
+          <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>1,50 € / km parcouru</strong> avec au moins un abonné Métro-Taxi à bord</p>
+          <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>0 % de commission</strong>, à vie</p>
+          <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>Versement chaque 10 du mois</strong></p>
+          <p style="color:#fff;margin:0;font-size:14px;">✅ <strong>Aucun engagement</strong> — tu continues Uber/Bolt en parallèle si tu veux</p>
+        </td></tr>
+      </table>
+      <p style="color:#a1a1aa;font-size:13px;line-height:1.6;margin:0 0 24px 0;font-style:italic;">
+        Le tarif fondateur t'est garanti à vie. Tu es entré dans le projet avant l'ouverture publique, ta place est gravée.
+      </p>
+
+      <h3 style="color:#FFD60A;font-size:16px;margin:28px 0 12px 0;border-bottom:1px solid #27272a;padding-bottom:8px;">🎯 3 actions à faire AVANT le 13 juin (5 min top chrono)</h3>
+      <ol style="color:#cccccc;line-height:1.8;font-size:14px;margin:0 0 24px 0;padding-left:22px;">
+        <li>Connecte-toi à l'app et vérifie que ton <strong>profil + RIB + immatriculation</strong> sont à jour</li>
+        <li>Confirme ta <strong>disponibilité</strong> dans l'agenda chauffeur (créneaux Saint-Denis)</li>
+        <li>Active les <strong>notifications push</strong> sur ton téléphone — c'est par là qu'arrivent les courses</li>
+      </ol>
+
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;"><tr><td align="center">
+        <a href="https://metro-taxi.com/driver/dashboard" style="display:inline-block;background:#FFD60A;color:#000;text-decoration:none;padding:16px 36px;border-radius:10px;font-weight:bold;font-size:15px;letter-spacing:0.3px;">
+          VÉRIFIER MA FICHE CHAUFFEUR →
+        </a>
+      </td></tr></table>
+
+      <hr style="border:none;border-top:1px solid #333;margin:28px 0;">
+
+      <h3 style="color:#FFD60A;font-size:16px;margin:0 0 12px 0;">🤝 Un dernier mot</h3>
+      <p style="color:#cccccc;line-height:1.7;font-size:14px;margin:0 0 14px 0;">
+        Vous êtes 33. Vous êtes les fondations. Sans vous, Saint-Denis ne se lance pas le 13 juin — il se lance "un jour". C'est grâce à votre confiance qu'on a tenu le cap.
+      </p>
+      <p style="color:#fff;line-height:1.7;font-size:15px;margin:0 0 14px 0;">
+        <strong>Merci.</strong> Vraiment.
+      </p>
+      <p style="color:#a1a1aa;font-size:13px;line-height:1.6;margin:0 0 20px 0;">
+        Si tu as la moindre question, réponds directement à cet email ou écris-moi sur WhatsApp au <strong style="color:#FFD60A">06 05 78 64 25</strong> — je m'en occupe personnellement.
+      </p>
+
+      <p style="color:#FFD60A;font-size:15px;margin:24px 0 0 0;">
+        Bonne route 🚖🇫🇷<br>
+        <strong>— Judée, fondateur Métro-Taxi</strong>
+      </p>
+    </div>
+
+    <div style="background:#09090b;padding:18px 24px;text-align:center;border-top:1px solid #27272a;">
+      <p style="color:#52525b;margin:0 0 6px 0;font-size:12px;">© 2026 Métro-Taxi — Plateforme française de covoiturage à maillage intelligent</p>
+      <p style="color:#52525b;margin:0;font-size:11px;">
+        <a href="https://metro-taxi.com/saint-denis" style="color:#71717a;text-decoration:none;">metro-taxi.com/saint-denis</a>
+      </p>
+    </div>
+  </div>
+</body></html>
+"""
+
+    try:
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [email],
+            "subject": "🚖 Pionniers, c'est confirmé : ouverture zone Saint-Denis le 13 juin",
+            "html": html_content,
+            "reply_to": "judeemane@hotmail.com",
+        }
+        result = await asyncio.to_thread(resend.Emails.send, params)
+        logging.info(f"Launch announcement email sent to {email} (#{pioneer_number}), ID: {result.get('id')}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send launch announcement email to {email}: {str(e)}")
+        return False
+
+
+# ============================================
 # EMAIL PERSO ADMIN → CHAUFFEUR
 # ============================================
 async def send_admin_personal_email(to_email: str, recipient_name: str, subject: str, body: str, admin_name: str = "Métro-Taxi"):

@@ -9,12 +9,13 @@ import os
 import logging
 import uuid
 import math
+import asyncio
 import stripe
 
 from database import db
 from models.schemas import RideRequestCreate, RideProgressUpdate, LocationUpdate, NotificationPayload
 from services.auth import get_current_user
-from services.emails import send_subscription_confirmation_email, send_gift_subscription_email, send_payout_notification_email, send_admin_personal_email
+from services.emails import send_subscription_confirmation_email, send_gift_subscription_email, send_payout_notification_email, send_admin_personal_email, send_launch_announcement_email
 
 # Security middleware
 from middleware.security import get_security_stats, manual_block_ip, manual_unblock_ip, get_client_ip
@@ -2112,4 +2113,146 @@ async def admin_get_email_logs(
     ).sort("sent_at", -1).to_list(length=limit)
 
     return {"logs": logs, "count": len(logs)}
+
+
+# ==========================================================
+# BROADCAST LANCEMENT SAINT-DENIS — 13 JUIN 2026
+# ==========================================================
+class BroadcastTestPayload(BaseModel):
+    test_email: str  # Email cible pour test (généralement le fondateur lui-même)
+
+
+class BroadcastConfirmPayload(BaseModel):
+    confirmation_phrase: str  # Doit être exactement "GO 13 JUIN"
+    dry_run: Optional[bool] = False  # Si True, retourne juste la liste sans envoyer
+
+
+@router.get("/admin/broadcast/launch-saint-denis/preview")
+async def broadcast_launch_preview(current_user: dict = Depends(get_current_user)):
+    """Aperçu : retourne le nombre de destinataires + la liste anonymisée des chauffeurs ciblés."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    # Critères : chauffeurs validés ET email vérifié
+    cursor = db.drivers.find(
+        {"is_validated": True, "email_verified": True},
+        {"_id": 0, "id": 1, "first_name": 1, "last_name": 1, "email": 1, "pioneer_number": 1}
+    )
+    drivers = await cursor.to_list(length=500)
+
+    # Anonymisation partielle pour preview (email masqué)
+    preview_list = []
+    for d in drivers:
+        email = d.get("email", "")
+        masked = email[:2] + "***@" + email.split("@")[-1] if "@" in email else "—"
+        preview_list.append({
+            "first_name": d.get("first_name"),
+            "pioneer_number": d.get("pioneer_number"),
+            "email_masked": masked,
+        })
+
+    return {
+        "subject": "🚖 Pionniers, c'est confirmé : ouverture zone Saint-Denis le 13 juin",
+        "recipient_count": len(drivers),
+        "criteria": "drivers WHERE is_validated=True AND email_verified=True",
+        "recipients_preview": preview_list,
+        "ready": len(drivers) > 0,
+    }
+
+
+@router.post("/admin/broadcast/launch-saint-denis/test")
+async def broadcast_launch_test(payload: BroadcastTestPayload, current_user: dict = Depends(get_current_user)):
+    """Envoie un email TEST à une adresse unique (généralement le fondateur) avant le broadcast réel."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    if not payload.test_email or "@" not in payload.test_email:
+        raise HTTPException(status_code=400, detail="Email de test invalide")
+
+    sent = await send_launch_announcement_email(
+        email=payload.test_email,
+        name="Capitaine (TEST)",
+        pioneer_number=0,  # 0 = badge "test"
+    )
+
+    if not sent:
+        raise HTTPException(status_code=500, detail="Échec envoi email test (vérifier RESEND_API_KEY)")
+
+    return {
+        "status": "test_sent",
+        "to": payload.test_email,
+        "message": "Email test envoyé. Vérifie ta boite et valide le rendu avant /confirm.",
+    }
+
+
+@router.post("/admin/broadcast/launch-saint-denis/confirm")
+async def broadcast_launch_confirm(payload: BroadcastConfirmPayload, current_user: dict = Depends(get_current_user)):
+    """Broadcast officiel aux chauffeurs validés. Phrase de confirmation OBLIGATOIRE."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    if payload.confirmation_phrase != "GO 13 JUIN":
+        raise HTTPException(
+            status_code=400,
+            detail="Phrase de confirmation invalide. Pour broadcaster, envoie exactement: 'GO 13 JUIN'"
+        )
+
+    cursor = db.drivers.find(
+        {"is_validated": True, "email_verified": True},
+        {"_id": 0, "id": 1, "first_name": 1, "last_name": 1, "email": 1, "pioneer_number": 1}
+    )
+    drivers = await cursor.to_list(length=500)
+
+    if not drivers:
+        raise HTTPException(status_code=404, detail="Aucun chauffeur éligible")
+
+    # Dry-run mode : retourne juste la liste sans envoyer
+    if payload.dry_run:
+        return {
+            "status": "dry_run",
+            "would_send_to": len(drivers),
+            "drivers": [{"first_name": d.get("first_name"), "pioneer_number": d.get("pioneer_number")} for d in drivers],
+        }
+
+    results = {"sent": [], "failed": []}
+    for d in drivers:
+        email = d.get("email")
+        name = d.get("first_name", "Chauffeur")
+        pioneer_number = d.get("pioneer_number")
+
+        try:
+            ok = await send_launch_announcement_email(
+                email=email,
+                name=name,
+                pioneer_number=pioneer_number,
+            )
+            if ok:
+                results["sent"].append({"email": email, "pioneer_number": pioneer_number})
+            else:
+                results["failed"].append({"email": email, "reason": "send returned False"})
+        except Exception as e:
+            results["failed"].append({"email": email, "reason": str(e)})
+
+        # Anti-rate-limit Resend : 200ms entre chaque envoi
+        await asyncio.sleep(0.2)
+
+    # Log opération en DB
+    await db.broadcast_logs.insert_one({
+        "broadcast_id": str(uuid.uuid4()),
+        "type": "launch_saint_denis_2026_06_13",
+        "sent_at": datetime.now(timezone.utc),
+        "sent_by": current_user.get("email", "unknown"),
+        "total_targeted": len(drivers),
+        "sent_count": len(results["sent"]),
+        "failed_count": len(results["failed"]),
+        "failures": results["failed"],
+    })
+
+    return {
+        "status": "broadcast_done",
+        "total_targeted": len(drivers),
+        "sent_count": len(results["sent"]),
+        "failed_count": len(results["failed"]),
+        "failures": results["failed"],
+    }
 
