@@ -54,10 +54,31 @@ D'après l'email SG :
 
 À aller chercher dans **Paramétrage > Boutiques > METRO-TAXI > onglet Clés** :
 
-- [ ] **Clé de test** : `________________` (à coller ici après récupération)
-- [ ] **Clé de signature HMAC test** : `________________`
-- [ ] **Clé de production** : (à générer APRÈS validation tests)
-- [ ] **Clé de signature HMAC prod** : (à générer APRÈS)
+- [x] **Identifiant boutique** : `43696939` ✅
+- [x] **Clé de TEST API formulaire (V1/V2/SOAP)** : `uqhmpvNV0v45QpNI` ✅ (récupérée le 29/05/2026 ~15h50)
+- [ ] **Clé HMAC SHA-256 TEST** : à vérifier dans onglet "Clés d'API REST"
+- [ ] **Clé de production** : "À générer" — bouton actuellement DÉSACTIVÉ (4 lignes de tests CB à valider d'abord)
+- [ ] **Clé HMAC SHA-256 PROD** : (à générer APRÈS validation tests)
+
+### 🧪 Tests CB requis avant génération clé production
+
+D'après le Back Office, il faut valider **4 transactions test** sur la table suivante :
+
+| # | CB | Mastercard | Maestro | Visa Electron |
+|---|---|---|---|---|
+| 1 | 4970100000000055 | 5970100300000067 | 5000550000000052 | 4917480000000057 |
+| 2 | 4970100000000063 | 5970100300000075 | 5000550000000060 | 4917480000000065 |
+| 3 | 4970100000000071 | 5970100300000083 | 5000550000000078 | 4917480000000073 |
+| 4 | 4970115000000228 | 5100010000000106 | 5000551000000415 | 4917481000000402 |
+
+Les paiements de test sont purgés au bout de 30 jours. Paramètre `vads_page_action` doit être à `PAYMENT` ou `REGISTER_PAY`.
+
+### ⚠️ Configuration manquante (à faire dans Métro-Taxi avant production)
+
+- **URL de notification IPN** : Statut "Non paramétrée" actuellement
+  - À configurer dans Paramétrage > Règles de notifications
+  - Devra pointer vers : `https://metro-taxi.com/api/payments/sogecommerce/ipn` (endpoint à créer côté backend Métro-Taxi)
+
 
 ---
 
