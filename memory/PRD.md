@@ -23,6 +23,27 @@ Plateforme web + mobile "Métro-Taxi" pour mettre en relation des usagers abonn�
 
 ## What's Been Implemented
 
+### Session 2026-05-29 & 30 (P0 INPI Extension + Broadcast 33 Pionniers + Sogecommerce activé)
+- [x] **🏛️ INPI Marque "Métro-Taxi" — Extension Classes 39 + 42** (29/05/2026)
+  - Référence interne: `METROTAXI-EXT-3942-2026`
+  - Transaction paiement INPI: `19431389` — **230,00 € PAYÉ**
+  - Classe 39 (transport): Transport, Organisation de voyages, Transport en taxi, Mise à disposition d'informations en matière de transport, Réservation de places de voyage
+  - Classe 42 (logiciels): Développement de logiciels, Élaboration (conception) de logiciels, Programmation informatique, Conception de systèmes informatiques, Logiciels en tant que services (SaaS), Fourniture de logiciels non téléchargeables en ligne
+  - Couverture totale post-dépôt: **Classes 9 + 39 + 42** (protection 360°)
+- [x] **🏦 Sogecommerce activé** (29/05/2026)
+  - Login Back Office: `jsouleymanenazim` (MDP changé)
+  - Identifiant boutique: `43696939`
+  - Clé de TEST API formulaire récupérée et sauvegardée dans `/app/memory/SOGECOMMERCE_PRIVATE.md`
+  - 4 tests CB à effectuer avant génération clé production
+- [x] **📧 Broadcast 33 chauffeurs pionniers — Lancement Saint-Denis 13 juin** (30/05/2026)
+  - 3 endpoints API ajoutés: `/admin/broadcast/launch-saint-denis/{preview,test,confirm}`
+  - Fonction `send_launch_announcement_email()` ajoutée dans `services/emails.py`
+  - Option `include_unverified=true` pour rattrapage des chauffeurs validés mais email non vérifié (logique disjointe = zéro doublon)
+  - Phrase de confirmation anti-erreur: `"GO 13 JUIN"` requise
+  - Anti-spam: 200ms entre envois (Resend rate limit)
+  - Logs DB: `db.broadcast_logs` (type = `launch_saint_denis_2026_06_13`)
+  - **Résultat: 33/33 pionniers contactés, 0 échec, 100% delivery** (14 vérifiés + 19 rattrapage)
+
 ### Session 2026-05-26 (P0 Lancement Saint-Denis 13 juin — Codes Promo + TTS Transbordement + Form Chauffeurs)
 - [x] **🎟️ P0 — Système de codes promo "1ère course offerte ≤ 10 km"** (campagne Saint-Denis)
   - Nouveau router `backend/routes/promo_codes.py` (3 endpoints admin + 2 endpoints user)
