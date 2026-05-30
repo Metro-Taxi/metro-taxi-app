@@ -1,0 +1,11 @@
+{
+  "video_id": "metro_test_4sec",
+  "status": "processing",
+  "model": "sora-2",
+  "size": "1280x720",
+  "duration": 4,
+  "started_at": "2026-05-30T10:54:44.404341",
+  "updated_at": "2026-05-30T10:54:44.404413",
+  "output_path": null,
+  "prompt": "Crowded RATP city bus at Saint-Denis market stop, Saturday morning, diverse North African and African passengers packed inside looking tired. Senior woman with shopping bags stands outside, unable to board, discouraged. Documentary style, warm sunlight, urban Paris suburbs. Vertical mobile shot. No text overlays.\n"
+}
