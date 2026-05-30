@@ -1,0 +1,11 @@
+{
+  "video_id": "metro_taxi_bus_bonde_v4",
+  "status": "processing",
+  "model": "sora-2",
+  "size": "1280x720",
+  "duration": 12,
+  "started_at": "2026-05-30T10:31:09.265672",
+  "updated_at": "2026-05-30T10:31:09.265740",
+  "output_path": null,
+  "prompt": "Vertical mobile cinematic shot, 12 seconds, ultra-realistic documentary style.\n\nOPENING (0-3s): Crowded RATP bus at Saint-Denis March\u00e9 stop on a sunny Saturday morning, North African and African passengers visibly packed against the windows, faces showing fatigue and frustration. Heavy shopping bags, baby strollers stuck in the aisle. Sound of city bustle.\n\nMIDDLE (3-7s): Camera slowly pulls back to reveal the bus is completely overloaded, people refusing to enter, a senior woman with bags waiting outside, looking discouraged. Heat haze rises from the asphalt. Wide shot of the Saint-Denis market square in background with vendors and pedestrians.\n\nCLIMAX (7-10s): The same woman lifts her phone, taps a mobility app (subtle yellow icon visible on screen). A clean modern yellow VTC car arrives smoothly, driver opens door with a respectful smile.\n\nENDING (10-12s): Woman sits comfortably, places bags beside her, exhales with relief. Sunlight bathes the interior. Soft uplifting music swells. Yellow and black color grading.\n\nStyle: Documentary realism mixed with hopeful cinematic finish, shot on smartphone-style but with professional color grading. Diverse representation. No text overlays.\n"
+}

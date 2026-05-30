@@ -20,7 +20,7 @@ OUTPUT_DIR = "/app/frontend/public/sora"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
-def generate(video_id: str, prompt: str, model: str = "sora-2-pro", size: str = "1024x1792", duration: int = 12):
+def generate(video_id: str, prompt: str, model: str = "sora-2", size: str = "1280x720", duration: int = 12):
     started_at = datetime.now()
     output_path = os.path.join(OUTPUT_DIR, f"{video_id}.mp4")
     status_path = os.path.join(OUTPUT_DIR, f"{video_id}.json")
