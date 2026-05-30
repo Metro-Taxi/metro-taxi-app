@@ -1,0 +1,10 @@
+{
+  "image_id": "scenario1_bus_bonde_01",
+  "prompt": "Cinematic vertical 9:16 mobile photograph, hyper-realistic documentary style, photojournalism quality.\n\nScene: Saturday morning at Saint-Denis market bus stop in the Paris northern suburbs (93). A cro...",
+  "mime_type": "image/jpeg",
+  "file_size": 953166,
+  "elapsed_seconds": 24.599175,
+  "generated_at": "2026-05-30T11:08:34.541850",
+  "session_id": "metro-taxi-1780139289",
+  "model": "gemini-3.1-flash-image-preview"
+}
