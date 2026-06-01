@@ -173,9 +173,9 @@ def compose_recto(raw_bg_path: str) -> str:
     x = (W_PX - tw) // 2
     draw.text((x, band_top + 30), text, font=f_city, fill=BLACK)
 
-    # "Ouverture vendredi 13 juin 2026"
+    # "Lancement vendredi 13 juin 2026"
     f_date = ImageFont.truetype(FONT_BOLD, 60)
-    text = "Ouverture vendredi 13 juin 2026"
+    text = "Lancement vendredi 13 juin 2026"
     bbox = draw.textbbox((0, 0), text, font=f_date)
     tw = bbox[2] - bbox[0]
     x = (W_PX - tw) // 2
