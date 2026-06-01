@@ -514,7 +514,7 @@ async def send_pioneer_welcome_email(email: str, name: str, pioneer_number: int,
           </p>
           <ul style="color:#cccccc;line-height:1.8;font-size:14px;margin:0 0 18px 0;padding-left:20px;">
             <li>🚖 On recrute à fond les chauffeurs (<strong>objectif 150 inscrits</strong> pour lancer la zone pilote payante)</li>
-            <li>🚖 Pendant cette période, <strong>continue ton activité actuelle</strong> (Uber/Bolt/Heetch) en parallèle</li>
+            <li>🚖 Pendant cette période, <strong>continue ton activité actuelle</strong> en parallèle</li>
             <li>🚖 Dès qu'on franchit le cap, tu commences à recevoir des courses</li>
           </ul>
 
@@ -903,7 +903,7 @@ async def send_launch_announcement_email(email: str, name: str, pioneer_number: 
           <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>1,50 € / km parcouru</strong> avec au moins un abonné Métro-Taxi à bord</p>
           <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>0 % de commission</strong>, à vie</p>
           <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>Versement chaque 10 du mois</strong></p>
-          <p style="color:#fff;margin:0;font-size:14px;">✅ <strong>Aucun engagement</strong> — tu continues Uber/Bolt en parallèle si tu veux</p>
+          <p style="color:#fff;margin:0;font-size:14px;">✅ <strong>Aucun engagement</strong> — tu continues tes activités actuelles en parallèle si tu veux</p>
         </td></tr>
       </table>
       <p style="color:#a1a1aa;font-size:13px;line-height:1.6;margin:0 0 24px 0;font-style:italic;">

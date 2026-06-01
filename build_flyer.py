@@ -235,7 +235,7 @@ def compose_verso() -> str:
     f_list_bold = ImageFont.truetype(FONT_BOLD, 60)
     avantages = [
         "Trajet partagé intelligent",
-        "Moins cher que Uber/Bolt",
+        "Moins cher que les autres",
         "Chauffeurs locaux 93",
         "Confort + dignité",
     ]
