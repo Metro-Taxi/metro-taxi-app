@@ -261,16 +261,25 @@ def compose_verso() -> str:
     draw.text((x, y), text, font=f_price_label, fill=WHITE)
     y += 75
 
-    f_price_big = ImageFont.truetype(FONT_BOLD, 160)
-    text = "6,99€"
-    bbox = draw.textbbox((0, 0), text, font=f_price_big)
-    tw = bbox[2] - bbox[0]
-    x = (W_PX - tw) // 2
-    draw.text((x, y), text, font=f_price_big, fill=YELLOW)
-    y += 175
+    # Prix principal: 6,99€/jour sur UNE seule ligne, centré
+    f_price_big = ImageFont.truetype(FONT_BOLD, 130)
+    f_price_unit = ImageFont.truetype(FONT_BOLD, 65)
+    price_big = "6,99€"
+    price_unit = "/jour"
+    bbox_big = draw.textbbox((0, 0), price_big, font=f_price_big)
+    bbox_unit = draw.textbbox((0, 0), price_unit, font=f_price_unit)
+    total_w = (bbox_big[2] - bbox_big[0]) + 10 + (bbox_unit[2] - bbox_unit[0])
+    start_x = (W_PX - total_w) // 2
+    # Position verticale: aligner les baselines
+    draw.text((start_x, y), price_big, font=f_price_big, fill=YELLOW)
+    # /jour aligné sur le baseline du prix principal
+    unit_y = y + (bbox_big[3] - bbox_unit[3]) - 10
+    draw.text((start_x + (bbox_big[2] - bbox_big[0]) + 10, unit_y), price_unit, font=f_price_unit, fill=WHITE)
+    y += 155
 
-    f_price_small = ImageFont.truetype(FONT_REG, 38)
-    text = "par jour  •  19,99€/7j  •  53,99€/30j"
+    # Autres tarifs en sous-ligne
+    f_price_small = ImageFont.truetype(FONT_REG, 40)
+    text = "19,99€/7j  •  53,99€/30j"
     bbox = draw.textbbox((0, 0), text, font=f_price_small)
     tw = bbox[2] - bbox[0]
     x = (W_PX - tw) // 2
