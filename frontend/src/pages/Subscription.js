@@ -179,6 +179,56 @@ const Subscription = () => {
     }
   };
 
+  // Sogecommerce (Société Générale) Payment - auto-submit POST to vads-payment
+  const handleSogecommerceSubscribe = async (planId) => {
+    if (!selectedRegion) {
+      toast.error(t('regions.regionRequired', 'Please select a region first'));
+      return;
+    }
+    setLoading(planId);
+    try {
+      const originUrl = window.location.origin;
+      const response = await axios.post(`${API}/payments/sogecommerce/checkout`, {
+        plan_id: planId,
+        region_id: selectedRegion.id,
+        origin_url: originUrl
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const { action_url, fields } = response.data;
+      if (!action_url || !fields) {
+        toast.error('Erreur: payload Sogecommerce incomplet');
+        setLoading(null);
+        return;
+      }
+
+      setIsRedirecting(true);
+      toast.success(t('subscription.redirectingSG', 'Redirection vers Société Générale...'));
+
+      // Build hidden form and auto-submit (POST required by Sogecommerce)
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = action_url;
+      form.style.display = 'none';
+      Object.entries(fields).forEach(([name, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value == null ? '' : String(value);
+        form.appendChild(input);
+      });
+      document.body.appendChild(form);
+      setTimeout(() => form.submit(), 200);
+    } catch (error) {
+      console.error('Sogecommerce checkout error:', error);
+      const message = error.response?.data?.detail || 'Erreur Sogecommerce';
+      toast.error(message);
+      setLoading(null);
+      setIsRedirecting(false);
+    }
+  };
+
   // SEPA Payment functions
   const openSepaDialog = (planId) => {
     if (!selectedRegion) {
@@ -556,6 +606,21 @@ const Subscription = () => {
                 >
                   <Building2 className="w-4 h-4 mr-2" />
                   {t('sepa.payWithSepa', 'Payer par prélèvement SEPA')}
+                </Button>
+              )}
+
+              {/* Sogecommerce (Société Générale) Button - Only for EUR regions */}
+              {selectedRegion?.currency === 'EUR' && (
+                <Button
+                  variant="outline"
+                  onClick={() => handleSogecommerceSubscribe(plan.id)}
+                  disabled={loading !== null || isRedirecting || sepaLoading}
+                  className={`w-full h-10 mt-2 text-sm border-red-700/40 text-red-200 hover:bg-red-950/40 ${(loading !== null || isRedirecting || sepaLoading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  data-testid={`sogecommerce-${plan.id}-btn`}
+                  title="Paiement sécurisé Société Générale (Apple Pay supporté)"
+                >
+                  <CreditCard className="w-4 h-4 mr-2" />
+                  Payer avec Société Générale
                 </Button>
               )}
             </motion.div>
