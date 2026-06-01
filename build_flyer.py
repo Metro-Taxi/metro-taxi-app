@@ -303,7 +303,7 @@ def compose_verso() -> str:
     draw.text((text_x, band_y + round(25 * MM_TO_PX)), "/saint-denis", font=f_url, fill=BLACK)
 
     f_phone = ImageFont.truetype(FONT_BOLD, 36)
-    draw.text((text_x, band_y + round(35 * MM_TO_PX)), "06 05 78 64 25", font=f_phone, fill=BLACK)
+    draw.text((text_x, band_y + round(35 * MM_TO_PX)), "06 68 55 00 19", font=f_phone, fill=BLACK)
 
     out_path = f"{OUTPUT_DIR}/flyer_metrotaxi_VERSO_A6.png"
     img.save(out_path, "PNG", dpi=(DPI, DPI))
