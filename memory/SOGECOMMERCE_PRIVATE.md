@@ -55,7 +55,7 @@ D'après l'email SG :
 À aller chercher dans **Paramétrage > Boutiques > METRO-TAXI > onglet Clés** :
 
 - [x] **Identifiant boutique** : `43696939` ✅
-- [x] **Clé de TEST API formulaire (V1/V2/SOAP)** : `uqhmpvNV0v45QpNI` ✅ (récupérée le 29/05/2026 ~15h50)
+- [x] **Clé de TEST API formulaire (V1/V2/SOAP)** : `rftvjftsk6YYlUdm` ✅ (régénérée le 02/06/2026 après désync de l'ancienne `uqhmpvNV0v45QpNI`)
 - [ ] **Clé HMAC SHA-256 TEST** : à vérifier dans onglet "Clés d'API REST"
 - [ ] **Clé de production** : "À générer" — bouton actuellement DÉSACTIVÉ (4 lignes de tests CB à valider d'abord)
 - [ ] **Clé HMAC SHA-256 PROD** : (à générer APRÈS validation tests)
