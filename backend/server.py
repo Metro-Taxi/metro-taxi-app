@@ -169,7 +169,7 @@ def get_regional_pricing(region_id: str) -> dict:
 
 # Driver Revenue Configuration
 DRIVER_RATE_PER_KM = 1.50  # €1.50 per kilometer
-PAYOUT_DAY = 15  # Day of month for automatic payouts (changed from 10 to 15 for better cash flow)
+PAYOUT_DAY = 10  # Day of month for automatic payouts (Sogecommerce direct, faster than Stripe)
 
 # Create the main app
 app = FastAPI(

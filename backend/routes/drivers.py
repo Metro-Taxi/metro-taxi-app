@@ -17,7 +17,7 @@ router = APIRouter(prefix="/api", tags=["drivers"])
 
 # Configuration - importée depuis server.py ou .env
 DRIVER_RATE_PER_KM = 1.50
-PAYOUT_DAY = 15
+PAYOUT_DAY = 10
 
 
 # ============================================
