@@ -206,6 +206,7 @@ from routes.tts import router as tts_router
 from routes.payments import router as payments_router
 from routes.sogecommerce import router as sogecommerce_router
 from routes.admin import router as admin_router
+from routes.admin import public_router as admin_public_router
 from routes.ride_history import router as ride_history_router
 from routes.support_chat import router as support_chat_router
 from routes.promo_codes import router as promo_codes_router
@@ -3067,6 +3068,7 @@ app.include_router(tts_router)
 app.include_router(payments_router)
 app.include_router(sogecommerce_router)
 app.include_router(admin_router)
+app.include_router(admin_public_router)
 app.include_router(ride_history_router)
 app.include_router(support_chat_router)
 app.include_router(promo_codes_router)

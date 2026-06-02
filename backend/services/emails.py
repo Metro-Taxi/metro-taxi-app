@@ -968,6 +968,100 @@ async def send_launch_announcement_email(email: str, name: str, pioneer_number: 
         return False
 
 
+async def send_driver_presence_survey_email(email: str, name: str, pioneer_number: int, response_token: str, base_url: str = "https://metro-taxi.com"):
+    """Sondage de présence chauffeur pour le 13 juin. Boutons OUI/NON cliquables (token-based, no auth)."""
+    if not RESEND_API_KEY:
+        logging.warning("RESEND_API_KEY not configured, presence survey email NOT sent")
+        return False
+
+    yes_url = f"{base_url}/api/driver-presence-survey/respond?token={response_token}&answer=yes"
+    no_url = f"{base_url}/api/driver-presence-survey/respond?token={response_token}&answer=no"
+
+    pioneer_badge = f"PIONNIER #{pioneer_number}" if pioneer_number else "CHAUFFEUR PIONNIER"
+
+    html_content = f"""
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"></head>
+<body style="font-family:Helvetica,Arial,sans-serif;background:#0a0a0a;margin:0;padding:30px 20px;color:#fff;">
+  <div style="max-width:600px;margin:0 auto;background:#1a1a1a;border-radius:12px;overflow:hidden;border-top:6px solid #FFD60A;">
+    <div style="background:#FFD60A;padding:24px;text-align:center;">
+      <p style="margin:0 0 6px 0;color:#000;font-size:12px;font-weight:bold;letter-spacing:2px;">{pioneer_badge}</p>
+      <h1 style="margin:0;color:#000;font-size:22px;">📋 SONDAGE PRÉSENCE — VENDREDI 13 JUIN</h1>
+    </div>
+
+    <div style="padding:32px 28px;">
+      <h2 style="color:#FFD60A;font-size:20px;margin:0 0 16px 0;">Salut {name} 👋</h2>
+
+      <p style="color:#e4e4e7;line-height:1.7;font-size:15px;margin:0 0 18px 0;">
+        On y est presque : <strong style="color:#FFD60A">vendredi 13 juin 2026</strong>, ouverture officielle de Métro-Taxi à Saint-Denis.
+      </p>
+
+      <p style="color:#e4e4e7;line-height:1.7;font-size:15px;margin:0 0 24px 0;">
+        Pour bien calibrer la jauge des <strong>30 courses offertes</strong> et savoir combien de VTC seront sur le terrain le Jour J, j'ai besoin de toi en <strong>30 secondes top chrono</strong> :
+      </p>
+
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;border-radius:8px;border-left:4px solid #FFD60A;margin:0 0 28px 0;">
+        <tr><td style="padding:20px 22px;">
+          <p style="color:#fff;margin:0;font-size:16px;line-height:1.5;text-align:center;font-weight:bold;">
+            🗓️ Es-tu disponible pour rouler<br>le <span style="color:#FFD60A">vendredi 13 juin 2026</span> ?
+          </p>
+        </td></tr>
+      </table>
+
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;">
+        <tr>
+          <td align="center" width="50%" style="padding:0 8px;">
+            <a href="{yes_url}" style="display:block;background:#22c55e;color:#fff;text-decoration:none;padding:18px 12px;border-radius:10px;font-weight:bold;font-size:16px;letter-spacing:0.3px;">
+              ✅ OUI je suis dispo
+            </a>
+          </td>
+          <td align="center" width="50%" style="padding:0 8px;">
+            <a href="{no_url}" style="display:block;background:#ef4444;color:#fff;text-decoration:none;padding:18px 12px;border-radius:10px;font-weight:bold;font-size:16px;letter-spacing:0.3px;">
+              ❌ NON indisponible
+            </a>
+          </td>
+        </tr>
+      </table>
+
+      <p style="color:#a1a1aa;font-size:13px;line-height:1.6;margin:24px 0 0 0;text-align:center;font-style:italic;">
+        1 clic suffit. Aucun mot de passe, aucun formulaire. Tu peux changer ta réponse en re-cliquant.
+      </p>
+
+      <hr style="border:none;border-top:1px solid #333;margin:28px 0 20px 0;">
+
+      <p style="color:#cccccc;line-height:1.7;font-size:14px;margin:0 0 14px 0;">
+        Si tu réponds NON, aucun souci — préviens-moi juste par WhatsApp <strong style="color:#FFD60A">06 05 78 64 25</strong> pour qu'on cale ton retour sur la semaine suivante.
+      </p>
+
+      <p style="color:#FFD60A;font-size:14px;margin:20px 0 0 0;">
+        Merci Champion 🚖<br>
+        <strong>— Judée, fondateur Métro-Taxi</strong>
+      </p>
+    </div>
+
+    <div style="background:#09090b;padding:16px 24px;text-align:center;border-top:1px solid #27272a;">
+      <p style="color:#52525b;margin:0;font-size:11px;">© 2026 Métro-Taxi — Sondage de présence chauffeurs zone Saint-Denis</p>
+    </div>
+  </div>
+</body></html>
+"""
+
+    try:
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [email],
+            "subject": "📋 30 sec : tu roules le 13 juin ? (1 clic OUI/NON)",
+            "html": html_content,
+            "reply_to": "judeemane@hotmail.com",
+        }
+        result = await asyncio.to_thread(resend.Emails.send, params)
+        logging.info(f"Presence survey email sent to {email} (#{pioneer_number}), ID: {result.get('id')}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send presence survey to {email}: {str(e)}")
+        return False
+
+
 # ============================================
 # EMAIL PERSO ADMIN → CHAUFFEUR
 # ============================================

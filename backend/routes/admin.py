@@ -15,7 +15,7 @@ import stripe
 from database import db
 from models.schemas import RideRequestCreate, RideProgressUpdate, LocationUpdate, NotificationPayload
 from services.auth import get_current_user
-from services.emails import send_subscription_confirmation_email, send_gift_subscription_email, send_payout_notification_email, send_admin_personal_email, send_launch_announcement_email
+from services.emails import send_subscription_confirmation_email, send_gift_subscription_email, send_payout_notification_email, send_admin_personal_email, send_launch_announcement_email, send_driver_presence_survey_email
 
 # Security middleware
 from middleware.security import get_security_stats, manual_block_ip, manual_unblock_ip, get_client_ip
@@ -2255,4 +2255,227 @@ async def broadcast_launch_confirm(payload: BroadcastConfirmPayload, current_use
         "failed_count": len(results["failed"]),
         "failures": results["failed"],
     }
+
+
+# ============================================================
+# 📋 BROADCAST #4 — Sondage présence chauffeurs 13 juin
+# ============================================================
+
+@router.get("/admin/broadcast/driver-presence-survey/preview")
+async def driver_presence_survey_preview(current_user: dict = Depends(get_current_user)):
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    cursor = db.drivers.find(
+        {"is_validated": True},
+        {"_id": 0, "id": 1, "first_name": 1, "email": 1, "pioneer_number": 1}
+    )
+    drivers = await cursor.to_list(length=500)
+    return {
+        "subject": "📋 30 sec : tu roules le 13 juin ? (1 clic OUI/NON)",
+        "recipient_count": len(drivers),
+        "criteria": "drivers WHERE is_validated=True (email_verified non requis)",
+        "ready": len(drivers) > 0,
+    }
+
+
+@router.post("/admin/broadcast/driver-presence-survey/test")
+async def driver_presence_survey_test(payload: BroadcastTestPayload, current_user: dict = Depends(get_current_user)):
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    if not payload.test_email or "@" not in payload.test_email:
+        raise HTTPException(status_code=400, detail="Email de test invalide")
+
+    test_token = "test-" + uuid.uuid4().hex[:16]
+    sent = await send_driver_presence_survey_email(
+        email=payload.test_email,
+        name="Capitaine (TEST)",
+        pioneer_number=0,
+        response_token=test_token,
+        base_url=os.environ.get("FRONTEND_URL", "https://metro-taxi.com"),
+    )
+    if not sent:
+        raise HTTPException(status_code=500, detail="Échec envoi email test")
+    return {"status": "test_sent", "to": payload.test_email, "test_token": test_token}
+
+
+@router.post("/admin/broadcast/driver-presence-survey/confirm")
+async def driver_presence_survey_confirm(payload: BroadcastConfirmPayload, current_user: dict = Depends(get_current_user)):
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    if payload.confirmation_phrase != "GO 13 JUIN":
+        raise HTTPException(status_code=400, detail="Phrase de confirmation invalide. Envoie exactement: 'GO 13 JUIN'")
+
+    cursor = db.drivers.find(
+        {"is_validated": True},
+        {"_id": 0, "id": 1, "first_name": 1, "last_name": 1, "email": 1, "pioneer_number": 1}
+    )
+    drivers = await cursor.to_list(length=500)
+    if not drivers:
+        raise HTTPException(status_code=404, detail="Aucun chauffeur éligible")
+
+    if payload.dry_run:
+        return {"status": "dry_run", "would_send_to": len(drivers)}
+
+    base_url = os.environ.get("FRONTEND_URL", "https://metro-taxi.com")
+    survey_id = str(uuid.uuid4())
+    results = {"sent": [], "failed": []}
+
+    for d in drivers:
+        email = d.get("email")
+        name = d.get("first_name", "Chauffeur")
+        pioneer_number = d.get("pioneer_number")
+        driver_id = d.get("id")
+
+        # Token unique par chauffeur (utilisé pour 1-clic OUI/NON)
+        token = uuid.uuid4().hex
+        await db.driver_presence_surveys.insert_one({
+            "token": token,
+            "survey_id": survey_id,
+            "driver_id": driver_id,
+            "driver_email": email,
+            "driver_name": name,
+            "pioneer_number": pioneer_number,
+            "target_date": "2026-06-13",
+            "answer": None,
+            "responded_at": None,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        })
+
+        try:
+            ok = await send_driver_presence_survey_email(
+                email=email,
+                name=name,
+                pioneer_number=pioneer_number,
+                response_token=token,
+                base_url=base_url,
+            )
+            if ok:
+                results["sent"].append({"email": email, "pioneer_number": pioneer_number})
+            else:
+                results["failed"].append({"email": email, "reason": "send returned False"})
+        except Exception as e:
+            results["failed"].append({"email": email, "reason": str(e)})
+        await asyncio.sleep(0.2)
+
+    await db.broadcast_logs.insert_one({
+        "broadcast_id": survey_id,
+        "type": "driver_presence_survey_2026_06_13",
+        "sent_at": datetime.now(timezone.utc),
+        "sent_by": current_user.get("email", "unknown"),
+        "total_targeted": len(drivers),
+        "sent_count": len(results["sent"]),
+        "failed_count": len(results["failed"]),
+        "failures": results["failed"],
+    })
+
+    return {
+        "status": "broadcast_done",
+        "survey_id": survey_id,
+        "total_targeted": len(drivers),
+        "sent_count": len(results["sent"]),
+        "failed_count": len(results["failed"]),
+    }
+
+
+@router.get("/admin/broadcast/driver-presence-survey/results")
+async def driver_presence_survey_results(current_user: dict = Depends(get_current_user)):
+    """Stats agrégées des réponses au sondage."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    cursor = db.driver_presence_surveys.find({}, {"_id": 0})
+    surveys = await cursor.to_list(length=500)
+
+    yes_list, no_list, pending_list = [], [], []
+    for s in surveys:
+        item = {
+            "name": s.get("driver_name"),
+            "email": s.get("driver_email"),
+            "pioneer_number": s.get("pioneer_number"),
+            "responded_at": s.get("responded_at"),
+        }
+        if s.get("answer") == "yes":
+            yes_list.append(item)
+        elif s.get("answer") == "no":
+            no_list.append(item)
+        else:
+            pending_list.append(item)
+
+    return {
+        "total_sent": len(surveys),
+        "yes_count": len(yes_list),
+        "no_count": len(no_list),
+        "pending_count": len(pending_list),
+        "response_rate_pct": round(100 * (len(yes_list) + len(no_list)) / len(surveys), 1) if surveys else 0,
+        "available_for_june_13": len(yes_list),
+        "yes_list": yes_list,
+        "no_list": no_list,
+        "pending_list": pending_list,
+    }
+
+
+# ============================================================
+# 🌍 ENDPOINT PUBLIC — Réponse 1-clic OUI/NON (token-based)
+# ============================================================
+public_router = APIRouter(prefix="/api", tags=["public-survey"])
+
+
+@public_router.get("/driver-presence-survey/respond")
+async def respond_driver_presence_survey(token: str, answer: str):
+    """Endpoint public 1-clic. Pas d'auth, sécurisé par le token UUID unique."""
+    if answer not in ("yes", "no"):
+        raise HTTPException(status_code=400, detail="answer doit être 'yes' ou 'no'")
+
+    survey = await db.driver_presence_surveys.find_one({"token": token}, {"_id": 0})
+    if not survey:
+        # Page HTML d'erreur friendly (pas un 404 brut)
+        return _survey_html_response(
+            "Lien invalide ou expiré",
+            "Ce lien ne correspond à aucun sondage actif. Si tu penses qu'il y a une erreur, contacte Judée au 06 05 78 64 25.",
+            status="error",
+        )
+
+    await db.driver_presence_surveys.update_one(
+        {"token": token},
+        {"$set": {
+            "answer": answer,
+            "responded_at": datetime.now(timezone.utc).isoformat(),
+        }}
+    )
+
+    name = survey.get("driver_name", "Champion")
+    if answer == "yes":
+        title = f"Merci {name} ! ✅"
+        message = "C'est noté : tu es dispo le <strong>vendredi 13 juin 2026</strong>. À très vite sur la route 🚖"
+        status = "yes"
+    else:
+        title = f"OK {name}, c'est noté ❌"
+        message = "Pas de souci. Tu peux changer d'avis en recliquant sur OUI dans le mail. Sinon, on se cale ton retour sur la semaine d'après. Contacte Judée au 06 05 78 64 25 pour ajuster."
+        status = "no"
+
+    return _survey_html_response(title, message, status=status)
+
+
+def _survey_html_response(title: str, message: str, status: str = "yes"):
+    from fastapi.responses import HTMLResponse
+    color = {"yes": "#22c55e", "no": "#ef4444", "error": "#71717a"}.get(status, "#FFD60A")
+    icon = {"yes": "✅", "no": "❌", "error": "⚠️"}.get(status, "ℹ️")
+    html = f"""
+<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Métro-Taxi — Sondage 13 juin</title>
+</head>
+<body style="font-family:Helvetica,Arial,sans-serif;background:#0a0a0a;margin:0;padding:30px 20px;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;">
+  <div style="max-width:500px;width:100%;background:#1a1a1a;border-radius:12px;border-top:6px solid {color};padding:36px 28px;text-align:center;">
+    <div style="font-size:64px;margin-bottom:16px;">{icon}</div>
+    <h1 style="color:{color};margin:0 0 16px 0;font-size:24px;">{title}</h1>
+    <p style="color:#cccccc;line-height:1.7;font-size:15px;margin:0 0 24px 0;">{message}</p>
+    <hr style="border:none;border-top:1px solid #27272a;margin:24px 0;">
+    <p style="color:#71717a;font-size:13px;margin:0;">© 2026 Métro-Taxi — Saint-Denis 13 juin 2026</p>
+  </div>
+</body></html>
+"""
+    return HTMLResponse(content=html, status_code=200)
 
