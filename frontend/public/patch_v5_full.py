@@ -574,7 +574,7 @@ SURVEY_EMAIL_FUNC = '''async def send_driver_presence_survey_email(email: str, n
         On y est presque : <strong style="color:#FFD60A">vendredi 13 juin 2026</strong>, ouverture officielle de Métro-Taxi à Saint-Denis.
       </p>
       <p style="color:#e4e4e7;line-height:1.7;font-size:15px;margin:0 0 24px 0;">
-        Pour bien calibrer la jauge des <strong>30 courses offertes</strong> et savoir combien de VTC seront sur le terrain le Jour J, j\\'ai besoin de toi en <strong>30 secondes top chrono</strong> :
+        Pour bien calibrer la jauge des <strong>30 courses offertes</strong> et savoir combien de VTC seront sur le terrain le Jour J, j'ai besoin de toi en <strong>30 secondes top chrono</strong> :
       </p>
       <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;border-radius:8px;border-left:4px solid #FFD60A;margin:0 0 28px 0;">
         <tr><td style="padding:20px 22px;">
@@ -598,7 +598,7 @@ SURVEY_EMAIL_FUNC = '''async def send_driver_presence_survey_email(email: str, n
       </p>
       <hr style="border:none;border-top:1px solid #333;margin:28px 0 20px 0;">
       <p style="color:#cccccc;line-height:1.7;font-size:14px;margin:0 0 14px 0;">
-        Si tu réponds NON, aucun souci — préviens-moi juste par WhatsApp <strong style="color:#FFD60A">06 05 78 64 25</strong> pour qu\\'on cale ton retour sur la semaine suivante.
+        Si tu réponds NON, aucun souci — préviens-moi juste par WhatsApp <strong style="color:#FFD60A">06 05 78 64 25</strong> pour qu'on cale ton retour sur la semaine suivante.
       </p>
       <p style="color:#FFD60A;font-size:14px;margin:20px 0 0 0;">
         Merci Champion 🚖<br><strong>— Judée, fondateur Métro-Taxi</strong>
@@ -617,7 +617,8 @@ SURVEY_EMAIL_FUNC = '''async def send_driver_presence_survey_email(email: str, n
             "html": html_content, "reply_to": "judeemane@hotmail.com",
         }
         result = await asyncio.to_thread(resend.Emails.send, params)
-        logging.info(f"Presence survey email sent to {email} (#{pioneer_number}), ID: {result.get(\\'id\\')}")
+        result_id = result.get("id")
+        logging.info(f"Presence survey email sent to {email} (#{pioneer_number}), ID: {result_id}")
         return True
     except Exception as e:
         logging.error(f"Failed to send presence survey to {email}: {str(e)}")
@@ -801,11 +802,11 @@ async def respond_driver_presence_survey(token: str, answer: str):
     name = survey.get("driver_name", "Champion")
     if answer == "yes":
         title = f"Merci {name} ! ✅"
-        message = "C\\'est noté : tu es dispo le <strong>vendredi 13 juin 2026</strong>. À très vite sur la route 🚖"
+        message = "C'est noté : tu es dispo le <strong>vendredi 13 juin 2026</strong>. À très vite sur la route 🚖"
         status = "yes"
     else:
-        title = f"OK {name}, c\\'est noté ❌"
-        message = "Pas de souci. Tu peux changer d\\'avis en recliquant sur OUI dans le mail. Contacte Judée au 06 05 78 64 25 pour ajuster."
+        title = f"OK {name}, c'est noté ❌"
+        message = "Pas de souci. Tu peux changer d'avis en recliquant sur OUI dans le mail. Contacte Judée au 06 05 78 64 25 pour ajuster."
         status = "no"
     return _survey_html_response(title, message, status=status)
 
