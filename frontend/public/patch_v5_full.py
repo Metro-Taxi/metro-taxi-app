@@ -141,7 +141,11 @@ from services.sogecommerce import (
     compute_vads_signature, verify_vads_signature,
     get_active_key, get_ctx_mode, get_shop_id, get_payment_url,
 )
-from routes.auto_campaigns import attempt_auto_attribution
+try:
+    from routes.auto_campaigns import attempt_auto_attribution
+except ImportError:
+    async def attempt_auto_attribution(*args, **kwargs):
+        return None
 
 router = APIRouter(prefix="/api/payments/sogecommerce", tags=["sogecommerce"])
 logger = logging.getLogger(__name__)
