@@ -178,16 +178,7 @@ const DriverEarnings = ({ onClose }) => {
           >
             {t('driverEarnings.tabEarnings', 'Revenus')}
           </button>
-          <button
-            onClick={() => setActiveTab('stripe')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              activeTab === 'stripe' 
-                ? 'bg-[#FFD60A] text-black' 
-                : 'bg-zinc-800 text-zinc-400 hover:text-white'
-            }`}
-          >
-            {t('driverEarnings.tabStripe', 'Compte Stripe')}
-          </button>
+          {/* Onglet Compte Stripe retiré le 2026-06-03 — paiements migrés vers Sogecommerce */}
           <button
             onClick={() => setActiveTab('history')}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${

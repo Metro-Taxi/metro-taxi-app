@@ -570,31 +570,8 @@ const Subscription = () => {
                 ))}
               </ul>
               
-              <Button
-                onClick={() => handleSubscribe(plan.id)}
-                disabled={loading !== null || isRedirecting}
-                className={`w-full h-12 font-bold ${
-                  plan.popular 
-                    ? 'bg-[#FFD60A] text-black hover:bg-[#E6C209]' 
-                    : 'bg-zinc-800 text-white hover:bg-zinc-700'
-                } ${(loading !== null || isRedirecting) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                data-testid={`subscribe-${plan.id}-btn`}
-              >
-                {loading === plan.id ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                    <span>{t('subscription.processing', 'Traitement...')}</span>
-                  </div>
-                ) : (loading !== null || isRedirecting) ? (
-                  <span className="text-zinc-400">{t('subscription.pleaseWait', 'Veuillez patienter...')}</span>
-                ) : (
-                  <>
-                    <CreditCard className="w-4 h-4 mr-2" />
-                    {t('subscription.subscribeBtn', "S'ABONNER")}
-                  </>
-                )}
-              </Button>
-              
+              {/* Stripe button (S'ABONNER doré) removed — Sogecommerce + SEPA only since 2026-06-03 */}
+
               {/* SEPA Button - Only for EUR regions */}
               {selectedRegion?.currency === 'EUR' && (
                 <Button

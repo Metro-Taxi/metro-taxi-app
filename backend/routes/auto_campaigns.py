@@ -166,9 +166,6 @@ async def close_auto_campaign(
     return {"status": "ok"}
 
 
-# -----------------------------------------------------------------------------
-# HELPER — Trigger d'auto-attribution (à appeler après chaque activation abo)
-# -----------------------------------------------------------------------------
 async def attempt_auto_attribution(user_id: str, campaign_id: str) -> Optional[dict]:
     """Tente d'attribuer un crédit "1ère course offerte" à un usager qui vient
     d'activer un abonnement, s'il fait partie d'une campagne auto-attribution active.
@@ -233,3 +230,47 @@ async def attempt_auto_attribution(user_id: str, campaign_id: str) -> Optional[d
         f"🎁 Auto-attribution campaign={campaign_id} slot={updated['slots_used']}/{updated['max_slots']} user={user_id}"
     )
     return pending_promo
+
+
+# -----------------------------------------------------------------------------
+# HELPER — Auto-attribution par RÉGION (fallback si pas de signup_campaign)
+# -----------------------------------------------------------------------------
+async def auto_attribute_for_region(user_id: str, region_id: str) -> Optional[dict]:
+    """Cherche une campagne auto-attribution active pour cette région et tente
+    l'attribution. Permet aux flyers/posts sans lien magique de fonctionner :
+    n'importe qui s'abonnant sur cette région reçoit le cadeau si places dispo.
+
+    Args:
+        user_id: usager qui vient d'activer un abo
+        region_id: id de la région de l'abo (ex: "paris", "saint-denis")
+
+    Returns:
+        dict du pending_promo si attribué, sinon None.
+    """
+    if not region_id:
+        return None
+
+    # Cherche la campagne active matching cette région
+    # Une zone "saint-denis" est conceptuellement dans la région "paris" (Île-de-France).
+    # On accepte donc :
+    #  - match exact (region == region_id)
+    #  - match parent : campagnes "saint-denis-*" pour les usagers Paris/Île-de-France
+    now = datetime.now(timezone.utc)
+    candidate_regions = {region_id}
+    if region_id in ("paris", "ile-de-france", "idf"):
+        candidate_regions.add("saint-denis")
+
+    camp = await db.auto_campaigns.find_one(
+        {
+            "region": {"$in": list(candidate_regions)},
+            "active": True,
+            "$expr": {"$lt": ["$slots_used", "$max_slots"]},
+            "expires_at": {"$gt": now.isoformat()},
+        },
+        {"_id": 0, "campaign_id": 1},
+        sort=[("created_at", -1)],  # la plus récente d'abord
+    )
+    if not camp:
+        return None
+
+    return await attempt_auto_attribution(user_id, camp["campaign_id"])

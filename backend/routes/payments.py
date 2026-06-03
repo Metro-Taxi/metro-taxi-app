@@ -525,6 +525,10 @@ async def stripe_webhook(request: Request):
                         u_camp = await db.users.find_one({"id": transaction["user_id"]}, {"_id": 0, "signup_campaign": 1})
                         if u_camp and u_camp.get("signup_campaign"):
                             await attempt_auto_attribution(transaction["user_id"], u_camp["signup_campaign"])
+                        else:
+                            # Fallback : auto-attribution par région
+                            from routes.auto_campaigns import auto_attribute_for_region
+                            await auto_attribute_for_region(transaction["user_id"], region_id)
                         logging.info(f"✅ Subscription activated for user {transaction['user_id']} in region {region_id}")
                         
                         # Send confirmation email
@@ -656,6 +660,10 @@ async def stripe_sepa_webhook(request: Request):
                             u_camp = await db.users.find_one({"id": user_id}, {"_id": 0, "signup_campaign": 1})
                             if u_camp and u_camp.get("signup_campaign"):
                                 await attempt_auto_attribution(user_id, u_camp["signup_campaign"])
+                            else:
+                                # Fallback : auto-attribution par région
+                                from routes.auto_campaigns import auto_attribute_for_region
+                                await auto_attribute_for_region(user_id, region_id)
                             
                             logging.info(f"✅ SEPA Subscription activated for user {user_id} in region {region_id}")
                             

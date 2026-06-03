@@ -267,13 +267,20 @@ async def sogecommerce_ipn(request: Request):
         {"$set": {"status": "completed"}},
     )
 
-    # Auto-attribution promo (campagne Saint-Denis & co.)
+    # Auto-attribution promo si l'usager fait partie d'une campagne Saint-Denis & co.
     u_camp = await db.users.find_one({"id": user_id}, {"_id": 0, "signup_campaign": 1})
     if u_camp and u_camp.get("signup_campaign"):
         try:
             await attempt_auto_attribution(user_id, u_camp["signup_campaign"])
         except Exception as exc:  # noqa: BLE001
             logger.warning(f"Auto-attribution échouée: {exc}")
+    else:
+        # Fallback : auto-attribution par région (flyers sans lien magique)
+        try:
+            from routes.auto_campaigns import auto_attribute_for_region
+            await auto_attribute_for_region(user_id, region_id)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(f"Auto-attribution région échouée: {exc}")
 
     # Email confirmation
     region = await db.regions.find_one({"id": region_id}, {"_id": 0})
