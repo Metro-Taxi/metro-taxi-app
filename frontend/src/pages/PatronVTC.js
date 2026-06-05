@@ -103,7 +103,7 @@ const PatronVTC = () => {
               Métro-Taxi, c'est <strong className="text-white">0 % de commission</strong>, <strong className="text-white">1,50 € / km</strong> garantis à tes chauffeurs avec des abonnés à bord, et un algorithme qui maximise leur remplissage.
             </p>
             <p className="text-sm text-zinc-500">
-              Discutons partenariat : ta flotte connectée, tes chauffeurs payés le 10 du mois, ton CA optimisé.
+              Discutons partenariat : ta flotte connectée, tes chauffeurs payés chaque lundi, ton CA optimisé.
             </p>
           </motion.div>
         </div>

@@ -247,7 +247,7 @@ const DriverEarnings = ({ onClose }) => {
                 <span className="text-white font-bold">{formatCurrency(earnings.pending_payout)}</span>
               </div>
               <p className="text-zinc-500 text-xs mt-2">
-                {t('driverEarnings.payoutDate', 'Virement automatique le')} {earnings.payout_day} {t('driverEarnings.ofMonth', 'du mois')}
+                {t('driverEarnings.payoutWeekly', 'Virement automatique chaque lundi (SEPA)')}
               </p>
             </div>
 

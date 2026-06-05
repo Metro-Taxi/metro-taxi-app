@@ -523,7 +523,7 @@ async def send_pioneer_welcome_email(email: str, name: str, pioneer_number: int,
             <tr><td style="padding:18px 20px;">
               <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>1,50 € / km parcouru</strong> avec au moins un abonné Métro-Taxi à bord</p>
               <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>0 % de commission</strong>, à vie</p>
-              <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>Versement chaque 10 du mois</strong>, ponctuel</p>
+              <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>Versement chaque lundi (SEPA)</strong>, ponctuel</p>
               <p style="color:#fff;margin:0;font-size:14px;">✅ <strong>Aucun engagement</strong>, compatible avec tes autres plateformes</p>
             </tr></td>
           </table>
@@ -830,7 +830,7 @@ async def send_fleet_partnership_confirmation(email: str, name: str, fleet_size:
             <ul style="color:#cccccc;font-size:13px;line-height:1.7;padding-left:20px;margin:0;">
               <li>0% de commission sur vos chauffeurs</li>
               <li>1,50€/km versés à vos chauffeurs avec abonnés à bord</li>
-              <li>Paiement le 10 de chaque mois</li>
+              <li>Paiement chaque lundi (SEPA)</li>
               <li>Algorithme de mutualisation = revenus optimisés</li>
             </ul>
           </div>
@@ -902,7 +902,7 @@ async def send_launch_announcement_email(email: str, name: str, pioneer_number: 
         <tr><td style="padding:18px 20px;">
           <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>1,50 € / km parcouru</strong> avec au moins un abonné Métro-Taxi à bord</p>
           <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>0 % de commission</strong>, à vie</p>
-          <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>Versement chaque 10 du mois</strong></p>
+          <p style="color:#fff;margin:0 0 8px 0;font-size:14px;">✅ <strong>Versement chaque lundi (SEPA)</strong></p>
           <p style="color:#fff;margin:0;font-size:14px;">✅ <strong>Aucun engagement</strong> — tu continues tes activités actuelles en parallèle si tu veux</p>
         </td></tr>
       </table>

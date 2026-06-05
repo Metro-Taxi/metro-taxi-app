@@ -128,7 +128,9 @@ SUBSCRIPTION_PLANS = {
 DRIVER_RATE_PER_KM = 1.50
 
 # Payout configuration
-PAYOUT_DAY = 10  # Day of month for automatic payouts
+PAYOUT_FREQUENCY = "weekly"  # weekly (chaque lundi) ou monthly
+PAYOUT_DAY_OF_WEEK = 0  # 0=Lundi, ... 6=Dimanche (utilisé si frequency=weekly)
+PAYOUT_DAY = 10  # Day of month for automatic payouts (legacy, si frequency=monthly)
 MIN_PAYOUT_AMOUNT = 10.0  # Minimum amount for payout
 
 # Algorithm Constants

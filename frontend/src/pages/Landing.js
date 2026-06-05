@@ -817,7 +817,7 @@ const Landing = () => {
                 Tu diriges une <span className="text-[#FFD60A]">flotte VTC</span> ?
               </h3>
               <p className="text-zinc-400 text-sm">
-                Partenariat <strong className="text-white">0 % commission</strong> · 1,50 € / km à tes chauffeurs · Paiement le 10 du mois. Discutons.
+                Partenariat <strong className="text-white">0 % commission</strong> · 1,50 € / km à tes chauffeurs · Paiement chaque lundi. Discutons.
               </p>
             </div>
             <Link to="/patron-vtc">

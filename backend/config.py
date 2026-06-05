@@ -30,7 +30,9 @@ SUBSCRIPTION_PLANS = {
 
 # Driver Revenue Configuration
 DRIVER_RATE_PER_KM = 1.50  # €1.50 per kilometer
-PAYOUT_DAY = 10  # Day of month for automatic payouts
+PAYOUT_FREQUENCY = "weekly"  # weekly (chaque lundi) ou monthly
+PAYOUT_DAY_OF_WEEK = 0  # 0=Lundi
+PAYOUT_DAY = 10  # Day of month for automatic payouts (legacy)
 
 # Algorithm Constants
 SEGMENT_MIN_KM = 1.5  # Minimum segment distance

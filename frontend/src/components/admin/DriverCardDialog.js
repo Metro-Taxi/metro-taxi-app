@@ -221,7 +221,7 @@ const DriverCardDialog = ({ driverId, open, onClose, token, onChanged }) => {
                 icon={Banknote}
                 label="En attente de virement"
                 value={`${card.pending_payout_amount.toFixed(2)} €`}
-                sub="Versement le 10 du mois"
+                sub="Versement chaque lundi"
                 highlight
               />
               <StatCard
