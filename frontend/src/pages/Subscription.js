@@ -572,8 +572,8 @@ const Subscription = () => {
               
               {/* Stripe button (S'ABONNER doré) removed — Sogecommerce + SEPA only since 2026-06-03 */}
 
-              {/* SEPA Button - Only for EUR regions */}
-              {selectedRegion?.currency === 'EUR' && (
+              {/* SEPA Button HIDDEN since 2026-06-06 — uses Stripe under the hood. Use Sogecommerce only. */}
+              {false && selectedRegion?.currency === 'EUR' && (
                 <Button
                   variant="outline"
                   onClick={() => openSepaDialog(plan.id)}
@@ -640,7 +640,7 @@ const Subscription = () => {
             <Shield className="w-8 h-8 text-[#FFD60A]" />
             <div>
               <p className="text-white font-medium">Paiement sécurisé</p>
-              <p className="text-zinc-500 text-sm">Via Stripe</p>
+              <p className="text-zinc-500 text-sm">Via Société Générale</p>
             </div>
           </div>
           <div className="flex items-center gap-4 p-4 bg-zinc-900/50 rounded border border-zinc-800">
