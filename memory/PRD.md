@@ -1,318 +1,110 @@
-# Métro-Taxi - Product Requirements Document
+# PRD — Métro-Taxi (Plateforme VTC Saint-Denis)
 
-## Original Problem Statement
-Plateforme web + mobile "Métro-Taxi" pour mettre en relation des usagers abonnés et des chauffeurs VTC. Application full-stack avec inscriptions, abonnements, PWA installable, internationalisation (16 langues), interface d'administration avec traçabilité usagers, paiements sécurisés.
+## 🎯 Original Problem Statement
+Déploiement, marketing et stabilisation de la plateforme "Métro-Taxi" (React/FastAPI/MongoDB) pour la zone pilote de Saint-Denis. Modèle économique : **COVOITURAGE INTELLIGENT avec TRANSBORDEMENTS en MAILLAGE** (NON un VTC classique).
 
-## User Personas
-1. **Usagers** : Personnes souhaitant des trajets illimités via abonnement
-2. **Chauffeurs VTC** : Conducteurs professionnels recevant des courses et des virements
-3. **Administrateur** : Gestion des utilisateurs, chauffeurs, régions, revenus, conformité RGPD
+- **Lancement** : SAMEDI 13 JUIN 2026
+- **Cible pilote** : Saint-Denis (93)
+- **Modèle financier** : Abonnement usager (6,99€/24h, 19,99€/sem, 53,99€/mois) — Chauffeur payé 1,50€/km, 0% commission JAMAIS.
+- **Innovation clé** : Maillage + Transbordement = 2-4 abonnés en simultané par véhicule → rentabilité maintenue même en zone congestionnée
 
-## Core Requirements
-- Inscriptions usagers/chauffeurs avec validation
-- Système d'abonnements (24h, 1 semaine, 1 mois) par région
-- Paiements Stripe (en transition vers Crédit Agricole)
-- Tableau de bord temps réel avec géolocalisation (Leaflet/OpenStreetMap)
-- PWA installable avec service worker
-- Internationalisation complète (16 langues)
-- Système d'e-mails transactionnels (Resend)
-- Export PDF des données admin
-- Conformité RGPD
+## 👤 User Profile
+- **Judée Souleymane** (Capitaine), fondateur — agent IA est "Charly" en mode tutoiement français
+- VPS : Hostinger `/var/www/metro-taxi-app/` (process pm2 `metro-backend`)
+- DB MongoDB : `metro_taxi_prod`
+- Méthode déploiement : Scripts SSH (base64 ou mongosh direct) — Git désactivé
 
----
+## 📊 État au 09/06/2026 (J-4 du lancement)
+- **36 Chauffeurs Pionniers** inscrits
+- **18 chauffeurs CONFIRMÉS** disponibles le 13 juin (sondage 64,7% taux réponse)
+- **19 utilisateurs** pré-inscrits (sans abonnement, lancement le 13)
+- **0 abonnement actif** (normal — Sogecommerce attend lancement)
+- **Agnès Mayil** = Ambassadrice publique officielle (Facebook)
+- **1000 flyers V2** commandés VistaPrint (livraison 10-12 juin)
 
-## What's Been Implemented
+## 🔧 Architecture
+- **Backend** : FastAPI sur 0.0.0.0:8001 via pm2 (`metro-backend`)
+- **Frontend** : React (CRA), build dans `/frontend/build/`
+- **DB** : MongoDB `metro_taxi_prod`
+- **Paiement principal** : **Sogecommerce** (production active, IPN configurée)
+- **Stripe** : NEUTRALISÉ (kill-switch backend `/payments/checkout/region` + `/payments/checkout/sepa` → 410, alert frontend sur `handleSubscribe` + `openSepaDialog`)
 
-### Session 2026-06-01 (P0 Sogecommerce — Intégration backend complète + frontend câblé)
-- [x] **🏦 Intégration paiement Société Générale (vads-payment) — Backend prêt prod**
-  - Service `backend/services/sogecommerce.py` : `compute_vads_signature()` (HMAC-SHA-256, Base64, algo officiel Lyra), `verify_vads_signature()` (compare_digest, anti-timing attack), helpers `get_active_key/ctx_mode/shop_id/payment_url`
-  - Router `backend/routes/sogecommerce.py` (prefix `/api/payments/sogecommerce`) :
-     - `POST /checkout` (auth) : génère form vads_* signé + URL action `https://sogecommerce.societegenerale.eu/vads-payment/` → frontend auto-submit POST
-     - `POST /ipn` (public, signature requise) : vérifie HMAC, active abonnement (multi-région, idempotent, chaînage avec abos existants), envoie email confirmation, déclenche auto-attribution promo Saint-Denis si applicable
-     - `GET /return?order_id=` : statut transaction pour la page success
-  - Métadonnées portées via `vads_ext_info_plan_id/region_id/user_id` (récupérées dans l'IPN)
-  - Cohabitation Stripe : pas de remplacement, les deux passerelles coexistent
-  - **Variables `.env`** : `SOGECOMMERCE_SHOP_ID=43696939`, `SOGECOMMERCE_TEST_KEY=uqhmpvNV0v45QpNI`, `SOGECOMMERCE_MODE=TEST`, `SOGECOMMERCE_PROD_KEY=` (vide jusqu'à validation des 4 paiements tests par SG)
-- [x] **🎨 Frontend câblé** : bouton "Payer avec Société Générale" ajouté dans `Subscription.js` (visible uniquement pour régions EUR), avec auto-submit POST via form HTML caché. Indicateur `isRedirecting`, gestion d'erreur via toast.
-- [x] **🧪 Tests pytest 12/12 PASSED** (`tests/test_sogecommerce_signature.py`) :
-  - Oracle officiel de la doc Sogecommerce reproduit byte-for-byte (signature `ycA5Do5tNvsnKdc/eP1bj2xa19z9q3iWPy9/rpesfS0=` matchée)
-  - Idempotence ordre des clés, ignore champs non-vads_, rejette tampered amount, rejette wrong key, rejette empty
-  - Gestion modes TEST/PRODUCTION + erreur claire si clé manquante
-- [x] **🧪 Tests E2E live (curl)** :
-  - Checkout → form signé → action_url correcte
-  - IPN AUTHORISED signé → abonnement activé en DB (`subscription_active=True`, plan, expires_at, payment_method=sogecommerce)
-  - IPN mauvaise signature → 400 rejected
-  - IPN REFUSED → transaction non finalisée, abonnement NON activé
+## ✅ What's Been Implemented (Session 05-09/06/2026)
+- **Sogecommerce** : intégré bout-en-bout, en production
+- **Paiement chauffeurs hebdomadaire** : config `PAYOUT_FREQUENCY=weekly` + `PAYOUT_DAY_OF_WEEK=0` (LUNDI), UI mise à jour
+- **Cycle 1 lancement** : 13 juin → 21 juin → virement LUNDI 22 JUIN (9 jours exceptionnel)
+- **Cycles suivants** : lundi→dimanche → virement lundi suivant
+- **Stripe NEUTRALISÉ** : `handleSubscribe` et `openSepaDialog` affichent alert "Utilisez bouton rouge Société Générale", backend renvoie HTTP 410
+- **Pionnier #25 Maaz** : IBAN/BIC enregistré manuellement (FR68 PSSTFRPPPAR) — workaround bug UI
+- **Survey 13 juin** : 18 OUI, 4 NON, 12 hésitants (taux 64,7%)
+- **Flyer A6 chauffeur V2** : JPEG 300dpi en `/app/frontend/public/flyer_recto.jpg` + `flyer_verso.jpg` → 1000 imprimés VistaPrint commande VP_Q1JXXQ5L
+- **Stats live MongoDB script** : `/tmp/stats.py` (remplace ancien `survey.py` avec données figées)
+- **Mails Resend** : 36 chauffeurs notifiés Cycle 1 calendrier paie + 33 relances sondage
+- **Agnès Mayil ambassadrice** : 5 courses bonus + badge "Ambassadrice" à vie
 
-### Session 2026-05-29 & 30 (P0 INPI Extension + Broadcast 33 Pionniers + Sogecommerce activé)
-- [x] **🏛️ INPI Marque "Métro-Taxi" — Extension Classes 39 + 42** (29/05/2026)
-  - Référence interne: `METROTAXI-EXT-3942-2026`
-  - Transaction paiement INPI: `19431389` — **230,00 € PAYÉ**
-  - Classe 39 (transport): Transport, Organisation de voyages, Transport en taxi, Mise à disposition d'informations en matière de transport, Réservation de places de voyage
-  - Classe 42 (logiciels): Développement de logiciels, Élaboration (conception) de logiciels, Programmation informatique, Conception de systèmes informatiques, Logiciels en tant que services (SaaS), Fourniture de logiciels non téléchargeables en ligne
-  - Couverture totale post-dépôt: **Classes 9 + 39 + 42** (protection 360°)
-- [x] **🏦 Sogecommerce activé** (29/05/2026)
-  - Login Back Office: `jsouleymanenazim` (MDP changé)
-  - Identifiant boutique: `43696939`
-  - Clé de TEST API formulaire récupérée et sauvegardée dans `/app/memory/SOGECOMMERCE_PRIVATE.md`
-  - 4 tests CB à effectuer avant génération clé production
-- [x] **📧 Broadcast 33 chauffeurs pionniers — Lancement Saint-Denis 13 juin** (30/05/2026)
-  - 3 endpoints API ajoutés: `/admin/broadcast/launch-saint-denis/{preview,test,confirm}`
-  - Fonction `send_launch_announcement_email()` ajoutée dans `services/emails.py`
-  - Option `include_unverified=true` pour rattrapage des chauffeurs validés mais email non vérifié (logique disjointe = zéro doublon)
-  - Phrase de confirmation anti-erreur: `"GO 13 JUIN"` requise
-  - Anti-spam: 200ms entre envois (Resend rate limit)
-  - Logs DB: `db.broadcast_logs` (type = `launch_saint_denis_2026_06_13`)
-  - **Résultat: 33/33 pionniers contactés, 0 échec, 100% delivery** (14 vérifiés + 19 rattrapage)
+## 🚧 Pending / Known Issues
 
-### Session 2026-05-26 (P0 Lancement Saint-Denis 13 juin — Codes Promo + TTS Transbordement + Form Chauffeurs)
-- [x] **🎟️ P0 — Système de codes promo "1ère course offerte ≤ 10 km"** (campagne Saint-Denis)
-  - Nouveau router `backend/routes/promo_codes.py` (3 endpoints admin + 2 endpoints user)
-  - `POST /api/admin/promo-codes/generate` : génère N codes uniques au format `STDENIS-2026-XXXX` (charset sans 0/O/I/1 pour lisibilité)
-  - `GET /api/admin/promo-codes?campaign=&used=` : liste filtrée
-  - `GET /api/admin/promo-codes/stats` : agrégation par campagne (used, consumed, platform_cost_eur)
-  - `POST /api/promo-codes/redeem` : user redeem (409 si déjà utilisé, 410 si expiré, 409 si pending_promo déjà actif)
-  - `GET /api/promo-codes/my-promo` : récupère le credit actif
-  - **Auto-attach à l'inscription** : `POST /api/auth/register/user` accepte un champ `promo_code` optionnel (campagne Saint-Denis via URL `?promo=`)
-  - **Logique ride** (`POST /api/rides/request`) :
-     - Bypass de l'abonnement si pending_promo valide (free_first_ride)
-     - Calcul haversine pickup→destination, refus 400 si > max_distance_km (message DGCCRF-compliant)
-     - Ride marqué `platform_sponsored=true`, `user_paid_eur=0`, `promo_code_used=...`
-     - Code consommé atomiquement (single-use), `consumed_at` + `ride_id` enregistrés
-  - **Coût plateforme** : à la complétion de la course, `platform_cost_eur` enregistré sur le code promo (visible dans stats)
-  - Frontend `/saint-denis` : landing dédiée (titre, 3 cards, input code, CTA → `/register/user?promo=...&src=saint-denis`). Force la langue FR.
-  - Frontend `/93` : alias court vers /saint-denis
-  - Frontend `/admin/promo-codes` : page admin (formulaire de génération + liste + copier/CSV + stats)
-  - Frontend `/register/user` : champ "Code promo" prérempli depuis `?promo=`, envoyé dans le payload signup, toast spécifique si attaché
-  - Tests : **27/27 pytest passent** (`/app/backend/tests/test_iteration15_promo_and_tts.py`)
-  
-- [x] **🔊 P0 — Alertes vocales transbordement multilingues** (FR/AR/EN/ES, voix `nova`)
-  - Nouveau endpoint public `GET /api/tts/transfer-alert?lang={fr,ar,en,es}&role={user,driver}` (8 MP3 cachés)
-  - Endpoint admin `POST /api/admin/tts/pregenerate-transfer-alerts` (pré-cache batch)
-  - Endpoint info `GET /api/tts/transfer-alerts/info` (texte + état cache)
-  - Messages :
-     - User : "Préparez-vous à descendre. Votre transbordement approche..."
-     - Driver : "Mettez-vous en warning. Un usager Métro-Taxi va monter à bord..."
-  - 8 MP3 générés + cachés dans `/app/frontend/public/audio/transfer_alerts/`
-  
-- [x] **📊 P0 — Enrichissement formulaire chauffeurs (stats viables)**
-  - `RegisterDriver.js` : champ texte libre remplacé par `Select` shadcn
-  - 17 options : Flyer CDG / Orly / Gare du Nord / Gare de Lyon / Gare St-Lazare / Gare Montparnasse / Flyer autre, Parrainage, TikTok, Instagram, Facebook, Groupe FB VTC, WhatsApp, Google, Bouche-à-oreille, Presse, Autre
-  - Si "Parrainage" sélectionné → champ conditionnel "Nom du parrain"
-  - Source finale stockée comme `Parrainage (Jean Dupont)` au backend
+### 🔴 P0 — BLOQUANT pour 22 juin
+- **Bug UI Section IBAN/BIC manquante** dans `DriverEarnings.js` côté VPS (constaté par Maaz #25). Les 17 autres chauffeurs ne peuvent PAS saisir leur IBAN. → Solution actuelle : insertion manuelle MongoDB un par un (non scalable). **DOIT être corrigé avant le 22/06 pour les 17 autres chauffeurs présents.**
 
+### 🟠 P1
+- **9 chauffeurs sans pioneer_number** (`#None` dans driver_presence_surveys) — à attribuer #37→#45
+- **3 boutons Stripe restent VISIBLES** sur la page abonnement (S'ABONNER doré + SEPA + Société Générale) — désactivés mais cosmétiquement présents. Patch frontend partiel.
+- **VPS désynchronisé** du workspace Emergent — déploiement manuel SSH requis pour chaque change (rapport support Emergent 08/06)
 
-### Session 2026-05-20 (P0 Sécurité admin zombie + Refonte plan hebdomadaire 19,99€)
-- [x] **🔴 P0 — Suppression compte admin zombie (faille critique)**
-  - Diagnostic : 2 admins en DB prod, seul `contact@metro-taxi.com` synchronisé par le seed `.env`, l'autre `admin-mt@metro-taxi.com` (créé le 03/05/2026) gardait un vieux hash bcrypt jamais sync → backdoor potentielle
-  - Action prod : `db.admins.delete_many({'email': {'$ne': 'contact@metro-taxi.com'}})` + `db.admin_otps.delete_many({})`
-  - `backend/server.py` `create_default_admin` : auto-purge au startup de TOUT compte admin (collections `admins` ET `users`) dont l'email ≠ `ADMIN_EMAIL` du `.env`. Invalidation auto des OTPs en cours à chaque restart.
-  - `backend/server.py` `_initiate_admin_otp` : throttle 3 emails OTP max par IP / 15 min via `_otp_email_throttle` (anti email-bombing) → 429 sinon
-  - `memory/deploy/nginx-security-patch-2026-05-20-v3.conf` : rate-limit Nginx 5 logins/15min + 10 verify-otp/5min (sans blacklist IP, IP 37.67.127.14 identifiée comme fausse alerte — IP perso fondateur)
+### 🟡 P2
+- Régénérer Vidéo 1 "Bus bondé" via Nano Banana (continuité visage)
+- sitemap.xml + robots.txt (effacer SEO ancien proprio canadien)
+- Nginx Rate-Limit
+- Anti-fraude "Réservation Groupée Multi-Abonnés" (OTP transbordement)
 
-- [x] **🟠 P1 — Refonte plan hebdomadaire à 19,99€ (60% du Navigo Semaine 32,40€)**
-  - **Limites :** 15 trajets / 7 jours + max 3 trajets / 24h glissant (anti-abus, push vers le mois illimité)
-  - Backend : `SUBSCRIPTION_PLANS["1week"]` = {price 19.99, max_rides_per_period 15, max_rides_per_day 3} dans `server.py` + `config.py` + `utils/helpers.py`. `REGIONAL_PRICING` aligné pour 8 régions (paris/lyon 19,99€ ; london £34.99-£69.99 ; madrid 14,99€-20,99€).
-  - `backend/routes/admin.py` (POST `/api/admin/ride-requests`) : ajout d'une seconde branche de plafond pour `1week` : compteur hebdomadaire + compteur 24h glissant → 429 si dépassement
-  - Frontend : Subscription.js, SalesTerms.jsx (CGV), Landing.js (3 cartes France + 3 zones Madrid + 3 zones London), Profile.js, AdminDashboard.js (dropdown gift) — restauration de la 3ème carte hebdo
-  - i18n : 8 fichiers (`fr/en/en-GB/es/de/it/nl/pt.json`) — ajout de `pricing.limits.{day,week,month}` pour afficher les limites correctement par plan (24h → "5 trajets max", semaine → "15 trajets sur 7j (3/jour)", mois → "Trajets illimités") **protection juridique anti-DGCCRF**
+## 📋 Backlog / Next Tasks
 
-- [x] **🟢 P2 — Page `/subscription` enrichie**
-  - Badge "Subscribed" du UserDashboard rendu cliquable → navigation directe vers `/subscription`
-  - Carte "Mon abonnement actuel" sur `/subscription` avec compteur jours/heures restants + bouton renouvellement conditionnel (≤ 48h avant expiration)
-  - Système 48h/24h/jour-J déjà en place (`check_and_notify_expiring_subscriptions` cron + emails Resend) — pas de modif requise
+### Demain (10/06/2026 - Mercredi)
+- ✈️ **Tournée Roissy** — flyers V2 livrés, objectif 5 nouveaux Pionniers
+- ☎️ **5 appels hésitants** restants du sondage
+- 📢 **Post Facebook J-3** : "18 chauffeurs confirmés"
 
+### Jeudi-Vendredi (11-12/06/2026)
+- 🛠️ **Patch UI Section IBAN** (1h dev) — déploiement SSH VPS — CRITIQUE pour 22 juin
+- 📧 **Mail J-1 vendredi 12/06** : "Demain lancement, rendez-vous samedi !"
+- 🎯 **Boost pub Facebook** avec angle "Ambassadrice Agnès + 18 chauffeurs"
 
-### Session 2026-05-15 (P0 Rentabilité algo + P1 Patron VTC + P1 Email perso admin)
-- [x] **🔴 P0 — Seuil de rentabilité par type de véhicule**
-  - `backend/utils/algorithm_config.py` : `DEFAULT_VEHICLE_FILL_THRESHOLDS` (berline 3/4/4, monospace 4/5/5, van 5/7/7), `DEFAULT_QUEUE_TIMEOUT_MINUTES=12`, `normalize_vehicle_type()`, `assess_dispatch_profitability()`, cache `get_vehicle_thresholds()` Mongo
-  - `backend/routes/admin.py` : GET/PUT `/api/admin/algorithm-config` étendus avec `vehicle_thresholds` + `queue_timeout_minutes`. Validation stricte typo véhicule → 400. Reset purge aussi le cache véhicules.
-  - Nouveau endpoint `GET /api/admin/algorithm/avg-fill?days=7` : remplissage moyen / chauffeur, fleet_summary, classement santé (excellent/ok/below_threshold/no_data)
-  - Nouveau endpoint `POST /api/admin/algorithm/check-profitability` : simulation pour debug admin
-  - Frontend `AlgorithmConfigTab.js` : section "Seuils de rentabilité" éditable (berline/monospace/van + queue_timeout), section "Performance flotte" (composant `FleetFillPanel.js`)
-  - Tests Pytest : `tests/test_profitability_thresholds.py` (24 tests) + `tests/test_iteration14_admin_apis.py` (24 tests d'intégration via le testing agent) → **48/48 ✅**
+### Samedi 13/06/2026 — JOUR DU LANCEMENT
+- Monitoring temps réel dashboards
+- Support 7j/7 actif (Judée + Charly)
+- Réponse aux premiers paiements Sogecommerce
 
-- [x] **🟠 P1 — Page Patron VTC (B2B partenariats flotte)**
-  - Nouveau router `backend/routes/fleet_partnerships.py` : POST `/api/fleet-partnerships/apply` (public, anti-doublon 409), GET `/api/admin/fleet-partnerships`, POST `/api/admin/fleet-partnerships/{id}/status`
-  - Emails `services/emails.py` : `send_fleet_partnership_alert` (vers fondateur), `send_fleet_partnership_confirmation` (vers patron VTC)
-  - Frontend `pages/PatronVTC.js` : page hero + bénéfices + formulaire (nom, société, email, tél, taille flotte, ville, message)
-  - Routes `/patron-vtc`, `/patron`, `/b2b` enregistrées dans App.js
+### Lundi 22/06/2026 — 1er VIREMENT CYCLE 1
+- Calcul earnings drivers (km_with_user × 1,50€)
+- Validation IBAN/BIC de tous les chauffeurs présents
+- Lancement batch virement SEPA
 
-- [x] **🟠 P1 — Bouton "Envoyer email perso" dans la fiche chauffeur admin**
-  - Email service `send_admin_personal_email()` (texte libre vers chauffeur via Resend)
-  - Endpoint `POST /api/admin/drivers/{id}/send-email` (auth admin, validation subject 2-200 / body 5-10000, audit dans `admin_email_logs`)
-  - Endpoint `GET /api/admin/email-logs?limit=50` (lecture audit)
-  - Frontend `DriverCardDialog.js` : bouton "Envoyer email perso" + sous-Dialog avec sujet/signature/corps + envoi async
+## 🔑 Key Technical Concepts
+- **Compteur km** : Démarre à `in_progress` (embarquement abonné), s'arrête à `completed` (descente). Km pickup et à vide NON comptés. Si plusieurs abonnés simultanés → km comptés UNE FOIS pour chauffeur (économie maillage).
+- **Sogecommerce** : Encaissement abonnements en J+1 à J+2 ouvré sur compte pro
+- **MongoDB** : Base = `metro_taxi_prod` — Collection sondage = `driver_presence_surveys` — Champ réponse = `answer` (pas `response`)
 
+## 📂 Key Files
+- `/app/backend/routes/payments.py` — Endpoints Stripe NEUTRALISÉS (410)
+- `/app/backend/routes/sogecommerce.py` — Sogecommerce IPN
+- `/app/backend/routes/admin.py` (lignes 850-895) — Logique km counter
+- `/app/backend/utils/helpers.py` — `PAYOUT_FREQUENCY=weekly`
+- `/app/frontend/src/pages/Subscription.js` — Page abonnement (boutons Stripe désactivés via alert + return)
+- `/app/frontend/src/pages/DriverEarnings.js` — Tableau de bord chauffeur (bug : section IBAN/BIC manquante)
+- `/app/frontend/public/flyer_recto.jpg` + `flyer_verso.jpg` — Flyers V2 chauffeur
+- `/tmp/stats.py` (sur VPS) — Stats sondage live MongoDB
 
-### Session 2026-05-12 (Algorithme transbordement adaptatif + Plafond 24h)
-- [x] **🧠 Algorithme transbordement adaptatif par zone** (segments dynamiques)
-  - Module `backend/utils/zone_detector.py` : détection hybride code postal + GPS fallback (paris_intra / banlieue / grande_couronne / hors_zone)
-  - Module `backend/utils/algorithm_config.py` : config par zone (Paris 3-4km / Banlieue 5-7km / GC 8-12km / Nuit 10-15km)
-  - `calculate_multi_transfer_route()` dans `server.py` mis à jour — utilise désormais la config adaptive selon la zone du point de départ + l'heure (jour/nuit Europe/Paris avec DST)
-- [x] **🖥️ API panneau admin algorithme** (`/api/admin/algorithm-config`)
-  - `GET` — récupère defaults + overrides + effective config
-  - `PUT` — override per-zone + per-key avec validation stricte des clés
-  - `POST /reset` — réinitialise aux valeurs par défaut
-  - Cache mémoire 30s pour éviter de spammer MongoDB
-- [x] **🚦 Plafond abonnement 24h = 5 trajets max** (`/api/rides/request`)
-  - Retourne 429 quand le plafond est atteint
-  - Compte les trajets sur la période courante de l'abonnement (rejected/cancelled exclus)
-  - Champ `max_rides_per_period` ajouté à `SUBSCRIPTION_PLANS["24h"]`
-- [x] **🧪 Tests pytest 27/27 PASSED**
-  - `tests/test_adaptive_algorithm.py` — 23 tests (CP, GPS, hybride, nuit DST, config)
-  - `tests/test_subscription_24h_cap.py` — 4 tests d'intégration (blocage, allow, rejected non-comptés, 1month no-cap)
-  - `tests/conftest.py` + `pytest.ini` — fix event loop pour Motor/async
-- [x] **🐛 Bug pré-existant fixé** : `create_ride_request` retournait `_id` ObjectId non-sérialisable
-- [x] **⚖️ Short list avocats** consolidée dans ROADMAP.md (Parallel Avocats, INFLUXIO, Mochon, Goldwin, Hashtag, Swim Legal)
+## 🔐 Credentials & Integration
+- `RESEND_API_KEY` actif (mails)
+- `SOGECOMMERCE_*` clés PROD actives, IPN paramétrée
+- Stripe **désactivé** (kill-switch backend)
+- Emergent LLM key utilisée pour Nano Banana (génération flyers)
 
-
-### Session 2026-05-07 jour 3 (Validation marché chauffeurs + Premier engagement organique massif)
-- [x] **🔥 13 chauffeurs VTC pros répondent** à une question soft sur la Page Métro-Taxi (265 vues / 80 commentaires)
-  - Médiane confirmée : 220 km/jour pour vivre du métier
-  - Stéphane Pes : "1€/km minimum = seuil de survie" → Métro-Taxi à 1,50€/km = +50% au-dessus du marché
-  - 13 réponses personnalisées préparées (Stéphane, Rodrigue, Flow, PassionateDragon, Mustapha, etc.) pour conversion en MP
-- [x] **🖨️ 100 flyers A6 imprimés** (Copy Top Opéra, papier satiné 170g, 81,70€) — prêts pour distribution CDG vendredi 8 mai
-- [x] **📨 Mail relance Agnès** envoyé avec proposition code parrainage (3 amis = 1 mois offert)
-- [x] **🛠️ Endpoint `/api/marketing/download/`** créé pour bypasser PWA scope sur fichiers vidéos/flyers
-- [x] **🔗 Routes courtes `/chauffeur` et `/usager`** créées dans App.js pour campagnes marketing
-- [x] **🎨 Bouton "Devenir chauffeur"** retravaillé en blanc plein contrasté (vs bordure transparente)
-- [x] **📊 Apprentissage clé** : les chauffeurs VTC pros NE convertissent PAS via TikTok/Insta. Recrutement = TERRAIN (CDG, gares) + DM directs
-
-### Session 2026-05-05 (LANCEMENT MARKETING — 1ère inscription LIVE 🏆)
-- [x] **🎬 3 vidéos campagne chauffeurs produites avec Sora 2 + voix off TTS française**
-  - Coupe Sora à 7s pour éliminer le faux logo halluciné
-  - Outro fond noir + logo officiel Métro-Taxi + URL metro-taxi.com
-  - Voix masculine grave (onyx HD) — script sans concurrence citée
-  - Fichiers : `/app/marketing_assets/final/video_1_chiffre_qui_fait_mal_FINAL.mp4` (et videos 2, 3)
-  - Durée 13-16s, format vertical 9:16, prêt TikTok/Insta/Facebook
-- [x] **📤 Campagne lancée sur 4 plateformes** (TikTok, Instagram, Facebook personnel, 3 Groupes Facebook VTC)
-- [x] **🏆 1ère inscription réelle confirmée** : AGNÈS MAYILI (mayiliagnes@yahoo.fr) — usager via TikTok
-- [x] **📊 1 311 personnes touchées en 1 journée** (vs 30 vues/jour précédent)
-- [x] **📋 Stratégie hashtags 2026 validée** : 5 hashtags max — `#chauffeurvtc #vtcparis #pourtoi #iledefrance #fyp`
-- [x] **🛠️ Scripts marketing dans `/app/scripts/`** :
-  - `generate_marketing_assets.py` (TTS voix off)
-  - `generate_sora_video1.py` / `generate_sora_videos_2_3.py` (génération Sora)
-  - `montage_final_v2.py` (fusion ffmpeg : Sora cut 7s + outro logo + voix off)
-
-### Session 2026-02-04 (Déploiement sécurité 2FA admin sur VPS — SUCCÈS LIVE)
-- [x] **🔒 Faille critique sécurité corrigée** : suppression des identifiants admin hardcodés dans `Login.js`
-- [x] **🔐 Système 2FA OTP par email implémenté** (`server.py` + `services/emails.py`)
-  - Endpoint `POST /api/auth/login` retourne `{otp_required: true}` pour les admins
-  - Endpoint `POST /api/auth/admin/verify-otp` valide le code 6 chiffres (TTL 5 min, max 5 tentatives)
-  - Collection MongoDB `admin_otps` (auto-créée)
-- [x] **📧 Migration email admin** : `admin-mt@metro-taxi.com` → `contact@metro-taxi.com` (ancien email banni par Resend suppression list)
-- [x] **🚀 DÉPLOIEMENT VPS RÉUSSI** : `git pull` + `sed -i .env` + `pm2 restart all --update-env` sur VPS Hostinger
-- [x] **✅ Test live validé** : API répond `{"otp_required":true}`, OTP envoyé par mail, admin peut se connecter
-- [x] **📈 Premiers utilisateurs réels inscrits** suite au partage WhatsApp — confirmations visibles dans le panneau admin
-- [x] **🛡️ Manifest PWA** : ajout `id` stable pour éviter alertes Google Play Protect
-- [x] **📄 Documents INPI générés** : `INPI_FORBIDDEN_TERMS.pdf`, `SECURITY_BRAND_GUIDELINES.pdf`, `INPI_ALGORITHME_TRANSBORDEMENT.pdf`
-
-### Session 2026-02 (urgence sécurité brevet + bug voix multilingue)
-- [x] **🔴 BUG CRITIQUE (1000+ vues impactées) corrigé : voix Landing Page bloquée en anglais**
-  - Cause : `Landing.js` chargeait des fichiers MP3 statiques `/audio/voiceover/voiceover_*.mp3` depuis `frontend/build/` mais ces fichiers ne sont pas garantis présents après `yarn build` sur le VPS (le backend les écrit dans `frontend/public/` après le build)
-  - Fix : `playVoiceover()` appelle maintenant directement `POST /api/tts/voiceover` avec le langCode → backend retourne MP3 en streaming (cache backend ou regénération à la volée)
-  - Service Worker bumpé à v15 (audio-cache v7) pour invalider les anciens MP3 cachés
-  - Validation : test 3 langues (FR/ES/DE) → 200 OK audio/mpeg ✅
-- [x] **Reformulation TOTALE des 16 scripts vocaux TTS** (`/app/backend/routes/tts.py`)
-  - Phrase technique "changez de véhicule en route" remplacée par **"Voyagez librement à travers toute la ville, sans contrainte, sans limite, jusqu'où vous voulez"** (Option 4) dans les 16 langues
-  - 3 voix critiques (fr, en, es) régénérées et validées (HTTP 200)
-- [x] **🚨 FUITE CRITIQUE corrigée dans le chatbot IA** (`/app/backend/routes/support_chat.py`)
-  - System prompt réécrit + directive d'interdiction multilingue ajoutée
-  - Test live validé : le chatbot répond "réseau intelligent qui vous emmène partout" sans révéler le mécanisme
-- [x] **Nettoyage chirurgical des 16 fichiers i18n locales JSON**
-  - 13 chemins UI ciblés (common.transfers, dashboard.user.transferSuggestions, drivers.app.transfersDesc, cgu.service5, subscription.plans.{day,week,month}.feature3, etc.)
-  - **182 valeurs remplacées** par termes neutres ("itinéraires", "routes", "rutas", "Strecken"…)
-  - Stripe payouts (driverEarnings.transferred / payoutDate) intentionnellement intacts (virements bancaires légitimes)
-  - 16 JSON validés (parsing OK), screenshot Landing OK
-- [x] **Création du fichier `/app/SECURITY_BRAND_GUIDELINES.md`** — référentiel complet anti-fuite IP
-  - 40+ termes interdits dans 16 langues
-  - Distinction texte public (à nettoyer) vs code interne (OK)
-  - Script Python de scan automatique pré-déploiement
-  - Statut nettoyage global + checklist
-
-### Session 2025-04-20
-- [x] **Chatbot IA Support** : page /support avec assistant GPT-4.1-mini
-  - Répond en 16 langues automatiquement
-  - Connaît tous les tarifs, zones, fonctionnement de Métro-Taxi
-  - Questions fréquentes en raccourcis
-  - Escalade vers email contact@metro-taxi.com si nécessaire
-  - Bouton AIDE redirige vers /support
-
-### Session 2025-04-12 (Refactoring Phase 1)
-- [x] **Extraction emails → `services/emails.py`** : 4 fonctions email (vérification, confirmation abo, notification paiement, rappel expiration, cadeau) extraites de `server.py` (~514 lignes supprimées, 5940 → 5426)
-
-### Session 2025-04-12
-- [x] **Correction bug internationalisation anglais (US + GB)** :
-  - Refonte complète de la configuration i18n (`/app/frontend/src/i18n/index.js`)
-  - Suppression du plugin `LanguageDetector` (causait des résolutions de langue incorrectes)
-  - Remplacement par une détection explicite : stored → querystring → navigator → 'fr'
-  - Ajout de `supportedLngs`, `load: 'currentOnly'`, événement `languageChanged` pour sync localStorage
-  - Correction structure `auth.login` dans `fr.json` (string → object)
-  - Correction `Subscription.js` : `t('auth.login')` → `t('auth.login.submit')`
-  - Bump service worker v11 pour invalidation cache
-  - 9/9 tests de langues passés (Testing Agent)
-
-### Session 2025-04-10
-- [x] **Correctif anti-double-clic** sur page d'abonnement (`Subscription.js`)
-- [x] **Pare-feu & Sécurité** implémenté (slowapi, secure, admin dashboard)
-- [x] **Cadeau d'abonnement** (admin peut offrir un abo + email auto)
-- [x] **Resend SDK v2** (`resend.Emails.send`)
-- [x] **Tarification multi-zones** (France, Londres x3, Madrid x3)
-- [x] **Landing page dynamique** (revenus chauffeurs par région, prix zones)
-- [x] **Traductions massives** (16 langues, placeholders, noms de zones)
-
-### Sessions précédentes
-- [x] Vidéos promotionnelles (Sora 2 + TTS)
-- [x] Nouveaux champs d'inscription (adresse + date de naissance)
-- [x] Stripe Live key
-- [x] Auto-centrage carte géolocalisation
-- [x] Admin : colonne "Identité", modale RGPD, historique trajets
-- [x] Export PDF (jsPDF pur)
-- [x] PWA installable
-- [x] Internationalisation 16 langues
-- [x] Système de notation chauffeurs
-- [x] Historique des trajets
-- [x] Page CGU / CGV
-
----
-
-## Prioritized Backlog
-
-### P0 - Critique (Bloqué)
-- [ ] **Migration Stripe → Crédit Agricole** : En attente des identifiants bancaires du client (Site ID, Clés HMAC, ICS)
-
-### P1 - Haute priorité
-- [x] Refactoring `server.py` complet : 5940 → 2778 lignes (-53%, 8 modules extraits)
-- [ ] Validation complète des fonctionnalités (Notifications Push, Historique, Notation)
-- [ ] Mettre en place VAPID keys de production
-
-### P2 - Moyenne priorité
-- [ ] Sauvegardes automatiques MongoDB sur VPS
-- [ ] Espaces publicitaires pour annonceurs (repoussé par le client)
-
-### P3 - Basse priorité
-- [ ] Chat en temps réel usager/chauffeur
-- [ ] Amélioration mode hors ligne PWA
-
----
-
-## Technical Stack
-- **Frontend**: React, Tailwind, Shadcn/UI, jsPDF, i18next, Leaflet.js
-- **Backend**: FastAPI, Motor (async MongoDB)
-- **Database**: MongoDB
-- **Payments**: Stripe (transition vers Crédit Agricole)
-- **Emails**: Resend (SDK v2)
-- **AI**: OpenAI Sora 2, OpenAI TTS (via Emergent LLM Key)
-- **Infrastructure**: VPS Hostinger, PM2
-
-## Deployment Notes
-Le client héberge sur son propre VPS. Les changements doivent être :
-1. Sauvegardés sur GitHub via "Save to GitHub"
-2. Déployés manuellement : `cd /var/www/metro-taxi-app && git pull && cd frontend && yarn build && pm2 restart all`
-3. Cache PWA vidé côté utilisateurs (service worker versionné pour auto-invalidation)
-
-## Key Config
-- i18n: 16 langues, détection explicite (localStorage > querystring > navigator > 'fr'), fallback: 'en'
-- Service Worker: v11, network-first pour pages, cache-first pour audio
-- IMPORTANT: Ne pas toucher à l'implémentation Resend (`resend.Emails.send`)
+## 💛 Branding Tone
+- Persona "Charly" — bras droit technique + stratège marketing
+- Tutoiement obligatoire, "Capitaine"/"Champion"
+- Lancement = SAMEDI 13 JUIN 2026 (ne plus dire vendredi)
+- Ne JAMAIS mentionner concurrents (Uber/Bolt/RATP) dans la com
+- Transbordement = FORCE, pas défaut
+- Modèle = COVOITURAGE MAILLÉ (pas VTC classique 1-pour-1)
