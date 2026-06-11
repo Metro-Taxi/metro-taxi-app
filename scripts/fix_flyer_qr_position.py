@@ -93,27 +93,31 @@ def compose_flyer_v3_2():
     # 3 cards horizontales
     card_y = y_tar + 55
     card_w = 360
-    card_h = 130
+    card_h = 150
     gap = 25
     total_w = card_w * 3 + gap * 2
     start_x = (W - total_w) // 2
     plans = [
-        ("24H",    "6,99€",  "5 courses"),
-        ("1 SEM",  "19,99€", "15 courses"),
-        ("1 MOIS", "53,99€", "Illimité"),
+        ("24 HEURES",  "6,99€",  "5 courses"),
+        ("7 JOURS",    "19,99€", "15 courses"),
+        ("30 JOURS",   "53,99€", "Illimité"),
     ]
     for i, (lbl, prix, info) in enumerate(plans):
         cx = start_x + i * (card_w + gap)
         card = Image.new("RGBA", (card_w, card_h), (255, 214, 10, 245))
         bg.paste(card, (cx, card_y), card)
-        centered(draw, lbl, card_y + 10, F(26, True), BLACK, W, ol=False)
-        # Need draw price at card position
-        bb = draw.textbbox((0, 0), prix, font=F(40, True))
-        px = cx + (card_w - (bb[2] - bb[0])) // 2
-        draw.text((px, card_y + 45), prix, font=F(40, True), fill=BLACK)
-        bb2 = draw.textbbox((0, 0), info, font=F(20))
-        px2 = cx + (card_w - (bb2[2] - bb2[0])) // 2
-        draw.text((px2, card_y + 95), info, font=F(20), fill=BLACK)
+        # Label en haut — CENTRÉ SUR LA CARD (pas sur le flyer entier)
+        f_lbl = F(24, True)
+        bb = draw.textbbox((0, 0), lbl, font=f_lbl)
+        draw.text((cx + (card_w - (bb[2] - bb[0])) // 2, card_y + 10), lbl, font=f_lbl, fill=BLACK)
+        # Prix en gros au milieu
+        f_p = F(42, True)
+        bb = draw.textbbox((0, 0), prix, font=f_p)
+        draw.text((cx + (card_w - (bb[2] - bb[0])) // 2, card_y + 50), prix, font=f_p, fill=BLACK)
+        # Description en bas
+        f_i = F(22)
+        bb = draw.textbbox((0, 0), info, font=f_i)
+        draw.text((cx + (card_w - (bb[2] - bb[0])) // 2, card_y + 110), info, font=f_i, fill=BLACK)
 
     # --- QR XL et CENTRÉ DANS LE BAS (mais bien visible) ---
     qr_size = 420  # ⬆️ plus grand (était 270)
@@ -178,23 +182,26 @@ def compose_banner_v2():
     total_w = card_w * 3 + gap * 2
     start_x = (BW - total_w) // 2
     plans = [
-        ("24H",    "6,99€",  "5 courses"),
-        ("1 SEM",  "19,99€", "15 courses"),
-        ("1 MOIS", "53,99€", "Illimité"),
+        ("24 HEURES",  "6,99€",  "5 courses"),
+        ("7 JOURS",    "19,99€", "15 courses"),
+        ("30 JOURS",   "53,99€", "Illimité"),
     ]
     for i, (lbl, prix, info) in enumerate(plans):
         cx = start_x + i * (card_w + gap)
         card = Image.new("RGBA", (card_w, card_h), (255, 214, 10, 248))
         bg.paste(card, (cx, card_y), card)
-        # Label haut
-        bb = draw.textbbox((0, 0), lbl, font=F(54, True))
-        draw.text((cx + (card_w - (bb[2]-bb[0]))//2, card_y + 20), lbl, font=F(54, True), fill=BLACK)
+        # Label haut — CENTRÉ SUR LA CARD
+        f_lbl = F(50, True)
+        bb = draw.textbbox((0, 0), lbl, font=f_lbl)
+        draw.text((cx + (card_w - (bb[2]-bb[0]))//2, card_y + 25), lbl, font=f_lbl, fill=BLACK)
         # Prix gros
-        bb = draw.textbbox((0, 0), prix, font=F(86, True))
-        draw.text((cx + (card_w - (bb[2]-bb[0]))//2, card_y + 90), prix, font=F(86, True), fill=BLACK)
+        f_p = F(86, True)
+        bb = draw.textbbox((0, 0), prix, font=f_p)
+        draw.text((cx + (card_w - (bb[2]-bb[0]))//2, card_y + 100), prix, font=f_p, fill=BLACK)
         # Info bas
-        bb = draw.textbbox((0, 0), info, font=F(42))
-        draw.text((cx + (card_w - (bb[2]-bb[0]))//2, card_y + 200), info, font=F(42), fill=BLACK)
+        f_i = F(40)
+        bb = draw.textbbox((0, 0), info, font=f_i)
+        draw.text((cx + (card_w - (bb[2]-bb[0]))//2, card_y + 215), info, font=f_i, fill=BLACK)
 
     # --- POINT INSCRIPTION (sous les cards de tarifs) ---
     y_pi = card_y + card_h + 60
