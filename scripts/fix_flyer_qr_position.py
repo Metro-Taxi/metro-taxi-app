@@ -85,8 +85,35 @@ def compose_flyer_v3_2():
     # --- Offer (juste après le bandeau jaune) ---
     y_off = 700
     centered(draw, "🎁  1ÈRE COURSE OFFERTE", y_off, F(46, True), YELLOW, W)
-    centered(draw, "jusqu'à 10 km", y_off + 65, F(34, True), WHITE, W)
-    centered(draw, "Aux 30 premiers abonnés", y_off + 115, F(30), WHITE, W)
+    centered(draw, "jusqu'à 10 km — 30 premiers abonnés", y_off + 60, F(28), WHITE, W)
+
+    # --- TARIFS ABONNEMENTS (3 plans) ---
+    y_tar = y_off + 130
+    centered(draw, "ABONNEMENTS À PARTIR DE 6,99€", y_tar, F(34, True), YELLOW, W)
+    # 3 cards horizontales
+    card_y = y_tar + 55
+    card_w = 360
+    card_h = 130
+    gap = 25
+    total_w = card_w * 3 + gap * 2
+    start_x = (W - total_w) // 2
+    plans = [
+        ("24H",    "6,99€",  "5 courses"),
+        ("1 SEM",  "19,99€", "15 courses"),
+        ("1 MOIS", "53,99€", "Illimité"),
+    ]
+    for i, (lbl, prix, info) in enumerate(plans):
+        cx = start_x + i * (card_w + gap)
+        card = Image.new("RGBA", (card_w, card_h), (255, 214, 10, 245))
+        bg.paste(card, (cx, card_y), card)
+        centered(draw, lbl, card_y + 10, F(26, True), BLACK, W, ol=False)
+        # Need draw price at card position
+        bb = draw.textbbox((0, 0), prix, font=F(40, True))
+        px = cx + (card_w - (bb[2] - bb[0])) // 2
+        draw.text((px, card_y + 45), prix, font=F(40, True), fill=BLACK)
+        bb2 = draw.textbbox((0, 0), info, font=F(20))
+        px2 = cx + (card_w - (bb2[2] - bb2[0])) // 2
+        draw.text((px2, card_y + 95), info, font=F(20), fill=BLACK)
 
     # --- QR XL et CENTRÉ DANS LE BAS (mais bien visible) ---
     qr_size = 420  # ⬆️ plus grand (était 270)
@@ -139,25 +166,52 @@ def compose_banner_v2():
     # --- OFFER ---
     y_off = 1620
     centered(draw, "🎁  1ÈRE COURSE OFFERTE", y_off, F(92, True), YELLOW, BW)
-    centered(draw, "jusqu'à 10 km — 30 premiers abonnés", y_off + 120, F(56), WHITE, BW)
+    centered(draw, "jusqu'à 10 km — 30 premiers abonnés", y_off + 110, F(50), WHITE, BW)
 
-    # --- POINT INSCRIPTION (renforcé) ---
-    y_pi = 1900
-    centered(draw, "📍 POINT INSCRIPTION OFFICIEL", y_pi, F(78, True), BLUE, BW)
-    centered(draw, "Demandez à l'intérieur — aide gratuite", y_pi + 100, F(58, True), WHITE, BW)
+    # --- TARIFS ABONNEMENTS (3 cards XL) ---
+    y_tar = y_off + 200
+    centered(draw, "ABONNEMENTS À PARTIR DE 6,99€", y_tar, F(70, True), YELLOW, BW)
+    card_y = y_tar + 100
+    card_w = 580
+    card_h = 280
+    gap = 40
+    total_w = card_w * 3 + gap * 2
+    start_x = (BW - total_w) // 2
+    plans = [
+        ("24H",    "6,99€",  "5 courses"),
+        ("1 SEM",  "19,99€", "15 courses"),
+        ("1 MOIS", "53,99€", "Illimité"),
+    ]
+    for i, (lbl, prix, info) in enumerate(plans):
+        cx = start_x + i * (card_w + gap)
+        card = Image.new("RGBA", (card_w, card_h), (255, 214, 10, 248))
+        bg.paste(card, (cx, card_y), card)
+        # Label haut
+        bb = draw.textbbox((0, 0), lbl, font=F(54, True))
+        draw.text((cx + (card_w - (bb[2]-bb[0]))//2, card_y + 20), lbl, font=F(54, True), fill=BLACK)
+        # Prix gros
+        bb = draw.textbbox((0, 0), prix, font=F(86, True))
+        draw.text((cx + (card_w - (bb[2]-bb[0]))//2, card_y + 90), prix, font=F(86, True), fill=BLACK)
+        # Info bas
+        bb = draw.textbbox((0, 0), info, font=F(42))
+        draw.text((cx + (card_w - (bb[2]-bb[0]))//2, card_y + 200), info, font=F(42), fill=BLACK)
 
-    # --- QR XL bien remonté pour scan à hauteur d'homme ---
-    qr_size = 950  # XL pour scan rapide
+    # --- POINT INSCRIPTION (sous les cards de tarifs) ---
+    y_pi = card_y + card_h + 60
+    centered(draw, "📍 POINT INSCRIPTION OFFICIEL", y_pi, F(70, True), BLUE, BW)
+    centered(draw, "Demandez à l'intérieur — aide gratuite", y_pi + 90, F(52, True), WHITE, BW)
+
+    # --- QR (taille ajustée pour rentrer + footer) ---
+    qr_size = 700
     qi = qr("https://metro-taxi.com/inscription", qr_size)
-    fr = Image.new("RGB", (qi.width + 70, qi.height + 70), YELLOW)
-    fr.paste(qi, (35, 35))
-    # Position : milieu/bas (à hauteur d'homme sur une porte de 200cm)
-    qr_y = 2250  # remonté significativement
+    fr = Image.new("RGB", (qi.width + 50, qi.height + 50), YELLOW)
+    fr.paste(qi, (25, 25))
+    qr_y = y_pi + 220
     bg.paste(fr, ((BW - fr.width) // 2, qr_y))
 
     # --- Footer ---
-    centered(draw, "metro-taxi.com", qr_y + fr.height + 50, F(90, True), YELLOW, BW)
-    centered(draw, "📱 Scanne POUR T'INSCRIRE ET T'ABONNER", qr_y + fr.height + 160, F(56, True), WHITE, BW)
+    centered(draw, "metro-taxi.com", qr_y + fr.height + 40, F(80, True), YELLOW, BW)
+    centered(draw, "📱 Scanne POUR T'INSCRIRE ET T'ABONNER", qr_y + fr.height + 130, F(50, True), WHITE, BW)
 
     out = OUTPUT_DIR / "banderole_metrotaxi_PORTE_25x50cm_v2.png"
     bg.save(out, "PNG", optimize=True, quality=95)
