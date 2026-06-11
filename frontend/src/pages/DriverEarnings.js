@@ -50,8 +50,87 @@ const DriverEarnings = ({ onClose }) => {
   const [bankSaving, setBankSaving] = useState(false);
   const [bankErrors, setBankErrors] = useState({ iban: '', bic: '' });
 
+  // --- IBAN/BIC helpers (mask + normalize + validation) ---
+  const maskIban = (iban) => {
+    if (!iban) return '';
+    const clean = iban.replace(/\s+/g, '');
+    if (clean.length <= 8) return clean;
+    return `${clean.slice(0, 4)} •••• •••• ${clean.slice(-4)}`;
+  };
+
+  const normalizeIban = (iban) => {
+    if (!iban) return '';
+    return iban.replace(/\s+/g, '').toUpperCase();
+  };
+
+  const normalizeBic = (bic) => {
+    if (!bic) return '';
+    return bic.replace(/\s+/g, '').toUpperCase();
+  };
+
+  const validateIban = (iban) => {
+    const clean = normalizeIban(iban);
+    if (!clean) return 'IBAN requis';
+    if (clean.length < 15 || clean.length > 34) return 'IBAN invalide (15 à 34 caractères)';
+    if (!/^[A-Z]{2}[0-9]{2}[A-Z0-9]+$/.test(clean)) return 'Format IBAN invalide';
+    return '';
+  };
+
+  const validateBic = (bic) => {
+    const clean = normalizeBic(bic);
+    if (!clean) return 'BIC requis';
+    if (clean.length !== 8 && clean.length !== 11) return 'BIC doit faire 8 ou 11 caractères';
+    if (!/^[A-Z0-9]+$/.test(clean)) return 'Format BIC invalide';
+    return '';
+  };
+
+  const loadBankInfo = async () => {
+    try {
+      const res = await axios.get(`${API}/drivers/bank-info`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setBankInfo({
+        iban: res.data?.iban || '',
+        bic: res.data?.bic || ''
+      });
+    } catch (error) {
+      // Pas grave si pas encore renseigné
+      console.warn('Bank info not yet set');
+    }
+  };
+
+  const saveBankInfo = async () => {
+    const ibanErr = validateIban(bankInfo.iban);
+    const bicErr = validateBic(bankInfo.bic);
+    if (ibanErr || bicErr) {
+      setBankErrors({ iban: ibanErr, bic: bicErr });
+      toast.error(t('driverEarnings.bankInvalid', 'Coordonnées bancaires invalides'));
+      return;
+    }
+    setBankErrors({ iban: '', bic: '' });
+    setBankSaving(true);
+    try {
+      const cleanIban = normalizeIban(bankInfo.iban);
+      const cleanBic = normalizeBic(bankInfo.bic);
+      await axios.put(`${API}/drivers/bank-info`,
+        { iban: cleanIban, bic: cleanBic },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setBankInfo({ iban: cleanIban, bic: cleanBic });
+      setBankEditing(false);
+      toast.success(t('driverEarnings.bankSaved', 'Coordonnées bancaires enregistrées 🔒'));
+    } catch (error) {
+      const message = error.response?.data?.detail || t('driverEarnings.bankSaveError', 'Erreur enregistrement');
+      toast.error(message);
+    } finally {
+      setBankSaving(false);
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    loadBankInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchData = async () => {
@@ -225,16 +304,151 @@ const DriverEarnings = ({ onClose }) => {
               </div>
             </motion.div>
 
-            {/* Rate Info */}
-            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+            {/* Rate Info — tarif différencié selon véhicule */}
+            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4" data-testid="driver-rate-info-card">
               <div className="flex items-center gap-2 text-zinc-400 text-sm">
                 <TrendingUp className="w-4 h-4 text-green-500" />
-                <span>{t('driverEarnings.rateInfo', 'Tarif')}: </span>
+                <span>{t('driverEarnings.rateInfo', 'Votre tarif')}: </span>
                 <span className="text-white font-bold">{formatCurrency(earnings.rate_per_km)}/km</span>
+                {earnings.vehicle_type && (
+                  <span className="ml-1 px-2 py-0.5 rounded bg-[#FFD60A]/20 text-[#FFD60A] text-xs font-medium uppercase">
+                    {earnings.vehicle_type}
+                  </span>
+                )}
               </div>
               <p className="text-zinc-500 text-xs mt-2">
                 {t('driverEarnings.rateDescription', 'Uniquement les km parcourus avec usagers Métro-Taxi à bord')}
               </p>
+              {earnings.rate_per_km_by_vehicle && (
+                <div className="mt-3 pt-3 border-t border-zinc-800">
+                  <p className="text-zinc-500 text-xs mb-2">{t('driverEarnings.gridTitle', 'Grille tarifaire Métro-Taxi')}</p>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    {Object.entries(earnings.rate_per_km_by_vehicle).map(([vt, rate]) => (
+                      <div
+                        key={vt}
+                        className={`rounded p-2 ${
+                          earnings.vehicle_type === vt
+                            ? 'bg-[#FFD60A]/20 border border-[#FFD60A]/50'
+                            : 'bg-zinc-950 border border-zinc-800'
+                        }`}
+                      >
+                        <p className="text-xs text-zinc-400 uppercase">{vt}</p>
+                        <p className="text-sm font-bold text-white">{rate.toFixed(2)}€/km</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-zinc-500 text-xs mt-2">
+                    {t('driverEarnings.gridExplanation', 'Le tarif van/monospace est majoré car ces véhicules transportent plus d\'abonnés simultanément.')}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Bank Info — déplacée ici pour que tous les chauffeurs voient le formulaire */}
+            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4" data-testid="driver-bank-info-card">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-white font-medium flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-zinc-500" />
+                  {t('driverEarnings.bankInfo', 'Coordonnées bancaires (virement SEPA)')}
+                </h4>
+                {!bankEditing && bankInfo.iban && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setBankEditing(true)}
+                    className="border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                    data-testid="driver-bank-edit-btn"
+                  >
+                    {t('driverEarnings.bankEdit', 'Modifier')}
+                  </Button>
+                )}
+              </div>
+
+              {!bankEditing && bankInfo.iban && (
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-zinc-500">IBAN</span>
+                    <span className="text-white font-mono">{maskIban(bankInfo.iban)}</span>
+                  </div>
+                  {bankInfo.bic && (
+                    <div className="flex justify-between">
+                      <span className="text-zinc-500">BIC</span>
+                      <span className="text-white font-mono">{bankInfo.bic}</span>
+                    </div>
+                  )}
+                  <p className="text-xs text-zinc-500 mt-3">
+                    🔒 Vos coordonnées sont chiffrées et utilisées uniquement pour vos virements hebdomadaires (chaque lundi).
+                  </p>
+                </div>
+              )}
+
+              {(bankEditing || !bankInfo.iban) && (
+                <div className="space-y-3">
+                  {!bankInfo.iban && (
+                    <p className="text-xs text-zinc-400 bg-zinc-950 border border-zinc-800 rounded p-3">
+                      ℹ️ {t('driverEarnings.bankPrompt', 'Saisissez vos coordonnées bancaires pour recevoir vos virements hebdomadaires (chaque lundi).')}
+                    </p>
+                  )}
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1">IBAN *</label>
+                    <input
+                      type="text"
+                      placeholder="FR76 1234 5678 9012 3456 7890 123"
+                      value={bankInfo.iban}
+                      onChange={(e) => setBankInfo({ ...bankInfo, iban: e.target.value })}
+                      onBlur={() => setBankInfo({ ...bankInfo, iban: normalizeIban(bankInfo.iban) })}
+                      className="w-full bg-zinc-950 border border-zinc-700 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-yellow-500"
+                      data-testid="driver-bank-iban-input"
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                    {bankErrors.iban && (
+                      <p className="text-xs text-red-400 mt-1">{bankErrors.iban}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1">BIC *</label>
+                    <input
+                      type="text"
+                      placeholder="BNPAFRPP (8 ou 11 caractères)"
+                      value={bankInfo.bic}
+                      onChange={(e) => setBankInfo({ ...bankInfo, bic: e.target.value })}
+                      onBlur={() => setBankInfo({ ...bankInfo, bic: normalizeBic(bankInfo.bic) })}
+                      className="w-full bg-zinc-950 border border-zinc-700 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-yellow-500"
+                      data-testid="driver-bank-bic-input"
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                    {bankErrors.bic && (
+                      <p className="text-xs text-red-400 mt-1">{bankErrors.bic}</p>
+                    )}
+                  </div>
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      onClick={saveBankInfo}
+                      disabled={bankSaving}
+                      className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold"
+                      data-testid="driver-bank-save-btn"
+                    >
+                      {bankSaving ? t('driverEarnings.bankSaving', 'Enregistrement...') : t('driverEarnings.bankSave', 'Enregistrer mes coordonnées')}
+                    </Button>
+                    {bankInfo.iban && (
+                      <Button
+                        variant="outline"
+                        onClick={() => { setBankEditing(false); setBankErrors({ iban: '', bic: '' }); loadBankInfo(); }}
+                        disabled={bankSaving}
+                        className="border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                        data-testid="driver-bank-cancel-btn"
+                      >
+                        {t('driverEarnings.bankCancel', 'Annuler')}
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-zinc-500">
+                    🔒 Données chiffrées. Utilisées uniquement pour vos virements.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Pending Payout */}

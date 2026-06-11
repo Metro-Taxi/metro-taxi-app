@@ -124,8 +124,34 @@ SUBSCRIPTION_PLANS = {
     "1month": {"name": "1 mois", "price": 53.99, "price_cents": 5399, "duration_hours": 720}
 }
 
-# Driver earnings rate
+# Driver earnings rate (legacy / default = berline)
 DRIVER_RATE_PER_KM = 1.50
+
+# Driver earnings rate per vehicle type
+# Justification : le van/monospace transporte plus d'abonnés simultanément
+# (cf. algorithm_config.DEFAULT_VEHICLE_FILL_THRESHOLDS) donc on majore le
+# tarif au km pour compenser le surcoût carburant/usure et inciter les
+# chauffeurs avec gros véhicules à rejoindre Métro-Taxi.
+DRIVER_RATE_PER_KM_BY_VEHICLE = {
+    "berline":   1.50,
+    "monospace": 1.70,
+    "van":       1.90,
+}
+
+
+def get_driver_rate_per_km(vehicle_type: str | None) -> float:
+    """Return €/km rate for a given vehicle_type (canonical or alias)."""
+    if not vehicle_type:
+        return DRIVER_RATE_PER_KM
+    key = vehicle_type.strip().lower()
+    # Aliases (mirror utils/algorithm_config._VEHICLE_TYPE_ALIASES)
+    aliases = {
+        "berline": "berline", "sedan": "berline",
+        "monospace": "monospace", "minivan": "monospace", "suv": "monospace",
+        "van": "van", "minibus": "van",
+    }
+    canon = aliases.get(key, "berline")
+    return DRIVER_RATE_PER_KM_BY_VEHICLE.get(canon, DRIVER_RATE_PER_KM)
 
 # Payout configuration
 PAYOUT_FREQUENCY = "weekly"  # weekly (chaque lundi) ou monthly

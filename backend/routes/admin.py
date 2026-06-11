@@ -27,6 +27,7 @@ if STRIPE_API_KEY:
 
 # Import config from server
 from server import SUBSCRIPTION_PLANS, REGIONAL_PRICING, DRIVER_RATE_PER_KM, PAYOUT_DAY
+from utils.helpers import DRIVER_RATE_PER_KM_BY_VEHICLE, get_driver_rate_per_km
 
 def _get_manager():
     from server import manager
@@ -74,6 +75,7 @@ async def admin_get_all_driver_earnings(current_user: dict = Depends(get_current
         "current_month": current_month,
         "payout_day": PAYOUT_DAY,
         "rate_per_km": DRIVER_RATE_PER_KM,
+        "rate_per_km_by_vehicle": DRIVER_RATE_PER_KM_BY_VEHICLE,
         "total_pending": round(total_pending, 2),
         "drivers_count": len(result),
         "earnings": result
@@ -887,11 +889,17 @@ async def complete_ride(ride_id: str, current_user: dict = Depends(get_current_u
                 ride["destination_lat"], ride["destination_lng"]
             )
     
-    # Round and calculate revenue
+    # Round and calculate revenue (rate depends on driver's vehicle_type)
     km_with_user = round(km_with_user, 2)
-    revenue = round(km_with_user * DRIVER_RATE_PER_KM, 2)
+    driver_doc = await db.drivers.find_one({"id": driver_id}, {"_id": 0, "vehicle_type": 1})
+    vehicle_type = (driver_doc or {}).get("vehicle_type") or "berline"
+    rate_per_km = get_driver_rate_per_km(vehicle_type)
+    revenue = round(km_with_user * rate_per_km, 2)
     
-    logging.info(f"Ride {ride_id} completed: {km_with_user} km with user on board = €{revenue}")
+    logging.info(
+        f"Ride {ride_id} completed: {km_with_user} km with user on board, "
+        f"vehicle_type={vehicle_type}, rate={rate_per_km}€/km => €{revenue}"
+    )
     
     # Update ride with km and revenue
     completed_at = datetime.now(timezone.utc).isoformat()

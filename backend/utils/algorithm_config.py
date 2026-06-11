@@ -90,6 +90,7 @@ _VEHICLE_TYPE_ALIASES = {
     "sedan": "berline",
     "monospace": "monospace",
     "minivan": "monospace",
+    "suv": "monospace",
     "van": "van",
     "minibus": "van",
 }

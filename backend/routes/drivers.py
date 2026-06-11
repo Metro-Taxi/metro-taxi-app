@@ -12,6 +12,7 @@ import logging
 from database import db
 from models.schemas import LocationUpdate, BankInfoUpdate
 from services.auth import get_current_user
+from utils.helpers import DRIVER_RATE_PER_KM_BY_VEHICLE, get_driver_rate_per_km
 
 router = APIRouter(prefix="/api", tags=["drivers"])
 
@@ -173,6 +174,14 @@ async def get_driver_earnings(current_user: dict = Depends(get_current_user)):
     
     pending_amount = sum(p.get("total_revenue", 0) for p in pending_payouts)
     
+    # Récupère le type de véhicule du chauffeur pour appliquer le bon tarif/km
+    driver_doc = await db.drivers.find_one(
+        {"id": driver_id},
+        {"_id": 0, "vehicle_type": 1}
+    )
+    vehicle_type = (driver_doc or {}).get("vehicle_type") or "berline"
+    rate_per_km = get_driver_rate_per_km(vehicle_type)
+    
     return {
         "current_month": {
             "month": current_month,
@@ -187,7 +196,9 @@ async def get_driver_earnings(current_user: dict = Depends(get_current_user)):
             "total_rides": total_rides
         },
         "pending_payout": round(pending_amount, 2),
-        "rate_per_km": DRIVER_RATE_PER_KM,
+        "rate_per_km": rate_per_km,
+        "vehicle_type": vehicle_type,
+        "rate_per_km_by_vehicle": DRIVER_RATE_PER_KM_BY_VEHICLE,
         "payout_day": PAYOUT_DAY,
         "history": earnings_history
     }

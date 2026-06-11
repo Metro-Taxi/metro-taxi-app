@@ -29,7 +29,13 @@ SUBSCRIPTION_PLANS = {
 }
 
 # Driver Revenue Configuration
-DRIVER_RATE_PER_KM = 1.50  # €1.50 per kilometer
+DRIVER_RATE_PER_KM = 1.50  # €1.50 per kilometer (default = berline)
+# Tarif différencié par type de véhicule (van/monospace transportent + d'abonnés)
+DRIVER_RATE_PER_KM_BY_VEHICLE = {
+    "berline":   1.50,
+    "monospace": 1.70,
+    "van":       1.90,
+}
 PAYOUT_FREQUENCY = "weekly"  # weekly (chaque lundi) ou monthly
 PAYOUT_DAY_OF_WEEK = 0  # 0=Lundi
 PAYOUT_DAY = 10  # Day of month for automatic payouts (legacy)

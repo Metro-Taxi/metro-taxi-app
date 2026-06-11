@@ -20,6 +20,8 @@ from .helpers import (
     # Constants
     SUBSCRIPTION_PLANS,
     DRIVER_RATE_PER_KM,
+    DRIVER_RATE_PER_KM_BY_VEHICLE,
+    get_driver_rate_per_km,
     PAYOUT_DAY,
     MIN_PAYOUT_AMOUNT,
     SEGMENT_MIN_KM,
