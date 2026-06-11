@@ -98,7 +98,7 @@ def compose_flyer_v3_2():
 
     # --- Footer URL ---
     centered(draw, "metro-taxi.com", H - 110, F(38, True), YELLOW, W)
-    centered(draw, "Scanne le QR — inscris-toi en 2 minutes", H - 60, F(24), WHITE, W)
+    centered(draw, "Scanne POUR T'INSCRIRE ET T'ABONNER", H - 60, F(24, True), WHITE, W)
 
     out = OUTPUT_DIR / "flyer_metrotaxi_V3_2_A6_STADE_DE_FRANCE.png"
     bg.save(out, "PNG", optimize=True, quality=95)
@@ -157,7 +157,7 @@ def compose_banner_v2():
 
     # --- Footer ---
     centered(draw, "metro-taxi.com", qr_y + fr.height + 50, F(90, True), YELLOW, BW)
-    centered(draw, "📱 Scanne pour t'inscrire en 2 minutes", qr_y + fr.height + 160, F(56), WHITE, BW)
+    centered(draw, "📱 Scanne POUR T'INSCRIRE ET T'ABONNER", qr_y + fr.height + 160, F(56, True), WHITE, BW)
 
     out = OUTPUT_DIR / "banderole_metrotaxi_PORTE_25x50cm_v2.png"
     bg.save(out, "PNG", optimize=True, quality=95)
