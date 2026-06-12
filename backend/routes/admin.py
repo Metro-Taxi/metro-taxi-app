@@ -2487,3 +2487,208 @@ def _survey_html_response(title: str, message: str, status: str = "yes"):
 """
     return HTMLResponse(content=html, status_code=200)
 
+
+
+
+# =====================================================================
+# PARTNER (TAXIPHONE) TRACKING — Commission 15% sur 1er abonnement payé
+# =====================================================================
+def _partner_code_from_source(src: str) -> Optional[str]:
+    """Extrait le code partenaire à partir du champ source_inscription.
+    Accepte les formats : 'PARTENAIRE-ATXP', 'partenaire-atxp', 'PARTENAIRE_ATXP'.
+    Retourne le code en MAJUSCULES sans préfixe ou None si pas un partenaire.
+    """
+    if not src or not isinstance(src, str):
+        return None
+    s = src.strip().upper().replace("PARTENAIRE_", "PARTENAIRE-")
+    if not s.startswith("PARTENAIRE-"):
+        return None
+    code = s.replace("PARTENAIRE-", "", 1).strip()
+    # Garde uniquement les caractères alphanumériques
+    code = "".join(ch for ch in code if ch.isalnum())
+    return code or None
+
+
+@router.get("/admin/partner-stats")
+async def admin_partner_stats(
+    week: Optional[str] = None,
+    current_user: dict = Depends(get_current_user),
+):
+    """Récupère les stats de tous les partenaires (taxiphones).
+    
+    Pour chaque partenaire :
+      - nb d'inscriptions générées (users avec source_inscription = PARTENAIRE-XXXX)
+      - nb d'abonnements PAYÉS (uniquement le 1er abonnement compte pour la commission)
+      - commission totale due (15% du prix TTC du 1er abonnement payé)
+      - répartition par plan (24h / 7j / 30j)
+    
+    Query param 'week' (optionnel, format YYYY-WW) : filtre sur une semaine ISO précise.
+    """
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    # Optionnel : fenêtre temporelle pour ne compter que les inscriptions de la semaine
+    date_filter = None
+    if week:
+        try:
+            year, w = week.split("-")
+            year_i, week_i = int(year), int(w)
+            # Lundi de la semaine ISO
+            start = datetime.fromisocalendar(year_i, week_i, 1).replace(tzinfo=timezone.utc)
+            end = start + timedelta(days=7)
+            date_filter = {"$gte": start.isoformat(), "$lt": end.isoformat()}
+        except Exception:
+            raise HTTPException(status_code=400, detail="Paramètre 'week' invalide (format attendu: YYYY-WW)")
+
+    # 1. Récupère tous les users avec source_inscription commençant par PARTENAIRE-
+    user_query: dict = {
+        "source_inscription": {"$regex": r"^PARTENAIRE[-_]", "$options": "i"},
+    }
+    if date_filter:
+        user_query["created_at"] = date_filter
+
+    users_cursor = db.users.find(
+        user_query,
+        {"_id": 0, "id": 1, "email": 1, "first_name": 1, "last_name": 1,
+         "source_inscription": 1, "created_at": 1}
+    )
+    users = await users_cursor.to_list(length=5000)
+
+    # 2. Group by partner code
+    partners: dict = {}
+    user_ids = []
+    for u in users:
+        code = _partner_code_from_source(u.get("source_inscription", ""))
+        if not code:
+            continue
+        user_ids.append(u["id"])
+        partners.setdefault(code, {
+            "code": code,
+            "inscriptions_count": 0,
+            "paid_subscriptions_count": 0,
+            "commission_total_eur": 0.0,
+            "plans_breakdown": {"24h": 0, "7j": 0, "30j": 0},
+            "users": [],
+        })
+        partners[code]["inscriptions_count"] += 1
+        partners[code]["users"].append({
+            "user_id": u["id"],
+            "email": u.get("email"),
+            "name": f"{u.get('first_name', '')} {u.get('last_name', '')}".strip(),
+            "created_at": u.get("created_at"),
+            "paid": False,  # rempli ci-dessous
+            "plan_id": None,
+            "commission_eur": 0.0,
+        })
+
+    # 3. Pour chaque user partenaire, regarder s'il a un abonnement PAYÉ (1er seulement)
+    if user_ids:
+        # On cherche les transactions payées par user_id, on prend la PREMIÈRE (chronologique)
+        tx_cursor = db.payment_transactions.find(
+            {
+                "user_id": {"$in": user_ids},
+                "$or": [
+                    {"status": "completed"},
+                    {"payment_status": "paid"},
+                ],
+            },
+            {"_id": 0, "user_id": 1, "plan_id": 1, "amount": 1,
+             "created_at": 1, "status": 1, "payment_status": 1}
+        ).sort("created_at", 1)
+        transactions = await tx_cursor.to_list(length=10000)
+
+        # Garder uniquement la 1ère tx payée par user
+        first_paid_by_user = {}
+        for tx in transactions:
+            uid = tx.get("user_id")
+            if uid and uid not in first_paid_by_user:
+                first_paid_by_user[uid] = tx
+
+        # Calculer la commission
+        for code, partner in partners.items():
+            for user in partner["users"]:
+                tx = first_paid_by_user.get(user["user_id"])
+                if not tx:
+                    continue
+                plan_id = tx.get("plan_id") or ""
+                amount_eur = tx.get("amount") or 0.0  # déjà en euros (cf payments.py)
+                commission = round(amount_eur * 0.15, 2)
+                user["paid"] = True
+                user["plan_id"] = plan_id
+                user["commission_eur"] = commission
+                partner["paid_subscriptions_count"] += 1
+                partner["commission_total_eur"] = round(partner["commission_total_eur"] + commission, 2)
+                # Plan breakdown
+                if "24h" in plan_id or "daily" in plan_id or "24" in plan_id:
+                    partner["plans_breakdown"]["24h"] += 1
+                elif "7j" in plan_id or "week" in plan_id or "7" in plan_id:
+                    partner["plans_breakdown"]["7j"] += 1
+                elif "30j" in plan_id or "month" in plan_id or "30" in plan_id:
+                    partner["plans_breakdown"]["30j"] += 1
+
+    # 4. Totaux globaux
+    total_inscriptions = sum(p["inscriptions_count"] for p in partners.values())
+    total_paid = sum(p["paid_subscriptions_count"] for p in partners.values())
+    total_commission = round(sum(p["commission_total_eur"] for p in partners.values()), 2)
+
+    return {
+        "week": week or "all-time",
+        "commission_rate": 0.15,
+        "totals": {
+            "partners_count": len(partners),
+            "inscriptions_count": total_inscriptions,
+            "paid_subscriptions_count": total_paid,
+            "commission_total_eur": total_commission,
+        },
+        "partners": sorted(partners.values(), key=lambda p: -p["commission_total_eur"]),
+    }
+
+
+@router.get("/admin/partner-stats/{code}")
+async def admin_partner_detail(
+    code: str,
+    current_user: dict = Depends(get_current_user),
+):
+    """Détail d'un partenaire spécifique (toutes les inscriptions, tous les paiements)."""
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    code = code.upper().strip()
+    # Reuse aggregation by filtering on code
+    stats = await admin_partner_stats(current_user=current_user)
+    for p in stats["partners"]:
+        if p["code"] == code:
+            return p
+    raise HTTPException(status_code=404, detail=f"Partenaire '{code}' non trouvé")
+
+
+@router.get("/admin/partner-payouts/csv")
+async def admin_partner_payouts_csv(
+    week: Optional[str] = None,
+    current_user: dict = Depends(get_current_user),
+):
+    """Export CSV des versements à effectuer aux partenaires (à utiliser le lundi)."""
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+
+    from fastapi.responses import PlainTextResponse
+    stats = await admin_partner_stats(week=week, current_user=current_user)
+
+    # Build CSV
+    lines = ["Code partenaire;Nb inscriptions;Nb payes;Commission a verser (EUR);Plan 24h;Plan 7j;Plan 30j"]
+    for p in stats["partners"]:
+        lines.append(
+            f"{p['code']};{p['inscriptions_count']};{p['paid_subscriptions_count']};"
+            f"{p['commission_total_eur']:.2f};"
+            f"{p['plans_breakdown']['24h']};{p['plans_breakdown']['7j']};{p['plans_breakdown']['30j']}"
+        )
+    lines.append(
+        f";;TOTAL;{stats['totals']['commission_total_eur']:.2f};;;"
+    )
+    csv = "\n".join(lines) + "\n"
+    filename = f"partner_payouts_{week or 'all'}.csv"
+    return PlainTextResponse(
+        content=csv,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        media_type="text/csv; charset=utf-8",
+    )
