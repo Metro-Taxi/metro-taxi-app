@@ -58,8 +58,7 @@ def draw_header(c):
     c.setFillColor(white)
     c.setFont("Helvetica", 8)
     c.drawRightString(PAGE_W - MARGIN, PAGE_H - 26 * mm, "contact@metro-taxi.com")
-    c.drawRightString(PAGE_W - MARGIN, PAGE_H - 31 * mm, "WhatsApp : 06 68 55 00 19")
-    c.drawRightString(PAGE_W - MARGIN, PAGE_H - 36 * mm, "Siège : Saint-Denis (93)")
+    c.drawRightString(PAGE_W - MARGIN, PAGE_H - 31 * mm, "Tél : 06 68 55 00 19")
 
     # Ligne jaune sous header
     c.setFillColor(YELLOW)
@@ -78,21 +77,21 @@ def draw_footer(c, page_num=1):
 
 def draw_section_title(c, y, text):
     c.setFillColor(DARK)
-    c.setFont("Helvetica-Bold", 11.5)
+    c.setFont("Helvetica-Bold", 10.5)
     c.drawString(MARGIN, y, text)
     # underline jaune
     c.setFillColor(YELLOW)
-    c.rect(MARGIN, y - 1.5 * mm, len(text) * 2.4, 0.8 * mm, stroke=0, fill=1)
-    return y - 6 * mm
+    c.rect(MARGIN, y - 1.3 * mm, len(text) * 2.2, 0.7 * mm, stroke=0, fill=1)
+    return y - 5 * mm
 
 
-def draw_body(c, y, text, font_size=9.5, max_width=PAGE_W - 2 * MARGIN, bold=False, color=DARK):
+def draw_body(c, y, text, font_size=8.5, max_width=PAGE_W - 2 * MARGIN, bold=False, color=DARK):
     c.setFillColor(color)
     c.setFont("Helvetica-Bold" if bold else "Helvetica", font_size)
     # Manual wrap
     words = text.split()
     line = ""
-    line_h = font_size * 1.35
+    line_h = font_size * 1.3
     for w in words:
         candidate = (line + " " + w).strip()
         if c.stringWidth(candidate, "Helvetica-Bold" if bold else "Helvetica", font_size) > max_width:
@@ -107,7 +106,7 @@ def draw_body(c, y, text, font_size=9.5, max_width=PAGE_W - 2 * MARGIN, bold=Fal
     return y
 
 
-def draw_bullet(c, y, text, font_size=9.5):
+def draw_bullet(c, y, text, font_size=8.5):
     c.setFillColor(YELLOW)
     c.circle(MARGIN + 1.5 * mm, y + 1 * mm, 0.8 * mm, stroke=0, fill=1)
     c.setFillColor(DARK)
@@ -157,40 +156,40 @@ def draw_rem_table(c, y):
     c.setStrokeColor(GRAY)
     c.setLineWidth(0.4)
     c.rect(MARGIN, y, sum(col_w), row_h * 4, stroke=1, fill=0)
-    return y - 3 * mm
+    return y - 2 * mm
 
 
 def draw_signature_blocks(c, y):
     """2 blocs signature côte-à-côte"""
-    box_w = (PAGE_W - 2 * MARGIN - 8 * mm) / 2
-    box_h = 38 * mm
+    box_w = (PAGE_W - 2 * MARGIN - 6 * mm) / 2
+    box_h = 30 * mm
     # Métro-Taxi
     c.setStrokeColor(GRAY)
     c.setLineWidth(0.4)
     c.rect(MARGIN, y - box_h, box_w, box_h, stroke=1, fill=0)
     c.setFillColor(YELLOW)
-    c.rect(MARGIN, y - 7 * mm, box_w, 7 * mm, stroke=0, fill=1)
+    c.rect(MARGIN, y - 6 * mm, box_w, 6 * mm, stroke=0, fill=1)
     c.setFillColor(DARK)
-    c.setFont("Helvetica-Bold", 10)
-    c.drawString(MARGIN + 2.5 * mm, y - 5 * mm, "POUR MÉTRO-TAXI")
-    c.setFont("Helvetica", 8.5)
-    c.drawString(MARGIN + 2.5 * mm, y - 12 * mm, "Nom : Judée SOULEYMANE")
-    c.drawString(MARGIN + 2.5 * mm, y - 17 * mm, "Fonction : Fondateur")
-    c.drawString(MARGIN + 2.5 * mm, y - 22 * mm, "Date : ___ / ___ / 2026")
-    c.drawString(MARGIN + 2.5 * mm, y - 27 * mm, "Signature + cachet :")
+    c.setFont("Helvetica-Bold", 9)
+    c.drawString(MARGIN + 2 * mm, y - 4.2 * mm, "POUR MÉTRO-TAXI")
+    c.setFont("Helvetica", 8)
+    c.drawString(MARGIN + 2 * mm, y - 10 * mm, "Nom : Judée SOULEYMANE")
+    c.drawString(MARGIN + 2 * mm, y - 14 * mm, "Fonction : Fondateur")
+    c.drawString(MARGIN + 2 * mm, y - 18 * mm, "Date : ___ / ___ / 2026")
+    c.drawString(MARGIN + 2 * mm, y - 22 * mm, "Signature + cachet :")
 
     # Partenaire
-    c.rect(MARGIN + box_w + 8 * mm, y - box_h, box_w, box_h, stroke=1, fill=0)
+    c.rect(MARGIN + box_w + 6 * mm, y - box_h, box_w, box_h, stroke=1, fill=0)
     c.setFillColor(YELLOW)
-    c.rect(MARGIN + box_w + 8 * mm, y - 7 * mm, box_w, 7 * mm, stroke=0, fill=1)
+    c.rect(MARGIN + box_w + 6 * mm, y - 6 * mm, box_w, 6 * mm, stroke=0, fill=1)
     c.setFillColor(DARK)
-    c.setFont("Helvetica-Bold", 10)
-    c.drawString(MARGIN + box_w + 10.5 * mm, y - 5 * mm, "POUR LE PARTENAIRE")
-    c.setFont("Helvetica", 8.5)
-    c.drawString(MARGIN + box_w + 10.5 * mm, y - 12 * mm, "Nom commerce : ________________________")
-    c.drawString(MARGIN + box_w + 10.5 * mm, y - 17 * mm, "Nom / Prénom gérant : __________________")
-    c.drawString(MARGIN + box_w + 10.5 * mm, y - 22 * mm, "Date : ___ / ___ / 2026")
-    c.drawString(MARGIN + box_w + 10.5 * mm, y - 27 * mm, "Signature + cachet :")
+    c.setFont("Helvetica-Bold", 9)
+    c.drawString(MARGIN + box_w + 8 * mm, y - 4.2 * mm, "POUR LE PARTENAIRE")
+    c.setFont("Helvetica", 8)
+    c.drawString(MARGIN + box_w + 8 * mm, y - 10 * mm, "Nom commerce : ________________________")
+    c.drawString(MARGIN + box_w + 8 * mm, y - 14 * mm, "Nom / Prénom gérant : __________________")
+    c.drawString(MARGIN + box_w + 8 * mm, y - 18 * mm, "Date : ___ / ___ / 2026")
+    c.drawString(MARGIN + box_w + 8 * mm, y - 22 * mm, "Signature + cachet :")
 
     return y - box_h - 3 * mm
 
