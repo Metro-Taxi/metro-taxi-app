@@ -160,38 +160,62 @@ def draw_rem_table(c, y):
 
 
 def draw_signature_blocks(c, y):
-    """2 blocs signature côte-à-côte"""
-    box_w = (PAGE_W - 2 * MARGIN - 6 * mm) / 2
-    box_h = 30 * mm
-    # Métro-Taxi
+    """2 blocs signature côte-à-côte avec CACHET officiel pré-imprimé au milieu"""
+    # 2 colonnes + 1 colonne centrale pour le cachet (taille compacte pour tenir en 1 page)
+    cachet_w = 38 * mm
+    gap = 3 * mm
+    box_w = (PAGE_W - 2 * MARGIN - cachet_w - 2 * gap) / 2
+    box_h = 38 * mm
+    cachet_path = "/app/frontend/public/marketing/cachet_metrotaxi_LOGO_CENTRE.png"
+
+    # --- BLOC GAUCHE : Métro-Taxi ---
     c.setStrokeColor(GRAY)
     c.setLineWidth(0.4)
     c.rect(MARGIN, y - box_h, box_w, box_h, stroke=1, fill=0)
     c.setFillColor(YELLOW)
-    c.rect(MARGIN, y - 6 * mm, box_w, 6 * mm, stroke=0, fill=1)
+    c.rect(MARGIN, y - 5.5 * mm, box_w, 5.5 * mm, stroke=0, fill=1)
     c.setFillColor(DARK)
-    c.setFont("Helvetica-Bold", 9)
-    c.drawString(MARGIN + 2 * mm, y - 4.2 * mm, "POUR MÉTRO-TAXI")
-    c.setFont("Helvetica", 8)
-    c.drawString(MARGIN + 2 * mm, y - 10 * mm, "Nom : Judée SOULEYMANE")
-    c.drawString(MARGIN + 2 * mm, y - 14 * mm, "Fonction : Fondateur")
-    c.drawString(MARGIN + 2 * mm, y - 18 * mm, "Date : ___ / ___ / 2026")
-    c.drawString(MARGIN + 2 * mm, y - 22 * mm, "Signature + cachet :")
+    c.setFont("Helvetica-Bold", 8.5)
+    c.drawString(MARGIN + 2 * mm, y - 4 * mm, "POUR MÉTRO-TAXI")
+    c.setFont("Helvetica", 7.5)
+    c.drawString(MARGIN + 2 * mm, y - 9.5 * mm, "Nom : Judée SOULEYMANE")
+    c.drawString(MARGIN + 2 * mm, y - 13 * mm, "Fonction : Fondateur")
+    c.drawString(MARGIN + 2 * mm, y - 16.5 * mm, "Date : ___ / ___ / 2026")
+    c.drawString(MARGIN + 2 * mm, y - 20 * mm, "Signature :")
 
-    # Partenaire
-    c.rect(MARGIN + box_w + 6 * mm, y - box_h, box_w, box_h, stroke=1, fill=0)
+    # --- CACHET CENTRAL OFFICIEL ---
+    cachet_x = MARGIN + box_w + gap
+    cachet_y = y - box_h + (box_h - cachet_w) / 2
+    try:
+        c.drawImage(
+            cachet_path,
+            cachet_x, cachet_y,
+            width=cachet_w, height=cachet_w,
+            preserveAspectRatio=True, mask='auto'
+        )
+    except Exception:
+        pass
+    c.setFillColor(GRAY)
+    c.setFont("Helvetica-Oblique", 6)
+    c.drawCentredString(cachet_x + cachet_w / 2, y - box_h + 0.5 * mm, "CACHET OFFICIEL")
+
+    # --- BLOC DROITE : Partenaire ---
+    pright_x = cachet_x + cachet_w + gap
+    c.setStrokeColor(GRAY)
+    c.setLineWidth(0.4)
+    c.rect(pright_x, y - box_h, box_w, box_h, stroke=1, fill=0)
     c.setFillColor(YELLOW)
-    c.rect(MARGIN + box_w + 6 * mm, y - 6 * mm, box_w, 6 * mm, stroke=0, fill=1)
+    c.rect(pright_x, y - 5.5 * mm, box_w, 5.5 * mm, stroke=0, fill=1)
     c.setFillColor(DARK)
-    c.setFont("Helvetica-Bold", 9)
-    c.drawString(MARGIN + box_w + 8 * mm, y - 4.2 * mm, "POUR LE PARTENAIRE")
-    c.setFont("Helvetica", 8)
-    c.drawString(MARGIN + box_w + 8 * mm, y - 10 * mm, "Nom commerce : ________________________")
-    c.drawString(MARGIN + box_w + 8 * mm, y - 14 * mm, "Nom / Prénom gérant : __________________")
-    c.drawString(MARGIN + box_w + 8 * mm, y - 18 * mm, "Date : ___ / ___ / 2026")
-    c.drawString(MARGIN + box_w + 8 * mm, y - 22 * mm, "Signature + cachet :")
+    c.setFont("Helvetica-Bold", 8.5)
+    c.drawString(pright_x + 2 * mm, y - 4 * mm, "POUR LE PARTENAIRE")
+    c.setFont("Helvetica", 7.5)
+    c.drawString(pright_x + 2 * mm, y - 9.5 * mm, "Commerce : __________________________")
+    c.drawString(pright_x + 2 * mm, y - 13 * mm, "Gérant(e) : __________________________")
+    c.drawString(pright_x + 2 * mm, y - 16.5 * mm, "Date : ___ / ___ / 2026")
+    c.drawString(pright_x + 2 * mm, y - 20 * mm, "Signature + cachet :")
 
-    return y - box_h - 3 * mm
+    return y - box_h - 2 * mm
 
 
 def generate():
@@ -268,33 +292,31 @@ def generate():
     y -= 3 * mm
 
     # Article 3 — Contreparties
+    # Article 3 — Contreparties (compact bullets)
     y = draw_section_title(c, y, "ARTICLE 3 — CONTREPARTIES OFFERTES PAR MÉTRO-TAXI")
-    y = draw_body(c, y, "MÉTRO-TAXI s'engage à fournir au PARTENAIRE :")
-    y = draw_bullet(c, y, "Une affiche \"Point Inscription Officiel Métro-Taxi\" (format A3 — 25×50 cm) à apposer en vitrine.")
-    y = draw_bullet(c, y, "Des flyers Métro-Taxi (50 exemplaires par mois minimum).")
-    y = draw_bullet(c, y, "L'affichage du logo et du nom du PARTENAIRE sur les supports publicitaires de Métro-Taxi (flyers V3 imprimés, publications Facebook/Instagram, site web).")
-    y = draw_bullet(c, y, "Un code partenaire unique pour le suivi des inscriptions : PARTENAIRE-______ (4 lettres).")
-    y -= 2 * mm
+    y = draw_bullet(c, y, "Affiche \"Point Inscription Officiel\" (A3 — 25×50 cm) à apposer en vitrine.")
+    y = draw_bullet(c, y, "Flyers Métro-Taxi (50 exemplaires par mois minimum).")
+    y = draw_bullet(c, y, "Logo et nom du PARTENAIRE sur supports publicitaires Métro-Taxi.")
+    y = draw_bullet(c, y, "Code partenaire unique pour traçabilité : PARTENAIRE-______ (4 lettres).")
+    y -= 1 * mm
 
     # Article 4 — Suivi
     y = draw_section_title(c, y, "ARTICLE 4 — SUIVI ET TRAÇABILITÉ DES INSCRIPTIONS")
     y = draw_body(
         c, y,
-        "Chaque inscription assistée par le PARTENAIRE est tracée via le code unique attribué, saisi par l'utilisateur "
-        "lors de l'inscription en ligne. Un récapitulatif mensuel sera fourni au PARTENAIRE accompagné du virement de commissions.",
+        "Chaque inscription assistée par le PARTENAIRE est tracée via le code unique attribué, saisi lors de l'inscription en ligne. "
+        "Un récapitulatif est fourni au PARTENAIRE avec le virement hebdomadaire des commissions.",
     )
-    y -= 3 * mm
+    y -= 1 * mm
 
     # Article 5 — Durée
     y = draw_section_title(c, y, "ARTICLE 5 — DURÉE & RÉSILIATION")
     y = draw_body(
         c, y,
-        "Le présent contrat est conclu pour une durée initiale de 12 mois à compter de sa signature, "
-        "renouvelable par tacite reconduction. Chacune des parties peut y mettre fin moyennant un préavis "
-        "de 30 jours par lettre recommandée avec accusé de réception ou message électronique. "
-        "En cas de non-respect des obligations, la résiliation est immédiate.",
+        "Contrat conclu pour 12 mois renouvelable par tacite reconduction. Préavis de résiliation : 30 jours par lettre recommandée ou email. "
+        "Résiliation immédiate en cas de non-respect des obligations.",
     )
-    y -= 3 * mm
+    y -= 1 * mm
 
     # Article 6 — Confidentialité
     y = draw_section_title(c, y, "ARTICLE 6 — CONFIDENTIALITÉ & DONNÉES")
@@ -303,16 +325,21 @@ def generate():
         "Le PARTENAIRE s'engage à protéger les données personnelles des utilisateurs assistés (RGPD). "
         "Aucune donnée d'inscription ne peut être conservée, partagée ou utilisée à d'autres fins.",
     )
-    y -= 4 * mm
+    y -= 2 * mm
 
     # Lieu signature
     y = draw_body(
         c, y,
         "Fait à Saint-Denis, le ___ / ___ / 2026, en deux exemplaires originaux, dont un pour chaque partie.",
-        bold=True, font_size=10,
+        bold=True, font_size=9.5,
     )
-    y -= 4 * mm
+    y -= 2 * mm
 
+    # FORCE position des blocs signature au-dessus du footer
+    # Footer commence à 15mm. Avec box_h=38mm + caption 2mm, min y = 60mm depuis le bas
+    min_sig_y = 60 * mm
+    if y < min_sig_y:
+        y = min_sig_y
     # Signature blocks
     y = draw_signature_blocks(c, y)
 
