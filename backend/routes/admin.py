@@ -26,7 +26,8 @@ if STRIPE_API_KEY:
     stripe.api_key = STRIPE_API_KEY
 
 # Import config from server
-from server import SUBSCRIPTION_PLANS, REGIONAL_PRICING, DRIVER_RATE_PER_KM, PAYOUT_DAY
+from server import SUBSCRIPTION_PLANS, REGIONAL_PRICING, DRIVER_RATE_PER_KM, PAYOUT_DAY, RESEND_API_KEY, SENDER_EMAIL
+import resend
 from utils.helpers import DRIVER_RATE_PER_KM_BY_VEHICLE, get_driver_rate_per_km
 
 def _get_manager():
