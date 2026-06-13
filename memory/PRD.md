@@ -1,110 +1,94 @@
-# PRD — Métro-Taxi (Plateforme VTC Saint-Denis)
+# PRD — MÉTRO-TAXI
 
-## 🎯 Original Problem Statement
-Déploiement, marketing et stabilisation de la plateforme "Métro-Taxi" (React/FastAPI/MongoDB) pour la zone pilote de Saint-Denis. Modèle économique : **COVOITURAGE INTELLIGENT avec TRANSBORDEMENTS en MAILLAGE** (NON un VTC classique).
+## 🎯 PROBLÈME ORIGINAL
+Plateforme **Métro-Taxi** (React/FastAPI/MongoDB) — Covoiturage VTC avec transbordement intelligent.
+Zone pilote : Saint-Denis (93) — extension Île-de-France.
 
-- **Lancement** : SAMEDI 13 JUIN 2026
-- **Cible pilote** : Saint-Denis (93)
-- **Modèle financier** : Abonnement usager (6,99€/24h, 19,99€/sem, 53,99€/mois) — Chauffeur payé 1,50€/km, 0% commission JAMAIS.
-- **Innovation clé** : Maillage + Transbordement = 2-4 abonnés en simultané par véhicule → rentabilité maintenue même en zone congestionnée
+## ⚠️ STATUT CRITIQUE (13/06/2026)
+**LANCEMENT 13 JUIN REPORTÉ AU 26 JUILLET 2026** suite à bugs techniques le jour J :
+- GPS positionnement non opérationnel
+- Pas d'endpoint "passager monté" → statut courses bloqué à "accepted"
+- Plusieurs chauffeurs ont quitté le groupe WhatsApp
 
-## 👤 User Profile
-- **Judée Souleymane** (Capitaine), fondateur — agent IA est "Charly" en mode tutoiement français
-- VPS : Hostinger `/var/www/metro-taxi-app/` (process pm2 `metro-backend`)
-- DB MongoDB : `metro_taxi_prod`
-- Méthode déploiement : Scripts SSH (base64 ou mongosh direct) — Git désactivé
+## 🆕 NOUVEAU PLAN — LANCEMENT 26 JUILLET 2026
+- Demande autorisation Mairie 18e (Porte de Clignancourt)
+- Animation musicale + banderoles + démos live
+- 6 semaines pour : stabilisation tech, recrutement chauffeurs, campagne digitale
+- Compensation 50€ aux chauffeurs présents le 13/06
 
-## 📊 État au 09/06/2026 (J-4 du lancement)
-- **36 Chauffeurs Pionniers** inscrits
-- **18 chauffeurs CONFIRMÉS** disponibles le 13 juin (sondage 64,7% taux réponse)
-- **19 utilisateurs** pré-inscrits (sans abonnement, lancement le 13)
-- **0 abonnement actif** (normal — Sogecommerce attend lancement)
-- **Agnès Mayil** = Ambassadrice publique officielle (Facebook)
-- **1000 flyers V2** commandés VistaPrint (livraison 10-12 juin)
+## 💰 MODÈLE TARIFAIRE (ACTIF)
+### Abonnements usagers
+- 24h : 6,99€ • 7 jours : 19,99€ • 30 jours : 53,99€
 
-## 🔧 Architecture
-- **Backend** : FastAPI sur 0.0.0.0:8001 via pm2 (`metro-backend`)
-- **Frontend** : React (CRA), build dans `/frontend/build/`
-- **DB** : MongoDB `metro_taxi_prod`
-- **Paiement principal** : **Sogecommerce** (production active, IPN configurée)
-- **Stripe** : NEUTRALISÉ (kill-switch backend `/payments/checkout/region` + `/payments/checkout/sepa` → 410, alert frontend sur `handleSubscribe` + `openSepaDialog`)
+### Chauffeurs (déployé)
+- Berline / Sedan : 1,50€/km
+- Monospace / Minivan / SUV : 1,70€/km
+- Van / Minibus : 1,90€/km
 
-## ✅ What's Been Implemented (Session 05-09/06/2026)
-- **Sogecommerce** : intégré bout-en-bout, en production
-- **Paiement chauffeurs hebdomadaire** : config `PAYOUT_FREQUENCY=weekly` + `PAYOUT_DAY_OF_WEEK=0` (LUNDI), UI mise à jour
-- **Cycle 1 lancement** : 13 juin → 21 juin → virement LUNDI 22 JUIN (9 jours exceptionnel)
-- **Cycles suivants** : lundi→dimanche → virement lundi suivant
-- **Stripe NEUTRALISÉ** : `handleSubscribe` et `openSepaDialog` affichent alert "Utilisez bouton rouge Société Générale", backend renvoie HTTP 410
-- **Pionnier #25 Maaz** : IBAN/BIC enregistré manuellement (FR68 PSSTFRPPPAR) — workaround bug UI
-- **Survey 13 juin** : 18 OUI, 4 NON, 12 hésitants (taux 64,7%)
-- **Flyer A6 chauffeur V2** : JPEG 300dpi en `/app/frontend/public/flyer_recto.jpg` + `flyer_verso.jpg` → 1000 imprimés VistaPrint commande VP_Q1JXXQ5L
-- **Stats live MongoDB script** : `/tmp/stats.py` (remplace ancien `survey.py` avec données figées)
-- **Mails Resend** : 36 chauffeurs notifiés Cycle 1 calendrier paie + 33 relances sondage
-- **Agnès Mayil ambassadrice** : 5 courses bonus + badge "Ambassadrice" à vie
+### Partenaires taxiphones
+- Commission 15% du 1er abonnement + bonus volume 50€
 
-## 🚧 Pending / Known Issues
+## 🐛 BUGS CRITIQUES À FIXER (semaine du 14-20 juin)
+1. **P0** : Endpoint `/api/rides/{id}/start-trip` manquant → ajouter (passe accepted → in_progress)
+2. **P0** : GPS positionnement non fonctionnel → diagnostiquer côté frontend
+3. **P0** : Lifecycle complet de la course à revoir (accepted → pickup → in_progress → completed)
+4. **P1** : Bouton "Cadeau abonnement" → fonctionne (RESEND_API_KEY importé)
+5. **P1** : UX 1ère course offerte trop complexe → automatiser (auto-flag pending_promo dès souscription si <30)
+6. **P2** : 30 codes promo en base mais UX redeem trop manuelle pour usagers
 
-### 🔴 P0 — BLOQUANT pour 22 juin
-- **Bug UI Section IBAN/BIC manquante** dans `DriverEarnings.js` côté VPS (constaté par Maaz #25). Les 17 autres chauffeurs ne peuvent PAS saisir leur IBAN. → Solution actuelle : insertion manuelle MongoDB un par un (non scalable). **DOIT être corrigé avant le 22/06 pour les 17 autres chauffeurs présents.**
+## ✅ INFRASTRUCTURE EN PLACE
+- Site live : https://metro-taxi.com (Hostinger VPS, pm2)
+- Backend FastAPI + MongoDB (`metro_taxi_prod`)
+- Google Ads campagne (À METTRE EN PAUSE — économies crédits)
+- Balise Google `AW-18231977416` installée
+- 30 codes promo Saint-Denis en base
+- Sogecommerce paiements (Stripe désactivé via kill-switch 410)
 
-### 🟠 P1
-- **9 chauffeurs sans pioneer_number** (`#None` dans driver_presence_surveys) — à attribuer #37→#45
-- **3 boutons Stripe restent VISIBLES** sur la page abonnement (S'ABONNER doré + SEPA + Société Générale) — désactivés mais cosmétiquement présents. Patch frontend partiel.
-- **VPS désynchronisé** du workspace Emergent — déploiement manuel SSH requis pour chaque change (rapport support Emergent 08/06)
+## 📦 ACTIFS MARKETING (livrés, prêts pour réemploi)
+- Flyer V3.2 A6 Saint-Denis (avec prix + QR)
+- Banderole 25×50cm A3 (Point Inscription)
+- Contrat partenariat PDF avec cachet préimprimé
+- 3 maquettes cachet officiel (logo + tél + URL)
+- Logo Métro-Taxi
+- Page Facebook Pro Métro-Taxi (publications épinglées)
+- Gmail "Métro-Taxi Saint-Denis" actif
 
-### 🟡 P2
-- Régénérer Vidéo 1 "Bus bondé" via Nano Banana (continuité visage)
-- sitemap.xml + robots.txt (effacer SEO ancien proprio canadien)
-- Nginx Rate-Limit
-- Anti-fraude "Réservation Groupée Multi-Abonnés" (OTP transbordement)
+## 👥 ÉTAT DES UTILISATEURS (13/06)
+- **Chauffeurs** : 39 inscrits (départs partiels après 13/06)
+- **Abonnés actifs** : 4 (Boniface, Djamilatou, Jacinta, Judée)
+- **Inscrits non abonnés** : 16
+- **Partenaires signés** : 1 (Kelly's Paris — code KLYS, gérant Pierre Jacques Abega)
+- **Prospects partenaires** : PHONEEXPERT (banderole posée), SMART TECH (signature 14/06)
 
-## 📋 Backlog / Next Tasks
+## 🛠️ ENDPOINTS TRACKING PARTENAIRES (CODÉS, À DÉPLOYER)
+Patch prêt : `https://metro-taxi-demo.preview.emergentagent.com/patches/partner_tracking_20260612.tar.gz`
+- `GET /api/admin/partner-stats` — Vue d'ensemble par code
+- `GET /api/admin/partner-stats/{code}` — Détail 1 partenaire
+- `GET /api/admin/partner-payouts/csv?week=YYYY-WW` — Export CSV paiements
 
-### Demain (10/06/2026 - Mercredi)
-- ✈️ **Tournée Roissy** — flyers V2 livrés, objectif 5 nouveaux Pionniers
-- ☎️ **5 appels hésitants** restants du sondage
-- 📢 **Post Facebook J-3** : "18 chauffeurs confirmés"
+## 🎯 PRIORITÉS S1 (14-20 JUIN) — APRÈS REPOS WEEK-END
+1. **P0 fix bugs critiques** (P0 list ci-dessus)
+2. **P0 verser compensation 50€** aux chauffeurs présents le 13/06
+3. **P1 deploy partner tracking** sur prod
+4. **P1 dossier mairie 18e** pour autorisation Porte Clignancourt
+5. **P2 page publique "Points d'inscription"** (Kelly's Paris, PHONEEXPERT, SMART TECH)
 
-### Jeudi-Vendredi (11-12/06/2026)
-- 🛠️ **Patch UI Section IBAN** (1h dev) — déploiement SSH VPS — CRITIQUE pour 22 juin
-- 📧 **Mail J-1 vendredi 12/06** : "Demain lancement, rendez-vous samedi !"
-- 🎯 **Boost pub Facebook** avec angle "Ambassadrice Agnès + 18 chauffeurs"
+## 📞 CONTACTS
+- Capitaine : Judée SOULEYMANE (Fondateur) — Tél : 06 05 78 64 25
+- Email : contact@metro-taxi.com
+- Gmail : metrotaxi.saintdenis@gmail.com (Google Ads)
 
-### Samedi 13/06/2026 — JOUR DU LANCEMENT
-- Monitoring temps réel dashboards
-- Support 7j/7 actif (Judée + Charly)
-- Réponse aux premiers paiements Sogecommerce
+## 🔑 FICHIERS CLÉS
+- `/app/backend/utils/helpers.py` — DRIVER_RATE_PER_KM_BY_VEHICLE
+- `/app/backend/routes/admin.py` — gift_subscription, partner_stats (déployés)
+- `/app/backend/routes/promo_codes.py` — Génération codes promo
+- `/app/frontend/src/pages/DriverEarnings.js` — UI revenus + IBAN
+- `/app/frontend/public/marketing/` — Tous les assets marketing
+- `/app/frontend/public/patches/` — Archives tar.gz déploiement VPS
 
-### Lundi 22/06/2026 — 1er VIREMENT CYCLE 1
-- Calcul earnings drivers (km_with_user × 1,50€)
-- Validation IBAN/BIC de tous les chauffeurs présents
-- Lancement batch virement SEPA
-
-## 🔑 Key Technical Concepts
-- **Compteur km** : Démarre à `in_progress` (embarquement abonné), s'arrête à `completed` (descente). Km pickup et à vide NON comptés. Si plusieurs abonnés simultanés → km comptés UNE FOIS pour chauffeur (économie maillage).
-- **Sogecommerce** : Encaissement abonnements en J+1 à J+2 ouvré sur compte pro
-- **MongoDB** : Base = `metro_taxi_prod` — Collection sondage = `driver_presence_surveys` — Champ réponse = `answer` (pas `response`)
-
-## 📂 Key Files
-- `/app/backend/routes/payments.py` — Endpoints Stripe NEUTRALISÉS (410)
-- `/app/backend/routes/sogecommerce.py` — Sogecommerce IPN
-- `/app/backend/routes/admin.py` (lignes 850-895) — Logique km counter
-- `/app/backend/utils/helpers.py` — `PAYOUT_FREQUENCY=weekly`
-- `/app/frontend/src/pages/Subscription.js` — Page abonnement (boutons Stripe désactivés via alert + return)
-- `/app/frontend/src/pages/DriverEarnings.js` — Tableau de bord chauffeur (bug : section IBAN/BIC manquante)
-- `/app/frontend/public/flyer_recto.jpg` + `flyer_verso.jpg` — Flyers V2 chauffeur
-- `/tmp/stats.py` (sur VPS) — Stats sondage live MongoDB
-
-## 🔐 Credentials & Integration
-- `RESEND_API_KEY` actif (mails)
-- `SOGECOMMERCE_*` clés PROD actives, IPN paramétrée
-- Stripe **désactivé** (kill-switch backend)
-- Emergent LLM key utilisée pour Nano Banana (génération flyers)
-
-## 💛 Branding Tone
-- Persona "Charly" — bras droit technique + stratège marketing
-- Tutoiement obligatoire, "Capitaine"/"Champion"
-- Lancement = SAMEDI 13 JUIN 2026 (ne plus dire vendredi)
-- Ne JAMAIS mentionner concurrents (Uber/Bolt/RATP) dans la com
-- Transbordement = FORCE, pas défaut
-- Modèle = COVOITURAGE MAILLÉ (pas VTC classique 1-pour-1)
+## 💡 LEÇONS DU 13/06 (capitales)
+1. **TESTER en conditions réelles AVANT communication publique**
+2. **Endpoint /start-trip est NÉCESSAIRE** pour cycle vie course
+3. **UX simple > système élégant** (codes promo manuels = mauvaise UX)
+4. **Compensation immédiate quand on commet une erreur** = respect chauffeurs
+5. **Lancement local = autorisation mairie OBLIGATOIRE** (Porte Clignancourt 18e)
