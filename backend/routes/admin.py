@@ -822,8 +822,11 @@ async def accept_ride(ride_id: str, current_user: dict = Depends(get_current_use
         {"$set": {"status": "accepted", "accepted_at": datetime.now(timezone.utc).isoformat()}}
     )
     
-    # Reduce available seats
-    await db.drivers.update_one({"id": driver_id}, {"$inc": {"available_seats": -1}})
+    # Reduce available seats (clamped to ≥ 0 via aggregation pipeline update)
+    await db.drivers.update_one(
+        {"id": driver_id},
+        [{"$set": {"available_seats": {"$max": [{"$subtract": ["$available_seats", 1]}, 0]}}}]
+    )
     
     # Notify user
     await _get_manager().send_personal_message({
@@ -950,8 +953,11 @@ async def complete_ride(ride_id: str, current_user: dict = Depends(get_current_u
             {"$set": {"platform_cost_eur": revenue, "completed_at": now.isoformat()}},
         )
     
-    # Restore available seats
-    await db.drivers.update_one({"id": driver_id}, {"$inc": {"available_seats": 1}})
+    # Restore available seats (clamped to ≤ vehicle's total capacity)
+    await db.drivers.update_one(
+        {"id": driver_id},
+        [{"$set": {"available_seats": {"$min": [{"$add": ["$available_seats", 1]}, "$seats"]}}}]
+    )
     
     # Notify user
     await _get_manager().send_personal_message({
@@ -1101,8 +1107,11 @@ async def update_ride_progress(ride_id: str, data: RideProgressUpdate, current_u
         
         logging.info(f"Ride {ride_id}: KM counter stopped - {km_with_user:.2f} km with user on board")
         
-        # Restore seat
-        await db.drivers.update_one({"id": driver_id}, {"$inc": {"available_seats": 1}})
+        # Restore seat (clamped to ≤ vehicle's total capacity)
+        await db.drivers.update_one(
+            {"id": driver_id},
+            [{"$set": {"available_seats": {"$min": [{"$add": ["$available_seats", 1]}, "$seats"]}}}]
+        )
     
     await db.ride_requests.update_one({"id": ride_id}, {"$set": update_data})
     
