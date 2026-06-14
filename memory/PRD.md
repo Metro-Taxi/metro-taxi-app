@@ -73,10 +73,18 @@ Patch prêt : `https://metro-taxi-demo.preview.emergentagent.com/patches/partner
 
 ## 🎯 PRIORITÉS S1 (14-20 JUIN) — APRÈS REPOS WEEK-END
 1. **P0 fix bugs critiques** (P0 list ci-dessus)
-2. **P0 verser compensation 50€** aux chauffeurs présents le 13/06
+2. **P0 verser compensation 50€** aux chauffeurs présents le 13/06 — REPORTÉ (trésorerie, attendre retour Sarah)
 3. **P1 deploy partner tracking** sur prod
 4. **P1 dossier mairie 18e** pour autorisation Porte Clignancourt
 5. **P2 page publique "Points d'inscription"** (Kelly's Paris, PHONEEXPERT, SMART TECH)
+
+## 🔍 AUDIT À FAIRE APRÈS 26/07 (incohérences DB chauffeurs)
+- Plusieurs chauffeurs ont déclaré `vehicle_type=van/monospace` mais `seats=4` à l'inscription :
+  - Ali (van/4), Nizar (van/4), Mayoux (van/6), Houssem (monospace/4), JEAN CLAUDE MARCEL (suv/4)
+- Le formulaire d'inscription doit contraindre min/max selon le type :
+  - berline: 3-4 • suv: 4-6 • monospace: 5-7 • van: 7-9
+- Action : recontacter les chauffeurs concernés + ajouter validation côté formulaire
+- Impact actuel : tarif (€/km par vehicle_type) OK • capacité matching SOUS-ÉVALUÉE
 
 ## 📞 CONTACTS
 - Capitaine : Judée SOULEYMANE (Fondateur) — Tél : 06 05 78 64 25
