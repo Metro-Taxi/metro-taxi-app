@@ -25,6 +25,12 @@ Zone pilote : Saint-Denis (93) — extension Île-de-France.
 - Monospace / Minivan / SUV : 1,70€/km
 - Van / Minibus : 1,90€/km
 
+### Paiement des chauffeurs — RÈGLE NON NÉGOCIABLE
+- **JAMAIS en cash** — uniquement par virement SEPA sur IBAN renseigné dans l'app
+- **Cadence : TOUS LES LUNDIS** (paye automatique de la semaine ISO précédente)
+- Codé dans `server.py` : `PAYOUT_WEEKDAY = 0`, déduplication par `YYYY-Www`
+- Email automatique au chauffeur après chaque virement (Resend `send_payout_notification_email`)
+
 ### Partenaires taxiphones
 - Commission 15% du 1er abonnement + bonus volume 50€
 

@@ -168,8 +168,11 @@ def get_regional_pricing(region_id: str) -> dict:
     return REGIONAL_PRICING.get(region_id, REGIONAL_PRICING.get("paris"))
 
 # Driver Revenue Configuration
-DRIVER_RATE_PER_KM = 1.50  # €1.50 per kilometer
-PAYOUT_DAY = 10  # Day of month for automatic payouts (Sogecommerce direct, faster than Stripe)
+DRIVER_RATE_PER_KM = 1.50  # €1.50 per kilometer (legacy fallback, vehicle-type rates in utils/helpers.py)
+# Automatic payout runs every Monday (weekday=0) via Sogecommerce SEPA transfer.
+# Drivers are NEVER paid in cash - all revenue is bank-transferred weekly on Mondays.
+PAYOUT_WEEKDAY = 0  # 0=Monday, 1=Tuesday, ... 6=Sunday (Python datetime.weekday())
+PAYOUT_DAY = "monday"  # Human label kept for legacy admin responses
 
 # Create the main app
 app = FastAPI(
@@ -2470,22 +2473,29 @@ async def start_subscription_notification_checker():
 # AUTOMATIC DRIVER PAYOUT PROCESSING
 # ============================================
 async def process_automatic_payouts():
-    """Background task to automatically process driver payouts on the 10th of each month using Stripe Connect"""
+    """Background task to automatically process driver payouts EVERY MONDAY via SEPA/Stripe.
+    
+    Métro-Taxi rule: drivers are NEVER paid in cash. All earnings are bank-transferred
+    weekly on Mondays for the previous week. The deduplication key is the ISO week
+    (YYYY-Www) so that a Monday run only triggers once per week.
+    """
     while True:
         try:
             now = datetime.now(timezone.utc)
             
-            # Check if today is payout day (10th of month)
-            if now.day == PAYOUT_DAY:
-                # Check if we already processed payouts today
+            # Trigger only on Mondays (Python: Monday=0)
+            if now.weekday() == PAYOUT_WEEKDAY:
+                # Deduplication by ISO week (e.g. "2026-W24"). Guarantees one run per week.
+                iso_year, iso_week, _ = now.isocalendar()
+                week_key = f"{iso_year}-W{iso_week:02d}"
                 today_str = now.strftime("%Y-%m-%d")
                 last_auto_payout = await db.system_logs.find_one(
-                    {"type": "auto_payout", "date": today_str},
+                    {"type": "auto_payout", "week": week_key},
                     {"_id": 0}
                 )
                 
                 if not last_auto_payout:
-                    logging.info(f"Starting automatic Stripe Connect payout processing for {today_str}")
+                    logging.info(f"Starting automatic weekly payout processing for {week_key} ({today_str})")
                     
                     # Get all pending earnings
                     pending_cursor = db.driver_earnings.find({"payout_status": "pending"}, {"_id": 0})
@@ -2608,10 +2618,11 @@ async def process_automatic_payouts():
                         processed_count += 1
                         total_amount += amount
                     
-                    # Log the auto payout run
+                    # Log the auto payout run (keyed by ISO week)
                     await db.system_logs.insert_one({
                         "type": "auto_payout",
                         "date": today_str,
+                        "week": week_key,
                         "processed_count": processed_count,
                         "total_amount": round(total_amount, 2),
                         "errors_count": len(errors),
@@ -2619,7 +2630,7 @@ async def process_automatic_payouts():
                         "created_at": now.isoformat()
                     })
                     
-                    logging.info(f"Automatic Stripe payout completed: {processed_count} drivers, €{total_amount:.2f} total, {len(stripe_transfers)} transfers")
+                    logging.info(f"Automatic weekly payout completed for {week_key}: {processed_count} drivers, €{total_amount:.2f} total, {len(stripe_transfers)} transfers")
                     if errors:
                         logging.warning(f"Payout errors: {len(errors)} drivers skipped")
             
@@ -2633,7 +2644,7 @@ async def process_automatic_payouts():
 async def start_payout_processor():
     """Start the background automatic payout processor"""
     asyncio.create_task(process_automatic_payouts())
-    logging.info(f"Automatic payout processor started (processes on the {PAYOUT_DAY}th of each month)")
+    logging.info("Automatic payout processor started (runs every Monday — weekly SEPA transfers)")
 
 @app.on_event("startup")
 async def verify_database_connection():
