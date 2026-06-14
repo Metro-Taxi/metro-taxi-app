@@ -861,6 +861,20 @@ const UserDashboard = () => {
                    activeRide.status === 'accepted' ? t('common.confirm') : t('common.loading')}
                 </span>
               </div>
+
+              {/* 🔐 OTP Code — affiché tant que la course n'est pas démarrée */}
+              {activeRide.pickup_otp && ['accepted', 'pickup'].includes(activeRide.status) && (
+                <div className="mb-4 p-4 bg-gradient-to-br from-[#FFD60A]/10 to-purple-500/10 border-2 border-[#FFD60A]/40 rounded-lg">
+                  <p className="text-xs text-zinc-400 uppercase tracking-wider mb-1">🔐 Code embarquement</p>
+                  <p className="text-4xl font-mono font-bold text-[#FFD60A] tracking-[0.5rem] text-center my-2" data-testid="pickup-otp-display">
+                    {activeRide.pickup_otp}
+                  </p>
+                  <p className="text-xs text-zinc-400 text-center">
+                    Donne ce code au chauffeur en montant dans le véhicule.<br/>
+                    Sans ce code, la course ne pourra pas démarrer.
+                  </p>
+                </div>
+              )}
               
               {/* Progress Bar */}
               <div className="mb-4">

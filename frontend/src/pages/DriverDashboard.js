@@ -71,6 +71,7 @@ const DriverDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [availableSeats, setAvailableSeats] = useState(driver?.seats || 4);
   const [locatingDriver, setLocatingDriver] = useState(true);
+  const [otpInput, setOtpInput] = useState('');
 
   // Paris center as default (fallback only)
   const defaultCenter = [48.8566, 2.3522];
@@ -199,6 +200,53 @@ const DriverDashboard = () => {
       fetchPendingRides();
     } catch (error) {
       toast.error(t('common.declineError'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const arriveAtPickup = async (rideId) => {
+    setLoading(true);
+    try {
+      await axios.post(`${API}/rides/${rideId}/progress`, {
+        ride_id: rideId,
+        status: 'pickup',
+        current_lat: driverLocation?.[0],
+        current_lng: driverLocation?.[1],
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Le passager a été notifié de ton arrivée");
+      fetchActiveRide();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Erreur signalement arrivée");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startTrip = async (rideId, otp) => {
+    if (!otp || otp.length !== 4) {
+      toast.error("Demande au passager son code à 4 chiffres affiché dans son app");
+      return false;
+    }
+    setLoading(true);
+    try {
+      await axios.post(`${API}/rides/${rideId}/progress`, {
+        ride_id: rideId,
+        status: 'in_progress',
+        pickup_otp: otp,
+        current_lat: driverLocation?.[0],
+        current_lng: driverLocation?.[1],
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Trajet démarré — bonne route !");
+      fetchActiveRide();
+      return true;
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Code incorrect");
+      return false;
     } finally {
       setLoading(false);
     }
@@ -482,8 +530,14 @@ const DriverDashboard = () => {
             <div className="max-w-lg mx-auto">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-white text-lg">{t('dashboard.driver.currentRide')}</h3>
-                <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded border border-green-500/50">
-                  {t('dashboard.user.inProgress')}
+                <span className={`text-xs px-2 py-1 rounded border ${
+                  activeRide.status === 'in_progress' ? 'bg-blue-500/20 text-blue-400 border-blue-500/50' :
+                  activeRide.status === 'pickup' ? 'bg-purple-500/20 text-purple-400 border-purple-500/50' :
+                  'bg-yellow-500/20 text-yellow-400 border-yellow-500/50'
+                }`}>
+                  {activeRide.status === 'in_progress' ? 'EN COURSE' :
+                   activeRide.status === 'pickup' ? 'SUR PLACE' :
+                   'EN ROUTE VERS PASSAGER'}
                 </span>
               </div>
               
@@ -496,16 +550,65 @@ const DriverDashboard = () => {
                   <p className="text-zinc-400 text-sm font-mono">ID: {activeRide.id.slice(0, 8)}</p>
                 </div>
               </div>
-              
-              <Button
-                onClick={() => completeRide(activeRide.id)}
-                disabled={loading}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold h-12"
-                data-testid="complete-ride-btn"
-              >
-                <Check className="w-5 h-5 mr-2" />
-                {t('dashboard.driver.completeRide').toUpperCase()}
-              </Button>
+
+              {/* Step 1: Driver en route → bouton "J'arrive" */}
+              {activeRide.status === 'accepted' && (
+                <Button
+                  onClick={() => arriveAtPickup(activeRide.id)}
+                  disabled={loading}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold h-12"
+                  data-testid="arrive-pickup-btn"
+                >
+                  <MapPin className="w-5 h-5 mr-2" />
+                  JE SUIS ARRIVÉ AU POINT DE PRISE EN CHARGE
+                </Button>
+              )}
+
+              {/* Step 2: Sur place → demande OTP au passager */}
+              {activeRide.status === 'pickup' && (
+                <div className="space-y-3">
+                  <div className="bg-purple-500/10 border border-purple-500/30 rounded p-3">
+                    <p className="text-purple-300 text-sm font-medium mb-1">🔐 Code embarquement</p>
+                    <p className="text-zinc-300 text-xs">Demande au passager les 4 chiffres affichés dans son app. Ne démarre PAS la course sans ce code.</p>
+                  </div>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    maxLength={4}
+                    pattern="[0-9]{4}"
+                    value={otpInput}
+                    onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                    placeholder="• • • •"
+                    className="w-full text-center text-3xl font-mono tracking-[1rem] bg-zinc-900 border-2 border-zinc-700 rounded h-16 text-white focus:border-[#FFD60A] focus:outline-none"
+                    data-testid="otp-input"
+                  />
+                  <Button
+                    onClick={async () => {
+                      const ok = await startTrip(activeRide.id, otpInput);
+                      if (ok) setOtpInput('');
+                    }}
+                    disabled={loading || otpInput.length !== 4}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white font-bold h-12 disabled:opacity-50"
+                    data-testid="start-trip-btn"
+                  >
+                    <Check className="w-5 h-5 mr-2" />
+                    VALIDER LE CODE & DÉMARRER LA COURSE
+                  </Button>
+                </div>
+              )}
+
+              {/* Step 3: In progress → bouton "Trajet terminé" */}
+              {activeRide.status === 'in_progress' && (
+                <Button
+                  onClick={() => completeRide(activeRide.id)}
+                  disabled={loading}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-bold h-12"
+                  data-testid="complete-ride-btn"
+                >
+                  <Check className="w-5 h-5 mr-2" />
+                  TRAJET TERMINÉ — DÉPOSER LE PASSAGER
+                </Button>
+              )}
             </div>
           </motion.div>
         )}

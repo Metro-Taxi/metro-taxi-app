@@ -9,6 +9,7 @@ import os
 import logging
 import uuid
 import math
+import random
 import asyncio
 import stripe
 
@@ -28,7 +29,7 @@ if STRIPE_API_KEY:
 # Import config from server
 from server import SUBSCRIPTION_PLANS, REGIONAL_PRICING, DRIVER_RATE_PER_KM, PAYOUT_DAY, RESEND_API_KEY, SENDER_EMAIL
 import resend
-from utils.helpers import DRIVER_RATE_PER_KM_BY_VEHICLE, get_driver_rate_per_km
+from utils.helpers import DRIVER_RATE_PER_KM_BY_VEHICLE, get_driver_rate_per_km, calculate_distance
 
 def _get_manager():
     from server import manager
@@ -749,6 +750,9 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
             )
     
     ride_id = str(uuid.uuid4())
+    # 4-digit OTP that the passenger gives to the driver upon boarding.
+    # This unlocks status transition to "in_progress" and starts km counter.
+    pickup_otp = f"{random.randint(0, 9999):04d}"
     ride_doc = {
         "id": ride_id,
         "user_id": user_id,
@@ -759,6 +763,7 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
         "destination_lat": data.destination_lat,
         "destination_lng": data.destination_lng,
         "status": "pending",
+        "pickup_otp": pickup_otp,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     # Mark ride as promo-sponsored when applicable
@@ -796,7 +801,7 @@ async def get_pending_rides(current_user: dict = Depends(get_current_user)):
     driver_id = current_user["user_id"]
     rides = await db.ride_requests.find(
         {"driver_id": driver_id, "status": "pending"},
-        {"_id": 0}
+        {"_id": 0, "pickup_otp": 0}  # Driver must NEVER see the OTP
     ).to_list(100)
     
     return {"rides": rides}
@@ -974,9 +979,10 @@ async def get_active_ride(current_user: dict = Depends(get_current_user)):
             {"_id": 0}
         )
     else:
+        # Driver must NEVER see the OTP — only the passenger gives it verbally upon boarding
         ride = await db.ride_requests.find_one(
             {"driver_id": user_id, "status": {"$in": ["accepted", "pickup", "in_progress"]}},
-            {"_id": 0}
+            {"_id": 0, "pickup_otp": 0}
         )
     
     return {"ride": ride}
@@ -1007,6 +1013,31 @@ async def update_ride_progress(ride_id: str, data: RideProgressUpdate, current_u
     valid_statuses = ["pickup", "in_progress", "near_destination", "completed"]
     if data.status not in valid_statuses:
         raise HTTPException(status_code=400, detail="Statut invalide")
+    
+    # Workflow guard: enforce linear status progression
+    current_status = ride.get("status")
+    allowed_transitions = {
+        "accepted": ["pickup", "in_progress"],  # allow direct to in_progress if driver skipped "pickup"
+        "pickup": ["in_progress"],
+        "in_progress": ["near_destination", "completed"],
+        "near_destination": ["completed"],
+    }
+    if current_status in allowed_transitions and data.status not in allowed_transitions[current_status]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Transition impossible : {current_status} → {data.status}. Attendu : {allowed_transitions[current_status]}"
+        )
+    
+    # OTP guard: starting the trip requires the passenger's 4-digit pickup OTP
+    if data.status == "in_progress":
+        expected_otp = ride.get("pickup_otp")
+        if expected_otp:
+            provided_otp = (data.pickup_otp or "").strip()
+            if provided_otp != expected_otp:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Code embarquement incorrect. Demandez au passager son code à 4 chiffres affiché dans son app."
+                )
     
     now = datetime.now(timezone.utc)
     update_data = {
@@ -1108,7 +1139,8 @@ async def get_ride_tracking(ride_id: str, current_user: dict = Depends(get_curre
     if role == "user":
         ride = await db.ride_requests.find_one({"id": ride_id, "user_id": user_id}, {"_id": 0})
     else:
-        ride = await db.ride_requests.find_one({"id": ride_id, "driver_id": user_id}, {"_id": 0})
+        # Driver must NEVER see the OTP
+        ride = await db.ride_requests.find_one({"id": ride_id, "driver_id": user_id}, {"_id": 0, "pickup_otp": 0})
     
     if not ride:
         raise HTTPException(status_code=404, detail="Trajet non trouvé")

@@ -29,12 +29,17 @@ Zone pilote : Saint-Denis (93) — extension Île-de-France.
 - Commission 15% du 1er abonnement + bonus volume 50€
 
 ## 🐛 BUGS CRITIQUES À FIXER (semaine du 14-20 juin)
-1. **P0** : Endpoint `/api/rides/{id}/start-trip` manquant → ajouter (passe accepted → in_progress)
+1. **P0** ✅ **FIXÉ 14/06** : Cycle de vie de course complet + OTP embarquement à 4 chiffres
+   - Backend : `RideProgressUpdate` étend `pickup_otp`, transitions linéaires accepted→pickup→in_progress→completed
+   - Backend : `calculate_distance` était MANQUANT à l'import dans `admin.py` (cause majeure crash complete_ride)
+   - Backend : OTP généré automatiquement à `/rides/request`, masqué pour le chauffeur
+   - Frontend Driver : 3 boutons (J'arrive / Saisie OTP+Démarrer / Terminer)
+   - Frontend User : code OTP affiché en grand tant que statut ∈ {accepted, pickup}
+   - Patch déployable : `/patches/ride_lifecycle_otp_20260614.tar.gz`
 2. **P0** : GPS positionnement non fonctionnel → diagnostiquer côté frontend
-3. **P0** : Lifecycle complet de la course à revoir (accepted → pickup → in_progress → completed)
-4. **P1** : Bouton "Cadeau abonnement" → fonctionne (RESEND_API_KEY importé)
-5. **P1** : UX 1ère course offerte trop complexe → automatiser (auto-flag pending_promo dès souscription si <30)
-6. **P2** : 30 codes promo en base mais UX redeem trop manuelle pour usagers
+3. **P1** : Bouton "Cadeau abonnement" → fonctionne (RESEND_API_KEY importé)
+4. **P1** : UX 1ère course offerte trop complexe → automatiser (auto-flag pending_promo dès souscription si <30)
+5. **P2** : 30 codes promo en base mais UX redeem trop manuelle pour usagers
 
 ## ✅ INFRASTRUCTURE EN PLACE
 - Site live : https://metro-taxi.com (Hostinger VPS, pm2)

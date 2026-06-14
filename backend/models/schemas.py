@@ -109,6 +109,7 @@ class RideProgressUpdate(BaseModel):
     status: str  # "pickup", "in_progress", "near_destination", "completed"
     current_lat: Optional[float] = None
     current_lng: Optional[float] = None
+    pickup_otp: Optional[str] = None  # 4-digit code required to start trip (status="in_progress")
 
 
 class RideHistoryFilter(BaseModel):
