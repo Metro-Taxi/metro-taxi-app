@@ -72,6 +72,8 @@ const DriverDashboard = () => {
   const [availableSeats, setAvailableSeats] = useState(driver?.seats || 4);
   const [locatingDriver, setLocatingDriver] = useState(true);
   const [otpInput, setOtpInput] = useState('');
+  // 🔊 Persistent AudioContext — created on user gesture (toggleActive click) to bypass iOS Safari autoplay policy
+  const audioCtxRef = useRef(null);
 
   // Paris center as default (fallback only)
   const defaultCenter = [48.8566, 2.3522];
@@ -137,17 +139,27 @@ const DriverDashboard = () => {
     }
   }, [token]);
 
-  // 🔔 Play a "new ride" notification beep using Web Audio API (no external file needed)
-  const playNewRideBeep = () => {
+  // 🔔 Play a "new ride" notification beep using Web Audio API
+  // Uses a persistent AudioContext created on first user gesture (toggleActive)
+  const playNewRideBeep = async () => {
     try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      // Two-tone "bip-bip" pattern (660Hz then 880Hz)
+      // Create context if not yet (and on iOS this MUST happen during a user gesture)
+      if (!audioCtxRef.current) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        audioCtxRef.current = new AC();
+      }
+      const ctx = audioCtxRef.current;
+      // iOS suspends the context after page load — resume it explicitly
+      if (ctx.state === 'suspended') {
+        try { await ctx.resume(); } catch (_) { /* iOS may reject if not in gesture */ }
+      }
       const playTone = (freq, startTime, duration) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
         osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.4, startTime);
+        gain.gain.setValueAtTime(0.5, startTime);
         gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
         osc.connect(gain);
         gain.connect(ctx.destination);
@@ -155,10 +167,12 @@ const DriverDashboard = () => {
         osc.stop(startTime + duration);
       };
       const t0 = ctx.currentTime;
-      playTone(660, t0, 0.18);
-      playTone(880, t0 + 0.22, 0.18);
-      // Vibrate the phone too (Android/iOS PWA)
-      if (navigator.vibrate) navigator.vibrate([180, 80, 180]);
+      // Three-tone urgent pattern (more attention-grabbing)
+      playTone(880, t0, 0.18);
+      playTone(660, t0 + 0.22, 0.18);
+      playTone(990, t0 + 0.44, 0.30);
+      // Vibrate the phone too (Android only — iOS ignores it)
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 400]);
     } catch (e) {
       console.warn('Audio beep failed:', e);
     }
@@ -209,6 +223,25 @@ const DriverDashboard = () => {
   }, [isActive, driverLocation]);
 
   const toggleActive = async () => {
+    // 🔊 Initialize AudioContext on this user-gesture (iOS Safari requirement for autoplay)
+    if (!audioCtxRef.current) {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) {
+          audioCtxRef.current = new AC();
+          // Play an inaudible blip to "unlock" the audio output on iOS
+          const ctx = audioCtxRef.current;
+          if (ctx.state === 'suspended') await ctx.resume();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          gain.gain.value = 0.001;
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.01);
+        }
+      } catch (_) { /* AudioContext may fail to init on very old browsers */ }
+    }
     setLoading(true);
     try {
       const response = await axios.post(`${API}/drivers/toggle-active`, {}, {
@@ -489,6 +522,25 @@ const DriverDashboard = () => {
             </Popup>
           </Marker>
         ))}
+
+        {/* Active ride pickup marker — keeps passenger visible until boarding */}
+        {activeRide && activeRide.pickup_lat && activeRide.pickup_lng && ['accepted', 'pickup', 'in_progress'].includes(activeRide.status) && (
+          <Marker
+            position={[activeRide.pickup_lat, activeRide.pickup_lng]}
+            icon={userRequestIcon}
+          >
+            <Popup>
+              <div className="p-2 min-w-[200px]">
+                <p className="font-bold text-zinc-900">{activeRide.user_name}</p>
+                <p className="text-xs text-zinc-500 mb-1">
+                  {activeRide.status === 'accepted' ? '🚗 Va le chercher ici' :
+                   activeRide.status === 'pickup' ? '⏳ Sur place — attends le code OTP' :
+                   '✅ Passager à bord'}
+                </p>
+              </div>
+            </Popup>
+          </Marker>
+        )}
       </MapContainer>
       )}
 
