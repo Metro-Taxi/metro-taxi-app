@@ -42,10 +42,17 @@ Zone pilote : Saint-Denis (93) — extension Île-de-France.
    - Frontend Driver : 3 boutons (J'arrive / Saisie OTP+Démarrer / Terminer)
    - Frontend User : code OTP affiché en grand tant que statut ∈ {accepted, pickup}
    - Patch déployable : `/patches/ride_lifecycle_otp_20260614.tar.gz`
-2. **P0** : GPS positionnement non fonctionnel → diagnostiquer côté frontend
-3. **P1** : Bouton "Cadeau abonnement" → fonctionne (RESEND_API_KEY importé)
-4. **P1** : UX 1ère course offerte trop complexe → automatiser (auto-flag pending_promo dès souscription si <30)
-5. **P2** : 30 codes promo en base mais UX redeem trop manuelle pour usagers
+2. **P0** ✅ **FIXÉ 14/06** : Payout chauffeurs migré du 10 du mois → tous les lundis
+   - `PAYOUT_WEEKDAY = 0` dans `server.py`, déduplication par semaine ISO
+3. **P0** ✅ **FIXÉ 15/06** : GPS fantôme (chauffeur affiché à ancienne position)
+   - Backend : filtre `location_updated_at >= now - 10min` dans `/drivers/available` et `/matching/find-drivers`
+   - Backend : tâche background `cleanup_stale_drivers` toutes les minutes (auto-OFFLINE après 10 min sans GPS)
+   - Frontend Driver : heartbeat 30s + push GPS au retour foreground (`visibilitychange`)
+4. **P0** ✅ **FIXÉ 15/06** : Bip sonore "nouvelle course" pour le chauffeur (jamais implémenté avant)
+   - Web Audio API → bip-bip 660/880Hz + vibration `navigator.vibrate`
+5. **P1** : Bouton "Cadeau abonnement" → fonctionne (RESEND_API_KEY importé)
+6. **P1** : UX 1ère course offerte trop complexe → automatiser (auto-flag pending_promo dès souscription si <30)
+7. **P2** : 30 codes promo en base mais UX redeem trop manuelle pour usagers
 
 ## ✅ INFRASTRUCTURE EN PLACE
 - Site live : https://metro-taxi.com (Hostinger VPS, pm2)

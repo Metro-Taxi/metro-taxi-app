@@ -1635,8 +1635,18 @@ async def update_driver_location(data: LocationUpdate, current_user: dict = Depe
 
 @api_router.get("/drivers/available")
 async def get_available_drivers(region_id: Optional[str] = None, current_user: dict = Depends(get_current_user)):
-    """Get available drivers, optionally filtered by region"""
-    query = {"is_active": True, "is_validated": True, "location": {"$ne": None}}
+    """Get available drivers, optionally filtered by region.
+    
+    A driver is shown only if their GPS position was updated in the last 10 minutes.
+    This prevents 'ghost' drivers from appearing when they closed the app without going OFFLINE.
+    """
+    stale_threshold = (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()
+    query = {
+        "is_active": True,
+        "is_validated": True,
+        "location": {"$ne": None},
+        "location_updated_at": {"$gte": stale_threshold}
+    }
     
     # Filter by region if specified
     if region_id:
@@ -1651,8 +1661,18 @@ async def get_available_drivers(region_id: Optional[str] = None, current_user: d
 
 @api_router.post("/matching/find-drivers")
 async def find_matching_drivers(data: MatchingRequest, region_id: Optional[str] = None, current_user: dict = Depends(get_current_user)):
-    """Find best matching drivers based on distance, direction, and availability"""
-    query = {"is_active": True, "is_validated": True, "location": {"$ne": None}, "available_seats": {"$gt": 0}}
+    """Find best matching drivers based on distance, direction, and availability.
+    
+    Excludes drivers with stale GPS (>10 min) to avoid 'ghost' matches.
+    """
+    stale_threshold = (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()
+    query = {
+        "is_active": True,
+        "is_validated": True,
+        "location": {"$ne": None},
+        "location_updated_at": {"$gte": stale_threshold},
+        "available_seats": {"$gt": 0}
+    }
     
     # Filter by region if specified
     if region_id:
@@ -2645,6 +2665,39 @@ async def start_payout_processor():
     """Start the background automatic payout processor"""
     asyncio.create_task(process_automatic_payouts())
     logging.info("Automatic payout processor started (runs every Monday — weekly SEPA transfers)")
+
+
+# ============================================
+# STALE DRIVER CLEANER (auto-OFFLINE after inactivity)
+# ============================================
+async def cleanup_stale_drivers():
+    """Auto-deactivate drivers whose GPS has not been updated in the last 10 minutes.
+    
+    This prevents 'ghost drivers' from staying online for hours (e.g. Abderrahim case 14/06).
+    Runs every minute, sets is_active=false on stale drivers.
+    """
+    while True:
+        try:
+            stale_cutoff = (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()
+            result = await db.drivers.update_many(
+                {
+                    "is_active": True,
+                    "location_updated_at": {"$lt": stale_cutoff}
+                },
+                {"$set": {"is_active": False, "auto_offline_at": datetime.now(timezone.utc).isoformat()}}
+            )
+            if result.modified_count > 0:
+                logging.info(f"Auto-OFFLINE: {result.modified_count} stale driver(s) deactivated (>10 min no GPS)")
+        except Exception as e:
+            logging.error(f"Stale driver cleanup error: {e}")
+        await asyncio.sleep(60)  # Check every minute
+
+
+@app.on_event("startup")
+async def start_stale_driver_cleaner():
+    """Start the background stale driver cleaner"""
+    asyncio.create_task(cleanup_stale_drivers())
+    logging.info("Stale driver cleaner started (auto-OFFLINE after 10 min no GPS)")
 
 @app.on_event("startup")
 async def verify_database_connection():

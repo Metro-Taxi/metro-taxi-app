@@ -119,16 +119,50 @@ const DriverDashboard = () => {
   };
 
   // Fetch pending rides
+  const prevPendingCountRef = useRef(0);
   const fetchPendingRides = useCallback(async () => {
     try {
       const response = await axios.get(`${API}/rides/pending`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setPendingRides(response.data.rides || []);
+      const rides = response.data.rides || [];
+      // 🔔 Beep when a NEW ride request arrives (count increases)
+      if (rides.length > prevPendingCountRef.current) {
+        playNewRideBeep();
+      }
+      prevPendingCountRef.current = rides.length;
+      setPendingRides(rides);
     } catch (error) {
       console.error('Fetch rides error:', error);
     }
   }, [token]);
+
+  // 🔔 Play a "new ride" notification beep using Web Audio API (no external file needed)
+  const playNewRideBeep = () => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      // Two-tone "bip-bip" pattern (660Hz then 880Hz)
+      const playTone = (freq, startTime, duration) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.4, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(startTime);
+        osc.stop(startTime + duration);
+      };
+      const t0 = ctx.currentTime;
+      playTone(660, t0, 0.18);
+      playTone(880, t0 + 0.22, 0.18);
+      // Vibrate the phone too (Android/iOS PWA)
+      if (navigator.vibrate) navigator.vibrate([180, 80, 180]);
+    } catch (e) {
+      console.warn('Audio beep failed:', e);
+    }
+  };
 
   // Fetch active ride
   const fetchActiveRide = useCallback(async () => {
@@ -153,6 +187,26 @@ const DriverDashboard = () => {
       return () => clearInterval(interval);
     }
   }, [isActive, fetchPendingRides, fetchActiveRide]);
+
+  // 💓 Heartbeat: push driver position to server every 30s even if not moving,
+  // and immediately when app returns to foreground. Prevents "ghost driver" stale GPS.
+  useEffect(() => {
+    if (!isActive || !driverLocation) return;
+    const heartbeat = setInterval(() => {
+      updateDriverLocation(driverLocation[0], driverLocation[1]);
+    }, 30000);
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && driverLocation) {
+        updateDriverLocation(driverLocation[0], driverLocation[1]);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => {
+      clearInterval(heartbeat);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive, driverLocation]);
 
   const toggleActive = async () => {
     setLoading(true);
