@@ -2175,6 +2175,65 @@ async def get_subscription_status(current_user: dict = Depends(get_current_user)
 # MULTI-REGION SUBSCRIPTION ENDPOINTS
 # ============================================
 
+@api_router.get("/config/public")
+async def get_public_config():
+    """Public config endpoint — exposes subscription pause status and launch date.
+    
+    Used by frontend to know if it should display the subscription button or
+    the 'waitlist' message instead.
+    """
+    paused = os.environ.get("SUBSCRIPTIONS_PAUSED", "false").lower() == "true"
+    launch_date = os.environ.get("LAUNCH_DATE", "2026-07-26")
+    return {
+        "subscriptions_paused": paused,
+        "launch_date": launch_date,
+        "message_fr": (
+            f"Métro-Taxi est en phase de finalisation technique. "
+            f"Pour garantir la qualité du service à nos premiers abonnés, "
+            f"nous suspendons temporairement les nouvelles souscriptions jusqu'au "
+            f"lancement officiel le {launch_date}. Inscris-toi sur la liste prioritaire."
+        ) if paused else "Souscriptions ouvertes"
+    }
+
+
+class WaitlistJoinRequest(BaseModel):
+    email: str
+    first_name: Optional[str] = None
+    region_id: Optional[str] = "paris"
+
+
+@api_router.post("/waitlist/join")
+async def waitlist_join(data: WaitlistJoinRequest):
+    """Anyone can join the launch waitlist (no auth required).
+    
+    Stores email + region; will be used for a mass-email on launch day.
+    """
+    email = data.email.strip().lower()
+    if not email or "@" not in email:
+        raise HTTPException(status_code=400, detail="Email invalide")
+    
+    # Upsert by email (no duplicates)
+    await db.launch_waitlist.update_one(
+        {"email": email},
+        {
+            "$setOnInsert": {
+                "email": email,
+                "first_name": data.first_name,
+                "region_id": data.region_id or "paris",
+                "joined_at": datetime.now(timezone.utc).isoformat()
+            }
+        },
+        upsert=True
+    )
+    
+    total = await db.launch_waitlist.count_documents({})
+    return {
+        "success": True,
+        "message": "Tu es bien inscrit·e sur la liste prioritaire. On te préviendra en premier au lancement.",
+        "waitlist_position": total
+    }
+
+
 @api_router.get("/subscription/regions")
 async def get_user_region_subscriptions(current_user: dict = Depends(get_current_user)):
     """Get all region subscriptions for the current user"""

@@ -9,6 +9,7 @@ from datetime import datetime, timezone, timedelta
 from typing import Optional
 from urllib.parse import unquote_plus
 import logging
+import os
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -66,6 +67,15 @@ async def create_sogecommerce_checkout(
 
     Charge à lui de faire un auto-submit POST.
     """
+    # 🚫 PAUSE COMMERCIALE : tant que l'env SUBSCRIPTIONS_PAUSED=true, on refuse tout nouveau paiement
+    # Mis en place le 16/06/2026 suite à l'impossibilité d'effectuer les courses payées.
+    if os.environ.get("SUBSCRIPTIONS_PAUSED", "false").lower() == "true":
+        launch_date = os.environ.get("LAUNCH_DATE", "2026-07-26")
+        raise HTTPException(
+            status_code=503,
+            detail=f"Les nouvelles souscriptions sont temporairement suspendues. Lancement officiel le {launch_date}. Inscris-toi sur la liste prioritaire pour être prévenu en premier."
+        )
+    
     # Lazy import pour éviter import circulaire
     from server import SUBSCRIPTION_PLANS, REGIONAL_PRICING
 

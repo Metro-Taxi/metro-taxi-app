@@ -44,6 +44,11 @@ const Subscription = () => {
     email: user?.email || ''
   });
   const [sepaLoading, setSepaLoading] = useState(false);
+  
+  // 🚫 Pause commerciale — Mode liste d'attente pour le lancement du 26/07
+  const [publicConfig, setPublicConfig] = useState(null);
+  const [waitlistEmail, setWaitlistEmail] = useState(user?.email || '');
+  const [waitlistJoined, setWaitlistJoined] = useState(false);
 
   useEffect(() => {
     // Reset redirecting state on mount
@@ -51,7 +56,27 @@ const Subscription = () => {
     fetchPlans();
     fetchRegions();
     fetchUserSubscriptions();
+    // Public config (subscription pause status, launch date)
+    axios.get(`${API}/config/public`).then(r => setPublicConfig(r.data)).catch(() => {});
   }, []);
+  
+  const joinWaitlist = async () => {
+    if (!waitlistEmail || !waitlistEmail.includes('@')) {
+      toast.error('Merci de renseigner un email valide');
+      return;
+    }
+    try {
+      const r = await axios.post(`${API}/waitlist/join`, {
+        email: waitlistEmail,
+        first_name: user?.first_name,
+        region_id: selectedRegion?.id || 'paris'
+      });
+      toast.success(r.data.message);
+      setWaitlistJoined(true);
+    } catch (e) {
+      toast.error(e.response?.data?.detail || 'Erreur inscription liste prioritaire');
+    }
+  };
   
   useEffect(() => {
     if (user?.email) {
@@ -363,6 +388,54 @@ const Subscription = () => {
           </div>
         </div>
 
+        {/* 🚫 PAUSE COMMERCIALE — Liste prioritaire de lancement (26/07/2026) */}
+        {publicConfig?.subscriptions_paused && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-6 bg-gradient-to-br from-[#FFD60A]/10 to-purple-500/10 border-2 border-[#FFD60A]/40 rounded-lg"
+            data-testid="subscription-paused-banner"
+          >
+            <div className="flex items-start gap-4">
+              <Clock className="w-8 h-8 text-[#FFD60A] flex-shrink-0 mt-1" />
+              <div className="flex-1">
+                <h3 className="text-[#FFD60A] font-black text-xl mb-2">
+                  Souscriptions en pause — Lancement officiel le {publicConfig.launch_date}
+                </h3>
+                <p className="text-zinc-300 text-sm mb-4 leading-relaxed">
+                  Métro-Taxi est en phase de finalisation technique. Pour garantir la qualité du service à nos premiers abonnés, <strong className="text-white">nous suspendons temporairement les nouvelles souscriptions</strong>.<br/>
+                  <span className="text-zinc-400">Inscris-toi sur la liste prioritaire — tu seras prévenu·e en premier dès l&apos;ouverture, avec un mois offert pour les 30 premiers inscrits.</span>
+                </p>
+                
+                {waitlistJoined ? (
+                  <div className="flex items-center gap-2 text-green-400 font-medium">
+                    <Check className="w-5 h-5" />
+                    Tu es bien inscrit·e sur la liste prioritaire. À très bientôt !
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Input
+                      type="email"
+                      placeholder="ton.email@exemple.fr"
+                      value={waitlistEmail}
+                      onChange={(e) => setWaitlistEmail(e.target.value)}
+                      className="bg-zinc-900 border-zinc-700 text-white flex-1"
+                      data-testid="waitlist-email-input"
+                    />
+                    <Button
+                      onClick={joinWaitlist}
+                      className="bg-[#FFD60A] hover:bg-[#E6C209] text-black font-bold whitespace-nowrap"
+                      data-testid="waitlist-join-btn"
+                    >
+                      M&apos;inscrire en priorité
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* PROTECTION DOUBLE PAIEMENT (C) - Message d'avertissement */}
         {!user && (
           <motion.div
@@ -577,8 +650,8 @@ const Subscription = () => {
                 <Button
                   variant="outline"
                   onClick={() => openSepaDialog(plan.id)}
-                  disabled={loading !== null || isRedirecting || sepaLoading}
-                  className={`w-full h-10 mt-2 text-sm border-zinc-700 hover:bg-zinc-800 ${(loading !== null || isRedirecting || sepaLoading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={loading !== null || isRedirecting || sepaLoading || publicConfig?.subscriptions_paused}
+                  className={`w-full h-10 mt-2 text-sm border-zinc-700 hover:bg-zinc-800 ${(loading !== null || isRedirecting || sepaLoading || publicConfig?.subscriptions_paused) ? 'opacity-50 cursor-not-allowed' : ''}`}
                   data-testid={`sepa-${plan.id}-btn`}
                 >
                   <Building2 className="w-4 h-4 mr-2" />
@@ -591,8 +664,8 @@ const Subscription = () => {
                 <Button
                   variant="outline"
                   onClick={() => handleSogecommerceSubscribe(plan.id)}
-                  disabled={loading !== null || isRedirecting || sepaLoading}
-                  className={`w-full h-10 mt-2 text-sm border-red-700/40 text-red-200 hover:bg-red-950/40 ${(loading !== null || isRedirecting || sepaLoading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={loading !== null || isRedirecting || sepaLoading || publicConfig?.subscriptions_paused}
+                  className={`w-full h-10 mt-2 text-sm border-red-700/40 text-red-200 hover:bg-red-950/40 ${(loading !== null || isRedirecting || sepaLoading || publicConfig?.subscriptions_paused) ? 'opacity-50 cursor-not-allowed' : ''}`}
                   data-testid={`sogecommerce-${plan.id}-btn`}
                   title="Paiement sécurisé Société Générale (Apple Pay supporté)"
                 >
