@@ -84,19 +84,34 @@ Patch prêt : `https://metro-taxi-demo.preview.emergentagent.com/patches/partner
 - `GET /api/admin/partner-stats/{code}` — Détail 1 partenaire
 - `GET /api/admin/partner-payouts/csv?week=YYYY-WW` — Export CSV paiements
 
-## 🎯 PRIORITÉS S1 (14-20 JUIN) — APRÈS REPOS WEEK-END
-1. **P0 fix bugs critiques** (P0 list ci-dessus) — ✅ MAJORITAIREMENT FIXÉS
-2. **P0 verser compensation 50€** aux chauffeurs présents le 13/06 — REPORTÉ (trésorerie, attendre retour Sarah)
-3. **P0 PAUSE COMMERCIALE** — ✅ DÉPLOYÉE 16/06 (SUBSCRIPTIONS_PAUSED=true, LAUNCH_DATE=2026-07-26)
-4. **P0 PREMIÈRE COURSE COMMERCIALE RÉUSSIE** — ✅ 17/06/2026 (Hôpital Delafontaine St-Denis → Porte de Clignancourt, chauffeur Maaz Tagari berline, ~4.5 km, 7€+ crédités). Cycle OTP fonctionnel bout en bout.
-5. **P0 Remboursement Mme Vadé (1ère cliente perdue le 15/06)** — ⏳ EN COURS via Dylan Fernandes (06 19 70 57 99 / dylan.fernandes@socgen.com), Sarah en vacances jusqu'au 27/06
-6. **P1 deploy partner tracking** sur prod
-7. **P1 dossier mairie 18e** pour autorisation Porte Clignancourt — ✅ DEMANDE ENVOYÉE 15/06 + DEMANDE PARALLÈLE PLAINE COMMUNE (Basilique Saint-Denis)
-8. **P2 page publique "Points d'inscription"** (Kelly's Paris, PHONEEXPERT, SMART TECH)
+## 🔒 SÉCURITÉ HTTPS — CERTIFICAT SSL (corrigé 17/06/2026)
+- **Status** : ✅ Certificat Let's Encrypt valide jusqu'à **mi-septembre 2026** (renouvelé le 17/06)
+- **Couverture** : `metro-taxi.com` + `www.metro-taxi.com`
+- **Renouvellement automatique** : `snap.certbot.renew.timer` actif (2x/jour)
+- **Chaîne SSL** : 2 certificats (R13 + ISRG Root X1) ✅
+- **Historique bug** :
+  - Ancien `certbot apt 1.21.0` cassé (incompatibilité pyOpenSSL)
+  - Aucun renouvellement auto configuré → risque expiration 01/07/2026 (avant relance 26/07)
+  - Fix : `snap install certbot 5.6.0` + activation timer auto
 
-## 🐛 BUGS RÉSIDUELS POST-TEST LIVE 17/06 (MINEURS)
-- Bip sonore non perçu chez Maaz — diagnostic en cours (iPhone vs Android, mode silencieux, vibration ?)
-- Marker passager possiblement hors-champ sur la carte chauffeur après acceptation (à valider par 2e test)
+## 🎯 PRIORITÉS S2 (15-21 JUIN)
+1. **P0 PREMIÈRE COURSE COMMERCIALE RÉUSSIE** — ✅ 17/06 (Maaz Tagari, 4.67 km, 7,94€)
+2. **P0 CERTIFICAT SSL RENOUVELÉ + AUTO-RENEW** — ✅ 17/06
+3. **P0 Remboursement Mme Vadé** — ⏳ Dylan Fernandes (06 19 70 57 99)
+4. **P1 Patch v8 à venir** : auto-fit carte chauffeur + bip iOS + flash visuel
+5. **P1 Fix historique trajets vide côté admin** — bug identifié 17/06
+6. **P1 Ajouter "Total trajets" sur dashboard chauffeur**
+7. **P1 Partenaires Paris** : Golden GSM ✅ + 2 en attente sur Bvd Ornano
+8. **P1 Dossier mairie 18e (Clignancourt)** + Plaine Commune (Basilique)
+9. **P1 Démarche églises** (Notre-Dame de Clignancourt en priorité)
+10. **P2 Dashboard partenaires commerce de proximité** (Golden GSM, Kelly's Paris, etc.) — formulaire dédié à créer
+11. **P2 PWA iPhone install** : guide ajouter à l'écran d'accueil via Safari
+
+## 🐛 BUGS RÉSIDUELS POST-TEST LIVE 17/06
+- Bip sonore non perçu chez Maaz — diagnostic iOS/Android + vibration en cours
+- Zoom carte chauffeur snap-back — ✅ FIXÉ patch v7 (17/06)
+- Historique trajets vide côté admin dashboard (alors que rides existent en DB) — à investiguer
+- Compte doublon Pierre Jacques — ⏳ EN ATTENTE confirmation utilisateur
 
 ## 🔍 AUDIT À FAIRE APRÈS 26/07 (incohérences DB chauffeurs)
 - Plusieurs chauffeurs ont déclaré `vehicle_type=van/monospace` mais `seats=4` à l'inscription :
