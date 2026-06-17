@@ -107,11 +107,31 @@ Patch prêt : `https://metro-taxi-demo.preview.emergentagent.com/patches/partner
 10. **P2 Dashboard partenaires commerce de proximité** (Golden GSM, Kelly's Paris, etc.) — formulaire dédié à créer
 11. **P2 PWA iPhone install** : guide ajouter à l'écran d'accueil via Safari
 
-## 🐛 BUGS RÉSIDUELS POST-TEST LIVE 17/06
-- Bip sonore non perçu chez Maaz — diagnostic iOS/Android + vibration en cours
-- Zoom carte chauffeur snap-back — ✅ FIXÉ patch v7 (17/06)
-- Historique trajets vide côté admin dashboard (alors que rides existent en DB) — à investiguer
-- Compte doublon Pierre Jacques — ⏳ EN ATTENTE confirmation utilisateur
+## 🧪 TESTS LIVE RÉALISÉS
+
+### Test 1 — Maaz Tagari (17/06/2026 matin)
+- Trajet : Hôpital Delafontaine St-Denis → Porte de Clignancourt (4,67 km)
+- Cycle complet : demande → accept → OTP → in_progress → completed
+- Montant calculé : 7,94€ (berline 1,50€/km) ✅
+- Bug identifié : zoom snap-back (corrigé patch v7)
+
+### Test 2 — Ousmanou Ali (17/06/2026 19h45, Neuilly-sur-Marne)
+- Test technique sans trajet réel
+- ✅ Bip sonore confirmé (Android)
+- ✅ Marker passager visible sur la carte chauffeur
+- ✅ Card "Demandes en attente" avec ID, 4 places, En ligne
+- ❌ **MANQUE** : adresse pickup + destination NON affichées sur la card chauffeur (avant acceptation)
+- ❌ **MANQUE** : distance estimée + tarif estimé
+- ⚠️ Bip joué 1 seul ton au lieu de 3 (timing trop rapide, 0,7s)
+
+## 🛠️ PATCH V8 À CODER (à livrer 18/06 matin)
+**MUST** :
+1. Stocker `pickup_address` + `destination_address` (texte) dans `ride_requests` lors de la création
+2. Reverse-geocode via OpenStreetMap Nominatim côté frontend usager
+3. Afficher les 2 adresses + distance estimée + tarif estimé sur la card chauffeur AVANT acceptation
+**SHOULD** :
+4. Auto-fit map quand course acceptée (markers chauffeur + passager visibles ensemble)
+5. Bip étalé sur 1,5s (3 tons clairement séparés au lieu de 0,7s)
 
 ## 🔍 AUDIT À FAIRE APRÈS 26/07 (incohérences DB chauffeurs)
 - Plusieurs chauffeurs ont déclaré `vehicle_type=van/monospace` mais `seats=4` à l'inscription :
