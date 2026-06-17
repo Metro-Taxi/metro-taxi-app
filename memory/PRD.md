@@ -85,11 +85,18 @@ Patch prêt : `https://metro-taxi-demo.preview.emergentagent.com/patches/partner
 - `GET /api/admin/partner-payouts/csv?week=YYYY-WW` — Export CSV paiements
 
 ## 🎯 PRIORITÉS S1 (14-20 JUIN) — APRÈS REPOS WEEK-END
-1. **P0 fix bugs critiques** (P0 list ci-dessus)
+1. **P0 fix bugs critiques** (P0 list ci-dessus) — ✅ MAJORITAIREMENT FIXÉS
 2. **P0 verser compensation 50€** aux chauffeurs présents le 13/06 — REPORTÉ (trésorerie, attendre retour Sarah)
-3. **P1 deploy partner tracking** sur prod
-4. **P1 dossier mairie 18e** pour autorisation Porte Clignancourt
-5. **P2 page publique "Points d'inscription"** (Kelly's Paris, PHONEEXPERT, SMART TECH)
+3. **P0 PAUSE COMMERCIALE** — ✅ DÉPLOYÉE 16/06 (SUBSCRIPTIONS_PAUSED=true, LAUNCH_DATE=2026-07-26)
+4. **P0 PREMIÈRE COURSE COMMERCIALE RÉUSSIE** — ✅ 17/06/2026 (Hôpital Delafontaine St-Denis → Porte de Clignancourt, chauffeur Maaz Tagari berline, ~4.5 km, 7€+ crédités). Cycle OTP fonctionnel bout en bout.
+5. **P0 Remboursement Mme Vadé (1ère cliente perdue le 15/06)** — ⏳ EN COURS via Dylan Fernandes (06 19 70 57 99 / dylan.fernandes@socgen.com), Sarah en vacances jusqu'au 27/06
+6. **P1 deploy partner tracking** sur prod
+7. **P1 dossier mairie 18e** pour autorisation Porte Clignancourt — ✅ DEMANDE ENVOYÉE 15/06 + DEMANDE PARALLÈLE PLAINE COMMUNE (Basilique Saint-Denis)
+8. **P2 page publique "Points d'inscription"** (Kelly's Paris, PHONEEXPERT, SMART TECH)
+
+## 🐛 BUGS RÉSIDUELS POST-TEST LIVE 17/06 (MINEURS)
+- Bip sonore non perçu chez Maaz — diagnostic en cours (iPhone vs Android, mode silencieux, vibration ?)
+- Marker passager possiblement hors-champ sur la carte chauffeur après acceptation (à valider par 2e test)
 
 ## 🔍 AUDIT À FAIRE APRÈS 26/07 (incohérences DB chauffeurs)
 - Plusieurs chauffeurs ont déclaré `vehicle_type=van/monospace` mais `seats=4` à l'inscription :
