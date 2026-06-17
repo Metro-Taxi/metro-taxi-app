@@ -74,13 +74,11 @@ const MapUpdater = ({ center }) => {
   
   useEffect(() => {
     if (center && !hasInitialized.current) {
-      // Premier centrage sur la position de l'utilisateur
+      // Initial centering on user position
       map.setView(center, 15);
       hasInitialized.current = true;
-    } else if (center && hasInitialized.current) {
-      // Mises à jour suivantes avec animation
-      map.flyTo(center, 15, { duration: 0.5 });
     }
+    // No auto-recenter on GPS updates — user keeps zoom/pan control
   }, [center, map]);
   
   return null;

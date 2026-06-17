@@ -39,19 +39,20 @@ const userRequestIcon = L.divIcon({
 });
 
 // Map component that updates center
+// Only re-centers on initial load — subsequent GPS updates do NOT force a re-center,
+// so the driver can freely zoom in/out and pan to see the passenger marker
+// (fixes the "zoom keeps snapping back to driver" bug reported on 17/06).
 const MapUpdater = ({ center }) => {
   const map = useMap();
   const hasInitialized = useRef(false);
   
   useEffect(() => {
     if (center && !hasInitialized.current) {
-      // Premier centrage sur la position du chauffeur
+      // Initial centering on driver position
       map.setView(center, 15);
       hasInitialized.current = true;
-    } else if (center && hasInitialized.current) {
-      // Mises à jour suivantes avec animation légère
-      map.flyTo(center, 15, { duration: 0.5 });
     }
+    // No auto-recenter on subsequent updates — driver keeps zoom/pan control
   }, [center, map]);
   
   return null;
