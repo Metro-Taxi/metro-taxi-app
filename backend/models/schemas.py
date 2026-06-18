@@ -88,6 +88,8 @@ class RideRequestCreate(BaseModel):
     pickup_lng: float
     destination_lat: float
     destination_lng: float
+    pickup_address: Optional[str] = None  # Text address resolved by reverse-geocoding on the client
+    destination_address: Optional[str] = None
 
 
 class RideRequestResponse(BaseModel):

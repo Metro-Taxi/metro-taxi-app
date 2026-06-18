@@ -412,17 +412,41 @@ const UserDashboard = () => {
     setSelectedDriver(driver);
   };
 
+  // Reverse-geocode lat/lng → human-readable address via OpenStreetMap Nominatim (free, public).
+  // Used to show the pickup and destination ADDRESSES to drivers before they accept.
+  const reverseGeocode = async (lat, lng) => {
+    try {
+      const r = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=0&accept-language=fr`,
+        { timeout: 4000 }
+      );
+      return r.data?.display_name || null;
+    } catch (_) {
+      return null;
+    }
+  };
+
   const handleRequestRide = async () => {
     if (!selectedDriver || !userLocation) return;
     
     setLoading(true);
     try {
+      // Resolve human-readable addresses in parallel (fail-soft if Nominatim is down)
+      const destLat = destination ? destination[0] : (selectedDriver.destination?.lat || userLocation[0] + 0.01);
+      const destLng = destination ? destination[1] : (selectedDriver.destination?.lng || userLocation[1] + 0.01);
+      const [pickupAddress, destinationAddress] = await Promise.all([
+        reverseGeocode(userLocation[0], userLocation[1]),
+        reverseGeocode(destLat, destLng),
+      ]);
+      
       const response = await axios.post(`${API}/rides/request`, {
         driver_id: selectedDriver.id,
         pickup_lat: userLocation[0],
         pickup_lng: userLocation[1],
-        destination_lat: destination ? destination[0] : selectedDriver.destination?.lat || userLocation[0] + 0.01,
-        destination_lng: destination ? destination[1] : selectedDriver.destination?.lng || userLocation[1] + 0.01
+        destination_lat: destLat,
+        destination_lng: destLng,
+        pickup_address: pickupAddress,
+        destination_address: destinationAddress
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });

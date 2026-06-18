@@ -762,6 +762,8 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
         "pickup_lng": data.pickup_lng,
         "destination_lat": data.destination_lat,
         "destination_lng": data.destination_lng,
+        "pickup_address": data.pickup_address or "Adresse inconnue",
+        "destination_address": data.destination_address or "Adresse inconnue",
         "status": "pending",
         "pickup_otp": pickup_otp,
         "created_at": datetime.now(timezone.utc).isoformat()
@@ -803,6 +805,22 @@ async def get_pending_rides(current_user: dict = Depends(get_current_user)):
         {"driver_id": driver_id, "status": "pending"},
         {"_id": 0, "pickup_otp": 0}  # Driver must NEVER see the OTP
     ).to_list(100)
+    
+    # Enrich each ride with estimated distance (pickup → destination) and estimated payout
+    # so the driver can decide whether to accept BEFORE clicking ACCEPTER.
+    driver = await db.drivers.find_one({"id": driver_id}, {"vehicle_type": 1, "_id": 0})
+    vehicle_type = (driver or {}).get("vehicle_type") or "berline"
+    rate_per_km = get_driver_rate_per_km(vehicle_type)
+    
+    for ride in rides:
+        if all(k in ride for k in ("pickup_lat", "pickup_lng", "destination_lat", "destination_lng")):
+            trip_km = calculate_distance(
+                ride["pickup_lat"], ride["pickup_lng"],
+                ride["destination_lat"], ride["destination_lng"]
+            )
+            ride["estimated_km"] = round(trip_km, 2)
+            ride["estimated_payout"] = round(trip_km * rate_per_km, 2)
+            ride["rate_per_km"] = rate_per_km
     
     return {"rides": rides}
 
@@ -1321,10 +1339,11 @@ async def get_user_ride_history(user_id: str, current_user: dict = Depends(get_c
     if current_user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
     
-    # Get all rides for this user
-    rides = await db.rides.find(
+    # Get all rides for this user — collection is `ride_requests` (NOT `rides`)
+    # Fix 18/06/2026: the admin dashboard was always empty because of this typo.
+    rides = await db.ride_requests.find(
         {"user_id": user_id},
-        {"_id": 0}
+        {"_id": 0, "pickup_otp": 0}  # never expose OTP in admin history
     ).sort("created_at", -1).to_list(100)
     
     # Enrich with driver names

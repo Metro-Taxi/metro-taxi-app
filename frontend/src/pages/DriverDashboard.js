@@ -40,20 +40,30 @@ const userRequestIcon = L.divIcon({
 
 // Map component that updates center
 // Only re-centers on initial load — subsequent GPS updates do NOT force a re-center,
-// so the driver can freely zoom in/out and pan to see the passenger marker
-// (fixes the "zoom keeps snapping back to driver" bug reported on 17/06).
-const MapUpdater = ({ center }) => {
+// so the driver can freely zoom in/out and pan to see the passenger marker.
+// When a new ride is accepted (rideAcceptedKey changes), auto-fit both driver and
+// passenger markers into the viewport ONCE so the driver sees both at a glance.
+const MapUpdater = ({ center, fitBounds, rideAcceptedKey }) => {
   const map = useMap();
   const hasInitialized = useRef(false);
+  const lastAcceptedKey = useRef(null);
   
   useEffect(() => {
     if (center && !hasInitialized.current) {
-      // Initial centering on driver position
       map.setView(center, 15);
       hasInitialized.current = true;
     }
-    // No auto-recenter on subsequent updates — driver keeps zoom/pan control
   }, [center, map]);
+  
+  // Auto-fit on ride acceptance — runs once per new ride
+  useEffect(() => {
+    if (rideAcceptedKey && rideAcceptedKey !== lastAcceptedKey.current && fitBounds && fitBounds.length === 2) {
+      try {
+        map.fitBounds(fitBounds, { padding: [60, 60], maxZoom: 15 });
+      } catch (_) { /* leaflet may not be ready yet */ }
+      lastAcceptedKey.current = rideAcceptedKey;
+    }
+  }, [rideAcceptedKey, fitBounds, map]);
   
   return null;
 };
@@ -73,6 +83,7 @@ const DriverDashboard = () => {
   const [availableSeats, setAvailableSeats] = useState(driver?.seats || 4);
   const [locatingDriver, setLocatingDriver] = useState(true);
   const [otpInput, setOtpInput] = useState('');
+  const [earningsSummary, setEarningsSummary] = useState(null);  // {current_month, totals}
   // 🔊 Persistent AudioContext — created on user gesture (toggleActive click) to bypass iOS Safari autoplay policy
   const audioCtxRef = useRef(null);
 
@@ -121,6 +132,25 @@ const DriverDashboard = () => {
     }
   };
 
+  // Fetch driver earnings summary (used to display total rides & km in the side menu)
+  const fetchEarningsSummary = useCallback(async () => {
+    try {
+      const r = await axios.get(`${API}/drivers/earnings`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setEarningsSummary(r.data);
+    } catch (_) { /* silently fail — not critical */ }
+  }, [token]);
+  
+  useEffect(() => {
+    fetchEarningsSummary();
+    // Refresh after each completed ride
+    if (activeRide && activeRide.status === 'completed') {
+      fetchEarningsSummary();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRide?.status]);
+
   // Fetch pending rides
   const prevPendingCountRef = useRef(0);
   const fetchPendingRides = useCallback(async () => {
@@ -160,7 +190,7 @@ const DriverDashboard = () => {
         const gain = ctx.createGain();
         osc.type = 'sine';
         osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.5, startTime);
+        gain.gain.setValueAtTime(0.6, startTime);
         gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
         osc.connect(gain);
         gain.connect(ctx.destination);
@@ -168,12 +198,12 @@ const DriverDashboard = () => {
         osc.stop(startTime + duration);
       };
       const t0 = ctx.currentTime;
-      // Three-tone urgent pattern (more attention-grabbing)
-      playTone(880, t0, 0.18);
-      playTone(660, t0 + 0.22, 0.18);
-      playTone(990, t0 + 0.44, 0.30);
+      // 3-tone urgent pattern spread over 1.5s with clear gaps (audible on Android — fix 18/06)
+      playTone(880, t0,        0.30);  // tone 1: 0s → 0.30s
+      playTone(660, t0 + 0.50, 0.30);  // tone 2: 0.50s → 0.80s
+      playTone(990, t0 + 1.00, 0.50);  // tone 3: 1.00s → 1.50s (longer for emphasis)
       // Vibrate the phone too (Android only — iOS ignores it)
-      if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 400]);
+      if (navigator.vibrate) navigator.vibrate([300, 200, 300, 200, 500]);
     } catch (e) {
       console.warn('Audio beep failed:', e);
     }
@@ -421,6 +451,30 @@ const DriverDashboard = () => {
                   <p className="text-zinc-400 text-sm">{t('dashboard.driver.availableSeats')}</p>
                   <p className="text-[#FFD60A] font-bold text-2xl">{availableSeats} / {driver?.seats}</p>
                 </div>
+                
+                {/* 📊 Stats trajets (compteurs ajoutés 18/06 — demande Capitaine) */}
+                {earningsSummary && (
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-zinc-900 p-3 rounded border border-zinc-800">
+                      <p className="text-zinc-500 text-[10px] uppercase tracking-wider">Trajets ce mois</p>
+                      <p className="text-white font-bold text-xl" data-testid="rides-current-month">
+                        {earningsSummary.current_month?.rides_count || 0}
+                      </p>
+                      <p className="text-[10px] text-zinc-500">
+                        {(earningsSummary.current_month?.total_km || 0).toFixed(1)} km
+                      </p>
+                    </div>
+                    <div className="bg-zinc-900 p-3 rounded border border-zinc-800">
+                      <p className="text-zinc-500 text-[10px] uppercase tracking-wider">Total trajets</p>
+                      <p className="text-[#FFD60A] font-bold text-xl" data-testid="rides-total">
+                        {earningsSummary.totals?.total_rides || 0}
+                      </p>
+                      <p className="text-[10px] text-zinc-500">
+                        {(earningsSummary.totals?.total_km || 0).toFixed(0)} km
+                      </p>
+                    </div>
+                  </div>
+                )}
                 {driver?.region_id && (
                   <div className="bg-zinc-900 p-4 rounded border border-zinc-800">
                     <p className="text-zinc-400 text-sm flex items-center gap-2">
@@ -487,7 +541,15 @@ const DriverDashboard = () => {
           attribution='&copy; OpenStreetMap'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <MapUpdater center={driverLocation} />
+        <MapUpdater
+          center={driverLocation}
+          fitBounds={
+            activeRide && activeRide.status === 'accepted' && activeRide.pickup_lat && driverLocation
+              ? [driverLocation, [activeRide.pickup_lat, activeRide.pickup_lng]]
+              : null
+          }
+          rideAcceptedKey={activeRide && activeRide.status === 'accepted' ? activeRide.id : null}
+        />
         
         {/* Driver location */}
         {driverLocation && (
@@ -590,9 +652,33 @@ const DriverDashboard = () => {
                         <p className="font-bold text-white">{ride.user_name}</p>
                         <p className="text-xs text-zinc-500 font-mono">ID: {ride.id.slice(0, 8)}</p>
                       </div>
-                      <div className="flex items-center gap-1 text-zinc-400">
-                        <MapPin className="w-4 h-4" />
-                        <span className="text-xs">{t('dashboard.driver.nearbyUsers')}</span>
+                      {ride.estimated_payout != null && (
+                        <div className="text-right">
+                          <p className="text-[#FFD60A] font-black text-xl leading-none">{ride.estimated_payout.toFixed(2)} €</p>
+                          <p className="text-xs text-zinc-500">{ride.estimated_km} km · {ride.rate_per_km}€/km</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Pickup + Destination addresses — visible BEFORE accept (UX 18/06) */}
+                    <div className="space-y-2 mb-3 text-sm">
+                      <div className="flex gap-2 items-start">
+                        <span className="text-green-400 mt-0.5">●</span>
+                        <div className="flex-1">
+                          <p className="text-xs text-zinc-500 uppercase tracking-wider">Prise en charge</p>
+                          <p className="text-white text-sm leading-tight" data-testid={`pickup-address-${ride.id}`}>
+                            {ride.pickup_address || `${ride.pickup_lat?.toFixed(5)}, ${ride.pickup_lng?.toFixed(5)}`}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 items-start">
+                        <span className="text-red-400 mt-0.5">●</span>
+                        <div className="flex-1">
+                          <p className="text-xs text-zinc-500 uppercase tracking-wider">Destination</p>
+                          <p className="text-white text-sm leading-tight" data-testid={`destination-address-${ride.id}`}>
+                            {ride.destination_address || `${ride.destination_lat?.toFixed(5)}, ${ride.destination_lng?.toFixed(5)}`}
+                          </p>
+                        </div>
                       </div>
                     </div>
                     
