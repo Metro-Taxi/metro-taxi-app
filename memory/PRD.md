@@ -133,6 +133,28 @@ Patch prêt : `https://metro-taxi-demo.preview.emergentagent.com/patches/partner
 4. Auto-fit map quand course acceptée (markers chauffeur + passager visibles ensemble)
 5. Bip étalé sur 1,5s (3 tons clairement séparés au lieu de 0,7s)
 
+## ✅ PATCH V9 DÉPLOYÉ (18/06/2026) — `patch_v9_20260618.tar.gz`
+**Objectifs résolus** :
+1. **Solution iOS mode silencieux (P0 Aliou)** — Overlay rouge plein écran avec animation pulse, icône cloche, "NOUVELLE COURSE !", infos passager + prix estimé, bouton "VOIR LA COURSE →" qui dismiss. Wake Lock pour garder l'écran allumé. Flash du titre d'onglet en backup. Beep en boucle toutes les 2s tant qu'une course est en attente (Android continue de sonner ; iOS récupère via le visuel).
+2. **Mot de passe oublié** — Page `/forgot-password` en 2 étapes : email → code 6 chiffres (15 min, max 5 tentatives) → nouveau mot de passe. Anti-énumération (réponse identique si email inexistant). Anti-bombing (3 demandes / 15 min / IP).
+3. **Changer mot de passe** — Modale `ChangePasswordModal` accessible depuis Profil utilisateur ET menu chauffeur. Vérifie ancien mdp + minimum 8 caractères.
+4. **Anti-brute-force assoupli** — 5 → 8 tentatives, tracking par `email+IP` (un échec sur EmailA ne bloque plus EmailB depuis le même WiFi).
+5. **Mention "estimé"** — Sur la card chauffeur : "~ X,XX €" + "estimé · XX km" en italique pour lever la confusion d'Aliou (il ne facture pas encore).
+6. **Priorité driver login** — Confirmation : `/api/auth/login` cherche d'abord dans `drivers` puis `users` (fix bug Edgar).
+
+**Tests passés** : 11/11 features (9/9 pytest backend + UI flow E2E Playwright).
+**Email** : Resend `send_password_reset_email` opérationnel (template HTML jaune Métro-Taxi).
+
+## 🚀 PATCH V10 — BACKLOG À PRIORISER
+- **P1** : Dashboard partenaires commerciaux (Taxiphones, Kelly's, Golden GSM) avec suivi parrainages
+- **P1** : Validation suppression doublon `heleymouke@gmail.com`
+- **P2** : Reverse-geocode pickup côté serveur (l'overlay affichait "Adresse inconnue" en test agent)
+- **P2** : i18n FR sur card chauffeur ("Accept"/"Decline" → "Accepter"/"Refuser")
+- **P2** : Persister `_pwd_reset_throttle` en Mongo/Redis (actuellement RAM, perdu au restart)
+- **P2** : Gratuité auto 1ère course pour les 30 premiers abonnés
+- **P3** : PWA Push Notifications iOS 16.4+ (vraie alerte système même app fermée)
+- **P3** : Investigation PWA iPhone non installable
+
 ## 🔍 AUDIT À FAIRE APRÈS 26/07 (incohérences DB chauffeurs)
 - Plusieurs chauffeurs ont déclaré `vehicle_type=van/monospace` mais `seats=4` à l'inscription :
   - Ali (van/4), Nizar (van/4), Mayoux (van/6), Houssem (monospace/4), JEAN CLAUDE MARCEL (suv/4)
