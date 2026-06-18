@@ -87,6 +87,9 @@ const DriverDashboard = () => {
   const [earningsSummary, setEarningsSummary] = useState(null);  // {current_month, totals}
   // 🔊 Persistent AudioContext — created on user gesture (toggleActive click) to bypass iOS Safari autoplay policy
   const audioCtxRef = useRef(null);
+  // 🔇 Oscillateur silencieux continu — maintient l'audio session iOS active pour
+  // permettre aux beeps suivants de jouer sans gesture utilisateur. Patch V9.1.
+  const keepAliveRef = useRef(null);
   // 🔒 Wake Lock — keep iPhone screen ON while driver is active so the red flash is visible
   const wakeLockRef = useRef(null);
   // 🚨 Patch V9 — overlay rouge plein écran dismissé manuellement (au lieu d'attendre la décision)
@@ -311,6 +314,11 @@ const DriverDashboard = () => {
     const onVisibilityChange = () => {
       if (document.visibilityState === 'visible' && driverLocation) {
         updateDriverLocation(driverLocation[0], driverLocation[1]);
+        // Patch V9.1 — Au retour foreground iOS, l'AudioContext est suspendu.
+        // Tente une resume (peut échouer sans gesture, mais ça vaut le coup d'essayer).
+        if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+          audioCtxRef.current.resume().catch(() => {});
+        }
       }
     };
     document.addEventListener('visibilitychange', onVisibilityChange);
@@ -323,23 +331,33 @@ const DriverDashboard = () => {
 
   const toggleActive = async () => {
     // 🔊 Initialize AudioContext on this user-gesture (iOS Safari requirement for autoplay)
+    // Patch V9.1 : démarre un oscillateur silencieux CONTINU pour empêcher iOS de
+    // suspendre l'audio session après inactivité (sans ça, le 2e bip ne sonne pas).
     if (!audioCtxRef.current) {
       try {
         const AC = window.AudioContext || window.webkitAudioContext;
         if (AC) {
           audioCtxRef.current = new AC();
-          // Play an inaudible blip to "unlock" the audio output on iOS
           const ctx = audioCtxRef.current;
           if (ctx.state === 'suspended') await ctx.resume();
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          gain.gain.value = 0.001;
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start();
-          osc.stop(ctx.currentTime + 0.01);
+          // Keep-alive : oscillateur silencieux qui tourne en permanence à gain quasi-zéro
+          const keepAliveOsc = ctx.createOscillator();
+          const keepAliveGain = ctx.createGain();
+          keepAliveOsc.type = 'sine';
+          keepAliveOsc.frequency.value = 1; // 1 Hz inaudible
+          keepAliveGain.gain.value = 0.00001; // gain quasi-zéro
+          keepAliveOsc.connect(keepAliveGain);
+          keepAliveGain.connect(ctx.destination);
+          keepAliveOsc.start();
+          keepAliveRef.current = keepAliveOsc;
         }
       } catch (_) { /* AudioContext may fail to init on very old browsers */ }
+    } else {
+      // Si AudioContext existe déjà mais suspendu (ex: nouvelle session après backgrounding),
+      // ce gesture est l'occasion de le relancer.
+      try {
+        if (audioCtxRef.current.state === 'suspended') await audioCtxRef.current.resume();
+      } catch (_) { /* iOS may reject without gesture */ }
     }
     setLoading(true);
     try {
@@ -351,6 +369,11 @@ const DriverDashboard = () => {
       
       if (response.data.is_active && driverLocation) {
         updateDriverLocation(driverLocation[0], driverLocation[1]);
+      }
+      // Quand le chauffeur se déconnecte, arrête le keep-alive pour économiser la batterie
+      if (!response.data.is_active && keepAliveRef.current) {
+        try { keepAliveRef.current.stop(); } catch (_) { /* already stopped */ }
+        keepAliveRef.current = null;
       }
     } catch (error) {
       toast.error(t('common.statusChangeError'));
