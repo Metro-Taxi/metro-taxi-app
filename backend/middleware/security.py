@@ -37,8 +37,9 @@ failed_login_attempts: Dict[str, Dict] = {}
 # Suspicious activity tracker
 suspicious_activity: Dict[str, int] = {}
 
-# Thresholds
-MAX_FAILED_LOGIN_ATTEMPTS = 5
+# Thresholds (Patch V9 06/2026 — assoupli après reset manuel Capitaine)
+# Track par (email + IP) au lieu de IP seule pour éviter de bloquer un café/WiFi public
+MAX_FAILED_LOGIN_ATTEMPTS = 8
 LOGIN_LOCKOUT_MINUTES = 15
 MAX_SUSPICIOUS_SCORE = 10
 IP_BAN_DURATION_MINUTES = 30
@@ -131,52 +132,72 @@ def increment_suspicious_score(ip: str, reason: str):
 # LOGIN PROTECTION
 # ============================================
 
+def _login_key(ip: str, email: str = None) -> str:
+    """Compose la clé de tracking par (email + IP) pour éviter de bloquer un WiFi
+    partagé sur un échec d'un autre user. Fallback IP-only si email absent."""
+    if email:
+        return f"{email.lower().strip()}|{ip}"
+    return ip
+
+
 def record_failed_login(ip: str, email: str = None):
-    """Record a failed login attempt"""
-    if ip not in failed_login_attempts:
-        failed_login_attempts[ip] = {
+    """Record a failed login attempt (tracké par email+IP, Patch V9)"""
+    key = _login_key(ip, email)
+    if key not in failed_login_attempts:
+        failed_login_attempts[key] = {
             "count": 0,
             "first_attempt": datetime.now(timezone.utc),
             "locked_until": None,
-            "emails": set()
+            "emails": set(),
+            "ip": ip,
         }
     
-    data = failed_login_attempts[ip]
+    data = failed_login_attempts[key]
     data["count"] += 1
     if email:
         data["emails"].add(email)
     
-    logger.warning(f"🔐 Failed login attempt from {ip} (Count: {data['count']}, Email: {email})")
+    logger.warning(f"🔐 Failed login attempt [{key}] (Count: {data['count']})")
     
     if data["count"] >= MAX_FAILED_LOGIN_ATTEMPTS:
         data["locked_until"] = datetime.now(timezone.utc) + timedelta(minutes=LOGIN_LOCKOUT_MINUTES)
-        logger.warning(f"🔒 IP {ip} locked out for {LOGIN_LOCKOUT_MINUTES} minutes after {data['count']} failed attempts")
+        logger.warning(f"🔒 Account [{key}] locked out for {LOGIN_LOCKOUT_MINUTES} minutes after {data['count']} failed attempts")
         
-        # If trying many different emails, it's likely a brute force attack
-        if len(data["emails"]) > 3:
+        # Brute force scan multi-comptes depuis la même IP — ban total
+        ip_attempts = [d for k, d in failed_login_attempts.items() if d.get("ip") == ip]
+        all_emails = set()
+        for d in ip_attempts:
+            all_emails.update(d.get("emails", set()))
+        if len(all_emails) > 5:
             block_ip(ip, IP_BAN_DURATION_MINUTES * 2)
 
-def is_login_allowed(ip: str) -> tuple[bool, str]:
-    """Check if login is allowed from this IP"""
-    if ip in failed_login_attempts:
-        data = failed_login_attempts[ip]
+def is_login_allowed(ip: str, email: str = None) -> tuple[bool, str]:
+    """Check if login is allowed for this (email+IP) combination"""
+    key = _login_key(ip, email)
+    if key in failed_login_attempts:
+        data = failed_login_attempts[key]
         if data["locked_until"]:
             if datetime.now(timezone.utc) < data["locked_until"]:
                 remaining = (data["locked_until"] - datetime.now(timezone.utc)).seconds // 60
-                return False, f"Too many failed attempts. Try again in {remaining + 1} minutes."
+                return False, f"Trop de tentatives. Réessayez dans {remaining + 1} minute(s) ou cliquez sur 'Mot de passe oublié ?'."
             else:
                 # Reset after lockout period
-                failed_login_attempts[ip] = {
+                failed_login_attempts[key] = {
                     "count": 0,
                     "first_attempt": datetime.now(timezone.utc),
                     "locked_until": None,
-                    "emails": set()
+                    "emails": set(),
+                    "ip": ip,
                 }
     return True, ""
 
-def clear_failed_login(ip: str):
-    """Clear failed login attempts after successful login"""
-    if ip in failed_login_attempts:
+def clear_failed_login(ip: str, email: str = None):
+    """Clear failed login attempts after successful login (par email+IP)"""
+    key = _login_key(ip, email)
+    if key in failed_login_attempts:
+        del failed_login_attempts[key]
+    # Backward compat : nettoie aussi l'ancienne clé IP-only si présente
+    if email and ip in failed_login_attempts:
         del failed_login_attempts[ip]
 
 # ============================================

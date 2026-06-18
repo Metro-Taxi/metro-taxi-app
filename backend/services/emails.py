@@ -1111,3 +1111,62 @@ async def send_admin_personal_email(to_email: str, recipient_name: str, subject:
     except Exception as e:
         logging.error(f"Failed to send admin personal email to {to_email}: {str(e)}")
         return False
+
+
+
+async def send_password_reset_email(email: str, name: str, code: str):
+    """Send 6-digit password reset code via Resend.
+
+    Le code est valide 15 minutes. Aucun lien magique : l'utilisateur saisit le code
+    sur la page Mot de passe oublié (plus simple sur mobile).
+    """
+    if not RESEND_API_KEY:
+        logging.warning("RESEND_API_KEY not configured, skipping password reset email")
+        return False
+
+    subject = "Réinitialisation mot de passe - Métro-Taxi"
+    html = f"""
+    <!DOCTYPE html>
+    <html><head><meta charset="utf-8"></head>
+    <body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#0a0a0a;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 0;">
+        <tr><td align="center">
+          <table width="600" cellpadding="0" cellspacing="0" style="background:#18181b;border-radius:8px;overflow:hidden;">
+            <tr><td style="background:#FFD60A;padding:24px;text-align:center;">
+              <h1 style="margin:0;color:#000;font-size:24px;font-weight:bold;">MÉTRO-TAXI</h1>
+            </td></tr>
+            <tr><td style="padding:30px;">
+              <h2 style="color:#fff;margin:0 0 12px 0;font-size:20px;">Bonjour {name},</h2>
+              <p style="color:#a1a1aa;margin:0 0 24px 0;font-size:15px;">
+                Vous avez demandé à réinitialiser votre mot de passe. Voici votre code de vérification :
+              </p>
+              <div style="background:#0a0a0a;border:2px solid #FFD60A;border-radius:8px;padding:24px;text-align:center;margin:0 0 24px 0;">
+                <p style="color:#FFD60A;margin:0;font-size:36px;font-weight:bold;letter-spacing:8px;font-family:monospace;">{code}</p>
+              </div>
+              <p style="color:#a1a1aa;margin:0 0 12px 0;font-size:14px;">
+                Ce code est valide pendant <strong style="color:#fff;">15 minutes</strong>.
+              </p>
+              <p style="color:#71717a;margin:24px 0 0 0;font-size:13px;">
+                Si vous n'avez pas demandé cette réinitialisation, ignorez simplement cet email — votre mot de passe restera inchangé.
+              </p>
+            </td></tr>
+            <tr><td style="background:#09090b;padding:20px;text-align:center;">
+              <p style="color:#52525b;margin:0;font-size:11px;">© 2026 Métro-Taxi · Saint-Denis</p>
+            </td></tr>
+          </table>
+        </td></tr>
+      </table>
+    </body></html>
+    """
+    try:
+        result = await asyncio.to_thread(resend.Emails.send, {
+            "from": SENDER_EMAIL,
+            "to": [email],
+            "subject": subject,
+            "html": html,
+        })
+        logging.info(f"Password reset code sent to {email}, ID: {result.get('id')}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send password reset email to {email}: {str(e)}")
+        return False

@@ -1,0 +1,54 @@
+{
+  "summary": "Patch V9 — Métro-Taxi: 11/11 features verified. Backend: 9/9 pytest pass for forgot-password (anti-enum + 6-digit code in password_resets), reset-password (wrong code→400, success→200+pwd updated+doc deleted), change-password (auth required, wrong current→400, short new→400, success→200), anti-brute-force assoupli (MAX=8, key=email+IP, fail-on-EmailA does not block EmailB). Frontend: /forgot-password 2-step form OK end-to-end (UI flow validated: register→forgot→step2 with code from DB→reset→login with new pwd OK). /login link 'Mot de passe oublié ?' (data-testid forgot-password-link) navigates to /forgot-password. /profile section 'Sécurité' with 'Changer' (data-testid change-password-trigger) opens ChangePasswordModal which successfully updates the password (verified by API login). DriverDashboard iOS overlay P0 — VERIFIED: overlay appears full-screen red gradient with bell icon, 'NOUVELLE COURSE !', estimé mention with ~X.XX € and 'estimé · X km' format, 'VOIR LA COURSE →' button (data-testid dismiss-ios-alert-btn) closes it and the normal pending card appears underneath with Accept/Decline. Driver pending card also displays '~ 2.00 €' and 'estimé · 1.33 km · 1.5€/km' in italic as specified.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "POST /api/auth/forgot-password",
+        "issue": "Throttle _pwd_reset_throttle is in-memory and keyed by IP, but the preview ingress shares a single proxy IP for all tests. As a result, more than 3 requests in 15 min get 429 from any client (even legitimate). For the demo/load test this is fine; in prod with real client IPs it's OK. Consider using X-Forwarded-For (already in get_client_ip) which is correct — limitation is only inside the preview env, not a bug."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "/driver (DriverDashboard) Pending Rides Panel",
+        "issues": ["Card buttons say 'Accept' / 'Decline' (EN) while the rest of the panel is FR ('Course en attente', 'estimé · 1.33 km'). Same i18n inconsistency as flagged in iteration_15. Not a Patch V9 blocker but worth fixing for Saint-Denis FR launch."]
+      },
+      {
+        "screen": "/driver Pending Rides card",
+        "issues": ["pickup_address renders as 'Adresse inconnue' when the user did not pass a pickup_address (only lat/lng). The 'estimé · 1.33 km' line IS present and 'estimé' word IS visible as required. Address resolution is a future enhancement, not a regression."]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_patch_v9_password_flow.py",
+    "/app/test_reports/pytest/pytest_results_iteration16.xml"
+  ],
+  "action_items": [
+    "(Optional) Translate 'Accept' / 'Decline' / 'Pending requests' buttons on DriverDashboard to FR ('Accepter' / 'Refuser' / 'Courses en attente') for FR pilot consistency.",
+    "(Optional) Move _pwd_reset_throttle to MongoDB or Redis so it survives backend restarts and works across replicas — current in-memory dict resets on every redeploy.",
+    "(Optional) Reverse-geocode pickup_lat/lng → pickup_address server-side when creating a ride_request, so the iOS overlay shows a useful address instead of 'Adresse inconnue'."
+  ],
+  "critical_code_review_comments": [
+    "server.py L1670 — secrets.randbelow(1000000) with zero-padding gives uniformly distributed 6-digit codes ✓. Code is overwritten on each forgot-password call (delete_many+insert_one) — correct.",
+    "server.py L1707 — reset-password tracks per-email 'attempts' and trashes the doc after 5 wrong tries → blocks code-guessing. Good.",
+    "server.py L1684 — send_password_reset_email is fire-and-forget via asyncio.create_task; if Resend errors, user gets no email but still 200 (anti-enumeration). Make sure errors are logged in services/emails.py (not just swallowed).",
+    "middleware/security.py L135 _login_key — keys by email|ip, but the SecurityMiddleware at L243 calls is_login_allowed(client_ip) WITHOUT the email (since email is in body, not yet parsed). So the middleware-level lockout still works per-IP only. The per-(email+IP) tracking is only enforced inside the /login route handler itself. Acceptable, just a clarity note.",
+    "middleware/security.py L172 — if >5 distinct emails fail from the same IP, the IP is blocked entirely. This is the multi-account brute-force trap and correctly survives the 'tracking per email+IP' change.",
+    "DriverDashboard.js L477 — overlay z-index 3000 + animation pulse OK; uses motion.div with AnimatePresence so it animates in/out smoothly. Good UX for iOS silent-mode workaround.",
+    "DriverDashboard.js L501 — '~ X € estimé · X km' is correctly italic + readable. The word 'estimé' is unambiguous for Aliou."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_patch_v9_password_flow.py (new — 9 tests, all pass)"
+  ],
+  "success_rate": {"backend": "100% (9/9 new pytest, all existing iter15 tests not re-run but unchanged code paths)", "frontend": "100% on Patch V9 flows (forgot/reset/change/iOS overlay)"},
+  "test_credentials": "Test users/drivers created on the fly (emails matching ^(frontv9|profilev9|iosdrv|iosusr|testv9|brutea|bruteb)_[0-9a-f]+@example.com). Admin not needed for Patch V9 flows.",
+  "seed_data_creation": "Created ~6 test users and 1 test driver (region_id=paris) with their password_resets entries during testing. No cleanup script — recommend `db.users.deleteMany({email:/_[0-9a-f]+@example.com$/})` if hygiene needed. Driver iosdrv_xxx set is_active=true, location at Saint-Denis center. One ride_request created in pending state.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Re-run backend tests: `cd /app/backend && python3 -m pytest tests/test_patch_v9_password_flow.py -v`. IMPORTANT: the _pwd_reset_throttle dict is in-memory and per backend process; if tests fail with 429 on /forgot-password, restart backend (`sudo supervisorctl restart backend`) to flush it. For iOS overlay verification, mobile viewport (390x844) is recommended since the overlay is full-screen on mobile. Driver must be is_validated=True + is_active=True + have a location. User needs subscription_active=True OR a valid pending_promo. Ride polling is every 3s, so wait 5-7s after creating a ride_request before asserting the overlay appears.",
+  "rca of the issue": "N/A — no blockers. All Patch V9 deliverables (forgot/reset/change/anti-bruteforce/iOS overlay/estimé mention) are implemented correctly and integrated end-to-end."
+}

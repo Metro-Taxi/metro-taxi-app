@@ -20,6 +20,7 @@ const removeSplashScreen = () => {
 // Pages
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
+import ForgotPassword from "@/pages/ForgotPassword";
 import RegisterUser from "@/pages/RegisterUser";
 import RegisterDriver from "@/pages/RegisterDriver";
 import UserDashboard from "@/pages/UserDashboard";
@@ -109,6 +110,7 @@ function AppRoutes() {
       {/* Public Routes */}
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+      <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
       <Route path="/register/user" element={<PublicRoute><RegisterUser /></PublicRoute>} />
       <Route path="/register/driver" element={<PublicRoute><RegisterDriver /></PublicRoute>} />
       {/* Marketing-friendly short URLs for social media campaigns */}

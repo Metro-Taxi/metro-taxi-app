@@ -193,6 +193,16 @@ const Login = () => {
                 t('auth.login.submit')
               )}
             </Button>
+
+            <div className="text-center">
+              <Link
+                to="/forgot-password"
+                className="text-zinc-400 hover:text-[#FFD60A] text-sm transition-colors"
+                data-testid="forgot-password-link"
+              >
+                {t('auth.login.forgotPassword', 'Mot de passe oublié ?')}
+              </Link>
+            </div>
           </form>
           )}
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Car, User, LogOut, Menu, X, Power, MapPin, Check, XCircle, Users, Navigation, Wallet, ArrowLeft, Globe, HelpCircle, Loader2 } from 'lucide-react';
+import { Car, User, LogOut, Menu, X, Power, MapPin, Check, XCircle, Users, Navigation, Wallet, ArrowLeft, Globe, HelpCircle, Loader2, BellRing, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -11,6 +11,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import DriverEarnings from './DriverEarnings';
 import HelpCenter from '@/components/HelpCenter';
+import ChangePasswordModal from '@/components/ChangePasswordModal';
 import 'leaflet/dist/leaflet.css';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -86,6 +87,12 @@ const DriverDashboard = () => {
   const [earningsSummary, setEarningsSummary] = useState(null);  // {current_month, totals}
   // 🔊 Persistent AudioContext — created on user gesture (toggleActive click) to bypass iOS Safari autoplay policy
   const audioCtxRef = useRef(null);
+  // 🔒 Wake Lock — keep iPhone screen ON while driver is active so the red flash is visible
+  const wakeLockRef = useRef(null);
+  // 🚨 Patch V9 — overlay rouge plein écran dismissé manuellement (au lieu d'attendre la décision)
+  const [alertDismissed, setAlertDismissed] = useState(false);
+  // 🔑 Patch V9 — modale changement de mot de passe
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   // Paris center as default (fallback only)
   const defaultCenter = [48.8566, 2.3522];
@@ -162,6 +169,8 @@ const DriverDashboard = () => {
       // 🔔 Beep when a NEW ride request arrives (count increases)
       if (rides.length > prevPendingCountRef.current) {
         playNewRideBeep();
+        // Patch V9 — réactive l'alerte visuelle si nouvelle course après dismissal
+        setAlertDismissed(false);
       }
       prevPendingCountRef.current = rides.length;
       setPendingRides(rides);
@@ -232,6 +241,65 @@ const DriverDashboard = () => {
       return () => clearInterval(interval);
     }
   }, [isActive, fetchPendingRides, fetchActiveRide]);
+
+  // 🚨 Patch V9 — Wake Lock + beep en boucle + flash titre tant qu'il y a une course en attente
+  // Solution iOS mode silencieux : flash visuel rouge plein écran (voir overlay JSX) +
+  // l'écran est maintenu allumé via l'API Wake Lock (iOS 16.4+).
+  useEffect(() => {
+    let acquired = false;
+    const acquireWakeLock = async () => {
+      if ('wakeLock' in navigator && isActive) {
+        try {
+          wakeLockRef.current = await navigator.wakeLock.request('screen');
+          acquired = true;
+        } catch (_) { /* iOS may refuse if tab is hidden */ }
+      }
+    };
+    acquireWakeLock();
+    const onVisible = () => {
+      if (document.visibilityState === 'visible' && isActive && !wakeLockRef.current) {
+        acquireWakeLock();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      if (acquired && wakeLockRef.current) {
+        try { wakeLockRef.current.release(); } catch (_) { /* released anyway */ }
+        wakeLockRef.current = null;
+      }
+    };
+  }, [isActive]);
+
+  // 🔁 Beep + vibration en boucle (toutes les 2s) tant qu'une course est en attente
+  // et que le chauffeur n'a pas dismissé l'alerte. Sur Android le bip retentit, sur
+  // iOS en silencieux c'est la vibration + le flash visuel qui prennent le relais.
+  const showAlert = pendingRides.length > 0 && !alertDismissed && !activeRide;
+  useEffect(() => {
+    if (!showAlert) return;
+    const interval = setInterval(() => {
+      playNewRideBeep();
+    }, 2000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAlert]);
+
+  // 🔔 Flash du titre de l'onglet ("🚨 COURSE !") tant que l'alerte est active —
+  // utile si le chauffeur a switché d'onglet ou si l'iPhone est en standby (visible
+  // sur le centre de notifications).
+  useEffect(() => {
+    if (!showAlert) return;
+    const originalTitle = document.title;
+    let toggle = false;
+    const interval = setInterval(() => {
+      toggle = !toggle;
+      document.title = toggle ? '🚨 NOUVELLE COURSE !' : '⚪ Métro-Taxi';
+    }, 700);
+    return () => {
+      clearInterval(interval);
+      document.title = originalTitle;
+    };
+  }, [showAlert]);
 
   // 💓 Heartbeat: push driver position to server every 30s even if not moving,
   // and immediately when app returns to foreground. Prevents "ghost driver" stale GPS.
@@ -394,6 +462,64 @@ const DriverDashboard = () => {
 
   return (
     <div className="h-screen w-full bg-[#09090B] relative overflow-hidden">
+      {/* 🚨 Patch V9 — OVERLAY VISUEL ROUGE PLEIN ÉCRAN
+          Contourne le blocage audio iOS (mode silencieux physique).
+          Reste visible tant qu'une course est en attente et que le chauffeur
+          n'a pas tapé "Voir la course". Anti-doom : un bouton dismiss permet
+          de basculer sur la card classique sans rater l'info. */}
+      <AnimatePresence>
+        {showAlert && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[3000] flex flex-col items-center justify-center p-6"
+            data-testid="ios-ride-alert-overlay"
+            style={{
+              background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
+              animation: 'metroFlash 0.6s ease-in-out infinite alternate',
+            }}
+          >
+            <style>{`
+              @keyframes metroFlash {
+                0%   { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); }
+                100% { background: linear-gradient(135deg, #fbbf24 0%, #dc2626 100%); }
+              }
+            `}</style>
+            <BellRing className="w-24 h-24 text-white mb-4 animate-bounce" strokeWidth={2.5} />
+            <h1 className="text-white text-5xl font-black uppercase tracking-wider mb-2 text-center drop-shadow-lg">
+              Nouvelle course !
+            </h1>
+            <p className="text-white/90 text-xl font-bold mb-8 text-center">
+              {pendingRides.length} demande{pendingRides.length > 1 ? 's' : ''} en attente
+            </p>
+            {pendingRides[0] && (
+              <div className="bg-black/40 backdrop-blur-sm border-2 border-white/30 rounded-2xl p-5 mb-6 max-w-md w-full">
+                <p className="text-white font-bold text-lg mb-1">{pendingRides[0].user_name}</p>
+                {pendingRides[0].estimated_payout != null && (
+                  <p className="text-yellow-300 text-2xl font-black">
+                    ~ {pendingRides[0].estimated_payout.toFixed(2)} € <span className="text-base font-normal italic">estimé · {pendingRides[0].estimated_km} km</span>
+                  </p>
+                )}
+                <p className="text-white/80 text-sm mt-2 truncate">
+                  📍 {pendingRides[0].pickup_address || 'Adresse en cours...'}
+                </p>
+              </div>
+            )}
+            <Button
+              onClick={() => setAlertDismissed(true)}
+              className="bg-white text-red-700 font-black text-xl h-16 px-12 rounded-full shadow-2xl hover:bg-zinc-100 hover:scale-105 transition-transform"
+              data-testid="dismiss-ios-alert-btn"
+            >
+              VOIR LA COURSE →
+            </Button>
+            <p className="text-white/70 text-xs mt-6 text-center max-w-xs">
+              💡 Tape ci-dessus pour ouvrir la fiche et accepter / refuser la course
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-[1000] glass-panel">
         <div className="flex justify-between items-center px-4 py-3">
@@ -508,6 +634,16 @@ const DriverDashboard = () => {
               >
                 <HelpCircle className="w-5 h-5 mr-3 text-[#FFD60A]" />
                 {t('help.button', 'AIDE')}
+              </Button>
+
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-zinc-300 hover:bg-zinc-800"
+                onClick={() => { setShowChangePassword(true); setMenuOpen(false); }}
+                data-testid="driver-change-password-btn"
+              >
+                <KeyRound className="w-5 h-5 mr-3 text-[#FFD60A]" />
+                Changer le mot de passe
               </Button>
               
               <Button 
@@ -654,8 +790,8 @@ const DriverDashboard = () => {
                       </div>
                       {ride.estimated_payout != null && (
                         <div className="text-right">
-                          <p className="text-[#FFD60A] font-black text-xl leading-none">{ride.estimated_payout.toFixed(2)} €</p>
-                          <p className="text-xs text-zinc-500">{ride.estimated_km} km · {ride.rate_per_km}€/km</p>
+                          <p className="text-[#FFD60A] font-black text-xl leading-none">~ {ride.estimated_payout.toFixed(2)} €</p>
+                          <p className="text-xs text-zinc-400 italic">estimé · {ride.estimated_km} km · {ride.rate_per_km}€/km</p>
                         </div>
                       )}
                     </div>
@@ -866,6 +1002,9 @@ const DriverDashboard = () => {
         onClose={() => setShowHelp(false)} 
         userType="driver" 
       />
+
+      {/* Patch V9 — Modale changement de mot de passe */}
+      <ChangePasswordModal open={showChangePassword} onClose={() => setShowChangePassword(false)} />
     </div>
   );
 };

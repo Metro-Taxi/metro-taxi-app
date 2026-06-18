@@ -1430,18 +1430,26 @@ async def login(data: LoginRequest, request: Request):
     # Get client IP for security tracking
     client_ip = get_client_ip(request)
     
-    # Check if login is allowed (brute force protection)
-    allowed, message = is_login_allowed(client_ip)
+    # Check if login is allowed (brute force protection — Patch V9 tracks email+IP)
+    allowed, message = is_login_allowed(client_ip, data.email)
     if not allowed:
         raise HTTPException(status_code=429, detail=message)
     
-    # Check users first
+    # PRIORITY ORDER (Patch V8.1 — Edgar bug fix):
+    # Drivers FIRST so a driver with a duplicate user account gets driver dashboard
+    driver = await db.drivers.find_one({"email": data.email}, {"_id": 0})
+    if driver and verify_password(data.password, driver["password"]):
+        if not driver.get("is_validated"):
+            raise HTTPException(status_code=403, detail="Compte en attente de validation admin")
+        clear_failed_login(client_ip, data.email)
+        token = create_token(driver["id"], "driver")
+        return {"token": token, "driver": {k: v for k, v in driver.items() if k != "password"}}
+    
+    # Then users
     user = await db.users.find_one({"email": data.email}, {"_id": 0})
     if user and verify_password(data.password, user["password"]):
-        # Clear failed attempts on successful login
-        clear_failed_login(client_ip)
+        clear_failed_login(client_ip, data.email)
         user_data = {k: v for k, v in user.items() if k != "password"}
-        # Check if user is admin — require 2FA OTP
         if user.get("role") == "admin":
             await _initiate_admin_otp(user["email"], client_ip)
             return {"otp_required": True, "email": user["email"], "message": "OTP envoyé par email"}
@@ -1449,21 +1457,10 @@ async def login(data: LoginRequest, request: Request):
             token = create_token(user["id"], "user")
             return {"token": token, "user": user_data}
     
-    # Check drivers
-    driver = await db.drivers.find_one({"email": data.email}, {"_id": 0})
-    if driver and verify_password(data.password, driver["password"]):
-        if not driver.get("is_validated"):
-            raise HTTPException(status_code=403, detail="Compte en attente de validation admin")
-        # Clear failed attempts on successful login
-        clear_failed_login(client_ip)
-        token = create_token(driver["id"], "driver")
-        return {"token": token, "driver": {k: v for k, v in driver.items() if k != "password"}}
-    
     # Check admin collection — require 2FA OTP
     admin = await db.admins.find_one({"email": data.email}, {"_id": 0})
     if admin and verify_password(data.password, admin["password"]):
-        # Clear failed attempts on successful login
-        clear_failed_login(client_ip)
+        clear_failed_login(client_ip, data.email)
         await _initiate_admin_otp(admin["email"], client_ip)
         return {"otp_required": True, "email": admin["email"], "message": "OTP envoyé par email"}
     
@@ -1601,6 +1598,182 @@ async def get_me(current_user: dict = Depends(get_current_user)):
             return {"admin": admin}
     
     raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+
+
+# ============================================
+# PASSWORD MANAGEMENT — Patch V9 (06/2026)
+# ============================================
+# 3 endpoints: forgot-password, reset-password, change-password
+# Anti-bombing : max 3 demandes / 15 min / IP
+from services.emails import send_password_reset_email
+
+_pwd_reset_throttle: dict[str, list[datetime]] = {}
+PWD_RESET_MAX_PER_IP = 3
+PWD_RESET_WINDOW_MINUTES = 15
+
+
+def _pwd_reset_email_allowed(client_ip: str) -> tuple[bool, int]:
+    """Limit le nombre d'emails de reset par IP pour éviter le spam."""
+    now = datetime.now(timezone.utc)
+    window_start = now - timedelta(minutes=PWD_RESET_WINDOW_MINUTES)
+    history = [t for t in _pwd_reset_throttle.get(client_ip, []) if t > window_start]
+    _pwd_reset_throttle[client_ip] = history
+    if len(history) >= PWD_RESET_MAX_PER_IP:
+        retry_after = int((history[0] + timedelta(minutes=PWD_RESET_WINDOW_MINUTES) - now).total_seconds())
+        return False, max(retry_after, 1)
+    return True, 0
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    code: str
+    new_password: str
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
+async def _find_account_by_email(email: str):
+    """Cherche dans drivers puis users (ordre cohérent avec login priority).
+    Retourne (collection_name, doc) ou (None, None)."""
+    driver = await db.drivers.find_one({"email": email}, {"_id": 0})
+    if driver:
+        return "drivers", driver
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    if user:
+        return "users", user
+    return None, None
+
+
+@api_router.post("/auth/forgot-password")
+async def forgot_password(data: ForgotPasswordRequest, request: Request):
+    """Génère un code à 6 chiffres valide 15 min et l'envoie par email.
+    Réponse identique que l'email existe ou non (anti-enumeration)."""
+    client_ip = get_client_ip(request)
+    allowed, retry_after = _pwd_reset_email_allowed(client_ip)
+    if not allowed:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Trop de demandes. Réessayez dans {retry_after // 60 + 1} min."
+        )
+
+    email = data.email.lower().strip()
+    collection_name, account = await _find_account_by_email(email)
+
+    if account:
+        code = f"{secrets.randbelow(1000000):06d}"
+        await db.password_resets.delete_many({"email": email})
+        await db.password_resets.insert_one({
+            "email": email,
+            "code": code,
+            "collection": collection_name,
+            "user_id": account["id"],
+            "expires_at": (datetime.now(timezone.utc) + timedelta(minutes=15)).isoformat(),
+            "attempts": 0,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "client_ip": client_ip,
+        })
+        _pwd_reset_throttle.setdefault(client_ip, []).append(datetime.now(timezone.utc))
+        name = account.get("first_name", "")
+        asyncio.create_task(send_password_reset_email(email, name, code))
+        logging.info(f"Password reset code generated for {email} from {client_ip}")
+
+    # Réponse identique dans tous les cas pour éviter l'énumération d'emails
+    return {"message": "Si un compte existe avec cet email, un code a été envoyé."}
+
+
+@api_router.post("/auth/reset-password")
+async def reset_password(data: ResetPasswordRequest, request: Request):
+    """Vérifie le code et met à jour le mot de passe."""
+    email = data.email.lower().strip()
+    reset = await db.password_resets.find_one({"email": email}, {"_id": 0})
+
+    if not reset:
+        raise HTTPException(status_code=400, detail="Code invalide ou expiré")
+
+    # Vérifier expiration
+    expires_at = datetime.fromisoformat(reset["expires_at"])
+    if expires_at < datetime.now(timezone.utc):
+        await db.password_resets.delete_many({"email": email})
+        raise HTTPException(status_code=400, detail="Code expiré. Demandez un nouveau code.")
+
+    # Anti-brute-force sur le code lui-même
+    if reset.get("attempts", 0) >= 5:
+        await db.password_resets.delete_many({"email": email})
+        raise HTTPException(status_code=429, detail="Trop de tentatives. Demandez un nouveau code.")
+
+    if reset["code"] != data.code.strip():
+        await db.password_resets.update_one(
+            {"email": email},
+            {"$inc": {"attempts": 1}}
+        )
+        raise HTTPException(status_code=400, detail="Code invalide")
+
+    # Validation longueur mot de passe
+    if len(data.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Le mot de passe doit faire au moins 8 caractères.")
+
+    # Mise à jour du mot de passe
+    new_hash = hash_password(data.new_password)
+    collection_name = reset["collection"]
+    user_id = reset["user_id"]
+    await db[collection_name].update_one(
+        {"id": user_id},
+        {"$set": {"password": new_hash}}
+    )
+    await db.password_resets.delete_many({"email": email})
+    # Reset également l'anti-brute-force login pour cet IP
+    client_ip = get_client_ip(request)
+    clear_failed_login(client_ip)
+    logging.info(f"Password reset successful for {email}")
+
+    return {"message": "Mot de passe mis à jour avec succès. Vous pouvez vous connecter."}
+
+
+@api_router.post("/auth/change-password")
+async def change_password(data: ChangePasswordRequest, current_user: dict = Depends(get_current_user)):
+    """Changement de mot de passe pour utilisateur connecté."""
+    if len(data.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Le nouveau mot de passe doit faire au moins 8 caractères.")
+
+    role = current_user["role"]
+    user_id = current_user["user_id"]
+
+    if role == "driver":
+        account = await db.drivers.find_one({"id": user_id}, {"_id": 0})
+        collection_name = "drivers"
+    elif role == "user":
+        account = await db.users.find_one({"id": user_id}, {"_id": 0})
+        collection_name = "users"
+    elif role == "admin":
+        account = await db.users.find_one({"id": user_id, "role": "admin"}, {"_id": 0})
+        collection_name = "users"
+        if not account:
+            account = await db.admins.find_one({"id": user_id}, {"_id": 0})
+            collection_name = "admins"
+    else:
+        raise HTTPException(status_code=403, detail="Type de compte non supporté")
+
+    if not account:
+        raise HTTPException(status_code=404, detail="Compte introuvable")
+
+    if not verify_password(data.current_password, account["password"]):
+        raise HTTPException(status_code=400, detail="Mot de passe actuel incorrect")
+
+    new_hash = hash_password(data.new_password)
+    await db[collection_name].update_one(
+        {"id": user_id},
+        {"$set": {"password": new_hash}}
+    )
+    logging.info(f"Password changed for {role} {account.get('email')}")
+    return {"message": "Mot de passe modifié avec succès"}
+
 
 # Payment routes extracted to routes/payments.py
 # Driver Location Routes

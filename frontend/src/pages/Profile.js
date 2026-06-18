@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Car, ArrowLeft, User, Phone, Mail, CreditCard, Calendar, Shield, QrCode, Globe } from 'lucide-react';
+import { Car, ArrowLeft, User, Phone, Mail, CreditCard, Calendar, Shield, QrCode, Globe, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import ChangePasswordModal from '@/components/ChangePasswordModal';
 import axios from 'axios';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -12,6 +13,7 @@ const Profile = () => {
   const { user, token } = useAuth();
   const [virtualCard, setVirtualCard] = useState(null);
   const [userRegions, setUserRegions] = useState([]);
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   useEffect(() => {
     if (user?.id) {
@@ -220,6 +222,36 @@ const Profile = () => {
           </div>
         </motion.div>
 
+        {/* Sécurité — changement de mot de passe (Patch V9) */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="mt-8 bg-[#18181B] border border-zinc-800 rounded p-6"
+        >
+          <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <Shield className="w-5 h-5 text-[#FFD60A]" />
+            Sécurité
+          </h2>
+          <div className="flex items-center justify-between p-4 bg-zinc-900 rounded">
+            <div className="flex items-center gap-3">
+              <KeyRound className="w-5 h-5 text-zinc-400" />
+              <div>
+                <p className="text-white font-medium">Mot de passe</p>
+                <p className="text-zinc-500 text-xs">Recommandé : change-le régulièrement</p>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              className="border-[#FFD60A]/40 text-[#FFD60A] hover:bg-[#FFD60A]/10"
+              onClick={() => setShowChangePassword(true)}
+              data-testid="change-password-trigger"
+            >
+              Changer
+            </Button>
+          </div>
+        </motion.div>
+
         {/* Subscription CTA */}
         {!user?.subscription_active && (
           <motion.div
@@ -243,6 +275,7 @@ const Profile = () => {
           </motion.div>
         )}
       </div>
+      <ChangePasswordModal open={showChangePassword} onClose={() => setShowChangePassword(false)} />
     </div>
   );
 };
