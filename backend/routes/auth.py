@@ -241,8 +241,23 @@ async def resend_verification(current_user: dict = Depends(get_current_user), re
 
 @router.post("/login")
 async def login(data: LoginRequest):
-    """Authenticate user and return JWT token"""
-    # Check users first
+    """Authenticate user and return JWT token.
+    
+    PRIORITY ORDER (fixed 18/06/2026 — bug Edgar):
+    1. Drivers FIRST — a driver who also has a user account (iPhone PWA workaround)
+       must always be logged in as DRIVER to access the driver dashboard.
+    2. Users SECOND
+    3. Admins LAST (legacy collection)
+    """
+    # 1. Check drivers FIRST (priority)
+    driver = await db.drivers.find_one({"email": data.email}, {"_id": 0})
+    if driver and verify_password(data.password, driver["password"]):
+        if not driver.get("is_validated"):
+            raise HTTPException(status_code=403, detail="Compte chauffeur en attente de validation admin")
+        token = create_token(driver["id"], "driver")
+        return {"token": token, "driver": {k: v for k, v in driver.items() if k != "password"}}
+    
+    # 2. Check users
     user = await db.users.find_one({"email": data.email}, {"_id": 0})
     if user and verify_password(data.password, user["password"]):
         user_data = {k: v for k, v in user.items() if k != "password"}
@@ -253,15 +268,7 @@ async def login(data: LoginRequest):
             token = create_token(user["id"], "user")
             return {"token": token, "user": user_data}
     
-    # Check drivers
-    driver = await db.drivers.find_one({"email": data.email}, {"_id": 0})
-    if driver and verify_password(data.password, driver["password"]):
-        if not driver.get("is_validated"):
-            raise HTTPException(status_code=403, detail="Compte en attente de validation admin")
-        token = create_token(driver["id"], "driver")
-        return {"token": token, "driver": {k: v for k, v in driver.items() if k != "password"}}
-    
-    # Check admin collection (legacy)
+    # 3. Check admin collection (legacy)
     admin = await db.admins.find_one({"email": data.email}, {"_id": 0})
     if admin and verify_password(data.password, admin["password"]):
         token = create_token(admin["id"], "admin")
