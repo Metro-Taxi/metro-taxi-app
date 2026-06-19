@@ -40,6 +40,8 @@ const Login = () => {
       
       if (result.driver) {
         navigate('/driver');
+      } else if (result.partner) {
+        navigate('/partner');
       } else {
         navigate('/dashboard');
       }

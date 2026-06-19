@@ -1170,3 +1170,142 @@ async def send_password_reset_email(email: str, name: str, code: str):
     except Exception as e:
         logging.error(f"Failed to send password reset email to {email}: {str(e)}")
         return False
+
+
+
+async def send_partner_application_alert(partner: dict):
+    """Alerte instantanée à l'admin quand un nouveau commerce/ambulant postule.
+    Patch V10 - 19/06/2026."""
+    founder_email = os.environ.get('FOUNDER_ALERT_EMAIL')
+    if not founder_email or not RESEND_API_KEY:
+        return False
+    
+    type_label = {
+        "commerce_fixe": "🏪 Commerce fixe",
+        "ambulant": "🚶 Ambassadeur ambulant",
+        "entreprise": "🏢 Entreprise",
+    }.get(partner.get("partner_type", ""), "Partenaire")
+    
+    address = ""
+    if partner.get("street_address"):
+        address = f"{partner['street_address']}, {partner.get('postal_code', '')} {partner.get('city', '')}"
+    elif partner.get("activity_zone"):
+        address = f"Zone : {partner['activity_zone']}"
+    
+    html = f"""
+    <!DOCTYPE html>
+    <html><head><meta charset="utf-8"></head>
+    <body style="margin:0;padding:30px;background:#0a0a0a;font-family:Arial,sans-serif;color:#fff;">
+      <div style="max-width:560px;margin:0 auto;background:#18181B;border-radius:12px;overflow:hidden;border-top:4px solid #FFD60A;">
+        <div style="background:#FFD60A;padding:20px;text-align:center;">
+          <h1 style="margin:0;color:#000;font-size:20px;font-weight:bold;">📋 NOUVELLE DEMANDE PARTENAIRE</h1>
+          <p style="margin:6px 0 0 0;color:#000;font-size:13px;">{type_label}</p>
+        </div>
+        <div style="padding:24px;">
+          <h2 style="color:#FFD60A;margin:0 0 16px 0;font-size:22px;">{partner['business_name']}</h2>
+          <table style="width:100%;color:#fff;font-size:14px;border-collapse:collapse;">
+            <tr><td style="padding:6px 0;color:#a1a1aa;width:140px;">Contact :</td><td>{partner['contact_first_name']} {partner['contact_last_name']}</td></tr>
+            <tr><td style="padding:6px 0;color:#a1a1aa;">Email :</td><td><a href="mailto:{partner['email']}" style="color:#FFD60A;">{partner['email']}</a></td></tr>
+            <tr><td style="padding:6px 0;color:#a1a1aa;">Téléphone :</td><td><a href="tel:{partner['phone']}" style="color:#FFD60A;">{partner['phone']}</a></td></tr>
+            {f'<tr><td style="padding:6px 0;color:#a1a1aa;">Adresse :</td><td>{address}</td></tr>' if address else ''}
+            {f'<tr><td style="padding:6px 0;color:#a1a1aa;">SIRET :</td><td>{partner["siret"]}</td></tr>' if partner.get("siret") else ''}
+            <tr><td style="padding:6px 0;color:#a1a1aa;">Code attribué :</td><td><strong style="color:#FFD60A;font-family:monospace;font-size:18px;">{partner['referral_code']}</strong></td></tr>
+            <tr><td style="padding:6px 0;color:#a1a1aa;">Contact préf. :</td><td>{partner.get('preferred_contact', 'email')}</td></tr>
+          </table>
+          {f'<div style="margin-top:16px;padding:14px;background:#0a0a0a;border-left:3px solid #FFD60A;border-radius:4px;"><p style="margin:0;color:#a1a1aa;font-size:13px;">Motivation :</p><p style="margin:8px 0 0 0;color:#fff;">{partner["motivation"]}</p></div>' if partner.get("motivation") else ''}
+          <div style="margin-top:24px;text-align:center;">
+            <a href="https://metro-taxi.com/admin?tab=partners" style="display:inline-block;background:#FFD60A;color:#000;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;">
+              VALIDER DANS L'ADMIN →
+            </a>
+          </div>
+        </div>
+        <div style="background:#09090b;padding:14px;text-align:center;">
+          <p style="margin:0;color:#52525b;font-size:11px;">© 2026 Métro-Taxi · 918 687 864 RCS Bobigny</p>
+        </div>
+      </div>
+    </body></html>
+    """
+    try:
+        await asyncio.to_thread(resend.Emails.send, {
+            "from": SENDER_EMAIL,
+            "to": [founder_email],
+            "subject": f"📋 Partenaire : {partner['business_name']} ({partner['referral_code']})",
+            "html": html,
+        })
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send partner application alert: {e}")
+        return False
+
+
+async def send_partner_welcome_email(email: str, first_name: str, business_name: str, referral_code: str, temp_password: str):
+    """Email de bienvenue avec identifiants de connexion après validation admin.
+    Patch V10 - 19/06/2026."""
+    if not RESEND_API_KEY:
+        return False
+    
+    qr_url = f"https://metro-taxi.com/inscription?ref={referral_code}"
+    
+    html = f"""
+    <!DOCTYPE html>
+    <html><head><meta charset="utf-8"></head>
+    <body style="margin:0;padding:30px;background:#0a0a0a;font-family:Arial,sans-serif;color:#fff;">
+      <div style="max-width:600px;margin:0 auto;background:#18181B;border-radius:12px;overflow:hidden;">
+        <div style="background:#FFD60A;padding:30px;text-align:center;">
+          <h1 style="margin:0;color:#000;font-size:26px;font-weight:bold;">🎉 BIENVENUE PARTENAIRE !</h1>
+          <p style="margin:8px 0 0 0;color:#000;font-size:15px;">Ta candidature a été validée</p>
+        </div>
+        <div style="padding:30px;">
+          <p style="margin:0 0 18px 0;color:#fff;font-size:16px;">Bonjour {first_name},</p>
+          <p style="margin:0 0 24px 0;color:#a1a1aa;font-size:14px;line-height:1.5;">
+            Félicitations ! Le partenariat <strong style="color:#fff;">{business_name}</strong> × Métro-Taxi est officiellement actif. Tu vas maintenant gagner <strong style="color:#FFD60A;">15% de commission</strong> sur chaque abonnement signé via ton code parrainage.
+          </p>
+          
+          <div style="background:#0a0a0a;border:2px solid #FFD60A;border-radius:8px;padding:20px;margin:24px 0;">
+            <p style="margin:0 0 8px 0;color:#a1a1aa;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Ton code parrainage</p>
+            <p style="margin:0;color:#FFD60A;font-size:42px;font-weight:bold;letter-spacing:6px;font-family:monospace;text-align:center;">{referral_code}</p>
+          </div>
+          
+          <h3 style="color:#FFD60A;margin:24px 0 12px 0;font-size:16px;">🔑 Tes identifiants de connexion :</h3>
+          <table style="width:100%;background:#0a0a0a;border-radius:6px;padding:14px;">
+            <tr><td style="padding:6px 0;color:#a1a1aa;width:140px;font-size:13px;">Email :</td><td style="color:#fff;font-family:monospace;">{email}</td></tr>
+            <tr><td style="padding:6px 0;color:#a1a1aa;font-size:13px;">Mot de passe :</td><td style="color:#FFD60A;font-family:monospace;font-weight:bold;">{temp_password}</td></tr>
+          </table>
+          
+          <p style="margin:18px 0 0 0;color:#a1a1aa;font-size:13px;">
+            ⚠️ Change ce mot de passe dès ta première connexion via <strong>Profil → Sécurité → Changer</strong>.
+          </p>
+          
+          <div style="margin:30px 0;text-align:center;">
+            <a href="https://metro-taxi.com/partner/login" style="display:inline-block;background:#FFD60A;color:#000;padding:14px 28px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:15px;">
+              ACCÉDER À MON DASHBOARD →
+            </a>
+          </div>
+          
+          <h3 style="color:#FFD60A;margin:32px 0 12px 0;font-size:16px;">📲 Comment promouvoir ?</h3>
+          <ul style="color:#a1a1aa;font-size:14px;line-height:1.7;padding-left:20px;">
+            <li>Imprime ton <strong style="color:#fff;">QR code</strong> depuis ton dashboard et colle-le sur ta vitrine</li>
+            <li>Partage ton lien personnalisé : <a href="{qr_url}" style="color:#FFD60A;word-break:break-all;">{qr_url}</a></li>
+            <li>Dis simplement à tes clients : <em style="color:#fff;">"Utilisez le code <strong>{referral_code}</strong> à l'inscription"</em></li>
+            <li>Suis tes signups et commissions en temps réel sur ton dashboard</li>
+          </ul>
+        </div>
+        <div style="background:#09090b;padding:18px;text-align:center;">
+          <p style="margin:0;color:#52525b;font-size:11px;">© 2026 Métro-Taxi · SIRET 918 687 864 RCS Bobigny</p>
+          <p style="margin:6px 0 0 0;color:#52525b;font-size:11px;">Une question ? Réponds à cet email.</p>
+        </div>
+      </div>
+    </body></html>
+    """
+    try:
+        await asyncio.to_thread(resend.Emails.send, {
+            "from": SENDER_EMAIL,
+            "to": [email],
+            "subject": f"🎉 Bienvenue partenaire Métro-Taxi — Code {referral_code}",
+            "html": html,
+        })
+        logging.info(f"Partner welcome email sent to {email}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send partner welcome email to {email}: {e}")
+        return False

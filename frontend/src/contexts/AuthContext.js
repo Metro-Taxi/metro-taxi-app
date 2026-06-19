@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [driver, setDriver] = useState(null);
   const [admin, setAdmin] = useState(null);
+  const [partner, setPartner] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
@@ -22,6 +23,7 @@ export const AuthProvider = ({ children }) => {
           if (response.data.user) setUser(response.data.user);
           if (response.data.driver) setDriver(response.data.driver);
           if (response.data.admin) setAdmin(response.data.admin);
+          if (response.data.partner) setPartner(response.data.partner);
         } catch (error) {
           console.error('Auth init error:', error);
           localStorage.removeItem('token');
@@ -41,7 +43,7 @@ export const AuthProvider = ({ children }) => {
       return response.data;
     }
     
-    const { token: newToken, user: userData, driver: driverData, admin: adminData } = response.data;
+    const { token: newToken, user: userData, driver: driverData, admin: adminData, partner: partnerData } = response.data;
     
     localStorage.setItem('token', newToken);
     setToken(newToken);
@@ -49,6 +51,7 @@ export const AuthProvider = ({ children }) => {
     if (userData) setUser(userData);
     if (driverData) setDriver(driverData);
     if (adminData) setAdmin(adminData);
+    if (partnerData) setPartner(partnerData);
     
     return response.data;
   };
@@ -92,6 +95,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setDriver(null);
     setAdmin(null);
+    setPartner(null);
   };
 
   const refreshUser = async () => {
@@ -103,6 +107,7 @@ export const AuthProvider = ({ children }) => {
         if (response.data.user) setUser(response.data.user);
         if (response.data.driver) setDriver(response.data.driver);
         if (response.data.admin) setAdmin(response.data.admin);
+        if (response.data.partner) setPartner(response.data.partner);
       } catch (error) {
         console.error('Refresh user error:', error);
       }
@@ -113,6 +118,7 @@ export const AuthProvider = ({ children }) => {
     user,
     driver,
     admin,
+    partner,
     token,
     loading,
     login,
@@ -122,7 +128,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     refreshUser,
     isAuthenticated: !!token,
-    role: admin ? 'admin' : driver ? 'driver' : user ? 'user' : null
+    role: admin ? 'admin' : driver ? 'driver' : partner ? 'partner' : user ? 'user' : null
   };
 
   return (

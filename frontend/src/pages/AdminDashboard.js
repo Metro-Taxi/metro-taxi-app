@@ -7,7 +7,7 @@ import {
   TrendingUp, Activity, Mail, Phone, Calendar, IdCard,
   Clock, AlertTriangle, RefreshCw, Trash2, Globe, Plus,
   Power, PowerOff, Edit, Save, Loader2, Banknote, Send,
-  FileText, Download, History, Shield, Info, Gift, Brain, Building2
+  FileText, Download, History, Shield, Info, Gift, Brain, Building2, Store
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -23,6 +23,7 @@ import jsPDF from 'jspdf';
 import AlgorithmConfigTab from '@/components/admin/AlgorithmConfigTab';
 import DriverCardDialog from '@/components/admin/DriverCardDialog';
 import FleetPartnershipsTab from '@/components/admin/FleetPartnershipsTab';
+import CommercialPartnersTab from '@/components/admin/CommercialPartnersTab';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -729,6 +730,14 @@ const AdminDashboard = () => {
             >
               <Building2 className="w-4 h-4 mr-2" />
               Partenariats
+            </TabsTrigger>
+            <TabsTrigger 
+              value="commercial-partners"
+              className="data-[state=active]:bg-[#FFD60A] data-[state=active]:text-black"
+              data-testid="commercial-partners-tab"
+            >
+              <Store className="w-4 h-4 mr-2" />
+              Commerces
             </TabsTrigger>
           </TabsList>
 
@@ -1660,6 +1669,16 @@ const AdminDashboard = () => {
           {/* Fleet Partnerships Tab */}
           <TabsContent value="partnerships">
             <FleetPartnershipsTab token={token} />
+          </TabsContent>
+
+          <TabsContent value="commercial-partners">
+            <div className="bg-[#18181B] border border-zinc-800 rounded p-4 mb-4">
+              <h2 className="text-xl font-bold text-white mb-1">Partenaires commerciaux</h2>
+              <p className="text-zinc-400 text-sm">
+                Commerces, ambassadeurs ambulants et entreprises. Validation des demandes et suivi des commissions.
+              </p>
+            </div>
+            <CommercialPartnersTab token={token} />
           </TabsContent>
         </Tabs>
 

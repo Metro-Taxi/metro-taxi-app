@@ -26,7 +26,9 @@ const RegisterUser = () => {
     city: '',
     date_of_birth: '',
     // Tracking silencieux campagne d'origine (auto-attribution à l'abonnement)
-    signup_campaign: ''
+    signup_campaign: '',
+    // Patch V10 — Code parrainage partenaire commercial (?ref=GGSM)
+    referral_code: ''
   });
   // Champs séparés pour la date de naissance
   const [birthDay, setBirthDay] = useState('');
@@ -39,10 +41,21 @@ const RegisterUser = () => {
 
   // Tracking silencieux : prefill signup_campaign depuis ?campaign=saint-denis-2026-06-13
   // (auto-attribution du crédit "1ère course offerte" à l'activation de l'abonnement)
+  // Patch V10 : capte aussi ?ref=GGSM pour attribuer le crédit au partenaire commercial.
+  const [referralPartner, setReferralPartner] = useState(null);
   useEffect(() => {
     const campaign = searchParams.get('campaign');
     if (campaign) {
       setFormData((prev) => ({ ...prev, signup_campaign: campaign.trim() }));
+    }
+    const ref = searchParams.get('ref');
+    if (ref) {
+      const refUpper = ref.trim().toUpperCase();
+      setFormData((prev) => ({ ...prev, referral_code: refUpper }));
+      // Récupère les infos publiques du partenaire pour afficher un badge
+      axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/partners/by-code/${refUpper}`)
+        .then(r => setReferralPartner(r.data))
+        .catch(() => {/* code invalide, on ignore silencieusement */});
     }
   }, [searchParams]);
 
@@ -99,6 +112,12 @@ const RegisterUser = () => {
         delete submitData.signup_campaign;
       } else {
         submitData.signup_campaign = submitData.signup_campaign.trim();
+      }
+      // Clean empty referral_code
+      if (!submitData.referral_code || !submitData.referral_code.trim()) {
+        delete submitData.referral_code;
+      } else {
+        submitData.referral_code = submitData.referral_code.trim().toUpperCase();
       }
       const result = await registerUser(submitData);
       // Acceptation CGV horodatée côté backend
@@ -161,6 +180,19 @@ const RegisterUser = () => {
             </div>
           </div>
           
+          {/* Patch V10 — Badge partenaire référent */}
+          {referralPartner && (
+            <div className="mb-4 bg-[#FFD60A]/10 border border-[#FFD60A]/40 rounded-lg p-4 flex items-center gap-3" data-testid="referral-partner-badge">
+              <div className="bg-[#FFD60A] rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0">
+                <span className="text-black font-black text-sm">{referralPartner.referral_code}</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-zinc-400">Tu t'inscris via le partenaire</p>
+                <p className="text-white font-bold truncate">{referralPartner.business_name}</p>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">

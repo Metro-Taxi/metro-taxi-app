@@ -38,6 +38,8 @@ import PatronVTC from "@/pages/PatronVTC";
 import SaintDenis from "@/pages/SaintDenis";
 import PromoCodesPage from "@/pages/PromoCodesPage";
 import LegalPage from "@/pages/LegalPage";
+import PartnerRegister from "@/pages/PartnerRegister";
+import PartnerDashboard from "@/pages/PartnerDashboard";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -58,6 +60,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   if (allowedRoles && !allowedRoles.includes(role)) {
     if (role === 'admin') return <Navigate to="/admin" replace />;
     if (role === 'driver') return <Navigate to="/driver" replace />;
+    if (role === 'partner') return <Navigate to="/partner" replace />;
     return <Navigate to="/dashboard" replace />;
   }
   
@@ -84,7 +87,7 @@ const PublicRoute = ({ children }) => {
           <p className="text-white mb-4">Vous êtes connecté en tant que <span className="text-[#FFD60A] font-bold">{role}</span></p>
           <div className="flex flex-col gap-3">
             <a 
-              href={role === 'admin' ? '/admin' : role === 'driver' ? '/driver' : '/dashboard'}
+              href={role === 'admin' ? '/admin' : role === 'driver' ? '/driver' : role === 'partner' ? '/partner' : '/dashboard'}
               className="bg-[#FFD60A] text-black px-6 py-3 rounded font-bold hover:bg-[#E6C209]"
             >
               Aller à mon tableau de bord
@@ -132,6 +135,16 @@ function AppRoutes() {
       <Route path="/cgv" element={<Navigate to="/legal/cgv" replace />} />
       <Route path="/cgu" element={<Navigate to="/legal/cgv" replace />} />
       <Route path="/contrat-chauffeur" element={<Navigate to="/legal/contract-driver" replace />} />
+
+      {/* Partenaires commerciaux — Patch V10 (19/06/2026) */}
+      <Route path="/partenaires" element={<PartnerRegister />} />
+      <Route path="/partenaires/inscription" element={<PartnerRegister />} />
+      <Route path="/partner" element={
+        <ProtectedRoute allowedRoles={['partner']}>
+          <PartnerDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/partner/dashboard" element={<Navigate to="/partner" replace />} />
       
       {/* User Routes - Also allow admin for testing */}
       <Route path="/dashboard" element={

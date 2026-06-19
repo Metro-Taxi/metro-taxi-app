@@ -776,6 +776,8 @@ class UserRegister(BaseModel):
     promo_code: Optional[str] = None
     # Optionnel: ID de campagne auto-attribution (tracking via URL ?campaign=...)
     signup_campaign: Optional[str] = None
+    # Patch V10 — Code parrainage d'un partenaire commercial (?ref=GGSM)
+    referral_code: Optional[str] = None
 
 class DriverRegister(BaseModel):
     first_name: str
@@ -1128,6 +1130,8 @@ async def register_user(data: UserRegister, request: Request):
         "date_of_birth": data.date_of_birth,
         # Campagne d'origine (auto-attribution à l'activation d'abonnement)
         "signup_campaign": data.signup_campaign,
+        # Patch V10 — Parrainage d'un partenaire commercial
+        "referral_code": (data.referral_code or "").upper().strip() or None,
     }
     
     # Create response before inserting to avoid ObjectId contamination
@@ -1464,6 +1468,15 @@ async def login(data: LoginRequest, request: Request):
         await _initiate_admin_otp(admin["email"], client_ip)
         return {"otp_required": True, "email": admin["email"], "message": "OTP envoyé par email"}
     
+    # Check commercial_partners (Patch V10 — 19/06/2026)
+    partner = await db.commercial_partners.find_one({"email": data.email}, {"_id": 0})
+    if partner and partner.get("password") and verify_password(data.password, partner["password"]):
+        if partner.get("status") != "active":
+            raise HTTPException(status_code=403, detail="Compte partenaire pas encore activé. Vérifie tes mails ou contacte l'admin.")
+        clear_failed_login(client_ip, data.email)
+        token = create_token(partner["id"], "partner")
+        return {"token": token, "partner": {k: v for k, v in partner.items() if k != "password"}}
+    
     # Record failed login attempt
     record_failed_login(client_ip, data.email)
     raise HTTPException(status_code=401, detail="Email ou mot de passe incorrect")
@@ -1596,6 +1609,11 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         admin = await db.admins.find_one({"id": user_id}, {"_id": 0, "password": 0})
         if admin:
             return {"admin": admin}
+    elif role == "partner":
+        # Patch V10 — Partenaires commerciaux
+        partner = await db.commercial_partners.find_one({"id": user_id}, {"_id": 0, "password": 0})
+        if partner:
+            return {"partner": partner}
     
     raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
 
@@ -3392,6 +3410,8 @@ app.include_router(founding_members_router)
 
 from routes.fleet_partnerships import router as fleet_partnerships_router
 app.include_router(fleet_partnerships_router)
+from routes.commercial_partners import router as commercial_partners_router
+app.include_router(commercial_partners_router)
 
 app.add_middleware(
     CORSMiddleware,
