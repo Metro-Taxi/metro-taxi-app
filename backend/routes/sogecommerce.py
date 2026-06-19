@@ -278,7 +278,10 @@ async def sogecommerce_ipn(request: Request):
     )
 
     # Auto-attribution promo si l'usager fait partie d'une campagne Saint-Denis & co.
-    u_camp = await db.users.find_one({"id": user_id}, {"_id": 0, "signup_campaign": 1})
+    u_camp = await db.users.find_one(
+        {"id": user_id},
+        {"_id": 0, "signup_campaign": 1, "referral_code": 1}
+    )
     if u_camp and u_camp.get("signup_campaign"):
         try:
             await attempt_auto_attribution(user_id, u_camp["signup_campaign"])
@@ -291,6 +294,20 @@ async def sogecommerce_ipn(request: Request):
             await auto_attribute_for_region(user_id, region_id)
         except Exception as exc:  # noqa: BLE001
             logger.warning(f"Auto-attribution région échouée: {exc}")
+
+    # Patch V10 — Commission partenaire commercial (15% à chaque paiement)
+    if u_camp and u_camp.get("referral_code"):
+        try:
+            from routes.commercial_partners import credit_partner_commission
+            await credit_partner_commission(
+                referral_code=u_camp["referral_code"],
+                user_id=user_id,
+                order_id=order_id,
+                plan_id=plan_id,
+                amount_cents=amount_cents,
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(f"Commission partenaire échouée: {exc}")
 
     # Email confirmation
     region = await db.regions.find_one({"id": region_id}, {"_id": 0})

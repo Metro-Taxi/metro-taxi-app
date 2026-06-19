@@ -2903,6 +2903,18 @@ async def process_automatic_payouts():
                     logging.info(f"Automatic weekly payout completed for {week_key}: {processed_count} drivers, €{total_amount:.2f} total, {len(stripe_transfers)} transfers")
                     if errors:
                         logging.warning(f"Payout errors: {len(errors)} drivers skipped")
+                    
+                    # Patch V10 — Process partner commissions on the same Monday cycle
+                    try:
+                        from routes.commercial_partners import process_weekly_partner_payouts
+                        partner_summary = await process_weekly_partner_payouts()
+                        logging.info(
+                            f"Partner payouts for {week_key}: "
+                            f"{partner_summary['payouts_created']} partenaires, "
+                            f"€{partner_summary['total_eur']:.2f} total"
+                        )
+                    except Exception as exc:
+                        logging.error(f"Partner payout processing failed: {exc}")
             
         except Exception as e:
             logging.error(f"Error in automatic payout processing: {e}")

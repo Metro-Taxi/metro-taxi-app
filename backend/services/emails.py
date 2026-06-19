@@ -1258,7 +1258,7 @@ async def send_partner_welcome_email(email: str, first_name: str, business_name:
         <div style="padding:30px;">
           <p style="margin:0 0 18px 0;color:#fff;font-size:16px;">Bonjour {first_name},</p>
           <p style="margin:0 0 24px 0;color:#a1a1aa;font-size:14px;line-height:1.5;">
-            Félicitations ! Le partenariat <strong style="color:#fff;">{business_name}</strong> × Métro-Taxi est officiellement actif. Tu vas maintenant gagner <strong style="color:#FFD60A;">15% de commission</strong> sur chaque abonnement signé via ton code parrainage.
+            Félicitations ! Le partenariat <strong style="color:#fff;">{business_name}</strong> × Métro-Taxi est officiellement actif. Tu vas maintenant gagner <strong style="color:#FFD60A;">15% de commission</strong> à chaque paiement d'abonnement signé via ton code parrainage (1<sup>er</sup> abonnement + renouvellements). Versement automatique <strong style="color:#fff;">tous les lundis</strong>.
           </p>
           
           <div style="background:#0a0a0a;border:2px solid #FFD60A;border-radius:8px;padding:20px;margin:24px 0;">

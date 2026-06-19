@@ -157,7 +157,7 @@ const PartnerDashboard = () => {
             <span className="text-zinc-500 text-xs">· Commission {(data.commission_rate * 100).toFixed(0)}%</span>
           </div>
           <h2 className="text-2xl font-bold mb-1">Salut {data.contact_first_name} 👋</h2>
-          <p className="text-zinc-400 text-sm">Affiche ton QR code dans ton commerce. Chaque inscription via ton code = 15% à vie.</p>
+          <p className="text-zinc-400 text-sm">Affiche ton QR code dans ton commerce. Tu touches 15% à chaque abonnement payé via ton code (initial + renouvellements).</p>
         </motion.div>
 
         {/* Stats */}

@@ -373,3 +373,116 @@ async def admin_get_partner_details(
         "commission_this_month": round(total_commission, 2),
     }
     return partner
+
+
+# ============================================
+# COMMISSION HELPERS (utilisés par Sogecommerce IPN + payout lundi)
+# Patch V10 - 19/06/2026
+# ============================================
+async def credit_partner_commission(
+    referral_code: str,
+    user_id: str,
+    order_id: str,
+    plan_id: str,
+    amount_cents: int,
+) -> bool:
+    """Crée une commission partenaire à l'issue d'un paiement Sogecommerce.
+
+    Appelée depuis l'IPN Sogecommerce sur paiement réussi (initial + renouvellement).
+    Le partenaire ne touche RIEN tant qu'un paiement n'est pas effectivement reçu.
+
+    Returns True si une commission a bien été créditée.
+    """
+    if not referral_code or not amount_cents:
+        return False
+    code = referral_code.upper().strip()
+    partner = await db.commercial_partners.find_one(
+        {"referral_code": code, "status": "active"}, {"_id": 0}
+    )
+    if not partner:
+        logger.info(f"Pas de partenaire actif pour code {code} — skip commission")
+        return False
+
+    # Anti-doublon : si on a déjà crédité pour cet order_id, on saute
+    existing = await db.partner_commissions.find_one({"order_id": order_id})
+    if existing:
+        logger.info(f"Commission déjà créditée pour order {order_id}")
+        return False
+
+    rate = float(partner.get("commission_rate", 0.15))
+    commission_eur = round((amount_cents / 100.0) * rate, 2)
+
+    await db.partner_commissions.insert_one({
+        "id": str(uuid.uuid4()),
+        "partner_id": partner["id"],
+        "referral_code": code,
+        "user_id": user_id,
+        "order_id": order_id,
+        "plan_id": plan_id,
+        "amount_paid_eur": round(amount_cents / 100.0, 2),
+        "commission_rate": rate,
+        "commission_eur": commission_eur,
+        "status": "pending_payout",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+    # Met à jour les stats agrégées du partenaire (pour affichage rapide)
+    await db.commercial_partners.update_one(
+        {"id": partner["id"]},
+        {"$inc": {
+            "stats.total_commission_earned": commission_eur,
+        }}
+    )
+    logger.info(
+        f"💰 Commission {commission_eur}€ créditée à {partner['business_name']} "
+        f"({code}) — paiement {amount_cents}c order={order_id}"
+    )
+    return True
+
+
+async def process_weekly_partner_payouts() -> dict:
+    """Agrège toutes les commissions 'pending_payout' par partenaire et les marque
+    comme 'ready_for_payout' (en attente de virement bancaire manuel/SEPA).
+
+    Appelé chaque LUNDI par le scheduler existant (process_automatic_payouts).
+    Retourne un résumé pour les logs.
+    """
+    pending = await db.partner_commissions.find(
+        {"status": "pending_payout"}, {"_id": 0}
+    ).to_list(length=10000)
+
+    by_partner: dict[str, list] = {}
+    for c in pending:
+        by_partner.setdefault(c["partner_id"], []).append(c)
+
+    total_paid_out = 0.0
+    payouts_created = 0
+    for partner_id, commissions in by_partner.items():
+        total = round(sum(c["commission_eur"] for c in commissions), 2)
+        if total <= 0:
+            continue
+        payout_id = str(uuid.uuid4())
+        await db.partner_payouts.insert_one({
+            "id": payout_id,
+            "partner_id": partner_id,
+            "amount_eur": total,
+            "commission_count": len(commissions),
+            "commission_ids": [c["id"] for c in commissions],
+            "status": "ready_for_transfer",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        })
+        await db.partner_commissions.update_many(
+            {"id": {"$in": [c["id"] for c in commissions]}},
+            {"$set": {"status": "paid", "payout_id": payout_id}}
+        )
+        await db.commercial_partners.update_one(
+            {"id": partner_id},
+            {"$inc": {"stats.total_commission_paid": total}}
+        )
+        total_paid_out += total
+        payouts_created += 1
+
+    return {
+        "payouts_created": payouts_created,
+        "total_eur": round(total_paid_out, 2),
+        "commissions_processed": len(pending),
+    }

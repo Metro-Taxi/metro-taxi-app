@@ -116,10 +116,10 @@ const PartnerRegister = () => {
           </motion.div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-4 leading-tight">
             Deviens partenaire,<br/>
-            <span className="text-[#FFD60A]">gagne 15% à vie</span>
+            <span className="text-[#FFD60A]">gagne 15% à chaque abonnement</span>
           </h1>
           <p className="text-zinc-400 text-lg mb-8 max-w-xl mx-auto">
-            Pour chaque abonnement signé via ton code parrainage, tu touches <strong className="text-white">15% chaque mois</strong> tant que le client reste abonné.
+            Pour chaque <strong className="text-white">paiement d&apos;abonnement</strong> signé via ton code parrainage (initial ou renouvellement), tu touches <strong className="text-white">15%</strong>.
           </p>
           <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
             <div className="bg-[#18181B] border border-zinc-800 rounded-lg p-4">
