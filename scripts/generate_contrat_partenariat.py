@@ -71,7 +71,7 @@ def draw_footer(c, page_num=1):
     c.rect(0, y, PAGE_W, 1.5 * mm, stroke=0, fill=1)
     c.setFillColor(GRAY)
     c.setFont("Helvetica", 7.5)
-    c.drawString(MARGIN, y - 5 * mm, "Métro-Taxi — Saint-Denis (93) • SIRET en cours d'attribution • R.C.S. Bobigny")
+    c.drawString(MARGIN, y - 5 * mm, "Métro-Taxi — Saint-Denis (93) • SIRET 918 687 864 • R.C.S. Bobigny")
     c.drawRightString(PAGE_W - MARGIN, y - 5 * mm, f"Page {page_num} / 1 — v2 du 12/06/2026")
 
 
@@ -269,8 +269,8 @@ def generate():
     y = draw_body(
         c, y,
         "Pour chaque inscription validée (compte créé + abonnement payé), MÉTRO-TAXI versera au "
-        "PARTENAIRE une commission de 15% (quinze pour cent) du montant TTC du premier abonnement souscrit "
-        "selon la grille suivante :",
+        "PARTENAIRE une commission de 15% (quinze pour cent) du montant TTC de chaque abonnement payé "
+        "(initial ou renouvellement) selon la grille suivante :",
     )
     y -= 2 * mm
     y = draw_rem_table(c, y)
@@ -286,7 +286,7 @@ def generate():
     )
     y = draw_body(
         c, y,
-        "• La commission s'applique uniquement au PREMIER abonnement souscrit. Les renouvellements automatiques sont exclus.",
+        "• La commission s'applique à CHAQUE paiement d'abonnement effectif via le code PARTENAIRE (initial + renouvellements manuels ou automatiques) tant que le client reste actif.",
         font_size=9,
     )
     y -= 3 * mm
