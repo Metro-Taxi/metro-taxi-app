@@ -31,12 +31,17 @@ Plateforme VTC + covoiturage avec abonnements hebdomadaires (Sogecommerce) et **
 - Payout automatique tous les LUNDIS
 - Contrat partenariat PDF (SIRET 918 687 864 RCS Bobigny)
 
-### Assets marketing (19/06/2026)
-- **Banderole 25×50cm PARTENAIRES V11** (1476×2952, slogan 55% hauteur) — PNG + PDF
-- **Flyer A6 PARTENAIRES recto/verso** (1240×1748, 300 DPI) — PNG + PDF VistaPrint
-  - Stade de France + silhouette Tour Eiffel + slogan « DEVIENS PARTENAIRE · GAGNE 15% À CHAQUE ABONNEMENT »
-  - QR `metro-taxi.com/partners/apply?ref=FLYER`
-- Fix root cause : police DejaVu installée (avant fallback silencieux load_default ⇒ texte 10px illisible)
+### Assets marketing CLIENT (19/06/2026)
+- **Banderole 25×50cm CLIENT V4** (1476×2952) — PNG + PDF
+  - Slogan « 1ÈRE COURSE GRATUITE » en bandeau jaune central (~30% hauteur)
+  - 3 plans (24h/7j/30j), QR `metro-taxi.com`, SIRET 918 687 864 RCS Bobigny
+- **Flyer A6 CLIENT V4** (1240×1748, 300 DPI) — PNG + PDF
+  - Basé sur V3_2 existant, mention « SAMEDI 13 JUIN 2026 » masquée proprement (patch background)
+- Fix root cause : police DejaVu installée via `apt install fonts-dejavu` (avant : fallback silencieux load_default ⇒ texte 10px illisible)
+
+### ⚠️ RÈGLE D'OR
+- Le **15% de commission partenaire** est **CONFIDENTIEL** — uniquement dans le contrat PDF, **JAMAIS** sur un support marketing public (flyer, banderole, site).
+- Tous les flyers/banderoles sont destinés aux **CLIENTS** (passagers), pas aux partenaires. Les supports sont affichés DANS les commerces partenaires mais visent à recruter des passagers.
 
 ---
 
