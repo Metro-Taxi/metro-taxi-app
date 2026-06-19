@@ -281,11 +281,6 @@ def generate():
     )
     y = draw_body(
         c, y,
-        "• Bonus volume : +50 € si plus de 25 inscriptions validées au cours d'un mois calendaire.",
-        font_size=9,
-    )
-    y = draw_body(
-        c, y,
         "• La commission s'applique à CHAQUE paiement d'abonnement effectif via le code PARTENAIRE (initial + renouvellements manuels ou automatiques) tant que le client reste actif.",
         font_size=9,
     )
