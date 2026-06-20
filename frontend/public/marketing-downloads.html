@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Métro-Taxi — Téléchargements marketing</title>
+<!-- Bloque le service worker PWA sur cette page -->
+<meta name="apple-mobile-web-app-capable" content="no">
+<meta name="mobile-web-app-capable" content="no">
 <style>
   * { box-sizing: border-box; }
   body {
@@ -14,53 +17,78 @@
   }
   h1 { color: #FFD60A; font-size: 28px; margin: 8px 0 4px; }
   h2 { color: #FFD60A; font-size: 20px; margin: 32px 0 8px; border-bottom: 2px solid #FFD60A; padding-bottom: 6px; }
-  .sub { color: #aaa; font-size: 14px; margin: 0 0 24px; }
+  .sub { color: #aaa; font-size: 14px; margin: 0 0 8px; }
+  .warn {
+    background: #422006; border: 2px solid #FFD60A; color: #FFD60A;
+    padding: 14px; border-radius: 12px; margin: 16px 0 24px;
+    font-size: 14px; line-height: 1.5;
+  }
+  .warn strong { color: #fff; }
   .card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
   .card h3 { margin: 0 0 8px; font-size: 16px; color: #fff; }
-  .preview { width: 100%; max-width: 280px; display: block; margin: 12px auto; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+  .preview {
+    width: 100%; max-width: 320px; display: block; margin: 12px auto;
+    border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.4);
+    cursor: pointer;
+  }
   .buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 12px; }
   .btn {
     display: block; padding: 14px 8px;
     background: #FFD60A; color: #0a0a0b;
     text-decoration: none; font-weight: 700; text-align: center;
     border-radius: 8px; font-size: 13px;
-    transition: transform 0.1s;
   }
-  .btn:active { transform: scale(0.97); }
   .btn.pdf { background: #dc2626; color: #fff; }
   .btn.png { background: #2563eb; color: #fff; }
-  .hint { color: #888; font-size: 12px; margin-top: 8px; text-align: center; }
+  .hint { color: #FFD60A; font-size: 13px; margin-top: 10px; text-align: center; font-weight: 600; }
   .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #27272a; color: #666; font-size: 12px; text-align: center; }
 </style>
+<script>
+  // Désenregistre tout service worker actif sur cette page pour éviter
+  // que la PWA n'intercepte les téléchargements.
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
+  }
+</script>
 </head>
 <body>
 
 <h1>📥 Supports marketing</h1>
-<p class="sub">Clic long sur un bouton pour « Enregistrer le lien » sur ton téléphone.<br>
-JPG = à envoyer par WhatsApp / SMS · PDF = à donner à l'imprimeur · PNG = qualité maximale</p>
+<p class="sub">Samedi 20 juin 2026 · Région Parisienne</p>
 
-<h2>Flyer A6 client (Région parisienne)</h2>
+<div class="warn">
+  📱 <strong>Sur iPhone</strong> : appuie <strong>LONGUEMENT</strong> sur l'aperçu d'image ci-dessous →
+  <strong>« Enregistrer dans Photos »</strong>. C'est la méthode la plus fiable.<br><br>
+  📱 <strong>Sur Android</strong> : appui long sur l'image → <strong>« Télécharger l'image »</strong>.<br><br>
+  ⚠️ Les boutons JPG/PDF/PNG ouvrent un nouvel onglet Safari/Chrome (forcé hors PWA).
+</div>
+
+<h2>Flyer A6 client</h2>
 <div class="card">
-  <h3>105 × 148 mm · 300 DPI · refait propre, sans artefact</h3>
-  <img class="preview" src="/marketing/flyer_CLIENT_A6_V6.jpg" alt="Flyer A6">
+  <h3>105 × 148 mm · 300 DPI · 100 premiers abonnés</h3>
+  <a href="/marketing/flyer_CLIENT_A6_V6.jpg" target="_blank" rel="noopener noreferrer">
+    <img class="preview" src="/marketing/flyer_CLIENT_A6_V6.jpg" alt="Flyer A6 — appui long pour enregistrer">
+  </a>
+  <p class="hint">↑ Appui LONG sur l'image → Enregistrer dans Photos</p>
   <div class="buttons">
-    <a class="btn" href="/marketing/flyer_CLIENT_A6_V6.jpg" download>JPG<br><small>WhatsApp</small></a>
-    <a class="btn pdf" href="/marketing/flyer_CLIENT_A6_V6.pdf" download>PDF<br><small>Imprimeur</small></a>
-    <a class="btn png" href="/marketing/flyer_CLIENT_A6_V6.png" download>PNG<br><small>HD</small></a>
+    <a class="btn" href="/marketing/flyer_CLIENT_A6_V6.jpg" target="_blank" rel="noopener noreferrer">JPG<br><small>WhatsApp</small></a>
+    <a class="btn pdf" href="/marketing/flyer_CLIENT_A6_V6.pdf" target="_blank" rel="noopener noreferrer">PDF<br><small>Imprimeur</small></a>
+    <a class="btn png" href="/marketing/flyer_CLIENT_A6_V6.png" target="_blank" rel="noopener noreferrer">PNG<br><small>HD</small></a>
   </div>
-  <p class="hint">→ Envoie le JPG par WhatsApp aux commerçants ; donne le PDF à l'imprimeur.</p>
 </div>
 
 <h2>Banderole 25 × 50 cm</h2>
 <div class="card">
-  <h3>Portrait · à afficher dans la vitrine · « AVEC TRANSBORDEMENT INTELLIGENT »</h3>
-  <img class="preview" src="/marketing/banderole_CLIENT_PORTE_25x50cm_V6.jpg" alt="Banderole 25x50cm">
+  <h3>Portrait · « AVEC TRANSBORDEMENT INTELLIGENT »</h3>
+  <a href="/marketing/banderole_CLIENT_PORTE_25x50cm_V6.jpg" target="_blank" rel="noopener noreferrer">
+    <img class="preview" src="/marketing/banderole_CLIENT_PORTE_25x50cm_V6.jpg" alt="Banderole 25x50cm — appui long pour enregistrer">
+  </a>
+  <p class="hint">↑ Appui LONG sur l'image → Enregistrer dans Photos</p>
   <div class="buttons">
-    <a class="btn" href="/marketing/banderole_CLIENT_PORTE_25x50cm_V6.jpg" download>JPG<br><small>WhatsApp</small></a>
-    <a class="btn pdf" href="/marketing/banderole_CLIENT_PORTE_25x50cm_V6.pdf" download>PDF<br><small>Imprimeur</small></a>
-    <a class="btn png" href="/marketing/banderole_CLIENT_PORTE_25x50cm_V6.png" download>PNG<br><small>HD</small></a>
+    <a class="btn" href="/marketing/banderole_CLIENT_PORTE_25x50cm_V6.jpg" target="_blank" rel="noopener noreferrer">JPG<br><small>WhatsApp</small></a>
+    <a class="btn pdf" href="/marketing/banderole_CLIENT_PORTE_25x50cm_V6.pdf" target="_blank" rel="noopener noreferrer">PDF<br><small>Imprimeur</small></a>
+    <a class="btn png" href="/marketing/banderole_CLIENT_PORTE_25x50cm_V6.png" target="_blank" rel="noopener noreferrer">PNG<br><small>HD</small></a>
   </div>
-  <p class="hint">→ Format identique aux portes vitrées ; QR code 580×580 px scannable à 2 m.</p>
 </div>
 
 <div class="footer">
