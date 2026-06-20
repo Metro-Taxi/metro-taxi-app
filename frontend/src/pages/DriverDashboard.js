@@ -83,6 +83,9 @@ const DriverDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [availableSeats, setAvailableSeats] = useState(driver?.seats || 4);
   const [locatingDriver, setLocatingDriver] = useState(true);
+  // 📍 Erreur géoloc explicite (refus permission, timeout, etc.) — empêche d'envoyer
+  // une fausse position Paris 4 au backend.
+  const [geoError, setGeoError] = useState(null);
   const [otpInput, setOtpInput] = useState('');
   const [earningsSummary, setEarningsSummary] = useState(null);  // {current_month, totals}
   // 🔊 Persistent AudioContext — created on user gesture (toggleActive click) to bypass iOS Safari autoplay policy
@@ -103,29 +106,36 @@ const DriverDashboard = () => {
   // Get driver location and update
   useEffect(() => {
     setLocatingDriver(true);
-    if (navigator.geolocation) {
-      const watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setDriverLocation([latitude, longitude]);
-          setLocatingDriver(false);
-          if (isActive) {
-            updateDriverLocation(latitude, longitude);
-          }
-        },
-        (error) => {
-          console.error('Geolocation error:', error);
-          setDriverLocation(defaultCenter);
-          setLocatingDriver(false);
-        },
-        { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
-      );
-
-      return () => navigator.geolocation.clearWatch(watchId);
-    } else {
-      setDriverLocation(defaultCenter);
+    if (!navigator.geolocation) {
+      setGeoError('GPS non supporté sur cet appareil. Active la localisation et utilise un navigateur récent.');
       setLocatingDriver(false);
+      return;
     }
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setDriverLocation([latitude, longitude]);
+        setLocatingDriver(false);
+        setGeoError(null);
+        if (isActive) {
+          updateDriverLocation(latitude, longitude);
+        }
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        setLocatingDriver(false);
+        // ⚠️ NE PAS retomber sur Paris 4 — sinon le chauffeur apparait à un faux endroit
+        // pour tous les passagers. On affiche l'erreur et on bloque le tracking.
+        let msg = 'Impossible de récupérer ta position GPS.';
+        if (error.code === 1) msg = 'Autorise la localisation dans Réglages → Safari → Position pour Métro-Taxi.';
+        else if (error.code === 2) msg = 'Signal GPS faible. Sors à l\'extérieur ou redémarre le GPS.';
+        else if (error.code === 3) msg = 'GPS trop lent à répondre. Reste à l\'extérieur et reclique sur "ACTIF".';
+        setGeoError(msg);
+      },
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 30000 }
+    );
+
+    return () => navigator.geolocation.clearWatch(watchId);
   }, [isActive]);
 
   const updateDriverLocation = async (lat, lng) => {
@@ -688,6 +698,27 @@ const DriverDashboard = () => {
         <div className="h-full w-full flex flex-col items-center justify-center bg-zinc-900">
           <Loader2 className="w-12 h-12 text-[#FFD60A] animate-spin mb-4" />
           <p className="text-white text-lg">{t('dashboard.user.locating', 'Localisation en cours...')}</p>
+        </div>
+      ) : geoError ? (
+        <div data-testid="gps-error-screen" className="h-full w-full flex flex-col items-center justify-center bg-zinc-900 p-6 text-center">
+          <div className="bg-red-600 text-white p-4 rounded-full mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
+              <line x1="3" y1="3" x2="21" y2="21" stroke="white" strokeWidth="3" />
+            </svg>
+          </div>
+          <h2 className="text-white text-xl font-bold mb-3">GPS indisponible</h2>
+          <p className="text-zinc-300 text-base mb-6 max-w-md">{geoError}</p>
+          <button
+            data-testid="gps-retry-button"
+            onClick={() => { setGeoError(null); setLocatingDriver(true); setIsActive(false); setTimeout(() => setIsActive(prev => prev), 100); window.location.reload(); }}
+            className="bg-[#FFD60A] text-black font-bold px-6 py-3 rounded-lg"
+          >
+            Réessayer
+          </button>
+          <p className="text-zinc-500 text-xs mt-6 max-w-md">
+            iPhone&nbsp;: Réglages → Confidentialité → Service de localisation → Safari → «&nbsp;Toujours&nbsp;» ou «&nbsp;En utilisant l&apos;app&nbsp;».
+          </p>
         </div>
       ) : (
       <MapContainer
