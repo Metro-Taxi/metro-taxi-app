@@ -657,7 +657,7 @@ const AdminDashboard = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="drivers" className="w-full">
-          <TabsList className="bg-[#18181B] border border-zinc-800 mb-6">
+          <TabsList className="bg-[#18181B] border border-zinc-800 mb-6 flex flex-wrap h-auto justify-start gap-1 w-full overflow-x-auto">
             <TabsTrigger 
               value="drivers" 
               className="data-[state=active]:bg-[#FFD60A] data-[state=active]:text-black"
