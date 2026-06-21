@@ -30,7 +30,11 @@
     "deactivateError": "Erreur lors de la désactivation",
     "cleanupError": "Erreur lors du nettoyage",
     "destinationSet": "Destination définie",
-    "subscribed": "Abonné"
+    "subscribed": "Abonné",
+    "accepted": "Acceptée",
+    "pickedUp": "Embarqué",
+    "enRoute": "En route",
+    "arrived": "Arrivé"
   },
   "regions": {
     "selectRegion": "Sélectionnez votre région",

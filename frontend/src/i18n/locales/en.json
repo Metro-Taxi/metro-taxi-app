@@ -27,7 +27,11 @@
     "deactivateError": "Error during deactivation",
     "cleanupError": "Error during cleanup",
     "destinationSet": "Destination set",
-    "subscribed": "Subscribed"
+    "subscribed": "Subscribed",
+    "accepted": "Accepted",
+    "pickedUp": "Picked up",
+    "enRoute": "En route",
+    "arrived": "Arrived"
   },
   "regions": {
     "selectRegion": "Select your region",

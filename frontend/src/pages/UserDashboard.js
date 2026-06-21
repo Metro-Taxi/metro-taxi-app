@@ -967,6 +967,37 @@ const UserDashboard = () => {
                   </Button>
                 </div>
               )}
+
+              {/* ❌ Annuler la course — uniquement pending ou accepted (avant pickup) */}
+              {['pending', 'accepted'].includes(activeRide.status) && (
+                <div className="mt-3">
+                  <Button
+                    onClick={async () => {
+                      if (!window.confirm("Annuler cette course ? Cette action est définitive.")) return;
+                      try {
+                        await axios.post(
+                          `${API}/rides/${activeRide.id}/cancel`,
+                          {},
+                          { headers: { Authorization: `Bearer ${token}` } }
+                        );
+                        toast.success("Course annulée. Tu peux en commander une nouvelle.");
+                        setActiveRide(null);
+                      } catch (err) {
+                        const msg = err?.response?.data?.detail || "Annulation impossible.";
+                        toast.error(msg);
+                      }
+                    }}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-bold flex items-center justify-center gap-2"
+                    data-testid="cancel-ride-btn"
+                  >
+                    <X className="w-4 h-4" />
+                    Annuler la course
+                  </Button>
+                  <p className="text-xs text-zinc-500 text-center mt-2">
+                    Annulation possible tant que le chauffeur n&apos;a pas commencé la prise en charge.
+                  </p>
+                </div>
+              )}
             </div>
           </motion.div>
         )}

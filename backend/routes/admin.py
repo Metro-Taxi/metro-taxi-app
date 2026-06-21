@@ -875,6 +875,51 @@ async def reject_ride(ride_id: str, current_user: dict = Depends(get_current_use
     
     return {"status": "rejected"}
 
+@router.post("/rides/{ride_id}/cancel")
+async def cancel_ride_by_user(ride_id: str, current_user: dict = Depends(get_current_user)):
+    """Annulation par l'usager — uniquement avant la prise en charge.
+    Statuts annulables: pending (pas encore accepté) ou accepted (chauffeur assigné mais
+    pas encore arrivé). Refus si statut pickup/in_progress/completed/cancelled.
+    """
+    if current_user["role"] != "user":
+        raise HTTPException(status_code=403, detail="Accès réservé aux usagers")
+
+    user_id = current_user["user_id"]
+    ride = await db.ride_requests.find_one({"id": ride_id, "user_id": user_id}, {"_id": 0})
+
+    if not ride:
+        raise HTTPException(status_code=404, detail="Course non trouvée")
+
+    cancellable_statuses = {"pending", "accepted"}
+    if ride.get("status") not in cancellable_statuses:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Impossible d'annuler une course au statut '{ride.get('status')}'. "
+                   "Une fois la prise en charge effectuée, contacte le chauffeur ou le support.",
+        )
+
+    await db.ride_requests.update_one(
+        {"id": ride_id},
+        {"$set": {
+            "status": "cancelled",
+            "cancelled_by": "user",
+            "cancelled_at": datetime.now(timezone.utc).isoformat(),
+        }},
+    )
+
+    # Notifier le chauffeur si la course était déjà acceptée
+    driver_id = ride.get("driver_id")
+    if driver_id:
+        await _get_manager().send_personal_message({
+            "type": "ride_cancelled_by_user",
+            "ride_id": ride_id,
+            "message": "L'usager a annulé la course",
+        }, driver_id)
+
+    return {"status": "cancelled", "ride_id": ride_id}
+
+
+
 @router.post("/rides/{ride_id}/complete")
 async def complete_ride(ride_id: str, current_user: dict = Depends(get_current_user)):
     """Complete a ride and calculate driver earnings
