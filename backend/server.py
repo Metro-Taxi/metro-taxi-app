@@ -1828,10 +1828,10 @@ async def update_driver_location(data: LocationUpdate, current_user: dict = Depe
 async def get_available_drivers(region_id: Optional[str] = None, current_user: dict = Depends(get_current_user)):
     """Get available drivers, optionally filtered by region.
     
-    A driver is shown only if their GPS position was updated in the last 10 minutes.
+    A driver is shown only if their GPS position was updated in the last 2 minutes.
     This prevents 'ghost' drivers from appearing when they closed the app without going OFFLINE.
     """
-    stale_threshold = (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()
+    stale_threshold = (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat()
     query = {
         "is_active": True,
         "is_validated": True,
@@ -1854,9 +1854,9 @@ async def get_available_drivers(region_id: Optional[str] = None, current_user: d
 async def find_matching_drivers(data: MatchingRequest, region_id: Optional[str] = None, current_user: dict = Depends(get_current_user)):
     """Find best matching drivers based on distance, direction, and availability.
     
-    Excludes drivers with stale GPS (>10 min) to avoid 'ghost' matches.
+    Excludes drivers with stale GPS (>2 min) to avoid 'ghost' matches.
     """
-    stale_threshold = (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()
+    stale_threshold = (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat()
     query = {
         "is_active": True,
         "is_validated": True,
@@ -2940,7 +2940,7 @@ async def cleanup_stale_drivers():
     """
     while True:
         try:
-            stale_cutoff = (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()
+            stale_cutoff = (datetime.now(timezone.utc) - timedelta(minutes=3)).isoformat()
             result = await db.drivers.update_many(
                 {
                     "is_active": True,
@@ -2949,17 +2949,17 @@ async def cleanup_stale_drivers():
                 {"$set": {"is_active": False, "auto_offline_at": datetime.now(timezone.utc).isoformat()}}
             )
             if result.modified_count > 0:
-                logging.info(f"Auto-OFFLINE: {result.modified_count} stale driver(s) deactivated (>10 min no GPS)")
+                logging.info(f"Auto-OFFLINE: {result.modified_count} stale driver(s) deactivated (>3 min no GPS)")
         except Exception as e:
             logging.error(f"Stale driver cleanup error: {e}")
-        await asyncio.sleep(60)  # Check every minute
+        await asyncio.sleep(30)  # Check every 30 seconds
 
 
 @app.on_event("startup")
 async def start_stale_driver_cleaner():
     """Start the background stale driver cleaner"""
     asyncio.create_task(cleanup_stale_drivers())
-    logging.info("Stale driver cleaner started (auto-OFFLINE after 10 min no GPS)")
+    logging.info("Stale driver cleaner started (auto-OFFLINE after 3 min no GPS, scan every 30s)")
 
 @app.on_event("startup")
 async def verify_database_connection():
