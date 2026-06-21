@@ -981,10 +981,20 @@ const UserDashboard = () => {
                           { headers: { Authorization: `Bearer ${token}` } }
                         );
                         toast.success("Course annulée. Tu peux en commander une nouvelle.");
-                        setActiveRide(null);
                       } catch (err) {
-                        const msg = err?.response?.data?.detail || "Annulation impossible.";
-                        toast.error(msg);
+                        const code = err?.response?.status;
+                        const msg = err?.response?.data?.detail || "Course introuvable côté serveur — libération locale.";
+                        // 404 = la course n'existe plus en DB (déjà cancelled / fantôme).
+                        // 400 = statut non annulable. Dans tous les cas on libère le state local.
+                        if (code === 404 || code === 400) {
+                          toast.info(msg);
+                        } else {
+                          toast.error(msg);
+                        }
+                      } finally {
+                        // 🔓 Toujours libérer le state local pour que l'usager puisse re-commander
+                        setActiveRide(null);
+                        setRideProgress(0);
                       }
                     }}
                     className="w-full bg-red-600 hover:bg-red-700 text-white font-bold flex items-center justify-center gap-2"
@@ -998,6 +1008,30 @@ const UserDashboard = () => {
                   </p>
                 </div>
               )}
+
+              {/* 🆘 Libérer le compte — failsafe quand l'usager est bloqué sur une course
+                  fantôme (status pickup/in_progress sans chauffeur réel, ou state local désynchronisé).
+                  Toujours visible quand il y a un activeRide. */}
+              <div className="mt-3">
+                <button
+                  onClick={() => {
+                    if (!window.confirm("⚠️ Libération forcée du compte. Cette course disparaitra de ton écran. À utiliser uniquement si ta course est coincée.")) return;
+                    // Tente l'annulation côté serveur en best-effort, puis libère le state local.
+                    axios.post(
+                      `${API}/rides/${activeRide.id}/cancel`,
+                      {},
+                      { headers: { Authorization: `Bearer ${token}` } }
+                    ).catch(() => { /* silencieux */ });
+                    setActiveRide(null);
+                    setRideProgress(0);
+                    toast.success("Compte libéré. Tu peux commander une nouvelle course.");
+                  }}
+                  className="w-full text-xs text-zinc-500 underline hover:text-zinc-300"
+                  data-testid="force-unlock-btn"
+                >
+                  Course bloquée ? Libérer mon compte
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
