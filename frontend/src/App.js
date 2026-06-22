@@ -119,6 +119,11 @@ function AppRoutes() {
       {/* Marketing-friendly short URLs for social media campaigns */}
       <Route path="/chauffeur" element={<Navigate to="/register/driver" replace />} />
       <Route path="/usager" element={<Navigate to="/register/user" replace />} />
+      {/* Aliases inscription pour QR codes flyers/banderoles commerçants partenaires */}
+      <Route path="/inscription" element={<Navigate to="/register/user" replace />} />
+      <Route path="/inscription/usager" element={<Navigate to="/register/user" replace />} />
+      <Route path="/inscription/chauffeur" element={<Navigate to="/register/driver" replace />} />
+      <Route path="/register" element={<Navigate to="/register/user" replace />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
       <Route path="/terms" element={<TermsAndConditions />} />
       <Route path="/cgu" element={<TermsAndConditions />} />
