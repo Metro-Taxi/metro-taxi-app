@@ -144,6 +144,9 @@ function AppRoutes() {
       {/* Partenaires commerciaux — Patch V10 (19/06/2026) */}
       <Route path="/partenaires" element={<PartnerRegister />} />
       <Route path="/partenaires/inscription" element={<PartnerRegister />} />
+      {/* Alias pour les CTAs landing page et QR codes flyer/banderole */}
+      <Route path="/register/partner" element={<PartnerRegister />} />
+      <Route path="/partners/apply" element={<PartnerRegister />} />
       <Route path="/partner" element={
         <ProtectedRoute allowedRoles={['partner']}>
           <PartnerDashboard />

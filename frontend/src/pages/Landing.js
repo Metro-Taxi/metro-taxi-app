@@ -832,6 +832,37 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* CTA Commerces Partenaires */}
+      <section className="py-12 px-6 bg-[#09090B]" data-testid="landing-commerces-cta">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-gradient-to-br from-red-600/10 via-[#18181B] to-[#18181B] border border-red-600/30 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
+          >
+            <div className="flex-1 min-w-0">
+              <p className="text-red-500 text-xs uppercase tracking-widest font-bold mb-2">Commerces · Boulangeries · Salons · Restaurants</p>
+              <h3 className="text-xl sm:text-2xl font-black text-white leading-tight mb-2">
+                Tu tiens un <span className="text-red-500">commerce de proximité</span> ?
+              </h3>
+              <p className="text-zinc-400 text-sm">
+                Affiche notre QR code dans ta vitrine et reçois une commission à chaque client que tu nous amènes.
+                Inscription gratuite, paiement automatique chaque lundi.
+              </p>
+            </div>
+            <Link to="/register/partner">
+              <Button
+                className="bg-red-600 text-white hover:bg-red-700 px-6 h-12 font-bold whitespace-nowrap"
+                data-testid="landing-commerce-partner-btn"
+              >
+                Devenir partenaire commerce →
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="py-12 px-6 bg-[#09090B] border-t border-zinc-800">
         <div className="max-w-7xl mx-auto">
@@ -845,6 +876,7 @@ const Landing = () => {
               <Link to="/register/user" className="hover:text-white transition-colors">{t('nav.register')}</Link>
               <Link to="/register/driver" className="hover:text-white transition-colors">{t('nav.drivers')}</Link>
               <Link to="/patron-vtc" className="hover:text-[#FFD60A] transition-colors" data-testid="footer-patron-vtc-link">Patron VTC (B2B)</Link>
+              <Link to="/register/partner" className="hover:text-red-400 transition-colors" data-testid="footer-commerces-link">Commerces partenaires</Link>
               <Link to="/cgu" className="hover:text-white transition-colors">{t('footer.cgu', 'CGU')}</Link>
               <Link to="/cgv" className="hover:text-white transition-colors">{t('footer.cgv', 'CGV')}</Link>
               <a 
