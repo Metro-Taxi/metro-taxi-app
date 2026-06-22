@@ -2961,6 +2961,68 @@ async def start_stale_driver_cleaner():
     asyncio.create_task(cleanup_stale_drivers())
     logging.info("Stale driver cleaner started (auto-OFFLINE after 3 min no GPS, scan every 30s)")
 
+
+# ============================================
+# Auto-expiration des courses PENDING > 5 min
+# ============================================
+async def cleanup_expired_ride_requests():
+    """Annule automatiquement les ride_requests qui restent en 'pending' > 5 minutes.
+    
+    Évite le piège où un usager reste bloqué sur une course que personne n'accepte
+    (cas du Capitaine le 18 juin 2026). L'usager peut ainsi en commander une nouvelle.
+    Scan toutes les 30s.
+    """
+    while True:
+        try:
+            expiry_cutoff = (datetime.now(timezone.utc) - timedelta(minutes=5)).isoformat()
+            # Cible : ride_requests créées il y a >5min ET toujours en pending
+            cursor = db.ride_requests.find(
+                {
+                    "status": "pending",
+                    "created_at": {"$lt": expiry_cutoff}
+                },
+                {"_id": 0, "id": 1, "user_id": 1, "pickup_address": 1}
+            )
+            expired_ride_ids = []
+            async for ride in cursor:
+                expired_ride_ids.append(ride.get("id"))
+            
+            if expired_ride_ids:
+                now_iso = datetime.now(timezone.utc).isoformat()
+                result = await db.ride_requests.update_many(
+                    {"id": {"$in": expired_ride_ids}, "status": "pending"},
+                    {"$set": {
+                        "status": "expired",
+                        "expired_at": now_iso,
+                        "expired_reason": "no_driver_accepted_within_5min"
+                    }}
+                )
+                logging.info(f"Auto-EXPIRED: {result.modified_count} ride_request(s) (>5 min pending sans acceptation)")
+                
+                # Notifier chaque usager via WebSocket (best-effort)
+                for ride in cursor:
+                    user_id = ride.get("user_id")
+                    if user_id:
+                        try:
+                            await manager.send_personal_message({
+                                "type": "ride_request_expired",
+                                "ride_id": ride.get("id"),
+                                "message": "Aucun chauffeur n'a accepté ta course dans le délai imparti. Tu peux en commander une nouvelle."
+                            }, user_id)
+                        except Exception:
+                            pass
+        except Exception as e:
+            logging.error(f"Expired ride cleanup error: {e}")
+        await asyncio.sleep(30)
+
+
+@app.on_event("startup")
+async def start_expired_ride_cleaner():
+    """Start the background expired ride request cleaner"""
+    asyncio.create_task(cleanup_expired_ride_requests())
+    logging.info("Expired ride request cleaner started (auto-EXPIRED after 5 min pending, scan every 30s)")
+
+
 @app.on_event("startup")
 async def verify_database_connection():
     """Verify MongoDB connection at startup with retry logic"""
