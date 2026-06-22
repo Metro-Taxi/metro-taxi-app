@@ -43,20 +43,23 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
     }
   };
 
-  const handleExtendMine = async () => {
-    if (!currentUserId) {
-      toast.error("Impossible de récupérer ton user_id.");
+  const [extendEmail, setExtendEmail] = useState(currentUserEmail === 'contact@metro-taxi.com' ? 'judeemane@hotmail.com' : (currentUserEmail || ''));
+  const [extendDays, setExtendDays] = useState(7);
+
+  const handleExtendByEmail = async () => {
+    if (!extendEmail || !extendEmail.includes('@')) {
+      toast.error("Saisis un email valide.");
       return;
     }
     setLoading((l) => ({ ...l, extend: true }));
     try {
       const { data } = await axios.post(
-        `${API}/admin/users/${currentUserId}/extend-subscription?days=7`,
+        `${API}/admin/users/extend-subscription-by-email?email=${encodeURIComponent(extendEmail)}&days=${extendDays}`,
         {},
         auth
       );
       setExtendResult(data);
-      toast.success(`✅ Abonnement prolongé jusqu&apos;au ${new Date(data.new_expiry).toLocaleDateString('fr-FR')}`);
+      toast.success(`✅ Abonnement de ${data.user_email} prolongé de ${data.days_added} jours`);
     } catch (err) {
       toast.error(err?.response?.data?.detail || 'Erreur lors de la prolongation.');
     } finally {
@@ -139,27 +142,47 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
       </Card>
 
       <Card className="bg-[#18181B] border-zinc-800 p-6">
-        <h2 className="text-xl font-bold text-[#FFD60A] mb-2">📅 Prolonger mon abonnement (7 jours)</h2>
+        <h2 className="text-xl font-bold text-[#FFD60A] mb-2">📅 Prolonger un abonnement (7 jours par défaut)</h2>
         <p className="text-sm text-zinc-400 mb-6">
-          Ajoute 7 jours d&apos;abonnement actif à ton propre compte ({currentUserEmail}). Utile pour tester l&apos;app sans payer.
+          Tape l&apos;email de l&apos;usager dont tu veux prolonger l&apos;abonnement (ex: ton compte usager judeemane@hotmail.com).
+          7 jours sont ajoutés par défaut.
         </p>
 
-        <Button
-          onClick={handleExtendMine}
-          disabled={loading.extend}
-          className="bg-[#FFD60A] hover:bg-yellow-400 text-black font-bold py-6 px-8 flex items-center gap-2"
-          data-testid="maintenance-extend-mine-btn"
-        >
-          {loading.extend ? <Loader2 className="w-5 h-5 animate-spin" /> : <CalendarPlus className="w-5 h-5" />}
-          Me prolonger de 7 jours
-        </Button>
+        <div className="flex flex-col md:flex-row gap-3 mb-4">
+          <input
+            type="email"
+            value={extendEmail}
+            onChange={(e) => setExtendEmail(e.target.value)}
+            placeholder="email@exemple.com"
+            className="flex-1 px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:border-[#FFD60A] focus:outline-none"
+            data-testid="maintenance-extend-email-input"
+          />
+          <input
+            type="number"
+            min="1"
+            max="365"
+            value={extendDays}
+            onChange={(e) => setExtendDays(parseInt(e.target.value, 10) || 7)}
+            className="w-24 px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:border-[#FFD60A] focus:outline-none"
+            data-testid="maintenance-extend-days-input"
+          />
+          <Button
+            onClick={handleExtendByEmail}
+            disabled={loading.extend || !extendEmail}
+            className="bg-[#FFD60A] hover:bg-yellow-400 text-black font-bold px-8 flex items-center gap-2"
+            data-testid="maintenance-extend-email-btn"
+          >
+            {loading.extend ? <Loader2 className="w-5 h-5 animate-spin" /> : <CalendarPlus className="w-5 h-5" />}
+            Prolonger
+          </Button>
+        </div>
 
         {extendResult && (
-          <div className="mt-6 p-4 bg-zinc-900 border border-yellow-700 rounded-lg" data-testid="maintenance-extend-result">
+          <div className="mt-4 p-4 bg-zinc-900 border border-yellow-700 rounded-lg" data-testid="maintenance-extend-result">
             <h3 className="font-bold text-[#FFD60A]">
-              ✅ Abonnement prolongé jusqu&apos;au {new Date(extendResult.new_expiry).toLocaleString('fr-FR')}
+              ✅ Abonnement de {extendResult.user_email} prolongé jusqu&apos;au {new Date(extendResult.new_expiry).toLocaleString('fr-FR')}
             </h3>
-            <p className="text-xs text-zinc-500 mt-2">+{extendResult.days_added} jours ajoutés</p>
+            <p className="text-xs text-zinc-500 mt-2">+{extendResult.days_added} jours ajoutés{extendResult.user_name ? ` · ${extendResult.user_name}` : ''}</p>
           </div>
         )}
       </Card>

@@ -2877,6 +2877,56 @@ async def purge_test_accounts(current_user: dict = Depends(get_current_user)):
     }
 
 
+@router.post("/admin/users/extend-subscription-by-email")
+async def admin_extend_subscription_by_email(
+    email: str,
+    days: int = 7,
+    current_user: dict = Depends(get_current_user),
+):
+    """Prolonger l'abonnement d'un usager identifié par son EMAIL (plus simple que l'id)."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    user = await db.users.find_one(
+        {"email": {"$regex": f"^{email}$", "$options": "i"}},
+        {"_id": 0}
+    )
+    if not user:
+        raise HTTPException(status_code=404, detail=f"Aucun usager trouvé avec l'email {email}")
+    
+    now = datetime.now(timezone.utc)
+    current_expiry_str = user.get("subscription_expires")
+    if current_expiry_str:
+        try:
+            current_expiry = datetime.fromisoformat(current_expiry_str.replace("Z", "+00:00"))
+        except (ValueError, TypeError):
+            current_expiry = now
+    else:
+        current_expiry = now
+    base_date = max(current_expiry, now)
+    new_expiry = base_date + timedelta(days=days)
+    
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {
+            "subscription_active": True,
+            "subscription_expires": new_expiry.isoformat(),
+            "subscription_extended_at": now.isoformat(),
+            "subscription_extended_by_admin": current_user.get("email") or current_user["user_id"],
+            "subscription_extended_days": days,
+        }}
+    )
+    return {
+        "status": "extended",
+        "user_id": user["id"],
+        "user_email": user.get("email"),
+        "user_name": f"{user.get('first_name', '')} {user.get('last_name', '')}".strip(),
+        "days_added": days,
+        "new_expiry": new_expiry.isoformat(),
+        "message": f"Abonnement prolongé de {days} jours pour {user.get('email')}, expire le {new_expiry.strftime('%d/%m/%Y à %H:%M UTC')}",
+    }
+
+
 # ============================================
 # ADMIN — Prolonger l'abonnement d'un usager
 # ============================================
