@@ -847,7 +847,7 @@ const Landing = () => {
                 Tu tiens un <span className="text-red-500">commerce de proximité</span> ?
               </h3>
               <p className="text-zinc-400 text-sm">
-                Affiche notre QR code dans ta vitrine et reçois une commission à chaque client que tu nous amènes.
+                Affiche notre QR code dans ta vitrine et reçois une commission à chaque <strong className="text-white">abonné</strong> que tu nous amènes.
                 Inscription gratuite, paiement automatique chaque lundi.
               </p>
             </div>
