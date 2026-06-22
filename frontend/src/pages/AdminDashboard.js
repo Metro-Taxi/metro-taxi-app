@@ -24,6 +24,7 @@ import AlgorithmConfigTab from '@/components/admin/AlgorithmConfigTab';
 import DriverCardDialog from '@/components/admin/DriverCardDialog';
 import FleetPartnershipsTab from '@/components/admin/FleetPartnershipsTab';
 import CommercialPartnersTab from '@/components/admin/CommercialPartnersTab';
+import MaintenanceTab from '@/components/admin/MaintenanceTab';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -738,6 +739,13 @@ const AdminDashboard = () => {
             >
               <Store className="w-4 h-4 mr-2" />
               Commerces
+            </TabsTrigger>
+            <TabsTrigger
+              value="maintenance"
+              className="data-[state=active]:bg-[#FFD60A] data-[state=active]:text-black"
+              data-testid="maintenance-tab"
+            >
+              🧹 Maintenance
             </TabsTrigger>
           </TabsList>
 
@@ -1679,6 +1687,15 @@ const AdminDashboard = () => {
               </p>
             </div>
             <CommercialPartnersTab token={token} />
+          </TabsContent>
+
+          {/* Maintenance Tab */}
+          <TabsContent value="maintenance">
+            <MaintenanceTab
+              token={token}
+              currentUserId={admin?.id}
+              currentUserEmail={admin?.email}
+            />
           </TabsContent>
         </Tabs>
 

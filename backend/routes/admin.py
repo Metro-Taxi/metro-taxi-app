@@ -2798,3 +2798,129 @@ async def admin_partner_payouts_csv(
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
         media_type="text/csv; charset=utf-8",
     )
+
+
+# ============================================
+# ADMIN — Purge des comptes de test (admin only)
+# ============================================
+@router.get("/admin/test-accounts/preview")
+async def preview_test_accounts(current_user: dict = Depends(get_current_user)):
+    """Liste les comptes considérés comme 'de test' SANS les supprimer.
+    
+    Match emails contenant : @test, @example, demo@, +test, test_user, testuser,
+    testfeatures, testpopup, testverif, ratingtest, etc.
+    """
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    pattern = r"(@test\.|@example\.|^demo@|^test[a-z_]*@|^rating|testfeatures|testpopup|test\.verif|test_dup_|test_user_|jean\.dupont|marie\.test|judeemane\+test)"
+    users = await db.users.find(
+        {"email": {"$regex": pattern, "$options": "i"}},
+        {"_id": 0, "id": 1, "email": 1, "first_name": 1, "last_name": 1, "created_at": 1, "role": 1, "subscription_active": 1}
+    ).to_list(length=500)
+    drivers = await db.drivers.find(
+        {"email": {"$regex": pattern, "$options": "i"}},
+        {"_id": 0, "id": 1, "email": 1, "name": 1, "created_at": 1}
+    ).to_list(length=500)
+    return {
+        "users_to_delete": users,
+        "drivers_to_delete": drivers,
+        "total_users": len(users),
+        "total_drivers": len(drivers),
+        "warning": "Vérifie cette liste AVANT d'appeler POST /admin/test-accounts/purge",
+    }
+
+
+@router.post("/admin/test-accounts/purge")
+async def purge_test_accounts(current_user: dict = Depends(get_current_user)):
+    """Supprime définitivement tous les comptes considérés comme 'de test'.
+    
+    Préserve absolument : contact@metro-taxi.com (admin), judeemane@hotmail.com (Capitaine).
+    """
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    # Whitelist absolue : ne JAMAIS supprimer ces comptes
+    whitelist_emails = ["contact@metro-taxi.com", "judeemane@hotmail.com"]
+    pattern = r"(@test\.|@example\.|^demo@|^test[a-z_]*@|^rating|testfeatures|testpopup|test\.verif|test_dup_|test_user_|jean\.dupont|marie\.test|judeemane\+test)"
+    
+    base_query = {
+        "email": {"$regex": pattern, "$options": "i", "$nin": whitelist_emails}
+    }
+    
+    # Récupère les ids avant suppression pour le rapport
+    users_to_del = await db.users.find(base_query, {"_id": 0, "id": 1, "email": 1}).to_list(length=500)
+    drivers_to_del = await db.drivers.find(base_query, {"_id": 0, "id": 1, "email": 1}).to_list(length=500)
+    
+    user_ids = [u["id"] for u in users_to_del if u.get("id")]
+    driver_ids = [d["id"] for d in drivers_to_del if d.get("id")]
+    
+    # Suppression cascadée
+    deleted_users = await db.users.delete_many(base_query)
+    deleted_drivers = await db.drivers.delete_many(base_query)
+    
+    # Nettoyage des données liées
+    if user_ids:
+        await db.ride_requests.delete_many({"user_id": {"$in": user_ids}})
+        await db.payments.delete_many({"user_id": {"$in": user_ids}})
+        await db.subscriptions.delete_many({"user_id": {"$in": user_ids}})
+    if driver_ids:
+        await db.ride_requests.delete_many({"driver_id": {"$in": driver_ids}})
+    
+    return {
+        "status": "purged",
+        "deleted_users": deleted_users.deleted_count,
+        "deleted_drivers": deleted_drivers.deleted_count,
+        "preserved_emails": whitelist_emails,
+        "purged_user_emails": [u["email"] for u in users_to_del],
+        "purged_driver_emails": [d["email"] for d in drivers_to_del],
+    }
+
+
+# ============================================
+# ADMIN — Prolonger l'abonnement d'un usager
+# ============================================
+@router.post("/admin/users/{user_id}/extend-subscription")
+async def admin_extend_subscription(user_id: str, days: int = 7, current_user: dict = Depends(get_current_user)):
+    """Prolonger l'abonnement d'un usager de N jours (par défaut 7).
+    
+    Usage : depuis l'admin, ou par le Capitaine pour s'auto-prolonger.
+    """
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Usager non trouvé")
+    
+    now = datetime.now(timezone.utc)
+    current_expiry_str = user.get("subscription_expires")
+    if current_expiry_str:
+        try:
+            current_expiry = datetime.fromisoformat(current_expiry_str.replace("Z", "+00:00"))
+        except (ValueError, TypeError):
+            current_expiry = now
+    else:
+        current_expiry = now
+    # Si l'abonnement est déjà expiré, on repart de maintenant ; sinon on prolonge depuis l'expiration actuelle
+    base_date = max(current_expiry, now)
+    new_expiry = base_date + timedelta(days=days)
+    
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {
+            "subscription_active": True,
+            "subscription_expires": new_expiry.isoformat(),
+            "subscription_extended_at": now.isoformat(),
+            "subscription_extended_by_admin": current_user.get("email") or current_user["user_id"],
+            "subscription_extended_days": days,
+        }}
+    )
+    return {
+        "status": "extended",
+        "user_id": user_id,
+        "user_email": user.get("email"),
+        "days_added": days,
+        "new_expiry": new_expiry.isoformat(),
+        "message": f"Abonnement prolongé de {days} jours, expire le {new_expiry.strftime('%d/%m/%Y à %H:%M UTC')}",
+    }
