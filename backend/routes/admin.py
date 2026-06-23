@@ -2974,3 +2974,64 @@ async def admin_extend_subscription(user_id: str, days: int = 7, current_user: d
         "new_expiry": new_expiry.isoformat(),
         "message": f"Abonnement prolongé de {days} jours, expire le {new_expiry.strftime('%d/%m/%Y à %H:%M UTC')}",
     }
+
+
+# ============================================
+# ADMIN — Import legacy VPS (users + drivers)
+# ============================================
+from fastapi import Body
+
+@router.post("/admin/import/legacy-vps")
+async def import_legacy_vps(
+    payload: dict = Body(...),
+    current_user: dict = Depends(get_current_user),
+):
+    """Import des usagers/chauffeurs depuis l'ancien VPS metro_taxi_prod."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    users = payload.get("users", [])
+    drivers = payload.get("drivers", [])
+    users_imported = 0
+    users_skipped = 0
+    drivers_imported = 0
+    drivers_skipped = 0
+    errors = []
+    for u in users:
+        try:
+            u.pop("_id", None)
+            email = u.get("email", "").strip().lower()
+            if not email:
+                continue
+            existing = await db.users.find_one({"email": {"$regex": f"^{email}$", "$options": "i"}})
+            if existing:
+                users_skipped += 1
+                continue
+            u["email"] = email
+            await db.users.insert_one(u)
+            users_imported += 1
+        except Exception as e:
+            errors.append(f"user {u.get('email','?')}: {str(e)[:100]}")
+    for d in drivers:
+        try:
+            d.pop("_id", None)
+            email = d.get("email", "").strip().lower()
+            if not email:
+                continue
+            existing = await db.drivers.find_one({"email": {"$regex": f"^{email}$", "$options": "i"}})
+            if existing:
+                drivers_skipped += 1
+                continue
+            d["email"] = email
+            d["is_active"] = False
+            await db.drivers.insert_one(d)
+            drivers_imported += 1
+        except Exception as e:
+            errors.append(f"driver {d.get('email','?')}: {str(e)[:100]}")
+    return {
+        "status": "imported",
+        "users_imported": users_imported,
+        "users_skipped_already_exist": users_skipped,
+        "drivers_imported": drivers_imported,
+        "drivers_skipped_already_exist": drivers_skipped,
+        "errors": errors[:20],
+    }

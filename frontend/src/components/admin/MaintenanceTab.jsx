@@ -46,6 +46,42 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
   const [extendEmail, setExtendEmail] = useState(currentUserEmail === 'contact@metro-taxi.com' ? 'judeemane@hotmail.com' : (currentUserEmail || ''));
   const [extendDays, setExtendDays] = useState(7);
 
+  const [importUsersJson, setImportUsersJson] = useState('');
+  const [importDriversJson, setImportDriversJson] = useState('');
+  const [importResult, setImportResult] = useState(null);
+  const [importLoading, setImportLoading] = useState(false);
+
+  const handleImportLegacy = async () => {
+    if (!importUsersJson && !importDriversJson) {
+      toast.error("Colle au moins un des deux JSON (usagers ou chauffeurs).");
+      return;
+    }
+    let users = [];
+    let drivers = [];
+    try {
+      if (importUsersJson) users = JSON.parse(importUsersJson);
+      if (importDriversJson) drivers = JSON.parse(importDriversJson);
+    } catch (e) {
+      toast.error("Format JSON invalide. Vérifie que tu as bien copié le contenu complet.");
+      return;
+    }
+    if (!window.confirm(`Importer ${users.length} usagers et ${drivers.length} chauffeurs ? Les emails déjà existants seront ignorés.`)) return;
+    setImportLoading(true);
+    try {
+      const { data } = await axios.post(
+        `${API}/admin/import/legacy-vps`,
+        { users, drivers },
+        auth
+      );
+      setImportResult(data);
+      toast.success(`✅ ${data.users_imported} usagers + ${data.drivers_imported} chauffeurs importés`);
+    } catch (err) {
+      toast.error(err?.response?.data?.detail || "Erreur lors de l'import.");
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
   const handleExtendByEmail = async () => {
     if (!extendEmail || !extendEmail.includes('@')) {
       toast.error("Saisis un email valide.");
@@ -69,6 +105,64 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
 
   return (
     <div className="space-y-6">
+      <Card className="bg-[#18181B] border-blue-700 border-2 p-6">
+        <h2 className="text-xl font-bold text-blue-400 mb-2">📥 Importer mes anciens usagers/chauffeurs depuis le VPS</h2>
+        <p className="text-sm text-zinc-400 mb-4">
+          Colle ici les JSON exportés depuis ton ancien VPS (mongoexport). Les emails déjà présents sont ignorés.
+          Les mots de passe bcrypt sont préservés — tes utilisateurs pourront se reconnecter avec leurs identifiants habituels.
+        </p>
+        <div className="space-y-3 mb-4">
+          <div>
+            <label className="block text-xs text-zinc-400 mb-1">JSON des USAGERS (collection users) :</label>
+            <textarea
+              value={importUsersJson}
+              onChange={(e) => setImportUsersJson(e.target.value)}
+              placeholder='[{"id":"...","email":"...","password":"$2b$12$..."},...]'
+              rows={4}
+              className="w-full px-3 py-2 rounded bg-zinc-900 border border-zinc-700 text-white font-mono text-xs"
+              data-testid="import-users-json"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-zinc-400 mb-1">JSON des CHAUFFEURS (collection drivers) :</label>
+            <textarea
+              value={importDriversJson}
+              onChange={(e) => setImportDriversJson(e.target.value)}
+              placeholder='[{"id":"...","email":"...","password":"$2b$12$..."},...]'
+              rows={4}
+              className="w-full px-3 py-2 rounded bg-zinc-900 border border-zinc-700 text-white font-mono text-xs"
+              data-testid="import-drivers-json"
+            />
+          </div>
+        </div>
+        <Button
+          onClick={handleImportLegacy}
+          disabled={importLoading}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-6 px-8 w-full flex items-center justify-center gap-2"
+          data-testid="import-legacy-btn"
+        >
+          {importLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+          Importer depuis l&apos;ancien VPS
+        </Button>
+        {importResult && (
+          <div className="mt-4 p-4 bg-zinc-900 border border-green-700 rounded-lg">
+            <h3 className="font-bold text-green-400">✅ Import terminé</h3>
+            <p className="text-sm text-zinc-300 mt-2">
+              {importResult.users_imported} usagers ajoutés ({importResult.users_skipped_already_exist} déjà présents)<br/>
+              {importResult.drivers_imported} chauffeurs ajoutés ({importResult.drivers_skipped_already_exist} déjà présents)
+            </p>
+            {importResult.errors && importResult.errors.length > 0 && (
+              <details className="mt-2 text-xs text-red-400">
+                <summary>Erreurs ({importResult.errors.length})</summary>
+                <ul className="list-disc list-inside mt-1">
+                  {importResult.errors.map((e, i) => <li key={i}>{e}</li>)}
+                </ul>
+              </details>
+            )}
+          </div>
+        )}
+      </Card>
+
       <Card className="bg-[#18181B] border-zinc-800 p-6">
         <h2 className="text-xl font-bold text-[#FFD60A] mb-2">🧹 Maintenance & Comptes de test</h2>
         <p className="text-sm text-zinc-400 mb-6">
