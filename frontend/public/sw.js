@@ -1,4 +1,4 @@
-const CACHE_NAME = 'metro-taxi-v15';
+const CACHE_NAME = 'metro-taxi-v16';
 const STATIC_CACHE = 'metro-taxi-static-v15';
 const DYNAMIC_CACHE = 'metro-taxi-dynamic-v15';
 const API_CACHE = 'metro-taxi-api-v14';
@@ -246,34 +246,50 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
+  // Ignore "close" action explicitly
+  if (event.action === 'close') return;
+
   const data = event.notification.data || {};
   let targetUrl = '/dashboard';
-  
+
   // Navigate based on notification type
   if (data.type === 'subscription_expiry') {
     targetUrl = '/subscription';
   } else if (data.type === 'ride_accepted' || data.type === 'driver_arrived') {
     targetUrl = '/dashboard';
+  } else if (data.url && typeof data.url === 'string' && data.url.startsWith('/')) {
+    // Respect any explicit relative URL from the payload
+    targetUrl = data.url;
   }
 
-  if (event.action === 'open' || event.action === '' || !event.action) {
-    event.waitUntil(
-      clients.matchAll({ type: 'window', includeUncontrolled: true })
-        .then((clientList) => {
-          // If a window is already open, focus it
-          for (const client of clientList) {
-            if (client.url.includes(self.location.origin) && 'focus' in client) {
-              client.navigate(targetUrl);
-              return client.focus();
-            }
+  event.waitUntil((async () => {
+    // includeUncontrolled is critical so the standalone PWA is seen by matchAll
+    const clientList = await clients.matchAll({ type: 'window', includeUncontrolled: true });
+
+    // 1) Try to focus an already-open client (PWA or browser tab) and let React handle navigation
+    for (const client of clientList) {
+      try {
+        if (client.url && client.url.indexOf(self.location.origin) === 0) {
+          // Send the route via postMessage so the React app navigates internally (react-router)
+          // This avoids the iOS Safari bug where client.navigate() reloads outside the standalone PWA
+          try {
+            client.postMessage({ type: 'NAVIGATE', url: targetUrl });
+          } catch (_e) { /* postMessage may not be supported on some clients */ }
+          if ('focus' in client) {
+            return client.focus();
           }
-          // Otherwise open a new window
-          if (clients.openWindow) {
-            return clients.openWindow(targetUrl);
-          }
-        })
-    );
-  }
+          return;
+        }
+      } catch (_e) { /* skip and continue */ }
+    }
+
+    // 2) No open window — open a new one ONLY if we don't have a focused client.
+    // On iOS standalone PWA, openWindow may open Safari instead of the PWA, but if there's no
+    // existing PWA window we have no choice.
+    if (clients.openWindow) {
+      return clients.openWindow(targetUrl);
+    }
+  })());
 });
 
 // Background sync (for future use)

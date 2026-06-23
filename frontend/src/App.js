@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { RegionProvider } from "@/contexts/RegionContext";
@@ -108,6 +108,27 @@ const PublicRoute = ({ children }) => {
 };
 
 function AppRoutes() {
+  const navigate = useNavigate();
+
+  // Listen for postMessage from the Service Worker (notification clicks).
+  // The SW sends { type: 'NAVIGATE', url: '/dashboard' } so we can route INTERNALLY via react-router
+  // instead of letting client.navigate() reload outside the iOS standalone PWA.
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return;
+    const handleMessage = (event) => {
+      try {
+        const msg = event && event.data;
+        if (msg && msg.type === 'NAVIGATE' && typeof msg.url === 'string' && msg.url.startsWith('/')) {
+          navigate(msg.url);
+        }
+      } catch (_e) { /* ignore */ }
+    };
+    navigator.serviceWorker.addEventListener('message', handleMessage);
+    return () => {
+      try { navigator.serviceWorker.removeEventListener('message', handleMessage); } catch (_e) {}
+    };
+  }, [navigate]);
+
   return (
     <Routes>
       {/* Public Routes */}
