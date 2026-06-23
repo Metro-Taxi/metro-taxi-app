@@ -51,18 +51,87 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
   const [importResult, setImportResult] = useState(null);
   const [importLoading, setImportLoading] = useState(false);
 
+  // Nettoie les extensions BSON de mongoexport : {"$oid":"abc"} -> "abc", {"$date":"..."} -> ISO string, etc.
+  const cleanBsonExtensions = (obj) => {
+    if (obj === null || obj === undefined) return obj;
+    if (Array.isArray(obj)) return obj.map(cleanBsonExtensions);
+    if (typeof obj !== 'object') return obj;
+    const keys = Object.keys(obj);
+    if (keys.length === 1) {
+      const k = keys[0];
+      if (k === '$oid') return String(obj[k]);
+      if (k === '$date') {
+        const v = obj[k];
+        if (typeof v === 'string') return v;
+        if (v && typeof v === 'object' && v.$numberLong) return new Date(parseInt(v.$numberLong, 10)).toISOString();
+        return String(v);
+      }
+      if (k === '$numberLong' || k === '$numberInt') return parseInt(obj[k], 10);
+      if (k === '$numberDouble' || k === '$numberDecimal') return parseFloat(obj[k]);
+    }
+    const out = {};
+    for (const k of keys) out[k] = cleanBsonExtensions(obj[k]);
+    return out;
+  };
+
+  // Parser ultra-tolérant : accepte JSON array, JSONL (1 objet par ligne), espaces, ][
+  const tolerantParseArray = (raw) => {
+    if (!raw || !raw.trim()) return [];
+    let t = raw.trim();
+    // Vire les BOM et caractères de contrôle invisibles
+    t = t.replace(/^\uFEFF/, '');
+    // Essai 1 : JSON array standard
+    try {
+      const arr = JSON.parse(t);
+      if (Array.isArray(arr)) return arr.map(cleanBsonExtensions);
+      if (typeof arr === 'object' && arr !== null) return [cleanBsonExtensions(arr)];
+    } catch (_e1) { /* fallback */ }
+    // Essai 2 : plusieurs arrays concaténés [...][...] -> on les fusionne
+    if (t.includes('][')) {
+      try {
+        const fixed = '[' + t.replace(/\]\s*\[/g, ',') + ']';
+        // ça va donner [[...],[...]] -> flatten
+        const arr = JSON.parse(fixed);
+        if (Array.isArray(arr)) return arr.flat(Infinity).map(cleanBsonExtensions);
+      } catch (_e2) { /* fallback */ }
+    }
+    // Essai 3 : JSONL (un objet JSON par ligne, format mongoexport par défaut)
+    const lines = t.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    const out = [];
+    for (const line of lines) {
+      if (!line || line === '[' || line === ']' || line === ',') continue;
+      const clean = line.replace(/,\s*$/, ''); // virgule de fin éventuelle
+      try {
+        const obj = JSON.parse(clean);
+        out.push(cleanBsonExtensions(obj));
+      } catch (_e3) { /* skip ligne foireuse */ }
+    }
+    if (out.length > 0) return out;
+    throw new Error('Aucun format reconnu');
+  };
+
+  const handleFileUpload = async (e, target) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const text = await file.text();
+    if (target === 'users') setImportUsersJson(text);
+    else setImportDriversJson(text);
+    toast.success(`Fichier "${file.name}" chargé (${(text.length / 1024).toFixed(1)} ko). Clique sur Importer.`);
+  };
+
   const handleImportLegacy = async () => {
     if (!importUsersJson && !importDriversJson) {
-      toast.error("Colle au moins un des deux JSON (usagers ou chauffeurs).");
+      toast.error("Colle ou uploade au moins un des deux fichiers (usagers ou chauffeurs).");
       return;
     }
     let users = [];
     let drivers = [];
     try {
-      if (importUsersJson) users = JSON.parse(importUsersJson);
-      if (importDriversJson) drivers = JSON.parse(importDriversJson);
+      if (importUsersJson) users = tolerantParseArray(importUsersJson);
+      if (importDriversJson) drivers = tolerantParseArray(importDriversJson);
     } catch (e) {
-      toast.error("Format JSON invalide. Vérifie que tu as bien copié le contenu complet.");
+      toast.error("Format JSON invalide. Essaie le bouton 'Choisir un fichier' pour uploader directement ton .json.");
+      console.error('JSON parse error:', e);
       return;
     }
     if (!window.confirm(`Importer ${users.length} usagers et ${drivers.length} chauffeurs ? Les emails déjà existants seront ignorés.`)) return;
@@ -108,31 +177,53 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
       <Card className="bg-[#18181B] border-blue-700 border-2 p-6">
         <h2 className="text-xl font-bold text-blue-400 mb-2">📥 Importer mes anciens usagers/chauffeurs depuis le VPS</h2>
         <p className="text-sm text-zinc-400 mb-4">
-          Colle ici les JSON exportés depuis ton ancien VPS (mongoexport). Les emails déjà présents sont ignorés.
-          Les mots de passe bcrypt sont préservés — tes utilisateurs pourront se reconnecter avec leurs identifiants habituels.
+          Deux façons de procéder :<br/>
+          1. <b>Uploade ton fichier .json</b> directement (recommandé) — le bouton &quot;Choisir un fichier&quot; ci-dessous.<br/>
+          2. Ou colle le contenu dans la zone de texte.<br/>
+          Le parser détecte automatiquement le format mongoexport (JSON array OU JSONL ligne par ligne), nettoie les <code>$oid</code>/<code>$date</code>, et ignore les emails déjà présents. Les mots de passe bcrypt sont préservés — tes utilisateurs se reconnectent avec leurs anciens identifiants.
         </p>
-        <div className="space-y-3 mb-4">
+        <div className="space-y-4 mb-4">
           <div>
-            <label className="block text-xs text-zinc-400 mb-1">JSON des USAGERS (collection users) :</label>
+            <label className="block text-xs text-zinc-400 mb-1">Fichier USAGERS (.json export de mongoexport) :</label>
+            <input
+              type="file"
+              accept=".json,.txt,application/json"
+              onChange={(e) => handleFileUpload(e, 'users')}
+              className="block w-full text-xs text-zinc-300 file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-600 file:text-white file:cursor-pointer hover:file:bg-blue-700 mb-2"
+              data-testid="import-users-file"
+            />
             <textarea
               value={importUsersJson}
               onChange={(e) => setImportUsersJson(e.target.value)}
-              placeholder='[{"id":"...","email":"...","password":"$2b$12$..."},...]'
-              rows={4}
+              placeholder='Ou colle ici : [{"email":"..."}] ou JSONL (1 objet par ligne)'
+              rows={3}
               className="w-full px-3 py-2 rounded bg-zinc-900 border border-zinc-700 text-white font-mono text-xs"
               data-testid="import-users-json"
             />
+            {importUsersJson && (
+              <p className="text-xs text-green-400 mt-1">{importUsersJson.length.toLocaleString()} caractères chargés</p>
+            )}
           </div>
           <div>
-            <label className="block text-xs text-zinc-400 mb-1">JSON des CHAUFFEURS (collection drivers) :</label>
+            <label className="block text-xs text-zinc-400 mb-1">Fichier CHAUFFEURS (.json export de mongoexport) :</label>
+            <input
+              type="file"
+              accept=".json,.txt,application/json"
+              onChange={(e) => handleFileUpload(e, 'drivers')}
+              className="block w-full text-xs text-zinc-300 file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-600 file:text-white file:cursor-pointer hover:file:bg-blue-700 mb-2"
+              data-testid="import-drivers-file"
+            />
             <textarea
               value={importDriversJson}
               onChange={(e) => setImportDriversJson(e.target.value)}
-              placeholder='[{"id":"...","email":"...","password":"$2b$12$..."},...]'
-              rows={4}
+              placeholder='Ou colle ici : [{"email":"..."}] ou JSONL (1 objet par ligne)'
+              rows={3}
               className="w-full px-3 py-2 rounded bg-zinc-900 border border-zinc-700 text-white font-mono text-xs"
               data-testid="import-drivers-json"
             />
+            {importDriversJson && (
+              <p className="text-xs text-green-400 mt-1">{importDriversJson.length.toLocaleString()} caractères chargés</p>
+            )}
           </div>
         </div>
         <Button

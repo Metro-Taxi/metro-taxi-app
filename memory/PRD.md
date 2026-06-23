@@ -55,6 +55,14 @@ Plateforme VTC + covoiturage avec abonnements hebdomadaires (Sogecommerce) et **
 - [ ] Gratuité 1ère course (≤10km) pour les 100 premiers abonnés
 - [ ] Supprimer compte doublon `heleymouke@gmail.com`
 
+### P0 ajouté — Import legacy VPS (24/02/2026)
+- Endpoint `/api/admin/import/legacy-vps` + UI MaintenanceTab.jsx
+- Parser front-end ultra-tolérant : JSON array, JSONL (mongoexport par défaut), arrays collés `][`, objet unique
+- Nettoyage automatique des extensions BSON (`$oid`, `$date`, `$numberLong`, `$numberDouble`) côté front ET back (défense en profondeur)
+- Upload de fichier `.json` directement (en plus du copier-coller) pour bypass les bugs clavier mobile
+- Mots de passe bcrypt préservés → users du VPS se reconnectent avec leurs anciens identifiants
+- En attente test Capitaine en production (clic "Deploy" requis)
+
 ### P2
 - [ ] Reverse-geocode pickup serveur (Nominatim) — adresse parfois tronquée
 - [ ] Traduire boutons chauffeur en FR (Accept/Decline → Accepter/Refuser)

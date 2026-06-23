@@ -2981,6 +2981,43 @@ async def admin_extend_subscription(user_id: str, days: int = 7, current_user: d
 # ============================================
 from fastapi import Body
 
+
+def _clean_bson_extensions(obj):
+    """Convertit récursivement les extensions BSON mongoexport ($oid, $date, $numberLong)
+    en types Python natifs pour que l'insertion Mongo ne plante pas."""
+    if obj is None:
+        return None
+    if isinstance(obj, list):
+        return [_clean_bson_extensions(x) for x in obj]
+    if isinstance(obj, dict):
+        if len(obj) == 1:
+            k = next(iter(obj))
+            v = obj[k]
+            if k == "$oid":
+                return str(v)
+            if k == "$date":
+                if isinstance(v, str):
+                    return v
+                if isinstance(v, dict) and "$numberLong" in v:
+                    try:
+                        return datetime.fromtimestamp(int(v["$numberLong"]) / 1000, tz=timezone.utc).isoformat()
+                    except Exception:
+                        return str(v)
+                return str(v)
+            if k in ("$numberLong", "$numberInt"):
+                try:
+                    return int(v)
+                except Exception:
+                    return v
+            if k in ("$numberDouble", "$numberDecimal"):
+                try:
+                    return float(v)
+                except Exception:
+                    return v
+        return {kk: _clean_bson_extensions(vv) for kk, vv in obj.items()}
+    return obj
+
+
 @router.post("/admin/import/legacy-vps")
 async def import_legacy_vps(
     payload: dict = Body(...),
@@ -2996,10 +3033,11 @@ async def import_legacy_vps(
     drivers_imported = 0
     drivers_skipped = 0
     errors = []
-    for u in users:
+    for raw_u in users:
         try:
+            u = _clean_bson_extensions(raw_u) or {}
             u.pop("_id", None)
-            email = u.get("email", "").strip().lower()
+            email = (u.get("email") or "").strip().lower()
             if not email:
                 continue
             existing = await db.users.find_one({"email": {"$regex": f"^{email}$", "$options": "i"}})
@@ -3010,11 +3048,12 @@ async def import_legacy_vps(
             await db.users.insert_one(u)
             users_imported += 1
         except Exception as e:
-            errors.append(f"user {u.get('email','?')}: {str(e)[:100]}")
-    for d in drivers:
+            errors.append(f"user {raw_u.get('email','?') if isinstance(raw_u, dict) else '?'}: {str(e)[:100]}")
+    for raw_d in drivers:
         try:
+            d = _clean_bson_extensions(raw_d) or {}
             d.pop("_id", None)
-            email = d.get("email", "").strip().lower()
+            email = (d.get("email") or "").strip().lower()
             if not email:
                 continue
             existing = await db.drivers.find_one({"email": {"$regex": f"^{email}$", "$options": "i"}})
@@ -3026,7 +3065,7 @@ async def import_legacy_vps(
             await db.drivers.insert_one(d)
             drivers_imported += 1
         except Exception as e:
-            errors.append(f"driver {d.get('email','?')}: {str(e)[:100]}")
+            errors.append(f"driver {raw_d.get('email','?') if isinstance(raw_d, dict) else '?'}: {str(e)[:100]}")
     return {
         "status": "imported",
         "users_imported": users_imported,
