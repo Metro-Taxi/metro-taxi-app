@@ -27,14 +27,19 @@ const Landing = () => {
     if (ref && ref !== 'qr') { // 'qr' générique = pas une campagne identifiée
       try {
         localStorage.setItem('signup_campaign', ref);
-        const apiUrl = process.env.REACT_APP_BACKEND_URL;
-        if (apiUrl) {
-          fetch(`${apiUrl}/api/qr/scan`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ campaign: ref, referrer: document.referrer || '' }),
-            keepalive: true,
-          }).catch(() => {});
+        // Dedupe : 1 scan max par session par campagne (évite double-scan en dev StrictMode + reloads)
+        const sessKey = `qr_scan_sent_${ref}`;
+        if (!sessionStorage.getItem(sessKey)) {
+          sessionStorage.setItem(sessKey, '1');
+          const apiUrl = process.env.REACT_APP_BACKEND_URL;
+          if (apiUrl) {
+            fetch(`${apiUrl}/api/qr/scan`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ campaign: ref, referrer: document.referrer || '' }),
+              keepalive: true,
+            }).catch(() => {});
+          }
         }
       } catch (_e) { /* ignore */ }
     }
