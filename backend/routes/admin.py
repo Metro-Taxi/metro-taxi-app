@@ -813,6 +813,21 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
         "type": "ride_request",
         "ride": {k: v for k, v in ride_doc.items() if k != "_id"}
     }, data.driver_id)
+
+    # Push notification (app fermée OK) — fire-and-forget pour ne pas ralentir la réponse API
+    try:
+        from routes.notifications import send_push_notification, NotificationPayload
+        asyncio.create_task(send_push_notification(
+            user_id=data.driver_id,
+            user_type="driver",
+            notification=NotificationPayload(
+                title="🚗 Nouvelle course Métro-Taxi",
+                body=f"{user.get('first_name','Un usager')} demande une course depuis {pickup_address[:40] if pickup_address else 'un point GPS'}",
+                data={"type": "ride_request", "ride_id": ride_id, "url": "/dashboard"}
+            )
+        ))
+    except Exception as e:
+        logging.warning(f"Push notif driver failed (non-blocking): {e}")
     
     return {"ride": {k: v for k, v in ride_doc.items() if k != "_id"}}
 
@@ -872,6 +887,22 @@ async def accept_ride(ride_id: str, current_user: dict = Depends(get_current_use
         "type": "ride_accepted",
         "ride_id": ride_id
     }, ride["user_id"])
+
+    # Push à l'usager (app fermée OK)
+    try:
+        from routes.notifications import send_push_notification, NotificationPayload
+        driver = await db.drivers.find_one({"id": driver_id}, {"first_name": 1, "vehicle_plate": 1, "_id": 0}) or {}
+        asyncio.create_task(send_push_notification(
+            user_id=ride["user_id"],
+            user_type="user",
+            notification=NotificationPayload(
+                title="✅ Ton chauffeur a accepté",
+                body=f"{driver.get('first_name','Le chauffeur')} arrive à ta rencontre. Plaque : {driver.get('vehicle_plate','-')}",
+                data={"type": "ride_accepted", "ride_id": ride_id, "url": "/dashboard"}
+            )
+        ))
+    except Exception as e:
+        logging.warning(f"Push notif accept failed: {e}")
     
     return {"status": "accepted"}
 
@@ -893,6 +924,21 @@ async def reject_ride(ride_id: str, current_user: dict = Depends(get_current_use
         "type": "ride_rejected",
         "ride_id": ride_id
     }, ride["user_id"])
+
+    # Push à l'usager
+    try:
+        from routes.notifications import send_push_notification, NotificationPayload
+        asyncio.create_task(send_push_notification(
+            user_id=ride["user_id"],
+            user_type="user",
+            notification=NotificationPayload(
+                title="❌ Course refusée",
+                body="Le chauffeur n'est pas disponible. Choisis-en un autre dans l'app.",
+                data={"type": "ride_rejected", "ride_id": ride_id, "url": "/dashboard"}
+            )
+        ))
+    except Exception as e:
+        logging.warning(f"Push notif reject failed: {e}")
     
     return {"status": "rejected"}
 
@@ -936,6 +982,20 @@ async def cancel_ride_by_user(ride_id: str, current_user: dict = Depends(get_cur
             "ride_id": ride_id,
             "message": "L'usager a annulé la course",
         }, driver_id)
+        # Push au chauffeur
+        try:
+            from routes.notifications import send_push_notification, NotificationPayload
+            asyncio.create_task(send_push_notification(
+                user_id=driver_id,
+                user_type="driver",
+                notification=NotificationPayload(
+                    title="🚫 Course annulée par l'usager",
+                    body="L'usager a annulé sa demande. Tu redeviens disponible.",
+                    data={"type": "ride_cancelled", "ride_id": ride_id, "url": "/dashboard"}
+                )
+            ))
+        except Exception as e:
+            logging.warning(f"Push notif cancel failed: {e}")
 
     return {"status": "cancelled", "ride_id": ride_id}
 
@@ -1158,6 +1218,20 @@ async def update_ride_progress(ride_id: str, data: RideProgressUpdate, current_u
     
     elif data.status == "pickup":
         update_data["progress_percent"] = 10
+        # Push à l'usager : "Ton chauffeur est arrivé"
+        try:
+            from routes.notifications import send_push_notification, NotificationPayload
+            asyncio.create_task(send_push_notification(
+                user_id=ride["user_id"],
+                user_type="user",
+                notification=NotificationPayload(
+                    title="📍 Ton chauffeur est arrivé !",
+                    body=f"Présente-toi au point de rdv. Code embarquement à donner au chauffeur : {ride.get('pickup_otp','-')}",
+                    data={"type": "driver_arrived", "ride_id": ride_id, "url": "/dashboard"}
+                )
+            ))
+        except Exception as e:
+            logging.warning(f"Push notif arrived failed: {e}")
     
     elif data.status == "near_destination":
         update_data["progress_percent"] = 90
