@@ -25,6 +25,7 @@ import DriverCardDialog from '@/components/admin/DriverCardDialog';
 import FleetPartnershipsTab from '@/components/admin/FleetPartnershipsTab';
 import CommercialPartnersTab from '@/components/admin/CommercialPartnersTab';
 import MaintenanceTab from '@/components/admin/MaintenanceTab';
+import QRStatsTab from '@/components/admin/QRStatsTab';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -746,6 +747,13 @@ const AdminDashboard = () => {
               data-testid="maintenance-tab"
             >
               🧹 Maintenance
+            </TabsTrigger>
+            <TabsTrigger
+              value="qr-stats"
+              className="data-[state=active]:bg-[#FFD60A] data-[state=active]:text-black"
+              data-testid="qr-stats-tab"
+            >
+              📊 Stats QR
             </TabsTrigger>
           </TabsList>
 
@@ -1696,6 +1704,11 @@ const AdminDashboard = () => {
               currentUserId={admin?.id}
               currentUserEmail={admin?.email}
             />
+          </TabsContent>
+
+          {/* QR Stats Tab */}
+          <TabsContent value="qr-stats">
+            <QRStatsTab token={token} />
           </TabsContent>
         </Tabs>
 

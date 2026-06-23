@@ -216,6 +216,7 @@ from routes.promo_codes import router as promo_codes_router
 from routes.auto_campaigns import router as auto_campaigns_router
 from routes.auto_campaigns import attempt_auto_attribution
 from routes.legal import router as legal_router
+from routes.qr_tracking import router as qr_tracking_router
 
 # ============================================
 # ALGORITHME CENTRAL MÉTRO-TAXI
@@ -3473,6 +3474,7 @@ app.include_router(support_chat_router)
 app.include_router(promo_codes_router)
 app.include_router(auto_campaigns_router)
 app.include_router(legal_router)
+app.include_router(qr_tracking_router)
 
 # Marketing assets download endpoint (forces download, bypasses PWA scope)
 from routes.marketing import router as marketing_router

@@ -47,6 +47,14 @@ const RegisterUser = () => {
     const campaign = searchParams.get('campaign');
     if (campaign) {
       setFormData((prev) => ({ ...prev, signup_campaign: campaign.trim() }));
+    } else {
+      // Fallback : reprendre la campagne capturée par Landing.js (scan QR avec ?ref=xxx)
+      try {
+        const stored = localStorage.getItem('signup_campaign');
+        if (stored && stored.trim()) {
+          setFormData((prev) => ({ ...prev, signup_campaign: stored.trim() }));
+        }
+      } catch (_e) { /* ignore */ }
     }
     const ref = searchParams.get('ref');
     if (ref) {

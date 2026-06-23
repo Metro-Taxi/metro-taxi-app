@@ -19,6 +19,27 @@ const Landing = () => {
   const videoRef = useRef(null);
   const videoSectionRef = useRef(null);
 
+  // Tracking QR / campagnes : si l'URL contient ?ref=xxx ou ?campaign=xxx, on enregistre le scan
+  // et on persiste la valeur en localStorage pour la binder au signup ensuite.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = (params.get('ref') || params.get('campaign') || '').trim().toLowerCase();
+    if (ref && ref !== 'qr') { // 'qr' générique = pas une campagne identifiée
+      try {
+        localStorage.setItem('signup_campaign', ref);
+        const apiUrl = process.env.REACT_APP_BACKEND_URL;
+        if (apiUrl) {
+          fetch(`${apiUrl}/api/qr/scan`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ campaign: ref, referrer: document.referrer || '' }),
+            keepalive: true,
+          }).catch(() => {});
+        }
+      } catch (_e) { /* ignore */ }
+    }
+  }, []);
+
   // Get language code - keep full code if it exists in languages list, otherwise get base
   const getLanguageCode = (langCode) => {
     if (!langCode) return 'fr';
