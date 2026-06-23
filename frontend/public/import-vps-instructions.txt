@@ -1,0 +1,80 @@
+============================================
+INSTRUCTIONS - IMPORT BASE LEGACY VPS
+Metro-Taxi - Procedure pour Capitaine
+============================================
+
+ETAPE 1 - Connexion SSH a ton ancien VPS
+-----------------------------------------
+Depuis ton PC, ouvre un terminal et tape :
+
+ssh root@TON_IP_VPS
+
+(remplace TON_IP_VPS par l'adresse IP de ton ancien serveur)
+
+
+ETAPE 2 - Exporter les USAGERS
+-------------------------------
+Une fois connecte, tape cette commande :
+
+mongoexport --uri="mongodb://localhost:27017/metro_taxi_prod" --collection=users --jsonArray --out=/tmp/users.json
+
+
+ETAPE 3 - Exporter les CHAUFFEURS
+----------------------------------
+Puis cette commande :
+
+mongoexport --uri="mongodb://localhost:27017/metro_taxi_prod" --collection=drivers --jsonArray --out=/tmp/drivers.json
+
+
+ETAPE 4 - Verifier que les fichiers existent
+---------------------------------------------
+Tape :
+
+ls -lh /tmp/users.json /tmp/drivers.json
+
+Tu dois voir 2 lignes avec une taille en Ko.
+
+
+ETAPE 5 - Rapatrier sur ton PC
+-------------------------------
+QUITTE la session SSH (tape : exit)
+Puis depuis ton PC :
+
+scp root@TON_IP_VPS:/tmp/users.json ~/Downloads/users.json
+scp root@TON_IP_VPS:/tmp/drivers.json ~/Downloads/drivers.json
+
+
+ETAPE 6 - Uploader dans Metro-Taxi
+-----------------------------------
+1. Va sur metro-taxi.com
+2. Connecte-toi en admin (contact@metro-taxi.com)
+3. Onglet Maintenance
+4. Section bleue "Importer mes anciens usagers/chauffeurs"
+5. Bouton "Choisir un fichier" sur la zone USAGERS -> selectionne users.json
+6. Bouton "Choisir un fichier" sur la zone CHAUFFEURS -> selectionne drivers.json
+7. Clic sur "Importer depuis l'ancien VPS"
+8. Tu vois : "X usagers + Y chauffeurs importes"
+
+
+PROBLEMES FREQUENTS
+-------------------
+- "Permission denied" en SSH : tu n'as plus la cle ou le mot de passe -> verifie ton hebergeur
+- Nom de base different : remplace metro_taxi_prod par le bon nom (commande mongo : show dbs)
+- mongoexport command not found : sudo apt install mongodb-database-tools
+- Fichier vide : verifie que le service mongod tourne encore (systemctl status mongod)
+
+
+SI TU N'AS PLUS ACCES AU VPS
+----------------------------
+Verifie si tu as un backup ailleurs :
+- Google Drive / Dropbox
+- Disque dur externe
+- Email envoye a toi-meme
+- Backup automatique chez ton hebergeur (OVH, Hostinger, etc.)
+
+Si rien : contacte ton ancien hebergeur, ils gardent souvent des backups 7-30 jours.
+
+
+============================================
+Charly - Metro-Taxi Tech Support
+============================================
