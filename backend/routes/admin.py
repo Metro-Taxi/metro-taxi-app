@@ -29,6 +29,7 @@ if STRIPE_API_KEY:
 # Import config from server
 from server import SUBSCRIPTION_PLANS, REGIONAL_PRICING, DRIVER_RATE_PER_KM, PAYOUT_DAY, RESEND_API_KEY, SENDER_EMAIL
 import resend
+import re
 from utils.helpers import DRIVER_RATE_PER_KM_BY_VEHICLE, get_driver_rate_per_km, calculate_distance
 
 def _get_manager():
@@ -3183,3 +3184,196 @@ async def import_legacy_vps_from_files(
     if current_user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
     raise HTTPException(status_code=410, detail="Endpoint désactivé : les fichiers de backup ont été supprimés après l'import du 23/06/2026.")
+
+
+# ============================================
+# ADMIN — Outil de diagnostic des revenus chauffeur
+# ============================================
+@router.get("/admin/diagnose/driver-earnings")
+async def diagnose_driver_earnings(
+    email: str,
+    current_user: dict = Depends(get_current_user),
+):
+    """Liste tous les profils chauffeurs avec cet email + compare rides.driver_revenue
+    avec driver_earnings stocké. Détecte doublons + courses orphelines."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+    email_clean = (email or "").strip().lower()
+    if not email_clean:
+        raise HTTPException(status_code=400, detail="email requis")
+    profiles = await db.drivers.find(
+        {"email": {"$regex": f"^{re.escape(email_clean)}$", "$options": "i"}},
+        {"_id": 0, "password": 0}
+    ).to_list(length=20)
+    report = {
+        "email_searched": email_clean,
+        "profiles_count": len(profiles),
+        "is_duplicate": len(profiles) > 1,
+        "profiles": [],
+        "orphan_rides": [],
+        "summary": {},
+    }
+    if not profiles:
+        return report
+    all_driver_ids = {p["id"] for p in profiles}
+    for p in profiles:
+        driver_id = p["id"]
+        rides = await db.ride_requests.find({"driver_id": driver_id}, {"_id": 0}).to_list(length=500)
+        by_status: dict = {}
+        sum_revenue_from_rides = 0.0
+        for r in rides:
+            s = r.get("status", "unknown")
+            by_status[s] = by_status.get(s, 0) + 1
+            if s == "completed":
+                sum_revenue_from_rides += float(r.get("driver_revenue", 0) or 0)
+        earnings = await db.driver_earnings.find(
+            {"driver_id": driver_id}, {"_id": 0}
+        ).to_list(length=24)
+        sum_revenue_stored = sum(float(e.get("total_revenue", 0) or 0) for e in earnings)
+        pending_amount = sum(
+            float(e.get("total_revenue", 0) or 0)
+            for e in earnings if e.get("payout_status") == "pending"
+        )
+        payouts = await db.driver_payouts.find(
+            {"driver_id": driver_id}, {"_id": 0, "stripe_account_id": 0}
+        ).sort("created_at", -1).limit(5).to_list(length=5)
+        report["profiles"].append({
+            "id": driver_id,
+            "name": f"{p.get('first_name','').strip()} {p.get('last_name','').strip()}",
+            "email": p.get("email"),
+            "phone": p.get("phone"),
+            "iban_set": bool(p.get("iban")),
+            "stripe_account_set": bool(p.get("stripe_account_id")),
+            "is_validated": p.get("is_validated", False),
+            "is_active": p.get("is_active", False),
+            "created_at": p.get("created_at"),
+            "pioneer_number": p.get("pioneer_number"),
+            "rides_count_total": len(rides),
+            "rides_by_status": by_status,
+            "sum_revenue_from_completed_rides_eur": round(sum_revenue_from_rides, 2),
+            "sum_revenue_stored_in_driver_earnings_eur": round(sum_revenue_stored, 2),
+            "discrepancy_eur": round(sum_revenue_from_rides - sum_revenue_stored, 2),
+            "pending_payout_eur": round(pending_amount, 2),
+            "earnings_per_month": [
+                {
+                    "month": e.get("month"),
+                    "total_revenue": round(float(e.get("total_revenue", 0) or 0), 2),
+                    "rides_count": e.get("rides_count", 0),
+                    "payout_status": e.get("payout_status"),
+                }
+                for e in earnings
+            ],
+            "recent_payouts": [
+                {
+                    "id": po.get("id"),
+                    "total_revenue": po.get("total_revenue"),
+                    "status": po.get("status"),
+                    "created_at": po.get("created_at"),
+                }
+                for po in payouts
+            ],
+        })
+    # Courses orphelines récentes (30j) avec driver_id qui n'est dans aucun profil
+    if profiles:
+        from datetime import timedelta as _td
+        since = (datetime.now(timezone.utc) - _td(days=30)).isoformat()
+        recent_orphans = await db.ride_requests.find(
+            {
+                "created_at": {"$gte": since},
+                "driver_id": {"$nin": list(all_driver_ids)},
+                "status": {"$in": ["completed", "in_progress", "accepted"]},
+            },
+            {"_id": 0, "id": 1, "driver_id": 1, "status": 1, "created_at": 1, "driver_revenue": 1, "user_name": 1, "pickup_address": 1}
+        ).limit(20).to_list(length=20)
+        report["orphan_rides"] = recent_orphans
+    report["summary"] = {
+        "total_completed_rides_across_profiles": sum(
+            p["rides_by_status"].get("completed", 0) for p in report["profiles"]
+        ),
+        "total_revenue_from_rides_eur": round(
+            sum(p["sum_revenue_from_completed_rides_eur"] for p in report["profiles"]), 2
+        ),
+        "total_revenue_stored_eur": round(
+            sum(p["sum_revenue_stored_in_driver_earnings_eur"] for p in report["profiles"]), 2
+        ),
+        "total_pending_payout_eur": round(
+            sum(p["pending_payout_eur"] for p in report["profiles"]), 2
+        ),
+        "orphan_rides_in_last_30_days": len(report["orphan_rides"]),
+    }
+    return report
+
+
+@router.post("/admin/recompute/driver-earnings")
+async def recompute_driver_earnings(
+    payload: dict = Body(...),
+    current_user: dict = Depends(get_current_user),
+):
+    """Recompute driver_earnings depuis les rides 'completed'. NE TOUCHE PAS aux months déjà 'paid'.
+    Body: {driver_id, dry_run}."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+    driver_id = ((payload or {}).get("driver_id") or "").strip()
+    dry_run = bool((payload or {}).get("dry_run", False))
+    if not driver_id:
+        raise HTTPException(status_code=400, detail="driver_id requis")
+    driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0, "password": 0})
+    if not driver:
+        raise HTTPException(status_code=404, detail="Chauffeur introuvable")
+    rides = await db.ride_requests.find(
+        {"driver_id": driver_id, "status": "completed"}, {"_id": 0}
+    ).to_list(length=2000)
+    by_month: dict = {}
+    for r in rides:
+        completed_at = r.get("completed_at") or r.get("created_at") or ""
+        month_key = completed_at[:7] if len(completed_at) >= 7 else "unknown"
+        if month_key not in by_month:
+            by_month[month_key] = {"total_revenue": 0.0, "total_km": 0.0, "rides_count": 0}
+        by_month[month_key]["total_revenue"] += float(r.get("driver_revenue", 0) or 0)
+        by_month[month_key]["total_km"] += float(r.get("km_with_user", 0) or 0)
+        by_month[month_key]["rides_count"] += 1
+    actions = []
+    now_iso = datetime.now(timezone.utc).isoformat()
+    for month_key, agg in by_month.items():
+        if month_key == "unknown":
+            continue
+        existing = await db.driver_earnings.find_one(
+            {"driver_id": driver_id, "month": month_key}, {"_id": 0}
+        )
+        if existing and existing.get("payout_status") == "paid":
+            actions.append({
+                "month": month_key, "action": "skipped_already_paid",
+                "stored_revenue": existing.get("total_revenue"),
+                "computed_revenue": round(agg["total_revenue"], 2),
+            })
+            continue
+        new_doc = {
+            "driver_id": driver_id, "month": month_key,
+            "total_revenue": round(agg["total_revenue"], 2),
+            "total_km": round(agg["total_km"], 2),
+            "rides_count": agg["rides_count"],
+            "payout_status": "pending",
+            "updated_at": now_iso,
+            "source": "recomputed_by_admin",
+        }
+        if not dry_run:
+            await db.driver_earnings.update_one(
+                {"driver_id": driver_id, "month": month_key},
+                {"$set": new_doc, "$setOnInsert": {"created_at": now_iso}},
+                upsert=True,
+            )
+        actions.append({
+            "month": month_key,
+            "action": "recomputed" if not dry_run else "would_recompute",
+            "stored_revenue_before": existing.get("total_revenue") if existing else None,
+            "computed_revenue_after": round(agg["total_revenue"], 2),
+            "rides_count_computed": agg["rides_count"],
+        })
+    return {
+        "driver_id": driver_id,
+        "driver_name": f"{driver.get('first_name','').strip()} {driver.get('last_name','').strip()}",
+        "total_completed_rides": len(rides),
+        "months_processed": list(by_month.keys()),
+        "dry_run": dry_run,
+        "actions": actions,
+    }

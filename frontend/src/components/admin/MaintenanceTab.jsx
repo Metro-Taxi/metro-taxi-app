@@ -3,7 +3,8 @@ import axios from 'axios';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
-import { Trash2, Eye, CalendarPlus, Loader2 } from 'lucide-react';
+import { Trash2, Eye, CalendarPlus, Loader2, Search } from 'lucide-react';
+import DriverEarningsDiagnosticDialog from './DriverEarningsDiagnosticDialog';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -50,6 +51,7 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
   const [importDriversJson, setImportDriversJson] = useState('');
   const [importResult, setImportResult] = useState(null);
   const [importLoading, setImportLoading] = useState(false);
+  const [showDiagnostic, setShowDiagnostic] = useState(false);
 
   // Nettoie les extensions BSON de mongoexport : {"$oid":"abc"} -> "abc", {"$date":"..."} -> ISO string, etc.
   const cleanBsonExtensions = (obj) => {
@@ -174,6 +176,33 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
 
   return (
     <div className="space-y-6">
+      {/* Outil diagnostic revenus chauffeur — NOUVEAU */}
+      <Card className="bg-[#18181B] border-orange-700 border-2 p-6">
+        <h2 className="text-xl font-bold text-orange-400 mb-2 flex items-center gap-2">
+          <Search className="w-5 h-5" />
+          🔍 Diagnostic revenus chauffeur
+        </h2>
+        <p className="text-sm text-zinc-400 mb-4">
+          Si un chauffeur signale des revenus qui ont disparu ou un virement manquant, lance ce diagnostic.
+          Il détecte : (1) doublons de profils (post-import legacy), (2) écarts entre les courses terminées et les revenus stockés,
+          (3) courses orphelines (driver_id qui n&apos;existe plus). Tu peux ensuite recalculer les revenus en 1 clic — les mois déjà PAYÉS ne sont jamais touchés.
+        </p>
+        <Button
+          onClick={() => setShowDiagnostic(true)}
+          className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 flex items-center gap-2"
+          data-testid="open-driver-diagnostic-btn"
+        >
+          <Search className="w-4 h-4" />
+          Ouvrir le diagnostic revenus
+        </Button>
+      </Card>
+
+      <DriverEarningsDiagnosticDialog
+        open={showDiagnostic}
+        onClose={() => setShowDiagnostic(false)}
+        token={token}
+      />
+
       <Card className="bg-[#18181B] border-blue-700 border-2 p-6">
         <h2 className="text-xl font-bold text-blue-400 mb-2">📥 Importer mes anciens usagers/chauffeurs depuis le VPS</h2>
         <p className="text-sm text-zinc-400 mb-4">
