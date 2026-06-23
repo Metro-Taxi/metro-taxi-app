@@ -3074,3 +3074,76 @@ async def import_legacy_vps(
         "drivers_skipped_already_exist": drivers_skipped,
         "errors": errors[:20],
     }
+
+
+# ============================================
+# ADMIN — Import legacy depuis fichiers JSON pré-chargés dans le repo
+# ============================================
+import json as _json_lib
+
+@router.post("/admin/import/legacy-vps-from-files")
+async def import_legacy_vps_from_files(
+    current_user: dict = Depends(get_current_user),
+):
+    """Import depuis les fichiers JSON pré-chargés /app/backend/data/legacy_*.json.
+    Snapshot du VPS du 23/06/2026 : 30 usagers + 39 chauffeurs."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
+    base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    users_path = os.path.join(base, "data", "legacy_users.json")
+    drivers_path = os.path.join(base, "data", "legacy_drivers.json")
+    if not os.path.exists(users_path) or not os.path.exists(drivers_path):
+        raise HTTPException(status_code=404, detail="Fichiers de backup introuvables côté serveur")
+    with open(users_path, "r", encoding="utf-8") as f:
+        users = _json_lib.load(f)
+    with open(drivers_path, "r", encoding="utf-8") as f:
+        drivers = _json_lib.load(f)
+    users_imported = 0
+    users_skipped = 0
+    drivers_imported = 0
+    drivers_skipped = 0
+    errors = []
+    for raw_u in users:
+        try:
+            u = _clean_bson_extensions(raw_u) or {}
+            u.pop("_id", None)
+            email = (u.get("email") or "").strip().lower()
+            if not email:
+                continue
+            existing = await db.users.find_one({"email": {"$regex": f"^{email}$", "$options": "i"}})
+            if existing:
+                users_skipped += 1
+                continue
+            u["email"] = email
+            await db.users.insert_one(u)
+            users_imported += 1
+        except Exception as e:
+            errors.append(f"user {raw_u.get('email','?') if isinstance(raw_u, dict) else '?'}: {str(e)[:100]}")
+    for raw_d in drivers:
+        try:
+            d = _clean_bson_extensions(raw_d) or {}
+            d.pop("_id", None)
+            email = (d.get("email") or "").strip().lower()
+            if not email:
+                continue
+            existing = await db.drivers.find_one({"email": {"$regex": f"^{email}$", "$options": "i"}})
+            if existing:
+                drivers_skipped += 1
+                continue
+            d["email"] = email
+            d["is_active"] = False
+            await db.drivers.insert_one(d)
+            drivers_imported += 1
+        except Exception as e:
+            errors.append(f"driver {raw_d.get('email','?') if isinstance(raw_d, dict) else '?'}: {str(e)[:100]}")
+    return {
+        "status": "imported",
+        "source": "snapshot_23_06_2026",
+        "total_users_in_snapshot": len(users),
+        "total_drivers_in_snapshot": len(drivers),
+        "users_imported": users_imported,
+        "users_skipped_already_exist": users_skipped,
+        "drivers_imported": drivers_imported,
+        "drivers_skipped_already_exist": drivers_skipped,
+        "errors": errors[:20],
+    }
