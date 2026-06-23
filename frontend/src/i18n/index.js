@@ -45,21 +45,16 @@ const storedLng = typeof window !== 'undefined'
   ? localStorage.getItem('i18nextLng')
   : null;
 
-// Determine initial language: stored > querystring > navigator > 'fr'
+// Determine initial language: stored > querystring > 'fr' (default forcé pour Métro-Taxi)
 function getInitialLng() {
   if (storedLng && supportedLngs.includes(storedLng)) return storedLng;
   if (typeof window !== 'undefined') {
     const params = new URLSearchParams(window.location.search);
     const qs = params.get('lng');
     if (qs && supportedLngs.includes(qs)) return qs;
-    // Try navigator languages
-    const navLangs = navigator.languages || [navigator.language];
-    for (const nl of navLangs) {
-      if (supportedLngs.includes(nl)) return nl;
-      const base = nl.split('-')[0];
-      if (supportedLngs.includes(base)) return base;
-    }
   }
+  // Métro-Taxi est une app française : on force le FR par défaut au lieu de suivre le navigateur.
+  // Les chauffeurs/usagers peuvent quand même changer via le sélecteur de langue.
   return 'fr';
 }
 
@@ -69,7 +64,7 @@ i18n
     resources,
     lng: getInitialLng(),
     supportedLngs,
-    fallbackLng: 'en',
+    fallbackLng: 'fr',
     debug: false,
     interpolation: {
       escapeValue: false

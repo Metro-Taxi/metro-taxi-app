@@ -12,6 +12,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import 'leaflet/dist/leaflet.css';
 import NotificationCenter from '@/components/NotificationCenter';
+import EnableNotificationsButton from '@/components/EnableNotificationsButton';
 import RideHistory from '@/pages/RideHistory';
 import { PendingRatings } from '@/components/RatingSystem';
 import ChatWindow from '@/components/ChatWindow';
@@ -695,6 +696,9 @@ const UserDashboard = () => {
                   <HelpCircle className="w-5 h-5 mr-3 text-[#FFD60A]" />
                   {t('help.button', 'AIDE')}
                 </Button>
+                <div className="px-3 py-2">
+                  <EnableNotificationsButton token={token} />
+                </div>
                 <Button 
                   variant="ghost" 
                   className="w-full justify-start text-red-400 hover:bg-red-500/10 hover:text-red-400"

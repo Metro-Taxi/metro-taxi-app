@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import DriverEarnings from './DriverEarnings';
 import HelpCenter from '@/components/HelpCenter';
 import ChangePasswordModal from '@/components/ChangePasswordModal';
+import EnableNotificationsButton from '@/components/EnableNotificationsButton';
 import 'leaflet/dist/leaflet.css';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -678,6 +679,10 @@ const DriverDashboard = () => {
                 <KeyRound className="w-5 h-5 mr-3 text-[#FFD60A]" />
                 Changer le mot de passe
               </Button>
+
+              <div className="px-3 py-2">
+                <EnableNotificationsButton token={token} />
+              </div>
               
               <Button 
                 variant="ghost" 

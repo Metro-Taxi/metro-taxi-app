@@ -55,15 +55,22 @@ Plateforme VTC + covoiturage avec abonnements hebdomadaires (Sogecommerce) et **
 - [ ] Gratuité 1ère course (≤10km) pour les 100 premiers abonnés
 - [ ] Supprimer compte doublon `heleymouke@gmail.com`
 
-### P0 ajouté — Import legacy VPS (24/02/2026)
+### P0 ajouté — Import legacy VPS (23-24/02/2026)
 - Endpoint `/api/admin/import/legacy-vps` + UI MaintenanceTab.jsx
 - Parser front-end ultra-tolérant : JSON array, JSONL (mongoexport par défaut), arrays collés `][`, objet unique
-- Nettoyage automatique des extensions BSON (`$oid`, `$date`, `$numberLong`, `$numberDouble`) côté front ET back (défense en profondeur)
-- Upload de fichier `.json` directement (en plus du copier-coller) pour bypass les bugs clavier mobile
-- Mots de passe bcrypt préservés → users du VPS se reconnectent avec leurs anciens identifiants
-- En attente test Capitaine en production (clic "Deploy" requis)
+- Nettoyage automatique des extensions BSON (`$oid`, `$date`, `$numberLong`, `$numberDouble`) côté front ET back
+- Upload de fichier `.json` directement (en plus du copier-coller)
+- **✅ Import effectué le 23/06/2026 (29 usagers + 39 chauffeurs en base)**. Fichiers JSON supprimés post-import pour RGPD.
 
-### P2
+### P1/P2/P3 — Session 24/02/2026
+- ✅ Langue par défaut forcée à FR (ignore navigator) + fallback FR (`i18n/index.js`)
+- ✅ Reverse-geocode Nominatim côté serveur avec cache 24h + rate-limit 1 req/s (`utils/geocoding.py`)
+- ✅ Bouton "Activer notifications" PWA iOS 16.4+ ajouté dans User & Driver Dashboard (`EnableNotificationsButton.jsx`) avec détection iOS standalone
+
+### P3 (non démarré)
+- [ ] Refactor `DriverDashboard.js` (>1000 lignes) — risqué sur app prod, skip pour l'instant
+
+### P2 (reste à venir)
 - [ ] Reverse-geocode pickup serveur (Nominatim) — adresse parfois tronquée
 - [ ] Traduire boutons chauffeur en FR (Accept/Decline → Accepter/Refuser)
 

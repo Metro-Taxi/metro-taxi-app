@@ -174,52 +174,6 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-[#18181B] border-green-700 border-2 p-6">
-        <h2 className="text-xl font-bold text-green-400 mb-2">⚡ Restaurer le backup VPS du 23/06/2026 (30 usagers + 39 chauffeurs)</h2>
-        <p className="text-sm text-zinc-400 mb-4">
-          Le snapshot complet de ton ancien VPS est déjà embarqué dans le serveur (fichiers <code>legacy_users.json</code> + <code>legacy_drivers.json</code>).
-          Clique sur le bouton, ça importe tout d&apos;un coup. Les emails déjà présents en base sont ignorés. Mots de passe bcrypt préservés.
-        </p>
-        <Button
-          onClick={async () => {
-            if (!window.confirm("Importer 30 usagers + 39 chauffeurs depuis le backup du 23/06/2026 ?")) return;
-            setImportLoading(true);
-            try {
-              const { data } = await axios.post(`${API}/admin/import/legacy-vps-from-files`, {}, auth);
-              setImportResult(data);
-              toast.success(`✅ ${data.users_imported} usagers + ${data.drivers_imported} chauffeurs importés`);
-            } catch (err) {
-              toast.error(err?.response?.data?.detail || "Erreur lors de l'import depuis fichiers");
-            } finally {
-              setImportLoading(false);
-            }
-          }}
-          disabled={importLoading}
-          className="bg-green-600 hover:bg-green-700 text-white font-bold py-6 px-8 w-full flex items-center justify-center gap-2"
-          data-testid="import-legacy-from-files-btn"
-        >
-          {importLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-          ⚡ Importer le backup du 23/06/2026 (en un clic)
-        </Button>
-        {importResult && (
-          <div className="mt-4 p-4 bg-zinc-900 border border-green-700 rounded-lg">
-            <h3 className="font-bold text-green-400">✅ Import terminé</h3>
-            <p className="text-sm text-zinc-300 mt-2">
-              {importResult.users_imported} usagers ajoutés ({importResult.users_skipped_already_exist} déjà présents)<br/>
-              {importResult.drivers_imported} chauffeurs ajoutés ({importResult.drivers_skipped_already_exist} déjà présents)
-            </p>
-            {importResult.errors && importResult.errors.length > 0 && (
-              <details className="mt-2 text-xs text-red-400">
-                <summary>Erreurs ({importResult.errors.length})</summary>
-                <ul className="list-disc list-inside mt-1">
-                  {importResult.errors.map((e, i) => <li key={i}>{e}</li>)}
-                </ul>
-              </details>
-            )}
-          </div>
-        )}
-      </Card>
-
       <Card className="bg-[#18181B] border-blue-700 border-2 p-6">
         <h2 className="text-xl font-bold text-blue-400 mb-2">📥 Importer mes anciens usagers/chauffeurs depuis le VPS</h2>
         <p className="text-sm text-zinc-400 mb-4">
