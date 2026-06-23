@@ -1,8 +1,8 @@
 const CACHE_NAME = 'metro-taxi-v16';
-const STATIC_CACHE = 'metro-taxi-static-v15';
-const DYNAMIC_CACHE = 'metro-taxi-dynamic-v15';
-const API_CACHE = 'metro-taxi-api-v14';
-const AUDIO_CACHE = 'metro-taxi-audio-v7';
+const STATIC_CACHE = 'metro-taxi-static-v16';
+const DYNAMIC_CACHE = 'metro-taxi-dynamic-v16';
+const API_CACHE = 'metro-taxi-api-v16';
+const AUDIO_CACHE = 'metro-taxi-audio-v16';
 
 // Critical resources to cache immediately (minimal set for fast startup)
 const STATIC_ASSETS = [
@@ -32,7 +32,7 @@ self.addEventListener('message', (event) => {
 
 // Install event - cache ONLY critical static assets (fast startup)
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing v10 (force update)...');
+  console.log('[Service Worker] Installing v16 (force update)...');
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then((cache) => {
