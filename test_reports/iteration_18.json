@@ -1,0 +1,41 @@
+{
+  "summary": "Frontend-only validation of PWA Install fix (Métro-Taxi). Code review + 8 Playwright tests run on landing page with Android UA and desktop UA. All 5 reported bug fixes verified working. No backend testing (per request).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "tests_executed": [
+    {"id": "TEST 1", "desc": "Desktop UA — install-pwa-nav-btn must NOT render", "result": "PASS"},
+    {"id": "TEST 2", "desc": "Android UA (Pixel 7) — install-pwa-nav-btn rendered + visible with text '📲 Installer'", "result": "PASS"},
+    {"id": "TEST 3", "desc": "Click install-pwa-nav-btn → URL contains ?install=1 after redirect", "result": "PASS"},
+    {"id": "TEST 4", "desc": "PWA install banner ([data-testid='pwa-install-banner']) appears after ?install=1 redirect (Android instructions rendered)", "result": "PASS"},
+    {"id": "TEST 5", "desc": "localStorage 'pwa-banner-dismissed' is removed by forceShow logic", "result": "PASS"},
+    {"id": "TEST 6", "desc": "?ref=qr query param triggers banner even with pre-existing dismissed timestamp", "result": "PASS"},
+    {"id": "TEST 7", "desc": "Cooldown 1h: banner hidden when dismissed 30min ago", "result": "PASS"},
+    {"id": "TEST 8", "desc": "Cooldown 1h: banner shown when dismissed 2h ago + old localStorage cleared", "result": "PASS"}
+  ],
+  "code_review_findings": {
+    "BUG_1_force_show_via_url_params": "VERIFIED — InstallPWABanner.jsx lines 36-40: `forceShow = params.has('install') || params.get('ref') === 'qr' || params.get('source') === 'qr'`; on forceShow, localStorage.removeItem('pwa-banner-dismissed') called; line 74 delay=500ms when forceShow else 2000ms.",
+    "BUG_2_cooldown_1h": "VERIFIED — Line 47: `Date.now() - dismissedTime < 60 * 60 * 1000` (exactly 1 hour, not 3 days).",
+    "BUG_3_mobile_only_button": "VERIFIED — Landing.js line 180: `/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && !window.matchMedia('(display-mode: standalone)').matches` correctly gates the install-pwa-nav-btn button.",
+    "BUG_4_android_button_clickable": "VERIFIED runtime — UA spoofed to Pixel 7 Chrome 120, button rendered, click triggers full reload to ?install=1, banner appears within ~2s with Android install instructions.",
+    "BUG_5_desktop_no_button": "VERIFIED runtime — desktop UA, button not present in DOM (query_selector returned None)."
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "MINOR (non-blocking): InstallPWABanner.jsx line 85 useEffect dep array `[dismissed]` causes the effect to re-run when dismissed flips to true, which clears the timer but is otherwise harmless. Could be improved by separating concerns, but not a bug.",
+    "MINOR (non-blocking): Landing.js line 180 calls navigator.userAgent and window.matchMedia inline during render. SSR-safe (CRA is CSR) but flagged for awareness — works fine in current CRA setup.",
+    "INFO: The custom InstallPWABanner falls back to manual instructions when beforeinstallprompt isn't fired (e.g. headless Chrome). On real Android Chrome on a public HTTPS PWA, the native install button (data-testid='pwa-install-btn') will appear instead — this path was not covered by automated tests but is correct by code review."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A — skipped per request", "frontend": "100% (8/8 tests passed)"},
+  "test_credentials": "N/A — landing page is public",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Fix for QR-code PWA install banner is fully working. The custom banner correctly: (1) appears on Android UA mobile devices, (2) is forced via ?install / ?ref=qr / ?source=qr URL params with auto-reset of localStorage and 500ms delay, (3) respects 1h cooldown (verified at 30min hidden / 2h shown), (4) the new mobile-only nav button '📲 Installer' (data-testid='install-pwa-nav-btn') appears only on mobile UA and correctly triggers full reload to ?install=1. Desktop UA correctly hides the button. No regressions detected on landing page. Iteration 17 already validated SW + EnableNotifications — both stacks now confirmed working together.",
+  "rca_of_the_issue": "Original bug: User dismissed the banner once, locking it out for 3 days via `pwa-banner-dismissed` localStorage. After QR scan, banner never reappeared. Fix: cooldown reduced to 1h, forceShow URL params clear the localStorage on QR arrival, and a failsafe nav button gives users a manual trigger. All three vectors validated working."
+}

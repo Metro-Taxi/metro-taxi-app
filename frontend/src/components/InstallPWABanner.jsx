@@ -31,12 +31,20 @@ const InstallPWABanner = () => {
       return;
     }
 
-    // Check if banner was dismissed
+    // FORCE display via URL param ?install or ?ref=qr (QR codes from flyers/banderole)
+    // Also auto-reset dismiss when user arrives via QR
+    const params = new URLSearchParams(window.location.search);
+    const forceShow = params.has('install') || params.get('ref') === 'qr' || params.get('source') === 'qr';
+    if (forceShow) {
+      localStorage.removeItem('pwa-banner-dismissed');
+    }
+
+    // Check if banner was dismissed (only 1 hour cooldown — reduced from 3 days for QR scans)
     const checkDismissed = localStorage.getItem('pwa-banner-dismissed');
-    if (checkDismissed) {
+    if (checkDismissed && !forceShow) {
       const dismissedTime = parseInt(checkDismissed, 10);
-      // Show again after 3 days (reduced from 7)
-      if (Date.now() - dismissedTime < 3 * 24 * 60 * 60 * 1000) {
+      // Show again after 1 hour (down from 3 days for better install conversion)
+      if (Date.now() - dismissedTime < 60 * 60 * 1000) {
         setDismissed(true);
         return;
       } else {
@@ -62,13 +70,13 @@ const InstallPWABanner = () => {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
 
-    // ALWAYS show banner after 3 seconds on mobile (even without beforeinstallprompt)
-    // This ensures users see the installation option
+    // ALWAYS show banner after 2 seconds on mobile (down from 3s for faster QR conversion)
+    const delay = forceShow ? 500 : 2000;
     const timer = setTimeout(() => {
       if (!dismissed && !isPWAInstalled()) {
         setShowBanner(true);
       }
-    }, 3000);
+    }, delay);
 
     return () => {
       clearTimeout(timer);

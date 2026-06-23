@@ -176,6 +176,23 @@ const Landing = () => {
                 </Button>
               </Link>
 
+              {/* Install PWA Button — failsafe : reste accessible même si le banner a été dismiss */}
+              {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && !window.matchMedia('(display-mode: standalone)').matches && (
+                <Button
+                  className="bg-zinc-800 hover:bg-zinc-700 text-[#FFD60A] border border-[#FFD60A] font-bold flex items-center gap-2 text-xs px-3"
+                  onClick={() => {
+                    localStorage.removeItem('pwa-banner-dismissed');
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('install', '1');
+                    window.location.href = url.toString();
+                  }}
+                  data-testid="install-pwa-nav-btn"
+                  title="Installer Métro-Taxi sur ton écran d'accueil"
+                >
+                  📲 Installer
+                </Button>
+              )}
+
               <Link to="/login">
                 <Button variant="ghost" className="text-white hover:text-[#FFD60A]" data-testid="login-nav-btn">
                   {t('nav.login')}
