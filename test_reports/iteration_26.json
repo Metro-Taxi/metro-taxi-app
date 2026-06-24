@@ -1,0 +1,37 @@
+{
+  "summary": "Iter26 minor — validated label change + enriched error handling on wake-drivers button + version bumps (v25 / sw v19) + non-regression backend. 6/6 bugs PASS (4 via static code review + 8/8 pytest pass for backend non-regression). No code changes by testing agent — everything was already correctly implemented by main agent.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration25_wake_drivers.py",
+    "/app/test_reports/pytest/iter26_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "BUG #1 OK — UserDashboard.js:1427 button text is exactly '🔔 Alerter les chauffeurs hors-ligne'. Sub-text at line 1430: 'Envoie une push aux chauffeurs validés non connectés de ta région (1 fois toutes les 10 min max)'. grep -F 'Notifier les chauffeurs disponibles' on /app/frontend/src/ returns ZERO matches — old label fully removed. ✓",
+    "BUG #2 OK — UserDashboard.js:1412-1422 catch block: status===429 → toast.warning(detail || 'Attends 10 minutes...'); status===403 → toast.error('Seuls les usagers connectés...'); else → toast.error(detail || `Erreur (code ${status || '?'}). Réessaie ou contacte le support.`). grep -F \"Erreur lors de l'envoi des notifications\" on /app/frontend/src/ returns ZERO matches — generic mute message fully removed. ✓",
+    "BUG #3 OK — admin.py:3395 reads `user_id = current_user[\"user_id\"]`. Re-verified: no occurrence of `current_user[\"id\"]` in the wake_drivers endpoint (lines 3385–3461). Fix from iter25 persists. ✓",
+    "BUG #4 OK — Re-ran /app/backend/tests/test_iteration25_wake_drivers.py: 8/8 PASS in 1.93s. test_wake_drivers_notifies_only_offline_validated: returns 200 with notified_count=1 (only the offline-validated driver in isolated region 'test-iter25-region'). No 500. ✓",
+    "BUG #5 OK — VersionBadge.jsx:6 `export const APP_VERSION = 'v25.alerter-hors-ligne-2026.06.24'` (exact string match). public/sw.js lines 1–5: CACHE_NAME, STATIC_CACHE, DYNAMIC_CACHE, API_CACHE, AUDIO_CACHE all bumped to 'metro-taxi-*-v19'. ✓",
+    "BUG #6 OK — Non-regression iter25 confirmed via 8/8 pytest: rate-limit 429 fires on 2nd call within 10min (test_second_call_returns_429), and status='no_offline_drivers' returned when no drivers in region (test_empty_body_no_offline_drivers_in_other_region). ✓",
+    "Note — Test seeds use isolated region 'test-iter25-region' (not 'test-iter26-region' as suggested in request) because the reusable pytest file from iter25 was kept as-is. Cleanup is autouse module-scoped, verified 0 docs remaining matching ^test-iter25-. No leak."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% (8/8 pytest non-regression PASS)",
+    "frontend": "100% (4/4 code-review checks PASS — strings/labels/version/SW all match spec)"
+  },
+  "test_credentials": "JWTs forged inline with JWT_SECRET from /app/backend/.env (HS256, exp=now+2h, payload={user_id, role}). No real account login needed for backend non-regression.",
+  "seed_data_creation": "Reused iter25 fixture: test-iter25-user, test-iter25-admin, 3 drivers in 'test-iter25-region'. Cleaned automatically by autouse module-scoped teardown. No iter26-specific seeds were created.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Iter26 was a minor label + UX iteration: button text changed from 'Notifier les chauffeurs disponibles' to '🔔 Alerter les chauffeurs hors-ligne', toasts reworded, catch block enriched (429/403/else). Backend unchanged. Version bumped to v25 / SW caches v19. Test file /app/backend/tests/test_iteration25_wake_drivers.py is the canonical regression for the wake-drivers endpoint — keep using it.",
+  "rca_of_the_issue": "Iter25 deployment by Capitaine missed the testing-agent fix at admin.py:3395 (current_user['id'] → current_user['user_id']) → 500 KeyError → generic toast 'Erreur lors de l'envoi des notifications' in UI. Iter26 addresses the visible symptoms: (a) the misleading label that suggested the button alerted *available* drivers when it actually alerts *offline* drivers, and (b) the muted/generic error toast that hid the real backend status. Catch block now surfaces the detail + HTTP code so a future deploy mismatch is visible immediately. Backend fix from iter25 confirmed present in current code."
+}

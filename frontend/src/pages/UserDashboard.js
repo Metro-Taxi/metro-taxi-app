@@ -1405,22 +1405,29 @@ const UserDashboard = () => {
                           { headers: { Authorization: `Bearer ${token}` } }
                         );
                         if (data.notified_count > 0) {
-                          toast.success(`🔔 ${data.notified_count} chauffeur(s) notifié(s). Patiente quelques minutes.`);
+                          toast.success(`🔔 ${data.notified_count} chauffeur(s) alerté(s). Ils ont 5-10 min pour se mettre en ligne.`);
                         } else {
-                          toast.info("Aucun chauffeur à notifier dans ta zone pour l'instant.");
+                          toast.info("Aucun chauffeur hors-ligne à alerter dans ta région.");
                         }
                       } catch (err) {
-                        const msg = err?.response?.data?.detail || "Erreur lors de l'envoi des notifications";
-                        toast.error(msg);
+                        const detail = err?.response?.data?.detail;
+                        const status = err?.response?.status;
+                        if (status === 429) {
+                          toast.warning(detail || "Attends 10 minutes avant de relancer l'alerte.");
+                        } else if (status === 403) {
+                          toast.error("Seuls les usagers connectés peuvent alerter les chauffeurs.");
+                        } else {
+                          toast.error(detail || `Erreur (code ${status || '?'}). Réessaie ou contacte le support.`);
+                        }
                       }
                     }}
                     className="bg-[#FFD60A] hover:bg-yellow-400 text-black font-bold w-full"
                     data-testid="wake-drivers-btn"
                   >
-                    🔔 Notifier les chauffeurs disponibles
+                    🔔 Alerter les chauffeurs hors-ligne
                   </Button>
                   <p className="text-[10px] text-zinc-500 mt-2 text-center">
-                    Envoie une alerte aux chauffeurs offline de ta région (limité à 1 fois toutes les 10 min)
+                    Envoie une push aux chauffeurs validés non connectés de ta région (1 fois toutes les 10 min max)
                   </p>
                 </div>
               )}
