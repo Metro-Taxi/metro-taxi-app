@@ -14,6 +14,7 @@ import HelpCenter from '@/components/HelpCenter';
 import ChangePasswordModal from '@/components/ChangePasswordModal';
 import EnableNotificationsButton from '@/components/EnableNotificationsButton';
 import NotificationCenter from '@/components/NotificationCenter';
+import VersionBadge from '@/components/VersionBadge';
 import 'leaflet/dist/leaflet.css';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -696,6 +697,9 @@ const DriverDashboard = () => {
                 <LogOut className="w-5 h-5 mr-3" />
                 {t('nav.logout')}
               </Button>
+              <div className="text-center pt-4 mt-4 border-t border-zinc-800">
+                <VersionBadge />
+              </div>
             </div>
           </motion.div>
         )}

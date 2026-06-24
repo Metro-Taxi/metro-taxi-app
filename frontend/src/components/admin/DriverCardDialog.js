@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Loader2, X, Car, Phone, Mail, MapPin, IdCard, Calendar,
-  Banknote, CheckCircle, XCircle, TrendingUp, Star, Award, Send,
+  Banknote, CheckCircle, XCircle, TrendingUp, Star, Award, Send, Search,
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import axios from 'axios';
+import DriverEarningsDiagnosticDialog from './DriverEarningsDiagnosticDialog';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -23,6 +24,7 @@ const DriverCardDialog = ({ driverId, open, onClose, token, onChanged }) => {
   const [emailBody, setEmailBody] = useState('');
   const [emailSenderLabel, setEmailSenderLabel] = useState('Judée — Métro-Taxi');
   const [emailSending, setEmailSending] = useState(false);
+  const [showDiagnostic, setShowDiagnostic] = useState(false);
 
   const fetchCard = async () => {
     if (!driverId) return;
@@ -174,7 +176,25 @@ const DriverCardDialog = ({ driverId, open, onClose, token, onChanged }) => {
                   Envoyer email perso
                 </Button>
               )}
+              {card.email && (
+                <Button
+                  onClick={() => setShowDiagnostic(true)}
+                  className="bg-orange-600 hover:bg-orange-700 text-white"
+                  data-testid="driver-diagnose-earnings-btn"
+                  title="Identifier les doublons ou écarts de revenus pour ce chauffeur"
+                >
+                  <Search className="w-4 h-4 mr-2" />
+                  🔍 Diagnostiquer revenus
+                </Button>
+              )}
             </div>
+
+            <DriverEarningsDiagnosticDialog
+              open={showDiagnostic}
+              onClose={() => setShowDiagnostic(false)}
+              token={token}
+              prefilledEmail={card.email || ''}
+            />
 
             {/* Contact info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

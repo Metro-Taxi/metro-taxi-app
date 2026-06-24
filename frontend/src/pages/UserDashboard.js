@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import 'leaflet/dist/leaflet.css';
 import NotificationCenter from '@/components/NotificationCenter';
 import EnableNotificationsButton from '@/components/EnableNotificationsButton';
+import VersionBadge from '@/components/VersionBadge';
 import RideHistory from '@/pages/RideHistory';
 import { PendingRatings } from '@/components/RatingSystem';
 import ChatWindow from '@/components/ChatWindow';
@@ -710,6 +711,9 @@ const UserDashboard = () => {
                   <LogOut className="w-5 h-5 mr-3" />
                   {t('nav.logout')}
                 </Button>
+                <div className="text-center pt-4 mt-4 border-t border-zinc-800">
+                  <VersionBadge />
+                </div>
               </nav>
             </div>
           </motion.div>

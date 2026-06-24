@@ -16,8 +16,19 @@ const DriverEarningsDiagnosticDialog = ({ open, onClose, token, prefilledEmail }
 
   const auth = { headers: { Authorization: `Bearer ${token}` } };
 
-  const runDiagnose = async () => {
-    if (!email || !email.includes('@')) {
+  // Quand le dialog s'ouvre avec un email pré-rempli, on lance auto le diagnostic
+  React.useEffect(() => {
+    if (open && prefilledEmail) {
+      setEmail(prefilledEmail);
+      // Auto-run après un petit délai pour laisser le state se mettre à jour
+      setTimeout(() => { runDiagnoseInline(prefilledEmail); }, 100);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, prefilledEmail]);
+
+  const runDiagnoseInline = async (overrideEmail) => {
+    const targetEmail = overrideEmail || email;
+    if (!targetEmail || !targetEmail.includes('@')) {
       toast.error("Email invalide");
       return;
     }
@@ -26,7 +37,7 @@ const DriverEarningsDiagnosticDialog = ({ open, onClose, token, prefilledEmail }
     try {
       const { data } = await axios.get(`${API}/admin/diagnose/driver-earnings`, {
         ...auth,
-        params: { email },
+        params: { email: targetEmail },
       });
       setReport(data);
       if (data.profiles_count === 0) {
@@ -42,6 +53,8 @@ const DriverEarningsDiagnosticDialog = ({ open, onClose, token, prefilledEmail }
       setLoading(false);
     }
   };
+
+  const runDiagnose = () => runDiagnoseInline();
 
   const runRecompute = async (driverId, dryRun = false) => {
     if (!dryRun && !window.confirm("Confirmer le recalcul des revenus pour ce chauffeur ? Les mois déjà PAYÉS ne seront pas touchés.")) return;
