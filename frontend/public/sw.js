@@ -1,8 +1,8 @@
-const CACHE_NAME = 'metro-taxi-v19';
-const STATIC_CACHE = 'metro-taxi-static-v19';
-const DYNAMIC_CACHE = 'metro-taxi-dynamic-v19';
-const API_CACHE = 'metro-taxi-api-v19';
-const AUDIO_CACHE = 'metro-taxi-audio-v19';
+const CACHE_NAME = 'metro-taxi-v20';
+const STATIC_CACHE = 'metro-taxi-static-v20';
+const DYNAMIC_CACHE = 'metro-taxi-dynamic-v20';
+const API_CACHE = 'metro-taxi-api-v20';
+const AUDIO_CACHE = 'metro-taxi-audio-v20';
 
 // Critical resources to cache immediately (minimal set for fast startup)
 const STATIC_ASSETS = [
@@ -223,14 +223,37 @@ self.addEventListener('push', (event) => {
     }
   }
 
+  // Notifications "critiques" pour le chauffeur (nouvelle course / appel usager hors-ligne) :
+  // vibration agressive + reste à l'écran jusqu'à interaction.
+  // Limitation Android : on ne peut pas forcer un son custom depuis une PWA en background,
+  // donc on compense par la vibration longue et la persistance visuelle.
+  const notifType = (notificationData.data && notificationData.data.type) || '';
+  const isCritical = (
+    notifType === 'ride_request' ||
+    notifType === 'new_ride' ||
+    notifType === 'wake_drivers' ||
+    notifType === 'driver_wake' ||
+    notificationData.data?.critical === true
+  );
+
   const options = {
     body: notificationData.body,
     icon: notificationData.icon,
     badge: notificationData.badge,
-    vibrate: [100, 50, 100],
+    // Pattern agressif pour les courses (~2,5s de vibration en poche),
+    // pattern court pour les autres notifs.
+    vibrate: isCritical
+      ? [400, 150, 400, 150, 400, 150, 600]
+      : [100, 50, 100],
     data: notificationData.data,
-    tag: 'metro-taxi-notification',
+    // Tag unique pour les critiques afin que chaque nouvelle course re-vibre,
+    // au lieu de remplacer silencieusement la précédente.
+    tag: isCritical
+      ? `metro-taxi-critical-${Date.now()}`
+      : 'metro-taxi-notification',
     renotify: true,
+    // Force la notif à rester affichée jusqu'à ce que le chauffeur tape dessus.
+    requireInteraction: isCritical,
     actions: [
       { action: 'open', title: 'Ouvrir', icon: '/icons/icon-72x72.png' },
       { action: 'close', title: 'Fermer', icon: '/icons/icon-72x72.png' }

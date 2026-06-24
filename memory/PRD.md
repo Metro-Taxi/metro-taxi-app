@@ -43,6 +43,15 @@ Plateforme VTC + covoiturage avec abonnements hebdomadaires (Sogecommerce) et **
 - Le **15% de commission partenaire** est **CONFIDENTIEL** — uniquement dans le contrat PDF, **JAMAIS** sur un support marketing public (flyer, banderole, site).
 - Tous les flyers/banderoles sont destinés aux **CLIENTS** (passagers), pas aux partenaires. Les supports sont affichés DANS les commerces partenaires mais visent à recruter des passagers.
 
+
+### Push PWA critiques chauffeur (26/02/2026)
+- `sw.js` v20 : pour les types `ride_request` et `wake_drivers` (et tout payload `data.critical=true`)
+  - Vibration agressive `[400, 150, 400, 150, 400, 150, 600]` (~2,5s en poche)
+  - `requireInteraction: true` → la notif reste à l'écran tant que le chauffeur n'a pas tapé dessus
+  - `tag` unique par notif critique pour forcer re-vibration sur chaque nouvelle course
+- Limite Android assumée : pas de son custom forçable en background depuis une PWA, mitigation via vibration + persistance visuelle
+- VersionBadge → `v27.push-critical-vibrate-2026.02.26`
+
 ---
 
 ## Backlog priorisé
