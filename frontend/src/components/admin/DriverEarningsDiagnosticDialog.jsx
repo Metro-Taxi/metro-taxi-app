@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Loader2, AlertTriangle, CheckCircle2, RefreshCcw, Search } from 'lucide-react';
+import { Loader2, AlertTriangle, CheckCircle2, RefreshCcw, Search, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -13,6 +13,9 @@ const DriverEarningsDiagnosticDialog = ({ open, onClose, token, prefilledEmail }
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const [recomputing, setRecomputing] = useState(null); // driver_id en cours de recompute
+  const [adjustingDriverId, setAdjustingDriverId] = useState(null); // driver_id dont la form est ouverte
+  const [adjustForm, setAdjustForm] = useState({ month: '', amount: '', reason: '' });
+  const [adjustSubmitting, setAdjustSubmitting] = useState(false);
 
   const auth = { headers: { Authorization: `Bearer ${token}` } };
 
@@ -69,6 +72,44 @@ const DriverEarningsDiagnosticDialog = ({ open, onClose, token, prefilledEmail }
       toast.error(err?.response?.data?.detail || "Erreur recalcul");
     } finally {
       setRecomputing(null);
+    }
+  };
+
+  const openAdjustForm = (driverId) => {
+    const now = new Date();
+    const defaultMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    setAdjustForm({ month: defaultMonth, amount: '', reason: '' });
+    setAdjustingDriverId(driverId);
+  };
+
+  const submitManualAdjust = async (driverId) => {
+    const amount = parseFloat(String(adjustForm.amount).replace(',', '.'));
+    if (!adjustForm.month || !/^\d{4}-(0[1-9]|1[0-2])$/.test(adjustForm.month)) {
+      toast.error("Mois invalide (format YYYY-MM)"); return;
+    }
+    if (!Number.isFinite(amount) || amount === 0) {
+      toast.error("Montant invalide (non nul)"); return;
+    }
+    if (!adjustForm.reason || adjustForm.reason.trim().length < 5) {
+      toast.error("Raison obligatoire (5 caractères min)"); return;
+    }
+    if (!window.confirm(`Appliquer un ajustement de ${amount.toFixed(2)} € sur le mois ${adjustForm.month} ?\nCette action sera tracée dans admin_audit_log.`)) return;
+    setAdjustSubmitting(true);
+    try {
+      const { data } = await axios.post(`${API}/admin/driver-earnings/manual-adjust`, {
+        driver_id: driverId,
+        month: adjustForm.month,
+        amount_eur: amount,
+        reason: adjustForm.reason.trim(),
+      }, auth);
+      toast.success(`✅ Rattrapage OK. Nouveau total ${adjustForm.month} : ${data.new_revenue_eur} €`);
+      setAdjustingDriverId(null);
+      setAdjustForm({ month: '', amount: '', reason: '' });
+      await runDiagnose();
+    } catch (err) {
+      toast.error(err?.response?.data?.detail || "Erreur ajustement");
+    } finally {
+      setAdjustSubmitting(false);
     }
   };
 
@@ -131,7 +172,7 @@ const DriverEarningsDiagnosticDialog = ({ open, onClose, token, prefilledEmail }
               {report.is_duplicate && (
                 <div className="mt-3 bg-red-900/30 border border-red-700 rounded p-3 text-sm flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
-                  <span><b>Doublon détecté.</b> Ce chauffeur a {report.profiles_count} profils en base. Vérifie ci-dessous quel profil porte les courses. C&apos;est probablement la cause du bug "revenus disparus".</span>
+                  <span><b>Doublon détecté.</b> Ce chauffeur a {report.profiles_count} profils en base. Vérifie ci-dessous quel profil porte les courses. C&apos;est probablement la cause du bug &quot;revenus disparus&quot;.</span>
                 </div>
               )}
             </Card>
@@ -221,6 +262,88 @@ const DriverEarningsDiagnosticDialog = ({ open, onClose, token, prefilledEmail }
                       </Button>
                     </div>
                   )}
+
+                  {/* Rattrapage manuel — utile quand la course IRL n'est pas en base
+                      (ex: reset BDD post-import legacy). Crée une ligne driver_earnings
+                      directe avec audit log obligatoire. */}
+                  <div className="mt-3 pt-3 border-t border-zinc-800">
+                    {adjustingDriverId !== p.id ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-xs border-orange-700 text-orange-300 hover:bg-orange-900/30"
+                        onClick={() => openAdjustForm(p.id)}
+                        data-testid={`open-manual-adjust-${p.id}`}
+                      >
+                        <Plus className="w-3 h-3 mr-1" />
+                        Rattrapage manuel (course hors-BDD)
+                      </Button>
+                    ) : (
+                      <div className="bg-orange-900/10 border border-orange-700/50 rounded p-3 space-y-2">
+                        <p className="text-xs text-orange-300 font-bold">Rattrapage manuel — driver_earnings</p>
+                        <p className="text-[10px] text-zinc-400">
+                          Utilise ce formulaire uniquement si la course a été exécutée IRL mais est absente de la BDD
+                          (ex: reset post-import legacy). Une entrée d&apos;audit obligatoire sera créée.
+                        </p>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-[10px] text-zinc-500 block mb-1">Mois (YYYY-MM)</label>
+                            <input
+                              type="text"
+                              value={adjustForm.month}
+                              onChange={(e) => setAdjustForm((f) => ({ ...f, month: e.target.value }))}
+                              placeholder="2026-06"
+                              className="w-full px-2 py-1 rounded bg-zinc-900 border border-zinc-700 text-white text-xs font-mono"
+                              data-testid={`adjust-month-${p.id}`}
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] text-zinc-500 block mb-1">Montant € (négatif autorisé)</label>
+                            <input
+                              type="text"
+                              value={adjustForm.amount}
+                              onChange={(e) => setAdjustForm((f) => ({ ...f, amount: e.target.value }))}
+                              placeholder="7.94"
+                              className="w-full px-2 py-1 rounded bg-zinc-900 border border-zinc-700 text-white text-xs font-mono"
+                              data-testid={`adjust-amount-${p.id}`}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-[10px] text-zinc-500 block mb-1">Raison (obligatoire, min 5 car.)</label>
+                          <input
+                            type="text"
+                            value={adjustForm.reason}
+                            onChange={(e) => setAdjustForm((f) => ({ ...f, reason: e.target.value }))}
+                            placeholder="Course du 17/06/2026 Delafontaine→Pte Clignancourt — rattrapage post-reset"
+                            className="w-full px-2 py-1 rounded bg-zinc-900 border border-zinc-700 text-white text-xs"
+                            data-testid={`adjust-reason-${p.id}`}
+                          />
+                        </div>
+                        <div className="flex gap-2 justify-end">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs border-zinc-700 text-zinc-400"
+                            onClick={() => { setAdjustingDriverId(null); setAdjustForm({ month: '', amount: '', reason: '' }); }}
+                            disabled={adjustSubmitting}
+                          >
+                            Annuler
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="bg-orange-600 hover:bg-orange-700 text-white text-xs"
+                            onClick={() => submitManualAdjust(p.id)}
+                            disabled={adjustSubmitting}
+                            data-testid={`submit-manual-adjust-${p.id}`}
+                          >
+                            {adjustSubmitting ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Plus className="w-3 h-3 mr-1" />}
+                            Appliquer le rattrapage
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </Card>
               );
             })}

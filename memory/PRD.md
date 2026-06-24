@@ -54,6 +54,15 @@ Plateforme VTC + covoiturage avec abonnements hebdomadaires (Sogecommerce) et **
 
 ---
 
+### Rattrapage manuel revenus chauffeur (26/02/2026)
+- Endpoint `POST /api/admin/driver-earnings/manual-adjust` (driver_id, month YYYY-MM, amount_eur, reason)
+  - Upsert dans `driver_earnings`, refuse si mois déjà `paid`, refuse si total devient négatif
+  - Audit log obligatoire dans `admin_audit_log` (admin_id, driver_id, mois, montant, raison, timestamp)
+- UI : bouton "Rattrapage manuel" dans chaque carte profil de `DriverEarningsDiagnosticDialog`
+- Cas d'usage : course exécutée IRL absente de la BDD (ex: reset post-import legacy)
+- VersionBadge → `v28.manual-earnings-adjust-2026.02.26` / SW v21
+
+
 ## Backlog priorisé
 
 ### P0 — Validation Capitaine

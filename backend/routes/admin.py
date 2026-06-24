@@ -3380,6 +3380,118 @@ async def recompute_driver_earnings(
 
 
 # ============================================
+# ADMIN — Rattrapage manuel d'une course (Scénario : course exécutée IRL mais absente
+# de la BDD suite à un reset/incident. Crée/incrémente driver_earnings du mois ciblé
+# avec audit log obligatoire. Ne touche PAS aux mois déjà payés.)
+# ============================================
+@router.post("/admin/driver-earnings/manual-adjust")
+async def manual_adjust_driver_earnings(
+    payload: dict = Body(...),
+    current_user: dict = Depends(get_current_user),
+):
+    """Ajoute un montant à driver_earnings pour un mois donné (rattrapage manuel).
+    Body: {driver_id, month: "YYYY-MM", amount_eur: float, reason: str}.
+    - amount_eur peut être négatif (correction à la baisse).
+    - Refuse si le mois est déjà 'paid'.
+    - Crée systématiquement un audit log dans admin_audit_log.
+    """
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+
+    driver_id = ((payload or {}).get("driver_id") or "").strip()
+    month = ((payload or {}).get("month") or "").strip()
+    try:
+        amount_eur = float((payload or {}).get("amount_eur"))
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="amount_eur doit être un nombre")
+    reason = ((payload or {}).get("reason") or "").strip()
+
+    if not driver_id:
+        raise HTTPException(status_code=400, detail="driver_id requis")
+    if not re.match(r"^\d{4}-(0[1-9]|1[0-2])$", month):
+        raise HTTPException(status_code=400, detail="month doit être au format YYYY-MM")
+    if abs(amount_eur) < 0.01:
+        raise HTTPException(status_code=400, detail="amount_eur ne peut pas être nul")
+    if len(reason) < 5:
+        raise HTTPException(status_code=400, detail="reason obligatoire (min 5 caractères)")
+
+    driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0, "password": 0})
+    if not driver:
+        raise HTTPException(status_code=404, detail="Chauffeur introuvable")
+
+    existing = await db.driver_earnings.find_one(
+        {"driver_id": driver_id, "month": month}, {"_id": 0}
+    )
+    if existing and existing.get("payout_status") == "paid":
+        raise HTTPException(
+            status_code=409,
+            detail=f"Le mois {month} est déjà PAYÉ. Impossible de modifier rétroactivement."
+        )
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    previous_revenue = float((existing or {}).get("total_revenue", 0) or 0)
+    new_revenue = round(previous_revenue + amount_eur, 2)
+    if new_revenue < 0:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Le total deviendrait négatif ({new_revenue}€). Annulation."
+        )
+
+    previous_rides_count = int((existing or {}).get("rides_count", 0) or 0)
+    # Un ajustement manuel positif compte comme +1 course rattrapée, négatif n'y touche pas
+    new_rides_count = previous_rides_count + (1 if amount_eur > 0 else 0)
+
+    await db.driver_earnings.update_one(
+        {"driver_id": driver_id, "month": month},
+        {
+            "$set": {
+                "driver_id": driver_id,
+                "month": month,
+                "total_revenue": new_revenue,
+                "rides_count": new_rides_count,
+                "payout_status": (existing or {}).get("payout_status") or "pending",
+                "updated_at": now_iso,
+                "last_manual_adjustment_at": now_iso,
+                "last_manual_adjustment_reason": reason,
+            },
+            "$setOnInsert": {
+                "created_at": now_iso,
+                "source": "manual_adjustment_admin",
+            },
+        },
+        upsert=True,
+    )
+
+    audit_entry = {
+        "id": str(uuid.uuid4()),
+        "type": "driver_earnings_manual_adjust",
+        "admin_id": current_user.get("user_id"),
+        "admin_email": current_user.get("email"),
+        "driver_id": driver_id,
+        "driver_name": f"{driver.get('first_name','').strip()} {driver.get('last_name','').strip()}",
+        "month": month,
+        "amount_eur": round(amount_eur, 2),
+        "previous_revenue_eur": round(previous_revenue, 2),
+        "new_revenue_eur": new_revenue,
+        "reason": reason,
+        "created_at": now_iso,
+    }
+    await db.admin_audit_log.insert_one(audit_entry)
+
+    return {
+        "ok": True,
+        "driver_id": driver_id,
+        "month": month,
+        "previous_revenue_eur": round(previous_revenue, 2),
+        "amount_applied_eur": round(amount_eur, 2),
+        "new_revenue_eur": new_revenue,
+        "rides_count_after": new_rides_count,
+        "payout_status": (existing or {}).get("payout_status") or "pending",
+        "audit_log_id": audit_entry["id"],
+    }
+
+
+# ============================================
 # RIDES — Wake drivers (notifier les chauffeurs offline quand l'usager cherche une course)
 # ============================================
 @router.post("/rides/wake-drivers")
