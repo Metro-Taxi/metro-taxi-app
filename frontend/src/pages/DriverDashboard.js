@@ -589,10 +589,10 @@ const DriverDashboard = () => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25 }}
-            className="absolute top-0 right-0 h-full w-72 bg-[#18181B] z-[1001] border-l border-zinc-800"
+            className="absolute top-0 right-0 h-full w-72 bg-[#18181B] z-[1001] border-l border-zinc-800 overflow-y-auto"
           >
-            <div className="p-6 pt-20">
-              <div className="flex items-center gap-3 mb-8 pb-6 border-b border-zinc-800">
+            <div className="p-6 pt-20 pb-12">
+              <div className="flex items-center gap-3 mb-4 pb-4 border-b border-zinc-800">
                 <div className="w-12 h-12 bg-[#FFD60A] rounded-full flex items-center justify-center">
                   <User className="w-6 h-6 text-black" />
                 </div>
@@ -600,6 +600,11 @@ const DriverDashboard = () => {
                   <p className="font-bold text-white">{driver?.first_name} {driver?.last_name}</p>
                   <p className="text-sm text-zinc-400 font-mono">{driver?.vehicle_plate}</p>
                 </div>
+              </div>
+
+              {/* Bouton Activer notifications déplacé EN HAUT — critique pour ne pas être coupé */}
+              <div className="mb-4 pb-4 border-b border-zinc-800">
+                <EnableNotificationsButton token={token} />
               </div>
               
               <div className="space-y-4 mb-6">
@@ -679,10 +684,6 @@ const DriverDashboard = () => {
                 <KeyRound className="w-5 h-5 mr-3 text-[#FFD60A]" />
                 Changer le mot de passe
               </Button>
-
-              <div className="px-3 py-2">
-                <EnableNotificationsButton token={token} />
-              </div>
               
               <Button 
                 variant="ghost" 
