@@ -1389,8 +1389,38 @@ const UserDashboard = () => {
                     <AlertTriangle className="w-5 h-5" />
                     <p className="text-sm">{t('dashboard.user.noVehiclesFound', 'Aucun véhicule disponible pour le moment')}</p>
                   </div>
-                  <p className="text-xs text-zinc-400 mt-1">
+                  <p className="text-xs text-zinc-400 mt-1 mb-3">
                     {t('dashboard.user.tryAgainLater', 'Réessayez dans quelques instants ou modifiez votre destination')}
+                  </p>
+                  <Button
+                    onClick={async () => {
+                      try {
+                        const { data } = await axios.post(
+                          `${API}/rides/wake-drivers`,
+                          {
+                            region_id: user?.region_id || 'paris',
+                            pickup_address: pickup?.address || '',
+                            distance_km: optimalRoute?.total_distance_km || 0,
+                          },
+                          { headers: { Authorization: `Bearer ${token}` } }
+                        );
+                        if (data.notified_count > 0) {
+                          toast.success(`🔔 ${data.notified_count} chauffeur(s) notifié(s). Patiente quelques minutes.`);
+                        } else {
+                          toast.info("Aucun chauffeur à notifier dans ta zone pour l'instant.");
+                        }
+                      } catch (err) {
+                        const msg = err?.response?.data?.detail || "Erreur lors de l'envoi des notifications";
+                        toast.error(msg);
+                      }
+                    }}
+                    className="bg-[#FFD60A] hover:bg-yellow-400 text-black font-bold w-full"
+                    data-testid="wake-drivers-btn"
+                  >
+                    🔔 Notifier les chauffeurs disponibles
+                  </Button>
+                  <p className="text-[10px] text-zinc-500 mt-2 text-center">
+                    Envoie une alerte aux chauffeurs offline de ta région (limité à 1 fois toutes les 10 min)
                   </p>
                 </div>
               )}

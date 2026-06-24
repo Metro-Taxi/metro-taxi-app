@@ -3377,3 +3377,84 @@ async def recompute_driver_earnings(
         "dry_run": dry_run,
         "actions": actions,
     }
+
+
+# ============================================
+# RIDES — Wake drivers (notifier les chauffeurs offline quand l'usager cherche une course)
+# ============================================
+@router.post("/rides/wake-drivers")
+async def wake_drivers(
+    payload: dict = Body(...),
+    current_user: dict = Depends(get_current_user),
+):
+    """L'usager appuie sur 'Notifier les chauffeurs disponibles' quand aucun chauffeur n'est en ligne.
+    On envoie une push à tous les chauffeurs validés de la région qui ne sont PAS actifs (offline).
+    Rate limit : 1 appel par usager toutes les 10 minutes."""
+    if current_user["role"] != "user":
+        raise HTTPException(status_code=403, detail="Réservé aux usagers")
+    user_id = current_user["user_id"]
+    region_id = ((payload or {}).get("region_id") or "paris").strip().lower()
+    distance_km = float((payload or {}).get("distance_km") or 0)
+
+    # Rate limit 10 min par usager
+    last_call_user = await db.users.find_one({"id": user_id}, {"_id": 0, "last_wake_drivers_at": 1}) or {}
+    last_ts_iso = last_call_user.get("last_wake_drivers_at")
+    if last_ts_iso:
+        try:
+            last_ts = datetime.fromisoformat(last_ts_iso.replace("Z", "+00:00"))
+            elapsed = (datetime.now(timezone.utc) - last_ts).total_seconds()
+            if elapsed < 600:
+                raise HTTPException(
+                    status_code=429,
+                    detail=f"Attends {int((600-elapsed)/60)+1} min avant de notifier à nouveau les chauffeurs."
+                )
+        except (ValueError, TypeError):
+            pass
+
+    # Tous les chauffeurs validés et offline de la région
+    offline_drivers = await db.drivers.find(
+        {
+            "region_id": region_id,
+            "is_validated": True,
+            "is_active": {"$ne": True},
+        },
+        {"_id": 0, "id": 1, "first_name": 1}
+    ).to_list(length=500)
+
+    if not offline_drivers:
+        return {"status": "no_offline_drivers", "notified_count": 0}
+
+    # Marque la dernière notification de wake
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"last_wake_drivers_at": datetime.now(timezone.utc).isoformat()}}
+    )
+
+    # Push à chacun en fire-and-forget
+    notified = 0
+    try:
+        from routes.notifications import send_push_notification, NotificationPayload
+        body_text = (
+            "Un usager cherche une course "
+            + (f"({distance_km:.1f} km) " if distance_km else "")
+            + "dans ta zone. Ouvre Métro-Taxi et mets-toi en ligne pour la prendre."
+        )
+        for d in offline_drivers:
+            asyncio.create_task(send_push_notification(
+                user_id=d["id"],
+                user_type="driver",
+                notification=NotificationPayload(
+                    title="🚖 Un usager te cherche !",
+                    body=body_text,
+                    data={"type": "wake_drivers", "region_id": region_id, "url": "/driver"}
+                )
+            ))
+            notified += 1
+    except Exception as e:
+        logging.warning(f"wake_drivers push failed: {e}")
+
+    return {
+        "status": "notified",
+        "notified_count": notified,
+        "region_id": region_id,
+    }

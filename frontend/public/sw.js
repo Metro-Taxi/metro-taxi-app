@@ -1,8 +1,8 @@
-const CACHE_NAME = 'metro-taxi-v17';
-const STATIC_CACHE = 'metro-taxi-static-v17';
-const DYNAMIC_CACHE = 'metro-taxi-dynamic-v17';
-const API_CACHE = 'metro-taxi-api-v17';
-const AUDIO_CACHE = 'metro-taxi-audio-v17';
+const CACHE_NAME = 'metro-taxi-v18';
+const STATIC_CACHE = 'metro-taxi-static-v18';
+const DYNAMIC_CACHE = 'metro-taxi-dynamic-v18';
+const API_CACHE = 'metro-taxi-api-v18';
+const AUDIO_CACHE = 'metro-taxi-audio-v18';
 
 // Critical resources to cache immediately (minimal set for fast startup)
 const STATIC_ASSETS = [

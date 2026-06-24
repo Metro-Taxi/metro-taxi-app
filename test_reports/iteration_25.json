@@ -1,0 +1,43 @@
+{
+  "summary": "Iter25 backend-only validation of POST /api/rides/wake-drivers. Found and FIXED 1 critical bug (current_user['id'] → current_user['user_id'] in admin.py:3395). After fix, 8/8 pytest assertions PASS covering all 5 backend bugs (BUG #1–#5). Frontend bugs (#6 wake-drivers-btn data-testid + axios.post + toasts, #7 VersionBadge='v24.wake-drivers-2026.06.24' + SW caches v18) validated by static code review (no Playwright per request).",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration25_wake_drivers.py",
+    "/app/test_reports/pytest/iter25_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "FIXED — admin.py line 3395 used `current_user[\"id\"]` but the JWT payload key everywhere else in the codebase (admin.py lines 135, 225, 323, 417, 537, 598, 840, 869, 915, 955, 1018, 1124, 1158, 1304, 1353, 1651, 1852, 2019, 2291, 3011) is `user_id`. All 5 wake-drivers code paths threw 500 'KeyError: id' before fix. Patched to `current_user[\"user_id\"]`. Verified by re-running pytest: 8/8 pass.",
+    "BUG #1 OK — no token → 401 'Non autorisé' (from get_current_user). Admin token → 403 'Réservé aux usagers'. Driver token → 403. ✓",
+    "BUG #2 OK — POST with body={'region_id':'unknown-region'} returns 200 + {status:'no_offline_drivers', notified_count:0}. ✓",
+    "BUG #3 OK — Seeded 3 drivers in isolated region 'test-iter25-region' (online-validated, offline-validated, offline-invalidated). After wake-drivers call: notified_count=1 (only the offline validated). db.notifications has exactly 1 doc for DRIVER_OFFLINE_VALID with title='🚖 Un usager te cherche !' and body containing 'cherche une course'. No notification doc for the online or invalidated driver. ✓",
+    "BUG #4 OK — 2nd call within 10min returns 429 with detail 'Attends X min avant de notifier...'. After patching users.last_wake_drivers_at to 15min ago, the call works again and returns status='notified'. ✓",
+    "BUG #5 OK — With distance_km=13.95, push body contains '13.9 km' (Python f-string {:.1f} format rounds to 1 decimal). ✓",
+    "BUG #6 OK (frontend code review) — UserDashboard.js lines 1385–1430 contain the <Button data-testid='wake-drivers-btn'> inside the 'No vehicles message' yellow block. onClick handler does axios.post(`${API}/rides/wake-drivers`, {region_id, pickup_address, distance_km}, Bearer token) with toast.success/toast.info/toast.error handling. ✓",
+    "BUG #7 OK (frontend code review) — VersionBadge.jsx:6 `export const APP_VERSION = 'v24.wake-drivers-2026.06.24'` exact match. public/sw.js lines 1–5: all 5 caches (CACHE_NAME, STATIC_CACHE, DYNAMIC_CACHE, API_CACHE, AUDIO_CACHE) bumped to '-v18'. ✓",
+    "NOTE — Tests originally seeded drivers in region 'paris' but the prod DB already has ~40 validated offline drivers in 'paris', so notified_count was 3+ and the test driver was sometimes lost in the asyncio.create_task burst (notif doc creation race). Mitigated by using isolated region 'test-iter25-region' for seeded drivers. Production behaviour is unchanged.",
+    "NOTE — send_push_notification is fire-and-forget via asyncio.create_task. Test waits up to 5s polling db.notifications for the doc — works reliably."
+  ],
+  "updated_files": [
+    "/app/backend/routes/admin.py (line 3395: 'id' → 'user_id')",
+    "/app/backend/tests/test_iteration25_wake_drivers.py (new file, 8 pytest tests)"
+  ],
+  "success_rate": {
+    "backend": "100% (8/8 pytest assertions PASS after the user_id fix)",
+    "frontend": "N/A (frontend testing skipped per request; static code review of UserDashboard.js + VersionBadge.jsx + sw.js confirms BUG #6 + #7 spec compliance)"
+  },
+  "test_credentials": "JWTs forged inline with JWT_SECRET from /app/backend/.env using HS256 + exp=now+2h. user_token (role=user, user_id=test-iter25-user), admin_token (role=admin, user_id=test-iter25-admin), driver_token (role=driver, user_id=test-iter25-driver-offline). No real account login needed.",
+  "seed_data_creation": "test-iter25-user (role=user, region_id=test-iter25-region, subscription_active=true). test-iter25-admin (role=admin). 3 drivers in region 'test-iter25-region': test-iter25-driver-online (is_validated=true, is_active=true), test-iter25-driver-offline (is_validated=true, is_active=false), test-iter25-driver-invalidated (is_validated=false, is_active=false). All cleaned up via module-scoped fixture teardown — verified 0 docs remaining for users/drivers/notifications matching ^test-iter25-.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Iter25 endpoint POST /api/rides/wake-drivers is in /app/backend/routes/admin.py lines 3385–3461. Requires JWT (HS256, JWT_SECRET in backend/.env) with payload {user_id, role, exp}. JWT payload key is `user_id` (not `id`) — same pattern as every other endpoint in admin.py. Rate limit is stored in users.last_wake_drivers_at (ISO string with Z or +00:00 suffix). Drivers query: {region_id, is_validated:true, is_active:{$ne:true}}. The function imports `send_push_notification, NotificationPayload` from routes.notifications inside the try block (lazy import) — pattern from iter19. To force re-test, just rerun: `pytest /app/backend/tests/test_iteration25_wake_drivers.py -v`. Seed/cleanup are autouse module-scoped — no manual steps needed.",
+  "rca_of_the_issue": "The new POST /api/rides/wake-drivers endpoint extracted the JWT subject with `current_user[\"id\"]`, but services/auth.py:19 `get_current_user` simply returns `jwt.decode(token)` payload — and the entire app encodes JWTs with key `user_id` (see _seed_iter22.py:27 `{'user_id': uid, 'role': role, ...}`). All 20+ existing endpoints in admin.py read `current_user[\"user_id\"]`. This 1-line copy-paste typo caused every authenticated wake-drivers call (BUG #2, #3, #4, #5) to throw KeyError 'id' → 500 Internal Server Error. Repro: `curl -X POST $BACKEND_URL/api/rides/wake-drivers -H 'Authorization: Bearer <user-jwt>' -d '{}'` → 500. Fix: changed `user_id = current_user[\"id\"]` to `user_id = current_user[\"user_id\"]` at admin.py:3395. After fix, all 8 backend assertions pass and the endpoint behaves exactly as specified (rate limit, region filter, validation filter, push fan-out, distance formatting)."
+}

@@ -3,7 +3,7 @@ import React from 'react';
 // IMPORTANT : à incrémenter à chaque déploiement majeur.
 // Permet à Capitaine de vérifier visuellement quelle version est active sur son appareil.
 // Si la version affichée diffère de celle annoncée par Charly, c'est qu'un déploiement n'a pas pris ou que le cache PWA tient.
-export const APP_VERSION = 'v23.cloche-driver-2026.06.24';
+export const APP_VERSION = 'v24.wake-drivers-2026.06.24';
 
 const VersionBadge = () => (
   <span
