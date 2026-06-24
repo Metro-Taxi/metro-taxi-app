@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import EnableNotificationsButton from './EnableNotificationsButton';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -240,6 +241,11 @@ const NotificationCenter = () => {
                   {t('notifications.markAllRead', 'Mark all read')}
                 </button>
               )}
+            </div>
+
+            {/* Enable Push Notifications block — always visible at the top */}
+            <div className="px-3 py-3 border-b border-zinc-800 bg-zinc-950/50">
+              <EnableNotificationsButton token={token} />
             </div>
 
             {/* Notifications list */}

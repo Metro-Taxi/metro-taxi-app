@@ -13,6 +13,7 @@ import DriverEarnings from './DriverEarnings';
 import HelpCenter from '@/components/HelpCenter';
 import ChangePasswordModal from '@/components/ChangePasswordModal';
 import EnableNotificationsButton from '@/components/EnableNotificationsButton';
+import NotificationCenter from '@/components/NotificationCenter';
 import 'leaflet/dist/leaflet.css';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -570,6 +571,7 @@ const DriverDashboard = () => {
             }`}>
               {isActive ? t('dashboard.driver.online') : t('dashboard.driver.offline')}
             </span>
+            <NotificationCenter />
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="text-white p-2 hover:bg-zinc-800 rounded"
