@@ -1,0 +1,29 @@
+{
+  "summary": "Iter27 — Vérification du fix ReferenceError sur wake-drivers-btn (UserDashboard.js) + non-régression backend. Tous les 5 bugs validés.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration25_wake_drivers.py",
+    "/app/test_reports/pytest/iter27_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "UserDashboard.js fait 1517 lignes — considérer un split en sous-composants (RideRequestPanel, DestinationPicker, WakeDriversButton) pour faciliter la maintenance. Pas bloquant pour cet iter.",
+    "Le toast d'erreur enrichi (Réseau : ${networkMsg}. URL : ...) est une bonne pratique de debug mais expose l'URL backend complète à l'utilisateur final — acceptable car REACT_APP_BACKEND_URL est de toute façon visible dans le bundle JS."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100% (8/8)", "frontend": "100% (lint clean)"},
+  "test_credentials": "JWT générés via JWT_SECRET dans test fixtures (pattern iter25/26 réutilisé)",
+  "seed_data_creation": "Aucune nouvelle seed — réutilisation des fixtures de test_iteration25_wake_drivers.py",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Iter27 micro-fix critique : (1) BUG #1 vérifié — grep confirme aucune référence à `pickup` dans le onClick de wake-drivers-btn (ligne 1395-1431). Body axios.post = {region_id, distance_km} uniquement. (2) BUG #2 vérifié — bloc catch contient bien `const networkMsg = err?.message || 'erreur inconnue';` (ligne 1414) et `if (!status) toast.error(\\`Réseau : ${networkMsg}. URL : ${API}/rides/wake-drivers\\`)` (ligne 1419-1421). Le fallback else (ligne 1423) affiche aussi networkMsg. (3) BUG #3 vérifié — mcp_lint_javascript sur UserDashboard.js retourne 'No issues found' (zéro ReferenceError 'pickup is not defined'). (4) BUG #4 vérifié — 8/8 tests pytest PASS sur test_iteration25_wake_drivers.py (incluant test_wake_drivers_notifies_only_offline_validated avec body {region_id, distance_km}, sans pickup_address). Aucune régression backend. (5) BUG #5 vérifié — VersionBadge.jsx ligne 6 : APP_VERSION = 'v26.debug-network-2026.06.24' (string exact). Pas de test UI playwright nécessaire — le fix est purement statique (suppression d'une variable undefined) et le lint confirme déjà l'absence du bug.",
+  "rca of the issue": "RCA confirmé par main agent : avant iter27, le onClick de wake-drivers-btn référençait `pickup?.address` alors que `pickup` n'était pas défini dans le scope du composant UserDashboard (variable inexistante). Quand l'utilisateur cliquait, JS levait une ReferenceError AVANT que axios.post soit exécuté. L'exception tombait dans le catch axios, mais comme c'était une ReferenceError native (pas une AxiosError), `err.response` était undefined → le toast affichait 'Erreur (code ?)' via le fallback `Erreur (code ${status}).` avec status=undefined. Mitigation iter27 : (a) retrait de la ligne `pickup_address: pickup?.address || ''` du body POST, (b) ajout de `const networkMsg = err?.message || 'erreur inconnue';` et branche `if (!status)` qui affiche `Réseau : ${networkMsg}. URL : ${API}/rides/wake-drivers` — ce qui permettrait à l'avenir de voir 'pickup is not defined' dans le toast si un bug similaire réapparaissait. Validation : lint clean + 8/8 pytest pass."
+}

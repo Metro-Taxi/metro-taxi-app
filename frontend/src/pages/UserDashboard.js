@@ -1399,7 +1399,6 @@ const UserDashboard = () => {
                           `${API}/rides/wake-drivers`,
                           {
                             region_id: user?.region_id || 'paris',
-                            pickup_address: pickup?.address || '',
                             distance_km: optimalRoute?.total_distance_km || 0,
                           },
                           { headers: { Authorization: `Bearer ${token}` } }
@@ -1412,12 +1411,16 @@ const UserDashboard = () => {
                       } catch (err) {
                         const detail = err?.response?.data?.detail;
                         const status = err?.response?.status;
+                        const networkMsg = err?.message || 'erreur inconnue';
                         if (status === 429) {
                           toast.warning(detail || "Attends 10 minutes avant de relancer l'alerte.");
                         } else if (status === 403) {
                           toast.error("Seuls les usagers connectés peuvent alerter les chauffeurs.");
+                        } else if (!status) {
+                          // Pas de réponse HTTP = erreur réseau / CORS / timeout / endpoint bloqué
+                          toast.error(`Réseau : ${networkMsg}. URL : ${API}/rides/wake-drivers`);
                         } else {
-                          toast.error(detail || `Erreur (code ${status || '?'}). Réessaie ou contacte le support.`);
+                          toast.error(detail || `Erreur (code ${status}). ${networkMsg}`);
                         }
                       }
                     }}
