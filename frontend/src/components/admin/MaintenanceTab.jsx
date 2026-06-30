@@ -315,6 +315,41 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
                   Action : appelle ces chauffeurs en visio WhatsApp et fais-les ouvrir https://metro-taxi.com sur Chrome (Android) ou Safari (iPhone),
                   installer la PWA (Menu &gt; Ajouter à l&apos;écran d&apos;accueil), se connecter et autoriser les notifications quand la popup apparaît.
                 </p>
+                <Button
+                  onClick={async () => {
+                    if (!window.confirm(`Envoyer un email d'activation aux ${pushDiag.without_push_count} chauffeurs sourds ?\n\nChacun recevra un email Resend avec les instructions précises (Android + iPhone) pour activer ses notifications.`)) return;
+                    try {
+                      const { data } = await axios.post(`${API}/admin/drivers/send-activation-emails`, {}, auth);
+                      toast.success(`✅ ${data.emails_sent} emails envoyés, ${data.emails_failed} échecs.`);
+                      fetchPushDiagnostic();
+                    } catch (err) {
+                      toast.error(err?.response?.data?.detail || 'Erreur envoi emails');
+                    }
+                  }}
+                  className="mt-3 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 text-sm"
+                  data-testid="send-activation-emails-btn"
+                >
+                  📧 Envoyer email d&apos;activation aux {pushDiag.without_push_count} chauffeurs sourds
+                </Button>
+              </div>
+            )}
+
+            {pushDiag.with_push_count > 0 && (
+              <div className="bg-green-900/10 border border-green-800/50 rounded p-3">
+                <p className="text-sm text-green-300 font-bold mb-2">
+                  ✅ {pushDiag.with_push_count} chauffeurs joignables par push :
+                </p>
+                <div className="max-h-48 overflow-y-auto space-y-1">
+                  {pushDiag.with_push.map(d => (
+                    <div key={d.id} className="text-xs text-zinc-300 flex items-center justify-between py-1 border-b border-zinc-800">
+                      <span>
+                        <b>{d.name || '(sans nom)'}</b> — {d.phone || 'sans tél'}
+                        {d.is_active && <span className="ml-2 text-[10px] px-1 py-0.5 bg-green-700/40 text-green-300 rounded">en ligne</span>}
+                      </span>
+                      <span className="text-zinc-500 font-mono text-[10px]">{d.email}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>

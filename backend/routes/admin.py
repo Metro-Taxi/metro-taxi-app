@@ -3541,6 +3541,132 @@ async def drivers_push_diagnostic(
 
 
 # ============================================
+# ADMIN — Envoyer un email d'activation aux chauffeurs sans push subscription
+# ============================================
+@router.post("/admin/drivers/send-activation-emails")
+async def send_activation_emails_to_silent_drivers(
+    current_user: dict = Depends(get_current_user),
+):
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+
+    import os as _os
+    import resend as _resend
+    resend_key = _os.environ.get("RESEND_API_KEY")
+    if not resend_key:
+        raise HTTPException(status_code=500, detail="RESEND_API_KEY non configurée")
+    _resend.api_key = resend_key
+    sender = _os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
+
+    # Identifier les chauffeurs sans push
+    validated = await db.drivers.find(
+        {"is_validated": True},
+        {"_id": 0, "id": 1, "email": 1, "first_name": 1, "last_name": 1}
+    ).to_list(1000)
+    subs = await db.push_subscriptions.find(
+        {"user_type": "driver"}, {"_id": 0, "user_id": 1}
+    ).to_list(10000)
+    with_push_ids = set(s["user_id"] for s in subs if s.get("user_id"))
+    silent_drivers = [d for d in validated if d.get("id") not in with_push_ids and d.get("email")]
+
+    sent = 0
+    failed = 0
+    for d in silent_drivers:
+        first_name = (d.get("first_name") or "Chauffeur").strip()
+        email = d.get("email")
+        html = f"""<!DOCTYPE html>
+<html><body style="margin:0;padding:0;background:#09090b;font-family:Arial,sans-serif;color:#e4e4e7;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#09090b;padding:20px 0;"><tr><td align="center">
+<table width="640" cellpadding="0" cellspacing="0" style="background:#18181B;border-radius:12px;overflow:hidden;">
+<tr><td style="background:#FFD60A;padding:30px;"><h1 style="color:#000;margin:0;font-size:24px;">Active tes notifications, {first_name}</h1>
+<p style="color:#000;margin:8px 0 0;font-size:14px;">Tu rates les courses Métro-Taxi. 90 secondes pour régler ça.</p></td></tr>
+<tr><td style="padding:30px;">
+<p style="margin:0 0 16px;font-size:15px;">Salut {first_name},</p>
+<p style="color:#a1a1aa;margin:0 0 20px;font-size:14px;line-height:1.6;">
+Le lancement officiel de Métro-Taxi à Saint-Denis est prévu le <b style="color:#FFD60A;">26 juillet 2026</b>.
+Aujourd'hui, ton compte chauffeur est bien validé, mais <b>tes notifications push ne sont pas activées</b> :
+tu ne reçois donc <b>aucune alerte quand un usager demande une course</b>.
+</p>
+<div style="background:#FFD60A22;border-left:4px solid #FFD60A;padding:12px 16px;margin:0 0 20px;border-radius:4px;">
+<p style="color:#FFD60A;margin:0 0 6px;font-weight:bold;font-size:14px;">Pourquoi c'est critique</p>
+<p style="color:#e4e4e7;margin:0;font-size:13px;line-height:1.5;">
+Le geste commercial promis lors de l'inscription sera versé aux chauffeurs <b>opérationnels au 26 juillet</b> :
+compte validé + PWA installée + notifications actives + dispo pour les 1ères courses.
+Sans tes notifs actives, tu ne pourras pas faire les courses, donc tu ne pourras pas être payé.
+</p></div>
+
+<h2 style="color:#FFD60A;margin:24px 0 8px;font-size:16px;">ANDROID (Chrome) — 90 secondes</h2>
+<ol style="color:#e4e4e7;margin:0;padding-left:20px;font-size:13px;line-height:1.7;">
+<li>Ouvre Chrome sur ton téléphone</li>
+<li>Va sur <a href="https://metro-taxi.com" style="color:#FFD60A;">https://metro-taxi.com</a></li>
+<li>Connecte-toi avec ton email et ton mot de passe</li>
+<li>Menu Chrome (3 points en haut à droite) → <b>"Installer Métro-Taxi"</b> ou <b>"Ajouter à l'écran d'accueil"</b></li>
+<li>Lance Métro-Taxi depuis l'icône sur ton écran</li>
+<li>Quand la popup <b>"Métro-Taxi souhaite vous envoyer des notifications"</b> apparaît → <b>AUTORISER</b></li>
+<li>Garde Métro-Taxi installée — ne désinstalle pas l'icône</li>
+</ol>
+
+<h2 style="color:#FFD60A;margin:24px 0 8px;font-size:16px;">iPHONE (Safari, iOS 16.4+) — 90 secondes</h2>
+<ol style="color:#e4e4e7;margin:0;padding-left:20px;font-size:13px;line-height:1.7;">
+<li>Ouvre <b>Safari</b> (pas Chrome)</li>
+<li>Va sur <a href="https://metro-taxi.com" style="color:#FFD60A;">https://metro-taxi.com</a></li>
+<li>Connecte-toi</li>
+<li>Touche l'icône <b>Partage</b> (carré avec flèche en bas) → <b>"Sur l'écran d'accueil"</b></li>
+<li>Lance Métro-Taxi depuis la nouvelle icône (pas depuis Safari)</li>
+<li>Va dans le menu et active <b>"Notifications"</b></li>
+<li>Réglages iPhone → Notifications → Métro-Taxi → <b>Sons ON + Bannières PERSISTANTES</b></li>
+</ol>
+
+<div style="background:#27272a;padding:14px;border-radius:6px;margin:24px 0 0;">
+<p style="color:#e4e4e7;margin:0;font-size:13px;font-weight:bold;">Test de validation</p>
+<p style="color:#a1a1aa;margin:6px 0 0;font-size:12px;">
+Une fois les notifs activées, tu recevras automatiquement une alerte dès la prochaine demande de course
+sur ton secteur. Si ça sonne, tu es prêt pour le lancement.
+</p></div>
+
+<p style="color:#71717a;margin:24px 0 0;font-size:12px;">
+Besoin d'aide ? Réponds directement à cet email ou appelle l'équipe Métro-Taxi.
+</p>
+</td></tr>
+<tr><td style="background:#09090b;padding:16px 30px;text-align:center;">
+<p style="color:#52525b;margin:0;font-size:11px;">© 2026 Métro-Taxi — Saint-Denis & région parisienne. Lancement officiel : 26 juillet 2026.</p>
+</td></tr>
+</table></td></tr></table>
+</body></html>"""
+
+        try:
+            await asyncio.to_thread(_resend.Emails.send, {
+                "from": sender,
+                "to": [email],
+                "subject": f"{first_name}, active tes notifications avant le 26 juillet — Métro-Taxi",
+                "html": html,
+            })
+            sent += 1
+        except Exception as e:
+            logging.error(f"Activation email failed for {email}: {e}")
+            failed += 1
+
+    # Audit log
+    await db.admin_audit_log.insert_one({
+        "id": str(uuid.uuid4()),
+        "type": "activation_emails_sent",
+        "admin_id": current_user.get("user_id"),
+        "admin_email": current_user.get("email"),
+        "emails_sent": sent,
+        "emails_failed": failed,
+        "target_count": len(silent_drivers),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+
+    return {
+        "ok": True,
+        "target_count": len(silent_drivers),
+        "emails_sent": sent,
+        "emails_failed": failed,
+    }
+
+
+# ============================================
 # ADMIN — Broadcast Mode (pré-lancement)
 # Quand ON : tous les chauffeurs validés apparaissent disponibles aux usagers même sans GPS,
 # le stale_drivers_cleaner est désactivé. Chaque demande de course déclenchera un push à
