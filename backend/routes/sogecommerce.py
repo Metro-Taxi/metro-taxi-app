@@ -270,6 +270,7 @@ async def sogecommerce_ipn(request: Request):
             "subscription_active": True,
             "subscription_expires": expires_at.isoformat(),
             "subscription_plan": plan_id,
+            "email_verified": True,  # 30/06/2026 — activation auto au paiement réussi
         }},
     )
     await db.payment_transactions.update_one(

@@ -32,6 +32,7 @@ async def _activate_subscription_and_attribution(user_id: str, plan_id: str, exp
             "subscription_active": True,
             "subscription_expires": expires_at.isoformat(),
             "subscription_plan": plan_id,
+            "email_verified": True,  # 30/06/2026 — activation auto au paiement réussi
         }},
     )
     # Tentative d'auto-attribution si signup_campaign est défini sur le profil
@@ -518,7 +519,8 @@ async def stripe_webhook(request: Request):
                                 # Keep legacy fields for backward compatibility
                                 "subscription_active": True,
                                 "subscription_expires": expires_at.isoformat(),
-                                "subscription_plan": transaction["plan_id"]
+                                "subscription_plan": transaction["plan_id"],
+                                "email_verified": True,  # 30/06/2026 — activation auto au paiement réussi
                             }}
                         )
                         # Auto-attribution promo si l'usager fait partie d'une campagne Saint-Denis & co.
@@ -653,7 +655,8 @@ async def stripe_sepa_webhook(request: Request):
                                     "subscriptions": existing_subs,
                                     "subscription_active": True,
                                     "subscription_expires": expires_at.isoformat(),
-                                    "subscription_plan": transaction["plan_id"]
+                                    "subscription_plan": transaction["plan_id"],
+                                    "email_verified": True,  # 30/06/2026 — activation auto au paiement réussi
                                 }}
                             )
                             # Auto-attribution promo si l'usager fait partie d'une campagne

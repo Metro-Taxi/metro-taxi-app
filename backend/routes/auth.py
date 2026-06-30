@@ -72,7 +72,7 @@ async def register_user(data: UserRegister, request: Request):
         "phone": data.phone,
         "password": hash_password(data.password),
         "role": "user",
-        "email_verified": True,  # 30/06/2026 — auto-activation à l'inscription (décision Capitaine pour booster onboarding)
+        "email_verified": False,  # 30/06/2026 — activation déclenchée par paiement abonnement (décision Capitaine)
         "verification_token": verification_token,
         "subscription_active": False,
         "subscription_expires": None,

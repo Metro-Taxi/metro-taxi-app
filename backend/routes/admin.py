@@ -3414,9 +3414,10 @@ async def activate_all_accounts(
         },
     )
 
-    # Users : pas de is_active/is_validated, juste email_verified
+    # Users : on n'active que ceux qui ont un abonnement actif (décision Capitaine 30/06/2026
+    # — éviter d'activer les curieux non-payants).
     users_result = await db.users.update_many(
-        {"email_verified": {"$ne": True}},
+        {"subscription_active": True, "email_verified": {"$ne": True}},
         {
             "$set": {
                 "email_verified": True,

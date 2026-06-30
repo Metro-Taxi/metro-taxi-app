@@ -55,11 +55,11 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
   const [activatingAll, setActivatingAll] = useState(false);
 
   const handleActivateAll = async () => {
-    if (!window.confirm("Activer en bloc TOUS les comptes (chauffeurs + usagers) qui ne le sont pas encore ?\n\nLes chauffeurs seront marqués is_active=true, is_validated=true, email_verified=true.\nLes usagers seront marqués email_verified=true.\nAction tracée dans admin_audit_log. Idempotente.")) return;
+    if (!window.confirm("Activer en bloc :\n• TOUS les chauffeurs inscrits (is_active, is_validated, email_verified)\n• UNIQUEMENT les usagers ayant un abonnement actif (email_verified)\n\nAction tracée dans admin_audit_log. Idempotente.")) return;
     setActivatingAll(true);
     try {
       const { data } = await axios.post(`${API}/admin/accounts/activate-all`, {}, auth);
-      toast.success(`✅ ${data.drivers_activated} chauffeurs et ${data.users_activated} usagers activés.`);
+      toast.success(`✅ ${data.drivers_activated} chauffeurs et ${data.users_activated} usagers abonnés activés.`);
     } catch (err) {
       toast.error(err?.response?.data?.detail || 'Erreur activation massive.');
     } finally {
@@ -196,8 +196,9 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
           ⚡ Activation massive des comptes
         </h2>
         <p className="text-sm text-zinc-400 mb-4">
-          Active en 1 clic <b>tous les chauffeurs et usagers inscrits</b> qui ne sont pas encore actifs/vérifiés.
-          Les nouveaux comptes (après cette mise à jour) sont déjà activés automatiquement à l&apos;inscription.
+          Active en 1 clic <b>tous les chauffeurs inscrits</b> + <b>uniquement les usagers ayant un abonnement actif</b>.
+          Les nouveaux chauffeurs sont activés automatiquement à l&apos;inscription.
+          Les nouveaux usagers sont activés automatiquement au paiement de leur abonnement.
           Action idempotente, tracée dans <code>admin_audit_log</code>.
         </p>
         <Button
@@ -207,7 +208,7 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
           data-testid="activate-all-accounts-btn"
         >
           {activatingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : '⚡'}
-          Activer tous les comptes inactifs
+          Activer chauffeurs inscrits + usagers abonnés
         </Button>
       </Card>
 
