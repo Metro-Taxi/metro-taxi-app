@@ -1522,7 +1522,11 @@ const UserDashboard = () => {
                         destination_address: destinationAddress,
                         force_broadcast: true,
                       }, { headers: { Authorization: `Bearer ${token}` } });
-                      setActiveRide(response.data.ride);
+                      // Volontairement on NE met PAS setActiveRide ici : le polling fetchActiveRide
+                      // qui tourne toutes les 5s va récupérer la course une fois qu'un chauffeur
+                      // l'aura acceptée (vu que sans driver_id la course n'est pas encore liée au tracking
+                      // UI normal). Évite tout crash de render dû à un état intermédiaire.
+                      void response;
                       setSelectedDriver(null);
                       toast.success("🚨 Tous les chauffeurs ont été alertés. Le premier qui accepte prend ta course.");
                     } catch (err) {
