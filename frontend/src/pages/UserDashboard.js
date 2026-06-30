@@ -1503,16 +1503,37 @@ const UserDashboard = () => {
               {destination && (
                 <Button
                   onClick={async () => {
+                    // Guards défensifs : si une donnée manque, on log + toast sans crasher.
+                    if (!userLocation || !Array.isArray(userLocation) || userLocation.length < 2) {
+                      toast.error("Position GPS introuvable. Autorise la géolocalisation dans ton navigateur.");
+                      return;
+                    }
+                    if (!destination || !Array.isArray(destination) || destination.length < 2) {
+                      toast.error("Destination invalide. Sélectionne une destination sur la carte.");
+                      return;
+                    }
+                    if (!token) {
+                      toast.error("Session expirée. Reconnecte-toi.");
+                      return;
+                    }
                     if (!window.confirm(`Alerter TOUS les chauffeurs Métro-Taxi ?\n\nUne notification sonore va retentir sur les téléphones de tous les chauffeurs validés. Le premier qui accepte prendra ta course.`)) return;
                     setLoading(true);
                     try {
                       const destLat = destination[0];
                       const destLng = destination[1];
-                      const [pickupAddress, destinationAddress] = await Promise.all([
-                        reverseGeocode(userLocation[0], userLocation[1]),
-                        reverseGeocode(destLat, destLng),
-                      ]);
-                      const response = await axios.post(`${API}/rides/request`, {
+                      let pickupAddress = null;
+                      let destinationAddress = null;
+                      try {
+                        const results = await Promise.all([
+                          reverseGeocode(userLocation[0], userLocation[1]),
+                          reverseGeocode(destLat, destLng),
+                        ]);
+                        pickupAddress = results[0];
+                        destinationAddress = results[1];
+                      } catch (_) {
+                        // Reverse geocode non bloquant
+                      }
+                      await axios.post(`${API}/rides/request`, {
                         driver_id: null,
                         pickup_lat: userLocation[0],
                         pickup_lng: userLocation[1],
@@ -1522,15 +1543,10 @@ const UserDashboard = () => {
                         destination_address: destinationAddress,
                         force_broadcast: true,
                       }, { headers: { Authorization: `Bearer ${token}` } });
-                      // Volontairement on NE met PAS setActiveRide ici : le polling fetchActiveRide
-                      // qui tourne toutes les 5s va récupérer la course une fois qu'un chauffeur
-                      // l'aura acceptée (vu que sans driver_id la course n'est pas encore liée au tracking
-                      // UI normal). Évite tout crash de render dû à un état intermédiaire.
-                      void response;
-                      setSelectedDriver(null);
                       toast.success("🚨 Tous les chauffeurs ont été alertés. Le premier qui accepte prend ta course.");
                     } catch (err) {
-                      toast.error(err?.response?.data?.detail || "Erreur diffusion broadcast.");
+                      console.error('Broadcast failed:', err);
+                      toast.error(err?.response?.data?.detail || err?.message || "Erreur diffusion broadcast.");
                     } finally {
                       setLoading(false);
                     }
