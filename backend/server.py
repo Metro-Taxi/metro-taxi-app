@@ -1913,7 +1913,7 @@ async def find_matching_drivers(data: MatchingRequest, region_id: Optional[str] 
     # fin de liste (eux aussi triés par score mais ils passeront après).
     matched_drivers.sort(key=lambda x: (x.get("gps_stale", False), -x["matching"]["score"]))
     
-    return {"drivers": matched_drivers[:10]}  # Return top 10
+    return {"drivers": matched_drivers[:50]}  # Return up to 50 (broadcast mode peut contenir beaucoup de gps_stale)
 
 @api_router.post("/matching/transfers")
 async def find_transfer_routes(data: MatchingRequest, current_user: dict = Depends(get_current_user)):

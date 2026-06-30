@@ -1355,8 +1355,8 @@ const UserDashboard = () => {
                     <Car className="w-4 h-4 text-[#FFD60A]" />
                     {t('dashboard.user.availableVehicles', 'Véhicules disponibles')} ({matchedDrivers.length})
                   </p>
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {matchedDrivers.slice(0, 5).map((driver) => (
+                  <div className="space-y-2 max-h-72 overflow-y-auto">
+                    {matchedDrivers.map((driver) => (
                       <div 
                         key={driver.id}
                         className="bg-zinc-800/50 p-3 rounded border border-zinc-700 hover:border-[#FFD60A] cursor-pointer transition-all"
