@@ -57,6 +57,20 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
   const [broadcastMode, setBroadcastMode] = useState(null); // null=loading, true/false=loaded
   const [broadcastDriversCount, setBroadcastDriversCount] = useState(0);
   const [togglingBroadcast, setTogglingBroadcast] = useState(false);
+  const [pushDiag, setPushDiag] = useState(null);
+  const [loadingPushDiag, setLoadingPushDiag] = useState(false);
+
+  const fetchPushDiagnostic = async () => {
+    setLoadingPushDiag(true);
+    try {
+      const { data } = await axios.get(`${API}/admin/drivers/push-diagnostic`, auth);
+      setPushDiag(data);
+    } catch (err) {
+      toast.error(err?.response?.data?.detail || 'Erreur diagnostic push');
+    } finally {
+      setLoadingPushDiag(false);
+    }
+  };
 
   useEffect(() => {
     let alive = true;
@@ -247,6 +261,66 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
 
   return (
     <div className="space-y-6">
+      {/* Diagnostic push subscriptions — décision Capitaine 30/06/2026 */}
+      <Card className="bg-[#18181B] border-indigo-700 border-2 p-6">
+        <h2 className="text-xl font-bold text-indigo-400 mb-2 flex items-center gap-2">
+          🔔 Diagnostic notifications push chauffeurs
+        </h2>
+        <p className="text-sm text-zinc-400 mb-4">
+          Combien de chauffeurs sont effectivement joignables par push PWA ?
+          Un chauffeur sans push subscription en BDD <b>ne recevra pas la sonnerie</b> lors d&apos;un broadcast.
+          Il doit avoir ouvert l&apos;app Métro-Taxi sur son tél et autorisé les notifications.
+        </p>
+        <Button
+          onClick={fetchPushDiagnostic}
+          disabled={loadingPushDiag}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 mb-4"
+          data-testid="push-diagnostic-btn"
+        >
+          {loadingPushDiag ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : '🔍 '}
+          Lancer le diagnostic
+        </Button>
+
+        {pushDiag && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-zinc-800 p-3 rounded text-center">
+                <p className="text-3xl font-bold text-white">{pushDiag.total_validated}</p>
+                <p className="text-xs text-zinc-400 mt-1">Chauffeurs validés</p>
+              </div>
+              <div className="bg-green-900/30 border border-green-700 p-3 rounded text-center">
+                <p className="text-3xl font-bold text-green-400">{pushDiag.with_push_count}</p>
+                <p className="text-xs text-zinc-400 mt-1">Avec push actif</p>
+              </div>
+              <div className="bg-red-900/30 border border-red-700 p-3 rounded text-center">
+                <p className="text-3xl font-bold text-red-400">{pushDiag.without_push_count}</p>
+                <p className="text-xs text-zinc-400 mt-1">SANS push (= sourds)</p>
+              </div>
+            </div>
+
+            {pushDiag.without_push_count > 0 && (
+              <div className="bg-red-900/10 border border-red-800/50 rounded p-3">
+                <p className="text-sm text-red-300 font-bold mb-2">
+                  ⚠️ {pushDiag.without_push_count} chauffeurs ne reçoivent AUCUNE notification push :
+                </p>
+                <div className="max-h-64 overflow-y-auto space-y-1">
+                  {pushDiag.without_push.map(d => (
+                    <div key={d.id} className="text-xs text-zinc-300 flex items-center justify-between py-1 border-b border-zinc-800">
+                      <span><b>{d.name || '(sans nom)'}</b> — {d.phone || 'sans tél'}</span>
+                      <span className="text-zinc-500 font-mono text-[10px]">{d.email}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[11px] text-zinc-400 mt-3 italic">
+                  Action : appelle ces chauffeurs en visio WhatsApp et fais-les ouvrir https://metro-taxi.com sur Chrome (Android) ou Safari (iPhone),
+                  installer la PWA (Menu &gt; Ajouter à l&apos;écran d&apos;accueil), se connecter et autoriser les notifications quand la popup apparaît.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </Card>
+
       {/* Mode Broadcast pré-lancement — décision Capitaine 30/06/2026 */}
       <Card className={`bg-[#18181B] border-2 p-6 ${broadcastMode ? 'border-pink-500' : 'border-zinc-700'}`}>
         <div className="flex items-start justify-between gap-4 mb-3">

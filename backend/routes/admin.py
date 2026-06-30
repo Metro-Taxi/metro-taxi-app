@@ -3493,6 +3493,54 @@ async def recompute_driver_earnings(
 
 
 # ============================================
+# ADMIN — Diagnostic push subscriptions chauffeurs
+# Indique combien de chauffeurs sont effectivement joignables par push PWA
+# ============================================
+@router.get("/admin/drivers/push-diagnostic")
+async def drivers_push_diagnostic(
+    current_user: dict = Depends(get_current_user),
+):
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+
+    # Tous les chauffeurs validés
+    validated = await db.drivers.find(
+        {"is_validated": True},
+        {"_id": 0, "id": 1, "email": 1, "first_name": 1, "last_name": 1, "phone": 1, "is_active": 1}
+    ).to_list(1000)
+
+    # Tous les drivers qui ont au moins une subscription push
+    subs = await db.push_subscriptions.find(
+        {"user_type": "driver"},
+        {"_id": 0, "user_id": 1}
+    ).to_list(10000)
+    drivers_with_push = set(s["user_id"] for s in subs if s.get("user_id"))
+
+    with_push = []
+    without_push = []
+    for d in validated:
+        info = {
+            "id": d.get("id"),
+            "name": f"{d.get('first_name','').strip()} {d.get('last_name','').strip()}".strip(),
+            "email": d.get("email"),
+            "phone": d.get("phone"),
+            "is_active": bool(d.get("is_active")),
+        }
+        if d.get("id") in drivers_with_push:
+            with_push.append(info)
+        else:
+            without_push.append(info)
+
+    return {
+        "total_validated": len(validated),
+        "with_push_count": len(with_push),
+        "without_push_count": len(without_push),
+        "with_push": with_push,
+        "without_push": without_push,
+    }
+
+
+# ============================================
 # ADMIN — Broadcast Mode (pré-lancement)
 # Quand ON : tous les chauffeurs validés apparaissent disponibles aux usagers même sans GPS,
 # le stale_drivers_cleaner est désactivé. Chaque demande de course déclenchera un push à
