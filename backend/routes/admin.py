@@ -3380,6 +3380,74 @@ async def recompute_driver_earnings(
 
 
 # ============================================
+# ADMIN — Activation massive comptes (rétroactif)
+# Décision Capitaine 30/06/2026 : booster onboarding en supprimant la barrière d'activation.
+# Met is_active=True, is_validated=True, email_verified=True sur tous les comptes existants
+# qui ne le sont pas encore. Idempotent. Logué dans admin_audit_log.
+# ============================================
+@router.post("/admin/accounts/activate-all")
+async def activate_all_accounts(
+    current_user: dict = Depends(get_current_user),
+):
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    # Drivers : on touche uniquement les comptes incomplets
+    drivers_result = await db.drivers.update_many(
+        {
+            "$or": [
+                {"is_active": {"$ne": True}},
+                {"is_validated": {"$ne": True}},
+                {"email_verified": {"$ne": True}},
+            ]
+        },
+        {
+            "$set": {
+                "is_active": True,
+                "is_validated": True,
+                "email_verified": True,
+                "auto_activated_at": now_iso,
+                "auto_activated_by": current_user.get("email"),
+            }
+        },
+    )
+
+    # Users : pas de is_active/is_validated, juste email_verified
+    users_result = await db.users.update_many(
+        {"email_verified": {"$ne": True}},
+        {
+            "$set": {
+                "email_verified": True,
+                "auto_activated_at": now_iso,
+                "auto_activated_by": current_user.get("email"),
+            }
+        },
+    )
+
+    audit = {
+        "id": str(uuid.uuid4()),
+        "type": "bulk_account_activation",
+        "admin_id": current_user.get("user_id"),
+        "admin_email": current_user.get("email"),
+        "drivers_modified": drivers_result.modified_count,
+        "users_modified": users_result.modified_count,
+        "created_at": now_iso,
+    }
+    await db.admin_audit_log.insert_one(audit)
+
+    return {
+        "ok": True,
+        "drivers_activated": drivers_result.modified_count,
+        "drivers_matched": drivers_result.matched_count,
+        "users_activated": users_result.modified_count,
+        "users_matched": users_result.matched_count,
+        "audit_log_id": audit["id"],
+    }
+
+
+# ============================================
 # ADMIN — Rattrapage manuel d'une course (Scénario : course exécutée IRL mais absente
 # de la BDD suite à un reset/incident. Crée/incrémente driver_earnings du mois ciblé
 # avec audit log obligatoire. Ne touche PAS aux mois déjà payés.)

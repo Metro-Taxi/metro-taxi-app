@@ -1247,9 +1247,9 @@ async def register_driver(data: DriverRegisterWithRegion, request: Request):
         "region_id": data.region_id,  # Associate driver with region
         "source_inscription": data.source_inscription,  # CDG, Gare du Nord, Facebook, TikTok, etc.
         "pioneer_number": pioneer_number,  # Founder pioneer status (immutable)
-        "is_active": False,
+        "is_active": True,
         "is_validated": True,  # Auto-validated at registration
-        "email_verified": False,
+        "email_verified": True,  # 30/06/2026 — auto-activation à l'inscription (décision Capitaine pour booster onboarding)
         "verification_token": verification_token,
         "role": "driver",
         "location": None,

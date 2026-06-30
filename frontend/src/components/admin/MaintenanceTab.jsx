@@ -52,6 +52,20 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
   const [importResult, setImportResult] = useState(null);
   const [importLoading, setImportLoading] = useState(false);
   const [showDiagnostic, setShowDiagnostic] = useState(false);
+  const [activatingAll, setActivatingAll] = useState(false);
+
+  const handleActivateAll = async () => {
+    if (!window.confirm("Activer en bloc TOUS les comptes (chauffeurs + usagers) qui ne le sont pas encore ?\n\nLes chauffeurs seront marqués is_active=true, is_validated=true, email_verified=true.\nLes usagers seront marqués email_verified=true.\nAction tracée dans admin_audit_log. Idempotente.")) return;
+    setActivatingAll(true);
+    try {
+      const { data } = await axios.post(`${API}/admin/accounts/activate-all`, {}, auth);
+      toast.success(`✅ ${data.drivers_activated} chauffeurs et ${data.users_activated} usagers activés.`);
+    } catch (err) {
+      toast.error(err?.response?.data?.detail || 'Erreur activation massive.');
+    } finally {
+      setActivatingAll(false);
+    }
+  };
 
   // Nettoie les extensions BSON de mongoexport : {"$oid":"abc"} -> "abc", {"$date":"..."} -> ISO string, etc.
   const cleanBsonExtensions = (obj) => {
@@ -176,6 +190,27 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
 
   return (
     <div className="space-y-6">
+      {/* Activation massive comptes — décision Capitaine 30/06/2026 */}
+      <Card className="bg-[#18181B] border-emerald-700 border-2 p-6">
+        <h2 className="text-xl font-bold text-emerald-400 mb-2 flex items-center gap-2">
+          ⚡ Activation massive des comptes
+        </h2>
+        <p className="text-sm text-zinc-400 mb-4">
+          Active en 1 clic <b>tous les chauffeurs et usagers inscrits</b> qui ne sont pas encore actifs/vérifiés.
+          Les nouveaux comptes (après cette mise à jour) sont déjà activés automatiquement à l&apos;inscription.
+          Action idempotente, tracée dans <code>admin_audit_log</code>.
+        </p>
+        <Button
+          onClick={handleActivateAll}
+          disabled={activatingAll}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 flex items-center gap-2"
+          data-testid="activate-all-accounts-btn"
+        >
+          {activatingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : '⚡'}
+          Activer tous les comptes inactifs
+        </Button>
+      </Card>
+
       {/* Outil diagnostic revenus chauffeur — NOUVEAU */}
       <Card className="bg-[#18181B] border-orange-700 border-2 p-6">
         <h2 className="text-xl font-bold text-orange-400 mb-2 flex items-center gap-2">

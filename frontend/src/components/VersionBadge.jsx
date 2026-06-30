@@ -3,7 +3,7 @@ import React from 'react';
 // IMPORTANT : à incrémenter à chaque déploiement majeur.
 // Permet à Capitaine de vérifier visuellement quelle version est active sur son appareil.
 // Si la version affichée diffère de celle annoncée par Charly, c'est qu'un déploiement n'a pas pris ou que le cache PWA tient.
-export const APP_VERSION = 'v28.manual-earnings-adjust-2026.02.26';
+export const APP_VERSION = 'v29.auto-activate-accounts-2026.06.30';
 
 const VersionBadge = () => (
   <span
