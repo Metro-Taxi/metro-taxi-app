@@ -775,11 +775,19 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
         except Exception as e:
             logging.warning(f"reverse_geocode destination failed: {e}")
 
+    # ============================================
+    # MODE BROADCAST (pré-lancement) — si activé, on ne verrouille PAS la course sur 1 chauffeur.
+    # La demande est diffusée à TOUS les chauffeurs validés, le 1er qui accepte gagne.
+    # ============================================
+    from utils.app_config import is_broadcast_mode
+    broadcast_active = await is_broadcast_mode(db)
+
     ride_doc = {
         "id": ride_id,
         "user_id": user_id,
         "user_name": f"{user['first_name']} {user['last_name']}",
-        "driver_id": data.driver_id,
+        "driver_id": None if broadcast_active else data.driver_id,
+        "broadcast": broadcast_active,
         "pickup_lat": data.pickup_lat,
         "pickup_lng": data.pickup_lng,
         "destination_lat": data.destination_lat,
@@ -808,29 +816,71 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
             {"code": pending_promo.get("code")},
             {"$set": {"consumed_at": datetime.now(timezone.utc).isoformat(), "ride_id": ride_id}},
         )
-    
-    # Notify driver
-    await _get_manager().send_personal_message({
-        "type": "ride_request",
-        "ride": {k: v for k, v in ride_doc.items() if k != "_id"}
-    }, data.driver_id)
 
-    # Push notification (app fermée OK) — fire-and-forget pour ne pas ralentir la réponse API
-    try:
-        from routes.notifications import send_push_notification, NotificationPayload
-        asyncio.create_task(send_push_notification(
-            user_id=data.driver_id,
-            user_type="driver",
-            notification=NotificationPayload(
-                title="🚗 Nouvelle course Métro-Taxi",
-                body=f"{user.get('first_name','Un usager')} demande une course depuis {pickup_address[:40] if pickup_address else 'un point GPS'}",
-                data={"type": "ride_request", "ride_id": ride_id, "url": "/dashboard"}
-            )
-        ))
-    except Exception as e:
-        logging.warning(f"Push notif driver failed (non-blocking): {e}")
+    # ============================================
+    # NOTIFICATION : broadcast OU ciblée
+    # ============================================
+    if broadcast_active:
+        # 1. WebSocket : push à TOUS les chauffeurs validés connectés
+        all_drivers = await db.drivers.find(
+            {"is_active": True, "is_validated": True},
+            {"_id": 0, "id": 1, "email": 1, "first_name": 1, "last_name": 1}
+        ).to_list(1000)
+
+        ride_payload = {k: v for k, v in ride_doc.items() if k != "_id" and k != "pickup_otp"}
+        manager = _get_manager()
+        push_count = 0
+        for drv in all_drivers:
+            drv_id = drv.get("id")
+            if not drv_id:
+                continue
+            try:
+                await manager.send_personal_message({
+                    "type": "ride_request",
+                    "ride": ride_payload,
+                }, drv_id)
+            except Exception:
+                pass
+
+            # 2. Push notification critique (fire-and-forget)
+            try:
+                from routes.notifications import send_push_notification, NotificationPayload
+                asyncio.create_task(send_push_notification(
+                    user_id=drv_id,
+                    user_type="driver",
+                    notification=NotificationPayload(
+                        title="🚗 Nouvelle course Métro-Taxi",
+                        body=f"{user.get('first_name', 'Un usager')} demande une course depuis {(pickup_address or 'un point GPS')[:50]}",
+                        data={"type": "ride_request", "ride_id": ride_id, "url": "/dashboard", "critical": True}
+                    )
+                ))
+                push_count += 1
+            except Exception as e:
+                logging.warning(f"Push broadcast failed for driver {drv_id}: {e}")
+
+        logging.info(f"Ride {ride_id} BROADCAST sent to {push_count}/{len(all_drivers)} drivers")
+    else:
+        # Comportement classique : notif au chauffeur sélectionné uniquement
+        await _get_manager().send_personal_message({
+            "type": "ride_request",
+            "ride": {k: v for k, v in ride_doc.items() if k != "_id"}
+        }, data.driver_id)
+
+        try:
+            from routes.notifications import send_push_notification, NotificationPayload
+            asyncio.create_task(send_push_notification(
+                user_id=data.driver_id,
+                user_type="driver",
+                notification=NotificationPayload(
+                    title="🚗 Nouvelle course Métro-Taxi",
+                    body=f"{user.get('first_name','Un usager')} demande une course depuis {pickup_address[:40] if pickup_address else 'un point GPS'}",
+                    data={"type": "ride_request", "ride_id": ride_id, "url": "/dashboard"}
+                )
+            ))
+        except Exception as e:
+            logging.warning(f"Push notif driver failed (non-blocking): {e}")
     
-    return {"ride": {k: v for k, v in ride_doc.items() if k != "_id"}}
+    return {"ride": {k: v for k, v in ride_doc.items() if k != "_id"}, "broadcast": broadcast_active}
 
 @router.get("/rides/pending")
 async def get_pending_rides(current_user: dict = Depends(get_current_user)):
@@ -838,8 +888,17 @@ async def get_pending_rides(current_user: dict = Depends(get_current_user)):
         raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
     
     driver_id = current_user["user_id"]
+    # Retourne :
+    #  - les courses ciblées spécifiquement à ce chauffeur (mode classique)
+    #  - + les courses broadcast (driver_id=null, broadcast=true) accessibles à tous
     rides = await db.ride_requests.find(
-        {"driver_id": driver_id, "status": "pending"},
+        {
+            "status": "pending",
+            "$or": [
+                {"driver_id": driver_id},
+                {"driver_id": None, "broadcast": True},
+            ],
+        },
         {"_id": 0, "pickup_otp": 0}  # Driver must NEVER see the OTP
     ).to_list(100)
     
@@ -865,17 +924,44 @@ async def get_pending_rides(current_user: dict = Depends(get_current_user)):
 async def accept_ride(ride_id: str, current_user: dict = Depends(get_current_user)):
     if current_user["role"] != "driver":
         raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs")
-    
+
     driver_id = current_user["user_id"]
-    ride = await db.ride_requests.find_one({"id": ride_id, "driver_id": driver_id}, {"_id": 0})
-    
+    ride = await db.ride_requests.find_one({"id": ride_id}, {"_id": 0})
+
     if not ride:
         raise HTTPException(status_code=404, detail="Demande non trouvée")
-    
-    await db.ride_requests.update_one(
-        {"id": ride_id},
-        {"$set": {"status": "accepted", "accepted_at": datetime.now(timezone.utc).isoformat()}}
-    )
+
+    # Vérification d'accès :
+    #  - course ciblée → seul le chauffeur ciblé peut accepter
+    #  - course broadcast (driver_id=null) → tout chauffeur validé peut tenter d'accepter
+    if ride.get("driver_id") and ride.get("driver_id") != driver_id:
+        raise HTTPException(status_code=403, detail="Cette course n'est pas pour toi")
+
+    # Lock atomique pour broadcast : la 1ère acceptation gagne
+    now_iso = datetime.now(timezone.utc).isoformat()
+    if ride.get("broadcast"):
+        result = await db.ride_requests.update_one(
+            {"id": ride_id, "driver_id": None, "status": "pending"},
+            {"$set": {
+                "driver_id": driver_id,
+                "status": "accepted",
+                "accepted_at": now_iso,
+                "accepted_via_broadcast": True,
+            }}
+        )
+        if result.modified_count == 0:
+            # Un autre chauffeur a déjà accepté entre-temps
+            raise HTTPException(
+                status_code=409,
+                detail="Cette course a déjà été acceptée par un autre chauffeur."
+            )
+    else:
+        if ride.get("status") != "pending":
+            raise HTTPException(status_code=409, detail="Course déjà traitée")
+        await db.ride_requests.update_one(
+            {"id": ride_id},
+            {"$set": {"status": "accepted", "accepted_at": now_iso}}
+        )
     
     # Reduce available seats (clamped to ≥ 0 via aggregation pipeline update)
     await db.drivers.update_one(
@@ -904,7 +990,28 @@ async def accept_ride(ride_id: str, current_user: dict = Depends(get_current_use
         ))
     except Exception as e:
         logging.warning(f"Push notif accept failed: {e}")
-    
+
+    # En mode broadcast : notifier les autres chauffeurs que la course est prise pour vider leur liste pending
+    if ride.get("broadcast"):
+        try:
+            other_drivers = await db.drivers.find(
+                {"is_active": True, "is_validated": True, "id": {"$ne": driver_id}},
+                {"_id": 0, "id": 1}
+            ).to_list(1000)
+            manager = _get_manager()
+            for d in other_drivers:
+                d_id = d.get("id")
+                if d_id:
+                    try:
+                        await manager.send_personal_message({
+                            "type": "ride_taken_by_other",
+                            "ride_id": ride_id,
+                        }, d_id)
+                    except Exception:
+                        pass
+        except Exception as e:
+            logging.warning(f"Failed to notify other drivers of ride taken: {e}")
+
     return {"status": "accepted"}
 
 @router.post("/rides/{ride_id}/reject")
