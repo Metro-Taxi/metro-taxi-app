@@ -83,13 +83,14 @@ class LocationUpdate(BaseModel):
 
 
 class RideRequestCreate(BaseModel):
-    driver_id: str
+    driver_id: Optional[str] = None
     pickup_lat: float
     pickup_lng: float
     destination_lat: float
     destination_lng: float
     pickup_address: Optional[str] = None  # Text address resolved by reverse-geocoding on the client
     destination_address: Optional[str] = None
+    force_broadcast: bool = False  # Si True, demande envoyée à TOUS les chauffeurs (1er accepteur gagne)
 
 
 class RideRequestResponse(BaseModel):

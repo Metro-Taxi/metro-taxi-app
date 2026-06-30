@@ -1546,7 +1546,12 @@ const UserDashboard = () => {
                       toast.success("🚨 Tous les chauffeurs ont été alertés. Le premier qui accepte prend ta course.");
                     } catch (err) {
                       console.error('Broadcast failed:', err);
-                      toast.error(err?.response?.data?.detail || err?.message || "Erreur diffusion broadcast.");
+                      // Pydantic retourne `detail` comme array d'objets parfois → on aplatit en string sûr
+                      const raw = err?.response?.data?.detail;
+                      const safeMsg = Array.isArray(raw)
+                        ? raw.map(d => d?.msg || JSON.stringify(d)).join(', ')
+                        : (typeof raw === 'string' ? raw : (err?.message || "Erreur diffusion broadcast."));
+                      toast.error(safeMsg);
                     } finally {
                       setLoading(false);
                     }
