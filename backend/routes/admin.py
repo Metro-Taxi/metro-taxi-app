@@ -776,11 +776,17 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
             logging.warning(f"reverse_geocode destination failed: {e}")
 
     # ============================================
-    # MODE BROADCAST (pré-lancement) — si activé, on ne verrouille PAS la course sur 1 chauffeur.
-    # La demande est diffusée à TOUS les chauffeurs validés, le 1er qui accepte gagne.
+    # MODE BROADCAST (pré-lancement) — si activé globalement OU si l'usager force le broadcast
+    # explicitement via le bouton "Alerter tous les chauffeurs", on ne verrouille PAS la course
+    # sur 1 chauffeur. La demande est diffusée à TOUS les chauffeurs validés, le 1er qui accepte gagne.
     # ============================================
     from utils.app_config import is_broadcast_mode
-    broadcast_active = await is_broadcast_mode(db)
+    broadcast_active = bool(getattr(data, "force_broadcast", False)) or await is_broadcast_mode(db)
+    if not broadcast_active and not data.driver_id:
+        raise HTTPException(
+            status_code=400,
+            detail="driver_id requis pour une demande ciblée (ou utilisez force_broadcast=true)"
+        )
 
     ride_doc = {
         "id": ride_id,

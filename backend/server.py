@@ -835,11 +835,12 @@ class LocationUpdate(BaseModel):
     available_seats: Optional[int] = None
 
 class RideRequestCreate(BaseModel):
-    driver_id: str
+    driver_id: Optional[str] = None
     pickup_lat: float
     pickup_lng: float
     destination_lat: float
     destination_lng: float
+    force_broadcast: bool = False  # Si True, la demande est envoyée à TOUS les chauffeurs (1er accepteur gagne)
 
 class RideRequestResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")

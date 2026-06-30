@@ -1497,6 +1497,47 @@ const UserDashboard = () => {
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               )}
+
+              {/* BOUTON BROADCAST — sonne chez TOUS les chauffeurs en 1 clic.
+                  Indépendant du mode broadcast global. Le 1er qui accepte gagne la course. */}
+              {destination && (
+                <Button
+                  onClick={async () => {
+                    if (!window.confirm(`Alerter TOUS les chauffeurs Métro-Taxi ?\n\nUne notification sonore va retentir sur les téléphones de tous les chauffeurs validés. Le premier qui accepte prendra ta course.`)) return;
+                    setLoading(true);
+                    try {
+                      const destLat = destination[0];
+                      const destLng = destination[1];
+                      const [pickupAddress, destinationAddress] = await Promise.all([
+                        reverseGeocode(userLocation[0], userLocation[1]),
+                        reverseGeocode(destLat, destLng),
+                      ]);
+                      const response = await axios.post(`${API}/rides/request`, {
+                        driver_id: null,
+                        pickup_lat: userLocation[0],
+                        pickup_lng: userLocation[1],
+                        destination_lat: destLat,
+                        destination_lng: destLng,
+                        pickup_address: pickupAddress,
+                        destination_address: destinationAddress,
+                        force_broadcast: true,
+                      }, { headers: { Authorization: `Bearer ${token}` } });
+                      setActiveRide(response.data.ride);
+                      setSelectedDriver(null);
+                      toast.success("🚨 Tous les chauffeurs ont été alertés. Le premier qui accepte prend ta course.");
+                    } catch (err) {
+                      toast.error(err?.response?.data?.detail || "Erreur diffusion broadcast.");
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                  disabled={loading}
+                  className="w-full mt-3 bg-red-600 hover:bg-red-700 text-white font-bold h-14 text-base border-2 border-red-400 shadow-lg shadow-red-900/50"
+                  data-testid="broadcast-all-drivers-btn"
+                >
+                  {loading ? '⏳ Envoi…' : '🚨 ALERTER LES 43 CHAUFFEURS'}
+                </Button>
+              )}
             </div>
           </motion.div>
         )}
