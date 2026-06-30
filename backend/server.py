@@ -1849,6 +1849,10 @@ async def get_available_drivers(region_id: Optional[str] = None, current_user: d
         query["region_id"] = region_id
 
     drivers = await db.drivers.find(query, {"_id": 0, "password": 0}).to_list(100)
+    stale_threshold_iso = (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat()
+    for d in drivers:
+        loc_ts = d.get("location_updated_at") or ""
+        d["gps_stale"] = (not loc_ts) or (loc_ts < stale_threshold_iso)
     return {"drivers": drivers, "broadcast_mode": broadcast}
 
 # ============================================
@@ -1880,20 +1884,34 @@ async def find_matching_drivers(data: MatchingRequest, region_id: Optional[str] 
         query["region_id"] = region_id
     
     drivers = await db.drivers.find(query, {"_id": 0, "password": 0}).to_list(100)
-    
+
+    # Calcul du flag gps_stale (vrai si pas de GPS frais dans les 2 dernières min)
+    # En broadcast mode on inclut les chauffeurs sans GPS récent → on doit le signaler à l'UI.
+    stale_threshold_iso = (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat()
+
     matched_drivers = []
     for driver in drivers:
+        loc_ts = driver.get("location_updated_at") or ""
+        driver["gps_stale"] = (not loc_ts) or (loc_ts < stale_threshold_iso)
         match_info = calculate_matching_score(
             driver, data.user_lat, data.user_lng, data.dest_lat, data.dest_lng
         )
-        if match_info["score"] > 10:  # Minimum score threshold
+        if driver["gps_stale"]:
+            # En broadcast mode, on garde le chauffeur même si son score est faible —
+            # le 1er qui accepte gagne la course.
+            matched_drivers.append({
+                **driver,
+                "matching": match_info,
+            })
+        elif match_info["score"] > 10:  # Minimum score threshold
             matched_drivers.append({
                 **driver,
                 "matching": match_info
             })
     
-    # Sort by score descending
-    matched_drivers.sort(key=lambda x: x["matching"]["score"], reverse=True)
+    # Sort : d'abord les chauffeurs avec GPS frais (par score desc), puis les gps_stale en
+    # fin de liste (eux aussi triés par score mais ils passeront après).
+    matched_drivers.sort(key=lambda x: (x.get("gps_stale", False), -x["matching"]["score"]))
     
     return {"drivers": matched_drivers[:10]}  # Return top 10
 

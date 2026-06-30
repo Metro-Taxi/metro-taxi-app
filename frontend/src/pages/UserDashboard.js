@@ -836,20 +836,27 @@ const UserDashboard = () => {
             >
               <Popup>
                 <div className="p-2 min-w-[200px]">
-                  <p className="font-bold text-lg">{driver.first_name}</p>
+                  <p className="font-bold text-lg flex items-center gap-2">
+                    {driver.first_name}
+                    {driver.gps_stale && (
+                      <span className="text-[10px] px-1.5 py-0.5 bg-pink-100 border border-pink-300 text-pink-700 rounded font-normal">
+                        📡 Approx.
+                      </span>
+                    )}
+                  </p>
                   <p className="text-sm text-zinc-600 font-mono">{driver.vehicle_plate}</p>
                   <p className="text-sm">{driver.vehicle_type}</p>
                   <div className="flex items-center gap-1 mt-2 text-[#FFD60A]">
                     <Users className="w-4 h-4" />
                     <span>{driver.available_seats} {t('common.places')}</span>
                   </div>
-                  {driver.destination && (
+                  {driver.destination && !driver.gps_stale && (
                     <div className="flex items-center gap-1 mt-1 text-blue-500">
                       <Compass className="w-4 h-4" />
                       <span className="text-xs">Direction: {Math.round(bearing || 0)}°</span>
                     </div>
                   )}
-                  {driver.matching && (
+                  {driver.matching && !driver.gps_stale && (
                     <div className="mt-2 pt-2 border-t border-gray-200">
                       <div className="flex items-center gap-1 text-green-600">
                         <Clock className="w-4 h-4" />
@@ -859,6 +866,11 @@ const UserDashboard = () => {
                         Score: {driver.matching.score} | Direction: {Math.round(driver.matching.direction_score)}%
                       </div>
                     </div>
+                  )}
+                  {driver.gps_stale && (
+                    <p className="text-xs text-pink-700 italic mt-2 pt-2 border-t border-gray-200">
+                      Position non temps-réel. Le chauffeur sera notifié par push si vous le sélectionnez.
+                    </p>
                   )}
                 </div>
               </Popup>
@@ -1357,20 +1369,34 @@ const UserDashboard = () => {
                               {driver.first_name?.charAt(0) || 'C'}
                             </div>
                             <div>
-                              <p className="text-white font-medium">{driver.first_name}</p>
+                              <p className="text-white font-medium flex items-center gap-2">
+                                {driver.first_name}
+                                {driver.gps_stale && (
+                                  <span
+                                    className="text-[10px] px-1.5 py-0.5 bg-pink-500/20 border border-pink-500/50 text-pink-300 rounded font-normal"
+                                    title="Position approximative — le chauffeur n'est pas connecté à l'app en ce moment. Une notification lui sera envoyée."
+                                    data-testid={`gps-stale-badge-${driver.id}`}
+                                  >
+                                    📡 Position approx.
+                                  </span>
+                                )}
+                              </p>
                               <p className="text-xs text-zinc-400">{driver.vehicle_plate} • {driver.vehicle_type}</p>
                             </div>
                           </div>
                           <div className="text-right">
                             <p className="text-green-400 font-bold">{driver.available_seats} {t('dashboard.user.seats', 'places')}</p>
-                            {driver.matching && (
+                            {driver.matching && !driver.gps_stale && (
                               <p className="text-xs text-zinc-500">
                                 {driver.matching.pickup_distance} km • {driver.matching.eta_minutes} min
                               </p>
                             )}
+                            {driver.gps_stale && (
+                              <p className="text-xs text-zinc-600 italic">distance indisponible</p>
+                            )}
                           </div>
                         </div>
-                        {driver.matching && (
+                        {driver.matching && !driver.gps_stale && (
                           <div className="mt-2 flex items-center gap-2">
                             <Progress value={driver.matching.score} className="h-1 flex-1" />
                             <span className="text-xs text-[#FFD60A]">{Math.round(driver.matching.score)}%</span>
