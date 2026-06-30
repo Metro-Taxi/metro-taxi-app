@@ -3380,6 +3380,65 @@ async def recompute_driver_earnings(
 
 
 # ============================================
+# ADMIN — Broadcast Mode (pré-lancement)
+# Quand ON : tous les chauffeurs validés apparaissent disponibles aux usagers même sans GPS,
+# le stale_drivers_cleaner est désactivé. Chaque demande de course déclenchera un push à
+# tous les chauffeurs (mécanisme wake-drivers existant).
+# ============================================
+@router.get("/admin/broadcast-mode")
+async def get_broadcast_mode_status(
+    current_user: dict = Depends(get_current_user),
+):
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+    from utils.app_config import is_broadcast_mode
+    enabled = await is_broadcast_mode(db)
+
+    # Compteur pour info
+    count_active = await db.drivers.count_documents({"is_active": True, "is_validated": True})
+    return {"enabled": enabled, "validated_drivers_count": count_active}
+
+
+@router.post("/admin/broadcast-mode")
+async def set_broadcast_mode(
+    payload: dict = Body(...),
+    current_user: dict = Depends(get_current_user),
+):
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+    enabled = bool((payload or {}).get("enabled", False))
+
+    from utils.app_config import set_config_value
+    await set_config_value(db, "broadcast_mode", enabled, updated_by=current_user.get("email"))
+
+    # Quand on ACTIVE le broadcast : force tous les chauffeurs validés à is_active=true
+    # pour que le stale_cleaner (s'il avait déjà tourné) n'ait pas désactivé certains.
+    drivers_reactivated = 0
+    if enabled:
+        result = await db.drivers.update_many(
+            {"is_validated": True, "is_active": {"$ne": True}},
+            {"$set": {"is_active": True, "broadcast_reactivated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        drivers_reactivated = result.modified_count
+
+    await db.admin_audit_log.insert_one({
+        "id": str(uuid.uuid4()),
+        "type": "broadcast_mode_toggle",
+        "admin_id": current_user.get("user_id"),
+        "admin_email": current_user.get("email"),
+        "enabled": enabled,
+        "drivers_reactivated": drivers_reactivated,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+
+    return {
+        "ok": True,
+        "enabled": enabled,
+        "drivers_reactivated": drivers_reactivated,
+    }
+
+
+# ============================================
 # ADMIN — Génération manuelle du batch SEPA de la semaine en cours
 # (utile pour test, ou si le scheduler lundi a été raté)
 # ============================================

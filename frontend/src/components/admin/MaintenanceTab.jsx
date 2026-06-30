@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
@@ -54,6 +54,42 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
   const [showDiagnostic, setShowDiagnostic] = useState(false);
   const [activatingAll, setActivatingAll] = useState(false);
   const [generatingSepa, setGeneratingSepa] = useState(false);
+  const [broadcastMode, setBroadcastMode] = useState(null); // null=loading, true/false=loaded
+  const [broadcastDriversCount, setBroadcastDriversCount] = useState(0);
+  const [togglingBroadcast, setTogglingBroadcast] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    axios.get(`${API}/admin/broadcast-mode`, auth).then(({ data }) => {
+      if (!alive) return;
+      setBroadcastMode(!!data.enabled);
+      setBroadcastDriversCount(data.validated_drivers_count || 0);
+    }).catch(() => alive && setBroadcastMode(false));
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const toggleBroadcastMode = async () => {
+    const next = !broadcastMode;
+    const message = next
+      ? `Activer le MODE BROADCAST (pré-lancement) ?\n\n• Tous les ${broadcastDriversCount} chauffeurs validés vont apparaître DISPONIBLES aux usagers, même s'ils n'ont pas ouvert leur app.\n• Le système anti-fantôme (auto-offline après 3 min sans GPS) sera DÉSACTIVÉ.\n• Chaque demande de course déclenchera un push sur les téléphones de tous les chauffeurs.\n\nÀ utiliser uniquement pendant la phase de pré-lancement pour amorcer la pompe. À DÉSACTIVER dès que le bouche-à-oreille naturel décolle.`
+      : `Désactiver le MODE BROADCAST ?\n\nLes chauffeurs devront à nouveau ouvrir leur app et activer leur disponibilité eux-mêmes pour apparaître aux usagers. Le système anti-fantôme sera réactivé.`;
+    if (!window.confirm(message)) return;
+    setTogglingBroadcast(true);
+    try {
+      const { data } = await axios.post(`${API}/admin/broadcast-mode`, { enabled: next }, auth);
+      setBroadcastMode(data.enabled);
+      if (data.enabled) {
+        toast.success(`📡 Broadcast ON. ${data.drivers_reactivated} chauffeurs réactivés.`);
+      } else {
+        toast.success('📡 Broadcast OFF. Système anti-fantôme réactivé.');
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.detail || 'Erreur toggle broadcast.');
+    } finally {
+      setTogglingBroadcast(false);
+    }
+  };
 
   const handleGenerateSepa = async () => {
     if (!window.confirm("Générer le batch SEPA XML de la semaine en cours ?\n\nLe fichier sera envoyé à ton adresse admin avec le récap des virements.\nLes earnings concernés seront marqués 'paid' avec un sepa_batch_id.\nAction non réversible : utilise-la uniquement si tu vas effectivement uploader le XML dans ta banque.")) return;
@@ -211,6 +247,38 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
 
   return (
     <div className="space-y-6">
+      {/* Mode Broadcast pré-lancement — décision Capitaine 30/06/2026 */}
+      <Card className={`bg-[#18181B] border-2 p-6 ${broadcastMode ? 'border-pink-500' : 'border-zinc-700'}`}>
+        <div className="flex items-start justify-between gap-4 mb-3">
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-pink-400 mb-1 flex items-center gap-2">
+              📡 Mode Broadcast — Pré-lancement
+              {broadcastMode && (
+                <span className="ml-2 px-2 py-0.5 bg-pink-500 text-black text-xs font-bold rounded">ACTIF</span>
+              )}
+            </h2>
+            <p className="text-xs text-zinc-500">
+              {broadcastDriversCount} chauffeurs validés en base.
+            </p>
+          </div>
+          <Button
+            onClick={toggleBroadcastMode}
+            disabled={togglingBroadcast || broadcastMode === null}
+            className={`min-w-[160px] font-bold ${broadcastMode ? 'bg-zinc-700 hover:bg-zinc-600 text-white' : 'bg-pink-600 hover:bg-pink-700 text-white'}`}
+            data-testid="toggle-broadcast-mode-btn"
+          >
+            {togglingBroadcast || broadcastMode === null
+              ? <Loader2 className="w-4 h-4 animate-spin" />
+              : (broadcastMode ? '🛑 Désactiver' : '📡 Activer')}
+          </Button>
+        </div>
+        <p className="text-sm text-zinc-400">
+          Quand <b>ACTIF</b> : tous les chauffeurs validés apparaissent <b>disponibles aux usagers</b> même s&apos;ils n&apos;ont pas
+          ouvert leur app. Chaque demande de course déclenchera un push critique sur leurs téléphones (système anti-fantôme désactivé).
+          <br/>À utiliser pour <b>amorcer la pompe</b> avant le 26 juillet. À désactiver dès que les chauffeurs prennent l&apos;habitude d&apos;ouvrir l&apos;app eux-mêmes.
+        </p>
+      </Card>
+
       {/* Activation massive comptes — décision Capitaine 30/06/2026 */}
       <Card className="bg-[#18181B] border-emerald-700 border-2 p-6">
         <h2 className="text-xl font-bold text-emerald-400 mb-2 flex items-center gap-2">

@@ -1828,24 +1828,28 @@ async def update_driver_location(data: LocationUpdate, current_user: dict = Depe
 @api_router.get("/drivers/available")
 async def get_available_drivers(region_id: Optional[str] = None, current_user: dict = Depends(get_current_user)):
     """Get available drivers, optionally filtered by region.
-    
-    A driver is shown only if their GPS position was updated in the last 2 minutes.
-    This prevents 'ghost' drivers from appearing when they closed the app without going OFFLINE.
+
+    Normal mode: only drivers with GPS updated in the last 2 minutes.
+    Broadcast mode (pre-launch): all validated drivers, regardless of GPS freshness.
     """
-    stale_threshold = (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat()
+    from utils.app_config import is_broadcast_mode
+    broadcast = await is_broadcast_mode(db)
+
     query = {
         "is_active": True,
         "is_validated": True,
-        "location": {"$ne": None},
-        "location_updated_at": {"$gte": stale_threshold}
     }
-    
+    if not broadcast:
+        stale_threshold = (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat()
+        query["location"] = {"$ne": None}
+        query["location_updated_at"] = {"$gte": stale_threshold}
+
     # Filter by region if specified
     if region_id:
         query["region_id"] = region_id
-    
+
     drivers = await db.drivers.find(query, {"_id": 0, "password": 0}).to_list(100)
-    return {"drivers": drivers}
+    return {"drivers": drivers, "broadcast_mode": broadcast}
 
 # ============================================
 # MATCHING ALGORITHM ENDPOINTS
@@ -1854,18 +1858,23 @@ async def get_available_drivers(region_id: Optional[str] = None, current_user: d
 @api_router.post("/matching/find-drivers")
 async def find_matching_drivers(data: MatchingRequest, region_id: Optional[str] = None, current_user: dict = Depends(get_current_user)):
     """Find best matching drivers based on distance, direction, and availability.
-    
-    Excludes drivers with stale GPS (>2 min) to avoid 'ghost' matches.
+
+    Normal mode: excludes drivers with stale GPS (>2 min).
+    Broadcast mode (pre-launch): includes all validated drivers regardless of GPS.
     """
-    stale_threshold = (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat()
+    from utils.app_config import is_broadcast_mode
+    broadcast = await is_broadcast_mode(db)
+
     query = {
         "is_active": True,
         "is_validated": True,
-        "location": {"$ne": None},
-        "location_updated_at": {"$gte": stale_threshold},
-        "available_seats": {"$gt": 0}
+        "available_seats": {"$gt": 0},
     }
-    
+    if not broadcast:
+        stale_threshold = (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat()
+        query["location"] = {"$ne": None}
+        query["location_updated_at"] = {"$gte": stale_threshold}
+
     # Filter by region if specified
     if region_id:
         query["region_id"] = region_id
@@ -2988,13 +2997,21 @@ async def start_payout_processor():
 # STALE DRIVER CLEANER (auto-OFFLINE after inactivity)
 # ============================================
 async def cleanup_stale_drivers():
-    """Auto-deactivate drivers whose GPS has not been updated in the last 10 minutes.
-    
+    """Auto-deactivate drivers whose GPS has not been updated in the last 3 minutes.
+
     This prevents 'ghost drivers' from staying online for hours (e.g. Abderrahim case 14/06).
-    Runs every minute, sets is_active=false on stale drivers.
+    Runs every 30s, sets is_active=false on stale drivers.
+
+    SKIPPED entirely when broadcast_mode=True (pre-launch phase: all validated drivers
+    must stay visible regardless of GPS freshness — decision Capitaine 30/06/2026).
     """
+    from utils.app_config import is_broadcast_mode
     while True:
         try:
+            if await is_broadcast_mode(db):
+                # Pre-launch broadcast mode: skip the cleanup entirely
+                await asyncio.sleep(30)
+                continue
             stale_cutoff = (datetime.now(timezone.utc) - timedelta(minutes=3)).isoformat()
             result = await db.drivers.update_many(
                 {
