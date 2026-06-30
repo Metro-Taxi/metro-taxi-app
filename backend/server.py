@@ -2783,96 +2783,150 @@ async def process_automatic_payouts():
                     processed_count = 0
                     total_amount = 0
                     errors = []
-                    stripe_transfers = []
-                    
+                    sepa_transfers_list = []  # list of SEPACreditTransfer
+                    sepa_driver_records = []  # parallel list of (driver, earnings, amount, end_to_end_id)
+
+                    # Étape 1 : préparer tous les virements SEPA
                     for driver_id, earnings in driver_earnings_map.items():
                         driver = await db.drivers.find_one(
                             {"id": driver_id},
                             {"_id": 0}
                         )
-                        
+
                         if not driver:
                             errors.append({"driver_id": driver_id, "reason": "Driver not found"})
                             continue
-                        
-                        if not driver.get("stripe_account_id"):
+
+                        # Décision Capitaine 30/06/2026 : paiement SEPA pur, plus de Stripe Connect.
+                        # Le chauffeur doit avoir un IBAN valide. BIC optionnel pour SEPA intra-zone.
+                        from utils.sepa_xml import is_valid_iban, SEPACreditTransfer
+                        driver_iban_raw = (driver.get("iban") or "").strip()
+                        if not driver_iban_raw or not is_valid_iban(driver_iban_raw):
                             errors.append({
                                 "driver_id": driver_id,
                                 "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
-                                "reason": "No Stripe Connect account"
+                                "reason": "IBAN manquant ou invalide"
                             })
                             continue
-                        
+
                         amount = sum(e.get("total_revenue", 0) for e in earnings)
-                        
+
                         if amount <= 0:
                             continue
-                        
-                        # Process Stripe transfer if API key is available
-                        if STRIPE_API_KEY:
+
+                        driver_name = f"{driver.get('first_name', '')} {driver.get('last_name', '')}".strip()
+                        end_to_end_id = f"MT-{driver_id[:8]}-{week_key.replace('-W', '')}"
+                        months_str = ",".join(sorted(set(e["month"] for e in earnings)))
+
+                        sepa_transfers_list.append(SEPACreditTransfer(
+                            end_to_end_id=end_to_end_id,
+                            creditor_name=driver_name or "Chauffeur Metro-Taxi",
+                            creditor_iban=driver_iban_raw,
+                            creditor_bic=(driver.get("bic") or "").strip(),
+                            amount_eur=round(amount, 2),
+                            remittance_info=f"Metro-Taxi salaire {months_str}",
+                        ))
+                        sepa_driver_records.append({
+                            "driver": driver,
+                            "earnings": earnings,
+                            "amount": round(amount, 2),
+                            "end_to_end_id": end_to_end_id,
+                        })
+
+                    # Étape 2 : générer le fichier SEPA XML et l'envoyer à l'admin
+                    sepa_batch_id = None
+                    sepa_filename = None
+                    sepa_xml_bytes = None
+                    if sepa_transfers_list:
+                        from utils.sepa_xml import generate_sepa_batch_xml
+                        sepa_debtor_iban = os.environ.get("SEPA_DEBTOR_IBAN", "")
+                        sepa_debtor_bic = os.environ.get("SEPA_DEBTOR_BIC", "")
+                        sepa_debtor_name = os.environ.get("SEPA_DEBTOR_NAME", "Metro-Taxi")
+                        try:
+                            batch_result = generate_sepa_batch_xml(
+                                transfers=sepa_transfers_list,
+                                debtor_name=sepa_debtor_name,
+                                debtor_iban=sepa_debtor_iban,
+                                debtor_bic=sepa_debtor_bic,
+                            )
+                            sepa_batch_id = batch_result.message_id
+                            sepa_filename = batch_result.filename
+                            sepa_xml_bytes = batch_result.xml_bytes
+
+                            # Stocker une trace en base
+                            await db.sepa_batches.insert_one({
+                                "id": sepa_batch_id,
+                                "week": week_key,
+                                "execution_date": batch_result.execution_date,
+                                "transactions_count": batch_result.transactions_count,
+                                "total_amount_eur": batch_result.total_amount_eur,
+                                "filename": sepa_filename,
+                                "created_at": now.isoformat(),
+                                "status": "generated",  # generated | sent_to_admin | uploaded_to_bank
+                            })
+
+                            # Envoyer le fichier à l'admin par email avec pièce jointe
                             try:
-                                transfer = stripe.Transfer.create(
-                                    amount=int(amount * 100),
-                                    currency="eur",
-                                    destination=driver["stripe_account_id"],
-                                    metadata={
-                                        "driver_id": driver_id,
-                                        "months": ",".join([e["month"] for e in earnings]),
-                                        "platform": "metro-taxi",
-                                        "auto_payout": "true"
-                                    }
+                                from services.sepa_emails import send_sepa_batch_to_admin
+                                await send_sepa_batch_to_admin(
+                                    admin_email=os.environ.get("ADMIN_EMAIL", "contact@metro-taxi.com"),
+                                    xml_bytes=sepa_xml_bytes,
+                                    filename=sepa_filename,
+                                    week=week_key,
+                                    transactions_count=batch_result.transactions_count,
+                                    total_amount_eur=batch_result.total_amount_eur,
+                                    driver_records=sepa_driver_records,
                                 )
-                                stripe_transfer_id = transfer.id
-                                status = "transferred"
-                                stripe_transfers.append(transfer.id)
-                            except stripe.error.StripeError as e:
-                                logging.error(f"Stripe transfer error for driver {driver_id}: {str(e)}")
-                                errors.append({
-                                    "driver_id": driver_id,
-                                    "reason": f"Stripe error: {str(e)}"
-                                })
-                                continue
-                        else:
-                            stripe_transfer_id = None
-                            status = "processed"
-                        
-                        # Create payout record
+                                await db.sepa_batches.update_one(
+                                    {"id": sepa_batch_id},
+                                    {"$set": {"status": "sent_to_admin", "admin_emailed_at": now.isoformat()}}
+                                )
+                            except Exception as e_mail:
+                                logging.error(f"Failed to send SEPA batch to admin: {e_mail}")
+                        except Exception as e_sepa:
+                            logging.error(f"Failed to generate SEPA batch: {e_sepa}")
+                            errors.append({"reason": f"SEPA batch generation failed: {e_sepa}"})
+
+                    # Étape 3 : créer les payouts + marquer earnings comme paid + notifier chauffeurs
+                    for rec in sepa_driver_records:
+                        driver = rec["driver"]
+                        driver_id = driver.get("id")
+                        earnings = rec["earnings"]
+                        amount = rec["amount"]
+
                         payout_id = str(uuid.uuid4())
                         payout_doc = {
                             "id": payout_id,
                             "driver_id": driver_id,
-                            "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
+                            "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}".strip(),
                             "driver_email": driver.get("email"),
                             "iban": driver.get("iban"),
                             "bic": driver.get("bic"),
-                            "stripe_account_id": driver.get("stripe_account_id"),
-                            "stripe_transfer_id": stripe_transfer_id,
+                            "sepa_batch_id": sepa_batch_id,
+                            "sepa_end_to_end_id": rec["end_to_end_id"],
                             "months": [e["month"] for e in earnings],
                             "total_km": sum(e.get("total_km", 0) for e in earnings),
                             "total_revenue": amount,
                             "rides_count": sum(e.get("rides_count", 0) for e in earnings),
-                            "status": status,
+                            "status": "sepa_batch_generated",
                             "created_at": now.isoformat(),
-                            "processed_by": "system_auto"
+                            "processed_by": "system_auto_sepa",
                         }
-                        
                         await db.driver_payouts.insert_one(payout_doc)
-                        
-                        # Update all earnings for this driver
+
                         for earning in earnings:
                             await db.driver_earnings.update_one(
                                 {"driver_id": driver_id, "month": earning["month"]},
                                 {"$set": {
                                     "payout_status": "paid",
                                     "payout_id": payout_id,
-                                    "stripe_transfer_id": stripe_transfer_id,
-                                    "paid_at": now.isoformat()
+                                    "sepa_batch_id": sepa_batch_id,
+                                    "paid_at": now.isoformat(),
                                 }}
                             )
-                        
-                        # Send email notification to driver
+
                         if driver.get("email"):
-                            driver_name = f"{driver.get('first_name', '')} {driver.get('last_name', '')}"
+                            driver_name = f"{driver.get('first_name', '')} {driver.get('last_name', '')}".strip()
                             payout_date = now.strftime("%d/%m/%Y")
                             asyncio.create_task(send_payout_notification_email(
                                 email=driver["email"],
@@ -2882,10 +2936,9 @@ async def process_automatic_payouts():
                                 rides_count=sum(e.get("rides_count", 0) for e in earnings),
                                 months=[e["month"] for e in earnings],
                                 payout_date=payout_date,
-                                lang="fr"
+                                lang="fr",
                             ))
-                            logging.info(f"Payout email notification queued for driver {driver_id}")
-                        
+
                         processed_count += 1
                         total_amount += amount
                     
@@ -2897,11 +2950,12 @@ async def process_automatic_payouts():
                         "processed_count": processed_count,
                         "total_amount": round(total_amount, 2),
                         "errors_count": len(errors),
-                        "stripe_transfers": stripe_transfers,
+                        "sepa_batch_id": sepa_batch_id,
+                        "sepa_filename": sepa_filename,
                         "created_at": now.isoformat()
                     })
                     
-                    logging.info(f"Automatic weekly payout completed for {week_key}: {processed_count} drivers, €{total_amount:.2f} total, {len(stripe_transfers)} transfers")
+                    logging.info(f"Automatic weekly SEPA payout completed for {week_key}: {processed_count} drivers, €{total_amount:.2f} total, batch={sepa_batch_id}")
                     if errors:
                         logging.warning(f"Payout errors: {len(errors)} drivers skipped")
                     

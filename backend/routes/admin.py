@@ -3380,6 +3380,168 @@ async def recompute_driver_earnings(
 
 
 # ============================================
+# ADMIN — Génération manuelle du batch SEPA de la semaine en cours
+# (utile pour test, ou si le scheduler lundi a été raté)
+# ============================================
+@router.post("/admin/sepa/generate-current-week")
+async def generate_current_week_sepa_batch(
+    current_user: dict = Depends(get_current_user),
+):
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+
+    from utils.sepa_xml import generate_sepa_batch_xml, SEPACreditTransfer, is_valid_iban
+    from services.sepa_emails import send_sepa_batch_to_admin
+    import os as _os
+
+    now = datetime.now(timezone.utc)
+    iso_year, iso_week, _w = now.isocalendar()
+    week_key = f"{iso_year}-W{iso_week:02d}"
+
+    # Réutilise la même logique que le scheduler : tous les earnings pending
+    pending = await db.driver_earnings.find({"payout_status": "pending"}, {"_id": 0}).to_list(length=1000)
+    if not pending:
+        return {
+            "ok": True,
+            "message": "Aucun earnings pending. Rien à virer cette semaine.",
+            "transactions_count": 0,
+            "total_amount_eur": "0.00",
+            "errors": [],
+        }
+
+    # Group par chauffeur
+    by_driver = {}
+    for e in pending:
+        by_driver.setdefault(e["driver_id"], []).append(e)
+
+    transfers = []
+    driver_records = []
+    errors = []
+    for driver_id, earnings in by_driver.items():
+        driver = await db.drivers.find_one({"id": driver_id}, {"_id": 0})
+        if not driver:
+            errors.append({"driver_id": driver_id, "reason": "Chauffeur introuvable"})
+            continue
+        driver_iban_raw = (driver.get("iban") or "").strip()
+        if not driver_iban_raw or not is_valid_iban(driver_iban_raw):
+            errors.append({
+                "driver_id": driver_id,
+                "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}",
+                "reason": "IBAN manquant ou invalide"
+            })
+            continue
+        amount = sum(e.get("total_revenue", 0) for e in earnings)
+        if amount <= 0:
+            continue
+        driver_name = f"{driver.get('first_name', '')} {driver.get('last_name', '')}".strip()
+        end_to_end_id = f"MT-{driver_id[:8]}-{week_key.replace('-W', '')}"
+        months_str = ",".join(sorted(set(e["month"] for e in earnings)))
+        transfers.append(SEPACreditTransfer(
+            end_to_end_id=end_to_end_id,
+            creditor_name=driver_name or "Chauffeur Metro-Taxi",
+            creditor_iban=driver_iban_raw,
+            creditor_bic=(driver.get("bic") or "").strip(),
+            amount_eur=round(amount, 2),
+            remittance_info=f"Metro-Taxi salaire {months_str}",
+        ))
+        driver_records.append({
+            "driver": driver,
+            "earnings": earnings,
+            "amount": round(amount, 2),
+            "end_to_end_id": end_to_end_id,
+        })
+
+    if not transfers:
+        return {
+            "ok": True,
+            "message": "Aucun virement éligible (chauffeurs sans IBAN valide).",
+            "transactions_count": 0,
+            "total_amount_eur": "0.00",
+            "errors": errors,
+        }
+
+    debtor_iban = _os.environ.get("SEPA_DEBTOR_IBAN", "")
+    debtor_bic = _os.environ.get("SEPA_DEBTOR_BIC", "")
+    debtor_name = _os.environ.get("SEPA_DEBTOR_NAME", "Metro-Taxi")
+
+    batch = generate_sepa_batch_xml(
+        transfers=transfers,
+        debtor_name=debtor_name,
+        debtor_iban=debtor_iban,
+        debtor_bic=debtor_bic,
+    )
+
+    await db.sepa_batches.insert_one({
+        "id": batch.message_id,
+        "week": week_key,
+        "execution_date": batch.execution_date,
+        "transactions_count": batch.transactions_count,
+        "total_amount_eur": batch.total_amount_eur,
+        "filename": batch.filename,
+        "created_at": now.isoformat(),
+        "status": "generated_manual",
+        "generated_by": current_user.get("email"),
+    })
+
+    # Envoyer le mail à l'admin avec le XML en PJ
+    sent = await send_sepa_batch_to_admin(
+        admin_email=current_user.get("email") or _os.environ.get("ADMIN_EMAIL", "contact@metro-taxi.com"),
+        xml_bytes=batch.xml_bytes,
+        filename=batch.filename,
+        week=week_key,
+        transactions_count=batch.transactions_count,
+        total_amount_eur=batch.total_amount_eur,
+        driver_records=driver_records,
+    )
+
+    # Marquer earnings comme paid + créer driver_payouts
+    for rec in driver_records:
+        driver = rec["driver"]
+        driver_id = driver.get("id")
+        earnings = rec["earnings"]
+        amount = rec["amount"]
+        payout_id = str(uuid.uuid4())
+        await db.driver_payouts.insert_one({
+            "id": payout_id,
+            "driver_id": driver_id,
+            "driver_name": f"{driver.get('first_name', '')} {driver.get('last_name', '')}".strip(),
+            "driver_email": driver.get("email"),
+            "iban": driver.get("iban"),
+            "bic": driver.get("bic"),
+            "sepa_batch_id": batch.message_id,
+            "sepa_end_to_end_id": rec["end_to_end_id"],
+            "months": [e["month"] for e in earnings],
+            "total_revenue": amount,
+            "rides_count": sum(e.get("rides_count", 0) for e in earnings),
+            "status": "sepa_batch_generated",
+            "created_at": now.isoformat(),
+            "processed_by": f"admin_manual:{current_user.get('email')}",
+        })
+        for earning in earnings:
+            await db.driver_earnings.update_one(
+                {"driver_id": driver_id, "month": earning["month"]},
+                {"$set": {
+                    "payout_status": "paid",
+                    "payout_id": payout_id,
+                    "sepa_batch_id": batch.message_id,
+                    "paid_at": now.isoformat(),
+                }}
+            )
+
+    return {
+        "ok": True,
+        "batch_id": batch.message_id,
+        "filename": batch.filename,
+        "transactions_count": batch.transactions_count,
+        "total_amount_eur": batch.total_amount_eur,
+        "execution_date": batch.execution_date,
+        "email_sent": sent,
+        "email_recipient": current_user.get("email"),
+        "errors": errors,
+    }
+
+
+# ============================================
 # ADMIN — Activation massive comptes (rétroactif)
 # Décision Capitaine 30/06/2026 : booster onboarding en supprimant la barrière d'activation.
 # Met is_active=True, is_validated=True, email_verified=True sur tous les comptes existants

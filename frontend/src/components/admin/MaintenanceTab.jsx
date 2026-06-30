@@ -53,6 +53,27 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
   const [importLoading, setImportLoading] = useState(false);
   const [showDiagnostic, setShowDiagnostic] = useState(false);
   const [activatingAll, setActivatingAll] = useState(false);
+  const [generatingSepa, setGeneratingSepa] = useState(false);
+
+  const handleGenerateSepa = async () => {
+    if (!window.confirm("Générer le batch SEPA XML de la semaine en cours ?\n\nLe fichier sera envoyé à ton adresse admin avec le récap des virements.\nLes earnings concernés seront marqués 'paid' avec un sepa_batch_id.\nAction non réversible : utilise-la uniquement si tu vas effectivement uploader le XML dans ta banque.")) return;
+    setGeneratingSepa(true);
+    try {
+      const { data } = await axios.post(`${API}/admin/sepa/generate-current-week`, {}, auth);
+      if (data.transactions_count === 0) {
+        toast.info(data.message || 'Aucun virement à générer.');
+      } else {
+        toast.success(`✅ Batch SEPA : ${data.transactions_count} virements, ${data.total_amount_eur} €. Mail envoyé à ${data.email_recipient}.`);
+        if (data.errors && data.errors.length > 0) {
+          toast.warning(`${data.errors.length} chauffeur(s) ignoré(s) (IBAN manquant ou invalide).`);
+        }
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.detail || 'Erreur génération batch SEPA.');
+    } finally {
+      setGeneratingSepa(false);
+    }
+  };
 
   const handleActivateAll = async () => {
     if (!window.confirm("Activer en bloc :\n• TOUS les chauffeurs inscrits (is_active, is_validated, email_verified)\n• UNIQUEMENT les usagers ayant un abonnement actif (email_verified)\n\nAction tracée dans admin_audit_log. Idempotente.")) return;
@@ -209,6 +230,28 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
         >
           {activatingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : '⚡'}
           Activer chauffeurs inscrits + usagers abonnés
+        </Button>
+      </Card>
+
+      {/* Batch SEPA hebdomadaire — décision Capitaine 30/06/2026 */}
+      <Card className="bg-[#18181B] border-amber-700 border-2 p-6">
+        <h2 className="text-xl font-bold text-amber-400 mb-2 flex items-center gap-2">
+          🏦 Batch SEPA — Virements chauffeurs
+        </h2>
+        <p className="text-sm text-zinc-400 mb-4">
+          Génère le <b>fichier SEPA XML</b> de la semaine en cours et l&apos;envoie à ton mail admin (avec récap).
+          À uploader ensuite dans <b>Société Générale Pro &gt; Virement multiple &gt; Importer un fichier SEPA</b>.
+          Le scheduler automatique tourne déjà chaque lundi — ce bouton sert uniquement pour <b>rattraper</b> un lundi manqué ou tester.
+          <br/>Les earnings concernés sont marqués <code>paid</code> avec un <code>sepa_batch_id</code>.
+        </p>
+        <Button
+          onClick={handleGenerateSepa}
+          disabled={generatingSepa}
+          className="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 flex items-center gap-2"
+          data-testid="generate-sepa-batch-btn"
+        >
+          {generatingSepa ? <Loader2 className="w-4 h-4 animate-spin" /> : '🏦'}
+          Générer le batch SEPA de cette semaine
         </Button>
       </Card>
 
