@@ -331,6 +331,22 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
                 >
                   📧 Envoyer email d&apos;activation aux {pushDiag.without_push_count} chauffeurs sourds
                 </Button>
+                <Button
+                  onClick={async () => {
+                    if (!window.confirm(`Envoyer le mail de RECTIFICATION aux ${pushDiag.without_push_count} chauffeurs sourds ?\n\nCe mail annule la mention "Saint-Denis 26 juillet" du précédent envoi et recentre sur "des usagers attendent tes courses dès maintenant". Action tracée dans l'audit log.`)) return;
+                    try {
+                      const { data } = await axios.post(`${API}/admin/drivers/send-rectification-email`, {}, auth);
+                      toast.success(`✅ ${data.emails_sent} rectificatifs envoyés, ${data.emails_failed} échecs.`);
+                      fetchPushDiagnostic();
+                    } catch (err) {
+                      toast.error(err?.response?.data?.detail || 'Erreur envoi rectificatif');
+                    }
+                  }}
+                  className="ml-2 mt-3 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 text-sm"
+                  data-testid="send-rectification-emails-btn"
+                >
+                  📨 Envoyer le rectificatif
+                </Button>
               </div>
             )}
 

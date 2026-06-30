@@ -3667,6 +3667,135 @@ Besoin d'aide ? Réponds directement à cet email ou appelle l'équipe Métro-Ta
 
 
 # ============================================
+# ADMIN — Envoyer un email de RECTIFICATION aux chauffeurs sourds
+# (Suite à la communication erronée du 30/06/2026 mentionnant "Saint-Denis 26 juillet".
+# Approuvé par Capitaine 30/06/2026.)
+# ============================================
+@router.post("/admin/drivers/send-rectification-email")
+async def send_rectification_email_to_silent_drivers(
+    current_user: dict = Depends(get_current_user),
+):
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+
+    import os as _os
+    import resend as _resend
+    resend_key = _os.environ.get("RESEND_API_KEY")
+    if not resend_key:
+        raise HTTPException(status_code=500, detail="RESEND_API_KEY non configurée")
+    _resend.api_key = resend_key
+    sender = _os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
+
+    validated = await db.drivers.find(
+        {"is_validated": True},
+        {"_id": 0, "id": 1, "email": 1, "first_name": 1, "last_name": 1}
+    ).to_list(1000)
+    subs = await db.push_subscriptions.find(
+        {"user_type": "driver"}, {"_id": 0, "user_id": 1}
+    ).to_list(10000)
+    with_push_ids = set(s["user_id"] for s in subs if s.get("user_id"))
+    silent_drivers = [d for d in validated if d.get("id") not in with_push_ids and d.get("email")]
+
+    sent = 0
+    failed = 0
+    for d in silent_drivers:
+        first_name = (d.get("first_name") or "Chauffeur").strip()
+        email = d.get("email")
+        html = f"""<!DOCTYPE html>
+<html><body style="margin:0;padding:0;background:#09090b;font-family:Arial,sans-serif;color:#e4e4e7;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#09090b;padding:20px 0;"><tr><td align="center">
+<table width="640" cellpadding="0" cellspacing="0" style="background:#18181B;border-radius:12px;overflow:hidden;">
+<tr><td style="background:#FFD60A;padding:30px;"><h1 style="color:#000;margin:0;font-size:22px;">Mise à jour — des usagers attendent tes courses</h1></td></tr>
+<tr><td style="padding:30px;">
+<p style="margin:0 0 16px;font-size:15px;">Salut {first_name},</p>
+<p style="color:#a1a1aa;margin:0 0 16px;font-size:14px;line-height:1.6;">
+Petite mise à jour suite au mail reçu ce soir.
+</p>
+<p style="color:#a1a1aa;margin:0 0 20px;font-size:14px;line-height:1.6;">
+<b>Oublie la mention de Saint-Denis et de la date du 26 juillet</b> — c'est une formulation qui n'est plus d'actualité.
+</p>
+
+<h2 style="color:#FFD60A;margin:20px 0 8px;font-size:16px;">Voici la réalité</h2>
+<p style="color:#e4e4e7;margin:0 0 12px;font-size:14px;line-height:1.6;">
+Métro-Taxi est déjà <b>en service</b>. Des usagers abonnés sont d'ores et déjà connectés à la plateforme et peuvent demander des courses <b>dès maintenant</b>. Nous sommes en phase de rodage avec des offres promotionnelles aux premiers inscrits, le temps de bien huiler le système.
+</p>
+<div style="background:#FFD60A22;border-left:4px solid #FFD60A;padding:12px 16px;margin:12px 0 20px;border-radius:4px;">
+<p style="color:#FFD60A;margin:0;font-size:14px;font-weight:bold;">CHAQUE COURSE NON HONORÉE = UN USAGER PERDU,</p>
+<p style="color:#e4e4e7;margin:6px 0 0;font-size:13px;">et pour toi un revenu manqué.</p>
+</div>
+
+<h2 style="color:#FFD60A;margin:20px 0 8px;font-size:16px;">Ce qui reste inchangé</h2>
+<p style="color:#a1a1aa;margin:0 0 16px;font-size:14px;line-height:1.6;">
+Ton compte chauffeur est validé et actif. Mais sans tes notifications push activées, <b>tu ne reçois aucune alerte</b>. Tes confrères qui ont activé les leurs prennent déjà les courses.
+</p>
+
+<h2 style="color:#FFD60A;margin:20px 0 8px;font-size:16px;">L'instruction du mail précédent reste valable</h2>
+
+<p style="color:#e4e4e7;margin:12px 0 6px;font-size:14px;font-weight:bold;">ANDROID (Chrome) — 90 secondes :</p>
+<ol style="color:#e4e4e7;margin:0;padding-left:20px;font-size:13px;line-height:1.7;">
+<li>Ouvre Chrome sur ton tél</li>
+<li>Va sur <a href="https://metro-taxi.com" style="color:#FFD60A;">https://metro-taxi.com</a></li>
+<li>Connecte-toi</li>
+<li>Menu Chrome (3 points) → <b>"Installer Métro-Taxi"</b></li>
+<li>Lance Métro-Taxi depuis l'icône</li>
+<li>Quand la popup notifications apparaît → <b>AUTORISER</b></li>
+</ol>
+
+<p style="color:#e4e4e7;margin:16px 0 6px;font-size:14px;font-weight:bold;">iPHONE (Safari, iOS 16.4+) — 90 secondes :</p>
+<ol style="color:#e4e4e7;margin:0;padding-left:20px;font-size:13px;line-height:1.7;">
+<li>Ouvre <b>Safari</b> (pas Chrome)</li>
+<li><a href="https://metro-taxi.com" style="color:#FFD60A;">https://metro-taxi.com</a></li>
+<li>Connecte-toi</li>
+<li>Icône Partage → <b>"Sur l'écran d'accueil"</b></li>
+<li>Lance Métro-Taxi depuis la nouvelle icône</li>
+<li>Réglages iPhone → Notifications → Métro-Taxi → <b>Sons ON + Bannières PERSISTANTES</b></li>
+</ol>
+
+<p style="color:#a1a1aa;margin:20px 0 0;font-size:14px;line-height:1.6;">
+Quand ton téléphone sonne pour la prochaine demande de course, tu es prêt.
+</p>
+<p style="color:#71717a;margin:16px 0 0;font-size:13px;">
+Besoin d'aide ? Réponds à ce mail, on te débloque.
+</p>
+</td></tr>
+<tr><td style="background:#09090b;padding:16px 30px;text-align:center;">
+<p style="color:#52525b;margin:0;font-size:11px;">© 2026 Métro-Taxi — L'équipe</p>
+</td></tr>
+</table></td></tr></table>
+</body></html>"""
+
+        try:
+            await asyncio.to_thread(_resend.Emails.send, {
+                "from": sender,
+                "to": [email],
+                "subject": f"{first_name}, mise à jour — des usagers attendent tes courses",
+                "html": html,
+            })
+            sent += 1
+        except Exception as e:
+            logging.error(f"Rectification email failed for {email}: {e}")
+            failed += 1
+
+    await db.admin_audit_log.insert_one({
+        "id": str(uuid.uuid4()),
+        "type": "rectification_emails_sent",
+        "admin_id": current_user.get("user_id"),
+        "admin_email": current_user.get("email"),
+        "emails_sent": sent,
+        "emails_failed": failed,
+        "target_count": len(silent_drivers),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+
+    return {
+        "ok": True,
+        "target_count": len(silent_drivers),
+        "emails_sent": sent,
+        "emails_failed": failed,
+    }
+
+
+# ============================================
 # ADMIN — Broadcast Mode (pré-lancement)
 # Quand ON : tous les chauffeurs validés apparaissent disponibles aux usagers même sans GPS,
 # le stale_drivers_cleaner est désactivé. Chaque demande de course déclenchera un push à
