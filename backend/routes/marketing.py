@@ -52,3 +52,24 @@ async def download_marketing_asset(filename: str):
             "Cache-Control": "public, max-age=3600",
         },
     )
+
+
+# Document CIS bancaire — endpoint dédié qui force le download (bypass PWA)
+CIS_PDF_PATH = Path("/app/frontend/public/downloads/cis-metro-taxi.pdf")
+
+
+@router.get("/cis")
+async def download_cis_document():
+    """Télécharge le Client Information Sheet (KYC bancaire)."""
+    if not CIS_PDF_PATH.exists():
+        raise HTTPException(status_code=404, detail="CIS document not generated yet")
+
+    return FileResponse(
+        path=str(CIS_PDF_PATH),
+        media_type="application/pdf",
+        filename="Metro-Taxi_CIS.pdf",
+        headers={
+            "Content-Disposition": 'attachment; filename="Metro-Taxi_CIS.pdf"',
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
+    )
