@@ -104,3 +104,36 @@ Plateforme VTC + covoiturage avec abonnements hebdomadaires (Sogecommerce) et **
 2. Tutoiement obligatoire, persona "Charly"
 3. Tous les assets marketing : PIL local UNIQUEMENT
 4. Police : DejaVu (installer `fonts-dejavu` si absent), pas de fallback silencieux
+
+---
+
+## Session 05/07/2026 — Fixes DNS + Comms
+
+### Réalisé
+- **PDF CIS v2** généré (date auto, page cachet supprimée) — user a finalisé côté sien
+- **Cachet officiel PDF** (`/app/frontend/public/downloads/cachet-metro-taxi.pdf`) — converti depuis PNG LOGO_CENTRE
+- **Endpoints download bypass PWA** : `/api/marketing/cis` + `/api/marketing/cachet` (force `attachment`)
+- **DNS Resend metro-taxi.com** via Kodee (Hostinger) :
+  - SPF, DKIM, MX déjà OK
+  - DMARC ajouté : `v=DMARC1; p=none; rua=mailto:contact@metro-taxi.com; adkim=r; aspf=r`
+  - TTL baissé à 3600s
+- **Test mail-tester.com** = **10/10** ✅
+- **Mail rectification envoyé aux 39 chauffeurs sourds** via bouton admin → Resend delivered
+- **Copie test** au user perso Gmail → Delivered dans onglet **Promotions** (pas Spam) ✅
+
+### État actuel
+- Chauffeurs validés : 44
+- Avec push actif : 5 (dont user)
+- SANS push (sourds) : 39 — mail rectification envoyé, en attente d'action utilisateur
+- Doublon détecté : Edgar DOUZIMA `eddouz@hotmail.fr` / LUDOVIC EDGAR DOUZIMA `12imaedgar@gmail.com` (à fusionner plus tard)
+
+### Décision en attente
+- **Twilio SMS** : mis en pause pour raisons budgétaires. User réfléchit entre :
+  - A) Offre promo 100 inscrits gratuits (P1, 0€ opérationnel)
+  - B) Twilio en mode minimal (~15-25€/mois)
+  - C) Campagne WhatsApp vidéo manuelle aux 10 sourds prioritaires (0€)
+
+### Prochaines actions
+- Attendre retour user (demain)
+- Attendre retour chauffeurs sur mail rectification (24-48h)
+- Nouveau diagnostic push pour mesurer taux de conversion
