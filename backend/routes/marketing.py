@@ -73,3 +73,24 @@ async def download_cis_document():
             "Cache-Control": "no-cache, no-store, must-revalidate",
         },
     )
+
+
+# Cachet officiel Métro-Taxi (PDF pour VistaPrint)
+CACHET_PDF_PATH = Path("/app/frontend/public/downloads/cachet-metro-taxi.pdf")
+
+
+@router.get("/cachet")
+async def download_cachet_pdf():
+    """Télécharge le cachet officiel Métro-Taxi en PDF (bypass PWA)."""
+    if not CACHET_PDF_PATH.exists():
+        raise HTTPException(status_code=404, detail="Cachet PDF not found")
+
+    return FileResponse(
+        path=str(CACHET_PDF_PATH),
+        media_type="application/pdf",
+        filename="Metro-Taxi_Cachet_Officiel.pdf",
+        headers={
+            "Content-Disposition": 'attachment; filename="Metro-Taxi_Cachet_Officiel.pdf"',
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
+    )
