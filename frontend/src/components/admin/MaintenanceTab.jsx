@@ -60,6 +60,63 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
   const [pushDiag, setPushDiag] = useState(null);
   const [loadingPushDiag, setLoadingPushDiag] = useState(false);
 
+  // Twilio SMS
+  const [twilioStatus, setTwilioStatus] = useState(null);
+  const [togglingTwilio, setTogglingTwilio] = useState(false);
+  const [smsTestPhone, setSmsTestPhone] = useState('');
+  const [sendingSmsTest, setSendingSmsTest] = useState(false);
+
+  const fetchTwilioStatus = async () => {
+    try {
+      const { data } = await axios.get(`${API}/admin/twilio/status`, auth);
+      setTwilioStatus(data);
+    } catch (err) {
+      // silent
+    }
+  };
+
+  useEffect(() => { fetchTwilioStatus(); /* eslint-disable-next-line */ }, []);
+
+  const toggleTwilio = async () => {
+    if (!twilioStatus) return;
+    const next = !twilioStatus.enabled;
+    const msg = next
+      ? "⚠️ ACTIVER l'envoi SMS RÉEL Twilio ?\n\nChaque nouvelle course en mode broadcast déclenchera un SMS payant (~0,075€/chauffeur) vers TOUS les chauffeurs validés.\n\nVérifie que :\n• Ton Regulatory Bundle FR est APPROUVÉ\n• Ton compte Twilio est passé en compte PAYANT (pas trial)\n\nTu peux désactiver à tout moment."
+      : "Désactiver l'envoi SMS (retour en mode DRY-RUN / logs uniquement) ?";
+    if (!window.confirm(msg)) return;
+    setTogglingTwilio(true);
+    try {
+      const { data } = await axios.post(`${API}/admin/twilio/toggle?enabled=${next}`, {}, auth);
+      setTwilioStatus((s) => ({ ...s, enabled: data.enabled }));
+      toast.success(data.enabled ? '📱 Twilio SMS ACTIVÉ (envois réels)' : '📱 Twilio SMS désactivé (mode dry-run)');
+    } catch (err) {
+      toast.error(err?.response?.data?.detail || 'Erreur toggle Twilio.');
+    } finally {
+      setTogglingTwilio(false);
+    }
+  };
+
+  const sendSmsTest = async () => {
+    if (!smsTestPhone || smsTestPhone.replace(/\D/g, '').length < 9) {
+      toast.error('Numéro invalide (format: 06XXXXXXXX ou +33XXXXXXXXX).');
+      return;
+    }
+    setSendingSmsTest(true);
+    try {
+      const { data } = await axios.post(`${API}/admin/twilio/send-test?to=${encodeURIComponent(smsTestPhone)}`, {}, auth);
+      const s = data.stats || {};
+      if (s.dry_run) {
+        toast.success(`✅ DRY-RUN OK. Voir logs backend. Skipped: ${s.skipped_no_phone || 0}, Sent (log): ${s.sent || 0}`);
+      } else {
+        toast.success(`✅ SMS RÉEL envoyé. Sent: ${s.sent}, Failed: ${s.failed}, Skipped: ${s.skipped_no_phone || 0}`);
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.detail || 'Erreur envoi test SMS.');
+    } finally {
+      setSendingSmsTest(false);
+    }
+  };
+
   const fetchPushDiagnostic = async () => {
     setLoadingPushDiag(true);
     try {
@@ -402,6 +459,67 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
           ouvert leur app. Chaque demande de course déclenchera un push critique sur leurs téléphones (système anti-fantôme désactivé).
           <br/>À utiliser pour <b>amorcer la pompe</b> avant le 26 juillet. À désactiver dès que les chauffeurs prennent l&apos;habitude d&apos;ouvrir l&apos;app eux-mêmes.
         </p>
+      </Card>
+
+      {/* Twilio SMS — décision Capitaine 06/07/2026 */}
+      <Card className={`bg-[#18181B] border-2 p-6 ${twilioStatus?.enabled ? 'border-cyan-500' : 'border-zinc-700'}`}>
+        <div className="flex items-start justify-between gap-4 mb-3">
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-cyan-400 mb-1 flex items-center gap-2">
+              📱 SMS Twilio — Alerte course chauffeurs
+              {twilioStatus?.enabled && (
+                <span className="ml-2 px-2 py-0.5 bg-cyan-500 text-black text-xs font-bold rounded">ACTIF</span>
+              )}
+              {twilioStatus && !twilioStatus.enabled && (
+                <span className="ml-2 px-2 py-0.5 bg-zinc-700 text-zinc-300 text-xs font-bold rounded">DRY-RUN</span>
+              )}
+            </h2>
+            <p className="text-xs text-zinc-500">
+              Numéro : <code>{twilioStatus?.phone_number || '—'}</code> · SOS : <code>{twilioStatus?.sos_phone || '—'}</code>
+            </p>
+          </div>
+          <Button
+            onClick={toggleTwilio}
+            disabled={togglingTwilio || !twilioStatus}
+            className={`min-w-[160px] font-bold ${twilioStatus?.enabled ? 'bg-zinc-700 hover:bg-zinc-600 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}
+            data-testid="toggle-twilio-sms-btn"
+          >
+            {togglingTwilio || !twilioStatus
+              ? <Loader2 className="w-4 h-4 animate-spin" />
+              : (twilioStatus?.enabled ? '🛑 Désactiver' : '📱 Activer envois réels')}
+          </Button>
+        </div>
+        <p className="text-sm text-zinc-400 mb-3">
+          Quand <b>ACTIF</b> : chaque course en mode broadcast déclenche un <b>vrai SMS payant</b> (~0,075€/chauffeur) vers tous les chauffeurs validés, sur leur numéro perso. Fonctionne même si leur app est fermée.
+          <br/>Quand <b>DRY-RUN</b> : les SMS sont uniquement <b>loggés côté serveur</b>, aucun envoi réel, aucun coût. Idéal tant que le Regulatory Bundle FR Twilio n&apos;est pas encore approuvé.
+        </p>
+
+        <div className="bg-zinc-900/40 border border-zinc-800 rounded p-3">
+          <label className="text-xs text-zinc-400 block mb-2">
+            🧪 Envoyer un SMS de test (le tien pour vérifier le rendu) :
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="tel"
+              value={smsTestPhone}
+              onChange={(e) => setSmsTestPhone(e.target.value)}
+              placeholder="06XXXXXXXX ou +33XXXXXXXXX"
+              className="flex-1 bg-zinc-950 border border-zinc-700 rounded px-3 py-2 text-sm text-white"
+              data-testid="sms-test-phone-input"
+            />
+            <Button
+              onClick={sendSmsTest}
+              disabled={sendingSmsTest || !smsTestPhone}
+              className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-4"
+              data-testid="send-sms-test-btn"
+            >
+              {sendingSmsTest ? <Loader2 className="w-4 h-4 animate-spin" /> : '📤 Test'}
+            </Button>
+          </div>
+          <p className="text-[10px] text-zinc-600 mt-2">
+            En mode DRY-RUN, le SMS est loggé dans <code>/var/log/supervisor/backend.err.log</code> mais pas envoyé.
+          </p>
+        </div>
       </Card>
 
       {/* Activation massive comptes — décision Capitaine 30/06/2026 */}

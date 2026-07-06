@@ -865,6 +865,32 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
                 logging.warning(f"Push broadcast failed for driver {drv_id}: {e}")
 
         logging.info(f"Ride {ride_id} BROADCAST sent to {push_count}/{len(all_drivers)} drivers")
+
+        # ============================================
+        # SMS Twilio broadcast (fire-and-forget, DRY-RUN tant que TWILIO_ENABLED != true)
+        # ============================================
+        try:
+            from services.twilio_sms import send_ride_broadcast_sms
+            drivers_full = await db.drivers.find(
+                {"is_active": True, "is_validated": True},
+                {"_id": 0, "id": 1, "phone": 1, "phone_number": 1, "first_name": 1}
+            ).to_list(1000)
+            # Distance approximative pickup→destination
+            _dist_km = _haversine_km(
+                data.pickup_lat, data.pickup_lng,
+                data.destination_lat, data.destination_lng,
+            )
+            asyncio.create_task(send_ride_broadcast_sms(
+                ride_id=ride_id,
+                user_first_name=user.get("first_name", "Un usager"),
+                pickup_address=pickup_address or "?",
+                destination_address=destination_address or "?",
+                distance_km=_dist_km,
+                passengers_count=getattr(data, "passengers_count", 1),
+                drivers=drivers_full,
+            ))
+        except Exception as _e:
+            logging.warning(f"Twilio SMS broadcast dispatch failed (non-blocking): {_e}")
     else:
         # Comportement classique : notif au chauffeur sélectionné uniquement
         await _get_manager().send_personal_message({
@@ -3793,6 +3819,82 @@ Besoin d'aide ? Réponds à ce mail, on te débloque.
         "emails_sent": sent,
         "emails_failed": failed,
     }
+
+
+    return {
+        "ok": True,
+        "target_count": len(silent_drivers),
+        "emails_sent": sent,
+        "emails_failed": failed,
+    }
+
+
+# ============================================
+# TWILIO — Kill-switch admin + statut + test
+# ============================================
+@router.get("/admin/twilio/status")
+async def twilio_status(current_user: dict = Depends(get_current_user)):
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+    return {
+        "enabled": os.environ.get("TWILIO_ENABLED", "false").lower() == "true",
+        "phone_number": os.environ.get("TWILIO_PHONE_NUMBER") or None,
+        "sos_phone": os.environ.get("TWILIO_SOS_PHONE") or None,
+        "app_url": os.environ.get("TWILIO_APP_URL") or None,
+    }
+
+
+@router.post("/admin/twilio/toggle")
+async def twilio_toggle(enabled: bool, current_user: dict = Depends(get_current_user)):
+    """Bascule TWILIO_ENABLED en mémoire (process courant) et persiste dans .env."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+    new_val = "true" if enabled else "false"
+    os.environ["TWILIO_ENABLED"] = new_val
+    env_path = "/app/backend/.env"
+    try:
+        with open(env_path, "r") as f:
+            lines = f.readlines()
+        found = False
+        for i, line in enumerate(lines):
+            if line.startswith("TWILIO_ENABLED="):
+                lines[i] = f"TWILIO_ENABLED={new_val}\n"
+                found = True
+                break
+        if not found:
+            lines.append(f"TWILIO_ENABLED={new_val}\n")
+        with open(env_path, "w") as f:
+            f.writelines(lines)
+    except Exception as e:
+        logging.warning(f"[Twilio Toggle] .env update failed: {e}")
+
+    await db.admin_audit_log.insert_one({
+        "id": str(uuid.uuid4()),
+        "type": "twilio_toggle",
+        "admin_id": current_user.get("user_id"),
+        "admin_email": current_user.get("email"),
+        "enabled": enabled,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+    return {"ok": True, "enabled": enabled}
+
+
+@router.post("/admin/twilio/send-test")
+async def twilio_send_test(to: str, current_user: dict = Depends(get_current_user)):
+    """Envoi d'un SMS test (dry-run si TWILIO_ENABLED=false)."""
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+    from services.twilio_sms import send_ride_broadcast_sms
+    stats = await send_ride_broadcast_sms(
+        ride_id="TEST",
+        user_first_name="Judee",
+        pickup_address="Neuilly-sur-Marne",
+        destination_address="Roissy CDG",
+        distance_km=18.0,
+        passengers_count=1,
+        drivers=[{"id": "test", "phone": to, "first_name": "Test"}],
+    )
+    return {"ok": True, "stats": stats}
 
 
 # ============================================
