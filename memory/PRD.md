@@ -137,3 +137,44 @@ Plateforme VTC + covoiturage avec abonnements hebdomadaires (Sogecommerce) et **
 - Attendre retour user (demain)
 - Attendre retour chauffeurs sur mail rectification (24-48h)
 - Nouveau diagnostic push pour mesurer taux de conversion
+
+---
+
+## Session 07/07/2026 — Intégration Twilio SMS + Dossier ADIE
+
+### Livré
+- **Backend Twilio SMS** complet (`services/twilio_sms.py`), intégré dans `/api/rides/request` broadcast, mode DRY-RUN par défaut, kill-switch persisté dans `.env`
+- **3 endpoints admin** : `/admin/twilio/{status,toggle,send-test}`
+- **UI carte "📱 SMS Twilio"** dans onglet 🧹 Maintenance avec toggle + test unitaire
+- **Version** : `v43.twilio-sms-broadcast-2026.07.06`
+
+### Twilio — statuts
+- ✅ Compte Twilio créé (SID `AC1089ccf3ff...`)
+- ✅ Regulatory Bundle FR approuvé le 07/07 (SID `BU6a6c54ff...`)
+- ⏳ Customer Profile en vérification (48h annoncées) — bloque l'upgrade compte payant
+- ❌ Aucun numéro FR encore acheté définitivement (compte encore trial, achat annulé silencieusement)
+- ⏳ À faire post-vérification : upgrade → rachat numéro → assigner Bundle → communiquer nouveau numéro au backend
+
+### Documents ADIE prêts
+- Livre Blanc Métro-Taxi v0.1 par Johny → sauvegardé `/app/memory/LIVRE_BLANC_METRO_TAXI_v0.1.md`
+- Note stratégique / hypothèses éco par Johny → base de travail expert-comptable
+- Mail-type de demande ADIE rédigé (à envoyer via https://www.adie.org/prendre-rendez-vous)
+- Liste 8 organismes 93 sauvegardée `/app/memory/ACCOMPAGNEMENT_ENTREPRENEURS_93.md`
+
+### Décisions stratégiques
+- ❌ Abandon expert-comptable payant (devis 3 000 € trop élevé)
+- ✅ Bascule sur écosystème étatique : ADIE + BGE + Bpifrance Création
+- Cible : microcrédit 2 000 € ADIE en secours si SG refuse
+
+### Chiffres actuels app (07/07 fin de journée)
+- 45 chauffeurs pionniers (dernier : Abderrahmane Bahri via Flyer CDG)
+- 32 usagers pré-inscrits
+- 0 abonnement payant vendu
+
+### Next Actions (par ordre)
+1. User : contacter ADIE via formulaire online → attendre rappel 48h
+2. Twilio : attendre validation Customer Profile (48h) → upgrade + rachat numéro
+3. Backend : mise à jour `TWILIO_PHONE_NUMBER` dès communication nouveau numéro
+4. Test SMS en réel (5 SMS ≈ 0,38 €)
+5. Fusion doublon Douzima (P2, ~2 crédits)
+6. Compteur coûts SMS admin (P2, ~4 crédits, après premiers vrais envois)
