@@ -178,3 +178,36 @@ Plateforme VTC + covoiturage avec abonnements hebdomadaires (Sogecommerce) et **
 4. Test SMS en réel (5 SMS ≈ 0,38 €)
 5. Fusion doublon Douzima (P2, ~2 crédits)
 6. Compteur coûts SMS admin (P2, ~4 crédits, après premiers vrais envois)
+
+---
+
+## Session 08/07/2026 — Broadcast Twilio grandeur nature ✅
+
+### Livré
+- Endpoint `/admin/twilio/send-test-broadcast-all` (texte fixe "TEST TECHNIQUE")
+- Bouton orange dans carte Maintenance SMS Twilio
+- Version bumped `v44.twilio-broadcast-test-2026.07.08`
+- Twilio Customer Profile validé (~9h52)
+- Compte upgradé (rechargement 20 $, crédit trial 15,50 $ perdu)
+- Numéro US bonus `+15076206407` utilisé (rewriter opérateur FR → short code `38102`)
+- Broadcast test réel aux 44 chauffeurs validés (1 chauffeur skip - phone invalide)
+
+### Résultats broadcast
+- 44/44 envoyés
+- 39 Delivered en <60 sec (88,6%)
+- 4 Sent en cours (Devenir Delivered sous 10 min)
+- 1 Undelivered (Iliad, error 30005 - Unknown destination handset - numéro fantôme à identifier)
+- Coût : 3,30 $
+- Solde restant : ~16,55 $
+
+### Next actions (à reprendre le 09/07)
+1. Repasser Twilio en DRY-RUN pour sécuriser jusqu'au lancement (bouton "Désactiver" dans Maintenance)
+2. Identifier le chauffeur fantôme (30005) et le supprimer de la base
+3. Attendre retours chauffeurs sur SOS 0605786425
+4. Contacter ADIE 93 pour dossier microcrédit 5 000 €
+5. Envoyer les 3 docs à Sarah SG (si prévisionnel finalisé avec l'ADIE)
+
+### Backlog
+- Fusion doublon Edgar/Ludovic Douzima (P2)
+- Compteur coûts SMS live dans admin (P2)
+- Optimisation géographique GPS avant scale (dès 5 courses/jour)
