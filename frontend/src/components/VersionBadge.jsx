@@ -3,7 +3,7 @@ import React from 'react';
 // IMPORTANT : à incrémenter à chaque déploiement majeur.
 // Permet à Capitaine de vérifier visuellement quelle version est active sur son appareil.
 // Si la version affichée diffère de celle annoncée par Charly, c'est qu'un déploiement n'a pas pris ou que le cache PWA tient.
-export const APP_VERSION = 'v43.twilio-sms-broadcast-2026.07.06';
+export const APP_VERSION = 'v44.twilio-broadcast-test-2026.07.08';
 
 const VersionBadge = () => (
   <span

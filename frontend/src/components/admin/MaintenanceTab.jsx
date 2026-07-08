@@ -117,6 +117,29 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
     }
   };
 
+  const [sendingBroadcastTest, setSendingBroadcastTest] = useState(false);
+  const sendBroadcastTest = async () => {
+    const targetCount = pushDiag?.total_validated_drivers ?? 45;
+    const msg = twilioStatus?.enabled
+      ? `⚠️ TEST BROADCAST RÉEL\n\nUn SMS "TEST TECHNIQUE" va être envoyé à ~${targetCount} chauffeurs validés.\n\nCoût estimé : ~${(targetCount * 0.075).toFixed(2)} $ débités du solde Twilio.\n\nContenu : "Metro-Taxi TEST TECHNIQUE : merci d'ignorer ce SMS. Verification systeme d'alerte course en cours..."\n\nConfirmer ?`
+      : `TEST BROADCAST en mode DRY-RUN\n\nAucun SMS réel envoyé (seulement des logs serveur).\nActive d'abord "envois réels" si tu veux tester en vrai.\n\nContinuer quand même ?`;
+    if (!window.confirm(msg)) return;
+    setSendingBroadcastTest(true);
+    try {
+      const { data } = await axios.post(`${API}/admin/twilio/send-test-broadcast-all`, {}, auth);
+      const s = data.stats || {};
+      if (s.dry_run) {
+        toast.success(`✅ DRY-RUN. Cible: ${s.target_count}, Loggés: ${s.sent}, Skipped: ${s.skipped_no_phone}`);
+      } else {
+        toast.success(`✅ BROADCAST RÉEL. Envoyés: ${s.sent}/${s.target_count}, Échecs: ${s.failed}, Skipped: ${s.skipped_no_phone}`);
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.detail || 'Erreur broadcast test.');
+    } finally {
+      setSendingBroadcastTest(false);
+    }
+  };
+
   const fetchPushDiagnostic = async () => {
     setLoadingPushDiag(true);
     try {
@@ -518,6 +541,28 @@ const MaintenanceTab = ({ token, currentUserId, currentUserEmail }) => {
           </div>
           <p className="text-[10px] text-zinc-600 mt-2">
             En mode DRY-RUN, le SMS est loggé dans <code>/var/log/supervisor/backend.err.log</code> mais pas envoyé.
+          </p>
+        </div>
+
+        {/* Broadcast test à TOUS les chauffeurs validés */}
+        <div className="mt-3 bg-zinc-900/40 border border-zinc-800 rounded p-3">
+          <label className="text-xs text-zinc-400 block mb-2">
+            🧪 Broadcast TEST TECHNIQUE à tous les chauffeurs validés :
+          </label>
+          <Button
+            onClick={sendBroadcastTest}
+            disabled={sendingBroadcastTest}
+            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold"
+            data-testid="send-sms-broadcast-test-btn"
+          >
+            {sendingBroadcastTest
+              ? <Loader2 className="w-4 h-4 animate-spin" />
+              : `📢 Envoyer le TEST TECHNIQUE aux ~${pushDiag?.total_validated_drivers ?? 45} chauffeurs (${twilioStatus?.enabled ? 'coût réel ~' + (((pushDiag?.total_validated_drivers ?? 45) * 0.075).toFixed(2)) + ' $' : 'DRY-RUN gratuit'})`}
+          </Button>
+          <p className="text-[10px] text-zinc-600 mt-2">
+            Envoie un SMS clairement marqué &quot;TEST TECHNIQUE&quot; à chaque chauffeur validé.
+            Texte fixé, pas le template course. Utile pour valider en 1 clic que l&apos;ensemble
+            du système fonctionne en conditions réelles.
           </p>
         </div>
       </Card>

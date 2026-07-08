@@ -3897,6 +3897,79 @@ async def twilio_send_test(to: str, current_user: dict = Depends(get_current_use
     return {"ok": True, "stats": stats}
 
 
+@router.post("/admin/twilio/send-test-broadcast-all")
+async def twilio_send_test_broadcast_all(current_user: dict = Depends(get_current_user)):
+    """Envoi d'un SMS de TEST TECHNIQUE à TOUS les chauffeurs validés (broadcast).
+
+    Le corps est un texte fixe explicitement marqué TEST TECHNIQUE — pas le
+    template de course habituel — pour éviter de simuler un faux appel.
+    Ce endpoint respecte TWILIO_ENABLED : si false = dry-run.
+    """
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+
+    drivers_full = await db.drivers.find(
+        {"is_active": True, "is_validated": True},
+        {"_id": 0, "id": 1, "phone": 1, "phone_number": 1, "first_name": 1},
+    ).to_list(1000)
+
+    dry_run = os.environ.get("TWILIO_ENABLED", "false").lower() != "true"
+    from_number = os.environ.get("TWILIO_PHONE_NUMBER")
+    if not from_number:
+        raise HTTPException(status_code=500, detail="TWILIO_PHONE_NUMBER manquant en config")
+
+    # Import local pour éviter dépendance forte
+    from services.twilio_sms import _normalize_fr_phone
+
+    body = (
+        "Metro-Taxi TEST TECHNIQUE : merci d'ignorer ce SMS. "
+        "Verification systeme d'alerte course en cours. "
+        "Ton compte reste actif. -L'equipe"
+    )
+
+    stats = {"target_count": len(drivers_full), "sent": 0, "failed": 0, "skipped_no_phone": 0, "dry_run": dry_run}
+
+    if dry_run:
+        for drv in drivers_full:
+            raw = drv.get("phone") or drv.get("phone_number") or ""
+            to = _normalize_fr_phone(raw)
+            if not to:
+                stats["skipped_no_phone"] += 1
+            else:
+                stats["sent"] += 1  # comptage log-only
+                logging.info(f"[TwilioSMS][DRY-RUN][BROADCAST-TEST] driver={drv.get('id')} to={to}")
+    else:
+        try:
+            from twilio.rest import Client
+            from twilio.base.exceptions import TwilioRestException
+            client = Client(os.environ["TWILIO_ACCOUNT_SID"], os.environ["TWILIO_AUTH_TOKEN"])
+            for drv in drivers_full:
+                raw = drv.get("phone") or drv.get("phone_number") or ""
+                to = _normalize_fr_phone(raw)
+                if not to:
+                    stats["skipped_no_phone"] += 1
+                    continue
+                try:
+                    client.messages.create(from_=from_number, to=to, body=body)
+                    stats["sent"] += 1
+                except TwilioRestException as exc:
+                    logging.warning(f"[TwilioSMS-BROADCAST-TEST] fail driver={drv.get('id')} to={to} code={getattr(exc,'code','?')}")
+                    stats["failed"] += 1
+        except Exception as e:
+            logging.exception(f"[TwilioSMS-BROADCAST-TEST] fatal: {e}")
+            raise HTTPException(status_code=500, detail=f"Erreur Twilio: {e}")
+
+    await db.admin_audit_log.insert_one({
+        "id": str(uuid.uuid4()),
+        "type": "twilio_broadcast_test",
+        "admin_id": current_user.get("user_id"),
+        "admin_email": current_user.get("email"),
+        "stats": stats,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+    return {"ok": True, "stats": stats, "body_sent": body}
+
+
 # ============================================
 # ADMIN — Broadcast Mode (pré-lancement)
 # Quand ON : tous les chauffeurs validés apparaissent disponibles aux usagers même sans GPS,
