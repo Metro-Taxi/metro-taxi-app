@@ -21,12 +21,12 @@ LEGAL_DIR = "/app/memory/legal"
 # Version des documents en vigueur (à incrémenter à chaque modification majeure)
 CURRENT_VERSIONS = {
     "cgv": "2026-05-28",
-    "contract-driver": "2026-05-28",
+    "contract-driver": "2026-07-20",
 }
 
 FILES = {
     "cgv": "CGU_CGV_Metro-Taxi_2026-05-28.md",
-    "contract-driver": "Contrat_Partenariat_Chauffeur_2026-05-28.md",
+    "contract-driver": "Contrat_Partenariat_Chauffeur_2026-07-20.md",
 }
 
 
