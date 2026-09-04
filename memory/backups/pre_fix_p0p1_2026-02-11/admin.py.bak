@@ -708,6 +708,7 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
         now = datetime.now(timezone.utc)
         plan_week = SUBSCRIPTION_PLANS["1week"]
         plan_week_max = plan_week.get("max_rides_per_period", 15)
+        plan_week_max_per_day = plan_week.get("max_rides_per_day", 3)
 
         # Période d'abonnement courante (7j glissant depuis activation)
         sub_started = user.get("subscription_started_at")
@@ -735,8 +736,19 @@ async def create_ride_request(data: RideRequestCreate, current_user: dict = Depe
                 status_code=429,
                 detail=f"Plafond hebdomadaire atteint : abonnement 1 semaine limité à {plan_week_max} trajets. Passez à l'abonnement 1 mois pour des trajets illimités."
             )
-        # NOTE (P1 fix 2026-02): plafond journalier 3/jour supprimé — le modèle
-        # commercial est 15 trajets / 7 jours sans sous-plafond quotidien.
+
+        # Plafond journalier : max 3 trajets / 24h glissant
+        day_start = now - timedelta(hours=24)
+        rides_count_day = await db.ride_requests.count_documents({
+            "user_id": user_id,
+            "created_at": {"$gte": day_start.isoformat()},
+            "status": {"$nin": ["rejected", "cancelled"]},
+        })
+        if rides_count_day >= plan_week_max_per_day:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Plafond journalier atteint : abonnement 1 semaine limité à {plan_week_max_per_day} trajets par jour. Réessayez plus tard ou passez à l'abonnement 1 mois pour des trajets illimités."
+            )
     
     ride_id = str(uuid.uuid4())
     # 4-digit OTP that the passenger gives to the driver upon boarding.

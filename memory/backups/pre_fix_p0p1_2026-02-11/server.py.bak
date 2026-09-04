@@ -53,7 +53,7 @@ STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY')
 if STRIPE_API_KEY:
     stripe.api_key = STRIPE_API_KEY
 
-JWT_SECRET = os.environ['JWT_SECRET']  # P0: obligatoire, plus de fallback en clair
+JWT_SECRET = os.environ.get('JWT_SECRET', 'metro-taxi-secret')
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
 
@@ -67,7 +67,7 @@ if RESEND_API_KEY:
 # Default plans (France/EUR)
 SUBSCRIPTION_PLANS = {
     "24h": {"name": "24 heures", "price": 6.99, "price_cents": 699, "duration_hours": 24, "max_rides_per_period": 5},
-    "1week": {"name": "1 semaine", "price": 19.99, "price_cents": 1999, "duration_hours": 168, "max_rides_per_period": 15},
+    "1week": {"name": "1 semaine", "price": 19.99, "price_cents": 1999, "duration_hours": 168, "max_rides_per_period": 15, "max_rides_per_day": 3},
     "1month": {"name": "1 mois", "price": 53.99, "price_cents": 5399, "duration_hours": 720}
 }
 

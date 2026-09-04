@@ -75,12 +75,9 @@ MAX_PASSENGERS_PER_VEHICLE = 4
 # `target_fill` = remplissage cible / idéal (utilisé pour le score & l'admin)
 # `capacity`   = capacité physique max d'abonnés simultanés
 DEFAULT_VEHICLE_FILL_THRESHOLDS = {
-    # P1 fix 2026-02: capacités alignées sur le modèle commercial Métro-Taxi
-    # (Berline 4, Monospace 6, Van 8). min_fill/target_fill conservés — pas de
-    # modification de la logique de dispatch sans démonstration de nécessité.
     "berline":   {"min_fill": 3, "target_fill": 4, "capacity": 4},
-    "monospace": {"min_fill": 4, "target_fill": 5, "capacity": 6},
-    "van":       {"min_fill": 5, "target_fill": 7, "capacity": 8},
+    "monospace": {"min_fill": 4, "target_fill": 5, "capacity": 5},
+    "van":       {"min_fill": 5, "target_fill": 7, "capacity": 7},
 }
 
 # Délai max en file d'attente avant dispatch forcé (anti-frustration abonné)
