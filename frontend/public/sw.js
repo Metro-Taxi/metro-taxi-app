@@ -1,3 +1,4 @@
+/* global clients */
 const CACHE_NAME = 'metro-taxi-v35';
 const STATIC_CACHE = 'metro-taxi-static-v35';
 const DYNAMIC_CACHE = 'metro-taxi-dynamic-v35';

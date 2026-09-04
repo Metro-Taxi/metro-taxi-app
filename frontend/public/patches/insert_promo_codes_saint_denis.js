@@ -1,3 +1,4 @@
+/* global db */
 db.promo_codes.insertMany([
   {
     "id": "699c4f60-8646-419b-8e56-46e2d1feae96",

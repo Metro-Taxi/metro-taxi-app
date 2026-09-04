@@ -3438,7 +3438,7 @@ async def download_note_synthese_docx():
 # ============================================
 # Multilingual AI chatbot for customer support
 
-class ChatMessage(BaseModel):
+class ChatMessage(BaseModel):  # noqa: F811
     message: str
     language: str = "fr"
     session_id: Optional[str] = None

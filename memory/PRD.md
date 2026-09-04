@@ -211,3 +211,49 @@ Plateforme VTC + covoiturage avec abonnements hebdomadaires (Sogecommerce) et **
 - Fusion doublon Edgar/Ludovic Douzima (P2)
 - Compteur coûts SMS live dans admin (P2)
 - Optimisation géographique GPS avant scale (dès 5 courses/jour)
+
+---
+
+## 2026-02-11 — Fix P0/P1 chirurgical (session Charly)
+
+### Contexte
+Audit préalable a révélé 3 anomalies critiques. Johny (stratège ChatGPT) a validé un GO strict : uniquement P0 + P1, backup obligatoire, aucun refactoring matching, aucun déploiement sans validation.
+
+### FIX 1 — P0 Sécurité JWT ✅ appliqué
+- `server.py` L56 : fallback `'metro-taxi-secret'` supprimé
+- `JWT_SECRET = os.environ['JWT_SECRET']` (obligatoire, crash au démarrage si absent)
+- Vérifié : variable présente dans `.env` (36 caractères), backend redémarre sans erreur
+
+### FIX 2 — P1 Abonnements alignés sur modèle commercial ✅ appliqué
+Modèle validé Capitaine : **5 / 15 / illimité** (pas de suppression globale)
+- `server.py` L70 : `max_rides_per_day: 3` retiré du plan 1week
+- `admin.py` L711 : variable `plan_week_max_per_day` supprimée
+- `admin.py` L740-751 : bloc de vérif plafond journalier retiré
+- Plafonds 5 (24h) et 15 (semaine) **conservés**
+- Simulation fonctionnelle validée : 4ème course/jour en abo 1-semaine désormais autorisée, 16ème course sur 7j toujours refusée
+
+### FIX 3 — P1 Capacités véhicules ✅ appliqué
+`utils/algorithm_config.py::DEFAULT_VEHICLE_FILL_THRESHOLDS`
+- berline : capacity 4 (inchangé)
+- monospace : capacity 5 → **6**
+- van : capacity 7 → **8**
+- `min_fill` et `target_fill` **conservés** (pas de modification de logique de dispatch)
+
+### Backup
+`/app/memory/backups/pre_fix_p0p1_2026-02-11/` (server.py, admin.py, algorithm_config.py, .env)
+
+### Découverte dette technique (non traitée, GO option a)
+- `utils/helpers.py` L121-125 : copie fantôme de `SUBSCRIPTION_PLANS` (jamais importée)
+- `config.py` : fichier orphelin complet (57 lignes de code mort, aucun import)
+- Contient encore `max_rides_per_day: 3` et fallback JWT en clair
+- **Inoffensifs en l'état** (jamais chargés) mais constituent un piège futur
+
+### Statut
+- Code corrigé et testé localement ✅
+- **Aucun déploiement en production** — décision remise au 12/02
+- Testing agent : non appelé (économie de crédits, tests locaux suffisants pour ce périmètre)
+
+### À reprendre demain (12/02)
+1. Décision Capitaine : GO déploiement prod des fix P0/P1
+2. Décision Capitaine : nettoyage dette technique (helpers.py + config.py) — option b/c reportée
+3. Backlog en attente : promo 100 inscrits (1 semaine gratuite), fusion moteur matching (P2)
