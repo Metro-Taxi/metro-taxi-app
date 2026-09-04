@@ -468,3 +468,6 @@ credentials.json
 frontend/node_modules/.cache/default-development/38.pack
 frontend/node_modules/.cache/default-development/40.pack
 frontend/node_modules/.cache/default-development/42.pack
+.env
+.env.*
+*.env
