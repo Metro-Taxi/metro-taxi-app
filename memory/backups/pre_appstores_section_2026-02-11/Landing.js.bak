@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { languages } from '@/i18n';
 import HelpCenter from '@/components/HelpCenter';
-import AppStoresSection from '@/components/AppStoresSection';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -906,9 +905,6 @@ const Landing = () => {
           </motion.div>
         </div>
       </section>
-
-      {/* App Stores Section (soon on Google Play / App Store) */}
-      <AppStoresSection />
 
       {/* Footer */}
       <footer className="py-12 px-6 bg-[#09090B] border-t border-zinc-800">
