@@ -779,8 +779,6 @@ class UserRegister(BaseModel):
     signup_campaign: Optional[str] = None
     # Patch V10 — Code parrainage d'un partenaire commercial (?ref=GGSM)
     referral_code: Optional[str] = None
-    # Comment as-tu connu Métro-Taxi ? (texte libre, facultatif)
-    source_inscription: Optional[str] = None
 
 class DriverRegister(BaseModel):
     first_name: str
@@ -1136,8 +1134,6 @@ async def register_user(data: UserRegister, request: Request):
         "signup_campaign": data.signup_campaign,
         # Patch V10 — Parrainage d'un partenaire commercial
         "referral_code": (data.referral_code or "").upper().strip() or None,
-        # Comment as-tu connu Métro-Taxi ? (texte libre, facultatif)
-        "source_inscription": (data.source_inscription or "").strip() or None,
     }
     
     # Create response before inserting to avoid ObjectId contamination
