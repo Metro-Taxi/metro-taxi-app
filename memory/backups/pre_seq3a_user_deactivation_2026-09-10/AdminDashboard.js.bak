@@ -211,24 +211,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Séquence 3-A — Désactivation/réactivation utilisateurs (admin)
-  const toggleUserDeactivation = async (user) => {
-    const action = user.deactivated ? 'reactivate' : 'deactivate';
-    const confirmMsg = user.deactivated
-      ? `Réactiver le compte de ${user.first_name} ${user.last_name} ?`
-      : `Désactiver le compte de ${user.first_name} ${user.last_name} ?\n\nL'utilisateur ne pourra plus se connecter. Les données sont conservées.`;
-    if (!window.confirm(confirmMsg)) return;
-    try {
-      await axios.post(`${API}/admin/users/${user.id}/${action}`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      toast.success(user.deactivated ? 'Compte réactivé' : 'Compte désactivé');
-      fetchData();
-    } catch (error) {
-      toast.error("Erreur lors de la mise à jour du statut du compte");
-    }
-  };
-
   const cleanupExpiredSubscriptions = async () => {
     setCleanupLoading(true);
     try {
@@ -983,11 +965,6 @@ const AdminDashboard = () => {
                             }`}>
                               {user.subscription_active ? t('dashboard.admin.users.active') : t('dashboard.admin.users.inactive')}
                             </span>
-                            {user.deactivated && (
-                              <span className="ml-2 text-xs px-2 py-1 rounded bg-red-500/20 text-red-400" data-testid={`user-deactivated-badge-${user.id}`}>
-                                Désactivé
-                              </span>
-                            )}
                             <p className="text-zinc-500 text-xs mt-1">{formatDate(user.created_at)}</p>
                           </td>
                           <td>
@@ -1019,29 +996,6 @@ const AdminDashboard = () => {
                               >
                                 <Download className="w-4 h-4" />
                               </Button>
-                              {user.deactivated ? (
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => toggleUserDeactivation(user)}
-                                  className="text-green-400 hover:text-green-300 hover:bg-green-500/10"
-                                  title="Réactiver le compte"
-                                  data-testid={`reactivate-user-${user.id}`}
-                                >
-                                  <UserCheck className="w-4 h-4" />
-                                </Button>
-                              ) : (
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => toggleUserDeactivation(user)}
-                                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                                  title="Désactiver le compte"
-                                  data-testid={`deactivate-user-${user.id}`}
-                                >
-                                  <UserX className="w-4 h-4" />
-                                </Button>
-                              )}
                             </div>
                           </td>
                         </tr>
