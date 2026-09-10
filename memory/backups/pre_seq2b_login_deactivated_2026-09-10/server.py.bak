@@ -1468,9 +1468,6 @@ async def login(data: LoginRequest, request: Request):
     # Drivers FIRST so a driver with a duplicate user account gets driver dashboard
     driver = await db.drivers.find_one({"email": data.email}, {"_id": 0})
     if driver and verify_password(data.password, driver["password"]):
-        # Séquence 2b fix 2026-09-10 : compte administrativement désactivé → refus immédiat
-        if driver.get("deactivated") is True:
-            raise HTTPException(status_code=401, detail="Compte désactivé — contactez le support")
         if not driver.get("is_validated"):
             raise HTTPException(status_code=403, detail="Compte en attente de validation admin")
         clear_failed_login(client_ip, data.email)
@@ -1480,9 +1477,6 @@ async def login(data: LoginRequest, request: Request):
     # Then users
     user = await db.users.find_one({"email": data.email}, {"_id": 0})
     if user and verify_password(data.password, user["password"]):
-        # Séquence 2b fix 2026-09-10 : compte administrativement désactivé → refus immédiat
-        if user.get("deactivated") is True:
-            raise HTTPException(status_code=401, detail="Compte désactivé — contactez le support")
         clear_failed_login(client_ip, data.email)
         user_data = {k: v for k, v in user.items() if k != "password"}
         if user.get("role") == "admin":
