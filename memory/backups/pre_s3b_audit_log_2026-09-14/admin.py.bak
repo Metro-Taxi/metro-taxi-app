@@ -1562,22 +1562,6 @@ async def get_all_drivers(current_user: dict = Depends(get_current_user)):
     drivers = await db.drivers.find({}, {"_id": 0, "password": 0}).to_list(1000)
     return {"drivers": drivers}
 
-async def _log_admin_action(target_type: str, target_id: str, action: str) -> None:
-    """S3-B 2026-09-14 — Journal minimal des actions de désactivation/réactivation.
-    Enregistre chaque événement dans admin_audit_log pour exploitation ultérieure
-    (aucune consultation UI pour l'instant, cf. brief S3-B)."""
-    try:
-        await db.admin_audit_log.insert_one({
-            "id": str(uuid.uuid4()),
-            "target_type": target_type,   # "user" | "driver"
-            "target_id": target_id,
-            "action": action,             # "deactivate" | "reactivate"
-            "created_at": datetime.now(timezone.utc).isoformat(),
-        })
-    except Exception as e:
-        # Journalisation ne doit jamais bloquer l'action métier
-        logging.getLogger(__name__).warning(f"[admin_audit_log] Insertion failed: {e}")
-
 @router.post("/admin/drivers/{driver_id}/validate")
 async def validate_driver(driver_id: str, current_user: dict = Depends(get_current_user)):
     if current_user["role"] != "admin":
@@ -1591,7 +1575,6 @@ async def validate_driver(driver_id: str, current_user: dict = Depends(get_curre
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Chauffeur non trouvé")
     
-    await _log_admin_action("driver", driver_id, "reactivate")
     return {"status": "validated"}
 
 @router.post("/admin/drivers/{driver_id}/deactivate")
@@ -1612,7 +1595,6 @@ async def deactivate_driver(driver_id: str, current_user: dict = Depends(get_cur
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Chauffeur non trouvé")
     
-    await _log_admin_action("driver", driver_id, "deactivate")
     return {"status": "deactivated"}
 
 # ============================================
@@ -1636,7 +1618,6 @@ async def deactivate_user(user_id: str, current_user: dict = Depends(get_current
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
-    await _log_admin_action("user", user_id, "deactivate")
     return {"status": "deactivated"}
 
 @router.post("/admin/users/{user_id}/reactivate")
@@ -1652,7 +1633,6 @@ async def reactivate_user(user_id: str, current_user: dict = Depends(get_current
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
-    await _log_admin_action("user", user_id, "reactivate")
     return {"status": "reactivated"}
 
 @router.get("/admin/users")
