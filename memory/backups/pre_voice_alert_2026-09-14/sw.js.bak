@@ -1,5 +1,5 @@
 /* global clients */
-const CACHE_NAME = 'metro-taxi-v36';
+const CACHE_NAME = 'metro-taxi-v35';
 const STATIC_CACHE = 'metro-taxi-static-v35';
 const DYNAMIC_CACHE = 'metro-taxi-dynamic-v35';
 const API_CACHE = 'metro-taxi-api-v35';
@@ -263,25 +263,6 @@ self.addEventListener('push', (event) => {
 
   event.waitUntil(
     self.registration.showNotification(notificationData.title, options)
-      .then(() => {
-        // Voice alert bridge (2026-09-14) — si push type 'transfer_approaching', relayer
-        // aux clients ouverts pour déclencher speechSynthesis (foreground uniquement).
-        if (notificationData.data && notificationData.data.type === 'transfer_approaching') {
-          return self.clients.matchAll({ type: 'window', includeUncontrolled: true })
-            .then((cs) => {
-              cs.forEach((c) => {
-                try {
-                  c.postMessage({
-                    type: 'voice_alert',
-                    level: notificationData.data.level,
-                    first_name: notificationData.data.first_name || '',
-                    body: notificationData.body || '',
-                  });
-                } catch (e) { /* silent */ }
-              });
-            });
-        }
-      })
   );
 });
 

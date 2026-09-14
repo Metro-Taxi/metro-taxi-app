@@ -124,56 +124,6 @@ const UserDashboard = () => {
   const [showHelp, setShowHelp] = useState(false);
   const [searchingVehicles, setSearchingVehicles] = useState(false);
   const [matchedDrivers, setMatchedDrivers] = useState([]);
-
-  // 🎙️ Alerte vocale personnalisée transbordement (2026-09-14)
-  // - Foreground : Web Speech API native (prénom + message court)
-  // - Background/verrouillé : push notification native OS (déjà en place)
-  // - iOS Safari : nécessite une interaction utilisateur pour débloquer speechSynthesis
-  const [voiceAlertsEnabled, setVoiceAlertsEnabled] = useState(
-    () => typeof window !== 'undefined' && localStorage.getItem('voice_alerts_enabled') === '1'
-  );
-
-  // Enclenche speechSynthesis dans un contexte utilisateur (obligatoire iOS).
-  const enableVoiceAlerts = useCallback(() => {
-    try {
-      if (!('speechSynthesis' in window)) {
-        toast.error("Votre navigateur ne supporte pas les alertes vocales.");
-        return;
-      }
-      const u = new window.SpeechSynthesisUtterance("Alertes vocales activées.");
-      u.lang = 'fr-FR';
-      u.rate = 1.0;
-      window.speechSynthesis.speak(u);
-      localStorage.setItem('voice_alerts_enabled', '1');
-      setVoiceAlertsEnabled(true);
-      toast.success("Alertes vocales activées");
-    } catch (e) {
-      toast.error("Impossible d'activer les alertes vocales");
-    }
-  }, []);
-
-  // Réception des messages du Service Worker → synthèse vocale foreground
-  useEffect(() => {
-    if (!('serviceWorker' in navigator) || !('speechSynthesis' in window)) return;
-    const handler = (event) => {
-      const data = event.data || {};
-      if (data.type !== 'voice_alert') return;
-      if (!voiceAlertsEnabled) return;
-      try {
-        const text = data.body || (
-          data.first_name
-            ? `${data.first_name}, votre transbordement approche.`
-            : "Votre transbordement approche."
-        );
-        const u = new window.SpeechSynthesisUtterance(text);
-        u.lang = 'fr-FR';
-        u.rate = 0.95;
-        window.speechSynthesis.speak(u);
-      } catch (_e) { /* silent */ }
-    };
-    navigator.serviceWorker.addEventListener('message', handler);
-    return () => navigator.serviceWorker.removeEventListener('message', handler);
-  }, [voiceAlertsEnabled]);
   
   // Address search states
   const [addressSearch, setAddressSearch] = useState('');
@@ -955,18 +905,6 @@ const UserDashboard = () => {
                    activeRide.status === 'accepted' ? t('common.confirm') : t('common.loading')}
                 </span>
               </div>
-
-              {/* 🎙️ Bouton activation alertes vocales (une seule fois par device — iOS gesture) */}
-              {!voiceAlertsEnabled && (
-                <button
-                  type="button"
-                  onClick={enableVoiceAlerts}
-                  className="w-full mb-3 px-4 py-2 rounded-lg bg-[#FFD60A]/10 border border-[#FFD60A]/30 text-[#FFD60A] text-sm font-medium hover:bg-[#FFD60A]/20 transition-colors"
-                  data-testid="enable-voice-alerts-btn"
-                >
-                  🔊 Activer les alertes vocales de transbordement
-                </button>
-              )}
 
               {/* 🔐 OTP Code — affiché tant que la course n'est pas démarrée */}
               {activeRide.pickup_otp && ['accepted', 'pickup'].includes(activeRide.status) && (

@@ -1826,83 +1826,6 @@ async def change_password(data: ChangePasswordRequest, current_user: dict = Depe
 
 # Payment routes extracted to routes/payments.py
 # Driver Location Routes
-async def _maybe_send_transfer_voice_alert(driver_id: str, driver_lat: float, driver_lng: float) -> None:
-    """Alerte vocale personnalisée transbordement (2026-09-14).
-    Fire-and-forget : jamais bloquer l'update GPS driver.
-    - Trouve la ride active du driver
-    - Pour chaque transfer_point non encore alerté, calcule distance driver → point
-    - Seuil L1 : < 500 m → 1ère alerte "prochain transbordement approche"
-    - Seuil L2 : < 150 m → 2ème alerte "point de transbordement est proche"
-    - Dedup : flag `voice_alerts_sent` en Mongo par (transfer_index, level)
-    """
-    try:
-        from utils.helpers import calculate_distance as _dist
-        ride = await db.ride_requests.find_one(
-            {
-                "driver_id": driver_id,
-                "status": {"$in": ["accepted", "pickup", "in_progress"]},
-            },
-            {"_id": 0, "id": 1, "user_id": 1, "transfer_points": 1, "voice_alerts_sent": 1}
-        )
-        if not ride:
-            return
-        transfers = ride.get("transfer_points") or []
-        if not transfers:
-            return
-        user = await db.users.find_one({"id": ride.get("user_id")}, {"_id": 0, "first_name": 1})
-        if not user:
-            return
-        first_name = (user.get("first_name") or "").strip() or None
-        sent = ride.get("voice_alerts_sent") or {}   # {"0": ["l1"], "1": ["l1","l2"]}
-
-        for idx, tp in enumerate(transfers):
-            tp_lat = tp.get("lat") or (tp.get("location") or {}).get("lat")
-            tp_lng = tp.get("lng") or (tp.get("location") or {}).get("lng")
-            if tp_lat is None or tp_lng is None:
-                continue
-            dist_km = _dist(driver_lat, driver_lng, tp_lat, tp_lng)
-            dist_m = dist_km * 1000
-            already = set(sent.get(str(idx), []))
-            level = None
-            if dist_m < 150 and "l2" not in already:
-                level = "l2"
-                body = (f"{first_name}, votre point de transbordement est proche."
-                        if first_name else "Votre point de transbordement est proche.")
-            elif dist_m < 500 and "l1" not in already:
-                level = "l1"
-                body = (f"{first_name}, votre prochain transbordement approche."
-                        if first_name else "Votre prochain transbordement approche.")
-            else:
-                continue
-
-            # Envoi push (fire-and-forget aussi)
-            try:
-                from routes.notifications import send_push_notification, NotificationPayload
-                await send_push_notification(
-                    user_id=ride["user_id"],
-                    notification=NotificationPayload(
-                        title="🚕 Métro-Taxi",
-                        body=body,
-                        data={"type": "transfer_approaching", "level": level, "first_name": first_name},
-                    ),
-                    user_type="user",
-                )
-            except Exception as _push_err:
-                logging.getLogger(__name__).warning(f"[voice_alert] push failed: {_push_err}")
-
-            # Dedup : marquer l'alerte comme envoyée
-            already.add(level)
-            sent[str(idx)] = sorted(already)
-            await db.ride_requests.update_one(
-                {"id": ride["id"]},
-                {"$set": {"voice_alerts_sent": sent}}
-            )
-            # Une seule alerte par tick GPS (évite d'envoyer L1+L2 dans le même appel)
-            break
-    except Exception as e:
-        logging.getLogger(__name__).warning(f"[voice_alert] check failed: {e}")
-
-
 @api_router.post("/drivers/location")
 async def update_driver_location(data: LocationUpdate, current_user: dict = Depends(get_current_user)):
     if current_user["role"] != "driver":
@@ -1929,10 +1852,7 @@ async def update_driver_location(data: LocationUpdate, current_user: dict = Depe
             "type": "driver_location_update",
             "driver": driver
         })
-
-    # Alerte vocale personnalisée transbordement (fire-and-forget)
-    asyncio.create_task(_maybe_send_transfer_voice_alert(driver_id, data.latitude, data.longitude))
-
+    
     return {"status": "ok"}
 
 @api_router.get("/drivers/available")
