@@ -26,7 +26,7 @@ CURRENT_VERSIONS = {
 
 FILES = {
     "cgv": "CGU_CGV_Metro-Taxi_2026-05-28.md",
-    "contract-driver": "Contrat_Partenariat_Chauffeur_2026-09-16.md",
+    "contract-driver": "Contrat_Partenariat_Chauffeur_2026-07-20.md",
 }
 
 

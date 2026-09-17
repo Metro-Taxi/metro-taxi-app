@@ -1001,7 +1001,6 @@ class DriverRegisterWithRegion(BaseModel):
     vehicle_type: str
     seats: int
     vtc_license: str
-    driving_license: Optional[str] = None  # Permis de conduire (KYC 2026-09-17 v4)
     tax_id: Optional[str] = None  # SIRET (FR), NIF (PT/ES), etc.
     region_id: str  # Required for drivers
     iban: Optional[str] = None
@@ -1266,7 +1265,6 @@ async def register_driver(data: DriverRegisterWithRegion, request: Request):
         "vehicle_type": data.vehicle_type,
         "seats": data.seats,
         "vtc_license": data.vtc_license,
-        "driving_license": (data.driving_license or "").strip() or None,  # Permis de conduire (KYC 2026-09-17)
         "tax_id": data.tax_id,  # SIRET (FR), NIF (PT/ES), etc.
         "iban": data.iban,
         "bic": data.bic,

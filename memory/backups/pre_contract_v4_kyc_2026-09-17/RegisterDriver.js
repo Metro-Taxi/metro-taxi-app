@@ -67,7 +67,6 @@ const RegisterDriver = () => {
     vehicle_type: '',
     seats: 4,
     vtc_license: '',
-    driving_license: '',
     tax_id: '',
     iban: '',
     bic: '',
@@ -485,26 +484,6 @@ const RegisterDriver = () => {
                       className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
                       required
                       data-testid="driver-license-input"
-                    />
-                  </div>
-                </div>
-
-                {/* Permis de conduire (KYC v4 — 16/09/2026) */}
-                <div className="space-y-2">
-                  <Label htmlFor="driving_license" className="text-zinc-300">
-                    Numéro du permis de conduire
-                  </Label>
-                  <div className="relative">
-                    <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500" />
-                    <Input
-                      id="driving_license"
-                      name="driving_license"
-                      value={formData.driving_license}
-                      onChange={handleChange}
-                      placeholder="Numéro figurant sur ton permis de conduire"
-                      maxLength={30}
-                      className="pl-10 bg-zinc-900 border-zinc-700 text-white h-12 focus:border-[#FFD60A]"
-                      data-testid="driver-driving-license-input"
                     />
                   </div>
                 </div>
